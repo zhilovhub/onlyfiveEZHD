@@ -1,1 +1,1 @@
-from config import TOKEN
+from .config import TOKEN
