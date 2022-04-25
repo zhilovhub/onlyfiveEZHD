@@ -1,4 +1,4 @@
-import vk_api
+from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from vk_api.keyboard import VkKeyboard
 
@@ -10,7 +10,7 @@ import data
 class DiaryVkBot:
     def __init__(self, token: str) -> None:
         """Initialization"""
-        self.vk_session = vk_api.VkApi(token=token)
+        self.vk_session = VkApi(token=token)
         self.bot_long_poll = VkBotLongPoll(vk=self.vk_session, group_id=data.GROUP_ID)
 
     def send_message(self, user_id: int, message: str) -> None:
