@@ -1,5 +1,5 @@
 import vk_api
-from vk_api.longpoll import VkLongPoll, VkEventType
+from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 
 from random import randint
 
@@ -10,7 +10,7 @@ class DiaryVkBot:
     def __init__(self, token: str) -> None:
         """Initialization"""
         self.vk_session = vk_api.VkApi(token=token)
-        self.long_poll = VkLongPoll(vk=self.vk_session)
+        self.bot_long_poll = VkBotLongPoll(vk=self.vk_session, group_id=data.GROUP_ID)
 
     def send_message(self, user_id: int, message: str) -> None:
         """Send message to user"""
@@ -37,14 +37,16 @@ class DiaryVkBot:
 
     def listen(self) -> None:
         """Listening events"""
-        for event in self.long_poll.listen():
-            if event.type == VkEventType.MESSAGE_NEW:
+        for event in self.bot_long_poll.listen():
+            if event.type == VkBotEventType.MESSAGE_NEW:
                 if event.from_user:
-                    if event.to_me:
-                        if self.is_member(user_id=event.user_id):
-                            pass
-                        else:
-                            self.send_message(user_id=event.user_id, message="Перед использованием бота подпишись на группу!")
+                    if self.is_member(user_id=event.message.from_id):
+                        self.send_message(user_id=event.message.from_id, message=event.message.text)
+                    else:
+                        self.send_message(user_id=event.message.from_id, message="Перед использованием бота подпишись на группу!")
+
+            else:
+                print(event.type)
 
 
 if __name__ == "__main__":
