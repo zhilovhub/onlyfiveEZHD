@@ -1,1 +1,1 @@
-from .config import TOKEN, ADMIN_ID
+from .config import TOKEN, ADMIN_ID, GROUP_ID
