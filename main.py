@@ -1,5 +1,6 @@
 import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
+from vk_api.keyboard import VkKeyboard
 
 from random import randint
 
@@ -14,11 +15,15 @@ class DiaryVkBot:
 
     def send_message(self, user_id: int, message: str) -> None:
         """Send message to user"""
+        keyboard = VkKeyboard(one_time=False)
+        keyboard.add_button("Найти класс")
+
         self.vk_session.method(
             "messages.send",
             {
                 "user_id": user_id,
                 "message": message,
+                "keyboard": keyboard.get_keyboard(),
                 "random_id": randint(0, 2 ** 10)
             }
         )
