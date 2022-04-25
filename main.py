@@ -40,10 +40,10 @@ class DiaryVkBot:
         for event in self.bot_long_poll.listen():
             if event.type == VkBotEventType.MESSAGE_NEW:
                 if event.from_user:
-                    if self.is_member(user_id=event.message.from_id):
-                        self.send_message(user_id=event.object.message.from_id, message=event.message.text)
+                    if self.is_member(user_id=event.object.message["from_id"]):
+                        self.send_message(user_id=event.object.message["from_id"], message=event.object.message["text"])
                     else:
-                        self.send_message(user_id=event.object.message.from_id, message="Перед использованием бота подпишись на группу!")
+                        self.send_message(user_id=event.object.message["from_id"], message="Перед использованием бота подпишись на группу!")
 
             elif event.type == VkBotEventType.GROUP_JOIN:
                 self.send_message(user_id=event.object.user_id, message="Добро пожаловать в наше сообщество!\n"
