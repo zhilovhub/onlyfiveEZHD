@@ -4,6 +4,7 @@ from vk_api.keyboard import VkKeyboard
 
 from random import randint
 
+from keyboards import KeyBoards
 import data
 
 
@@ -13,17 +14,21 @@ class DiaryVkBot:
         self.vk_session = VkApi(token=token)
         self.bot_long_poll = VkBotLongPoll(vk=self.vk_session, group_id=data.GROUP_ID)
 
-    def send_message(self, user_id: int, message: str) -> None:
-        """Send message to user"""
-        keyboard = VkKeyboard(one_time=False)
-        keyboard.add_button("Найти класс")
+    def get_keyboard(self, keyboard_type: str) -> VkKeyboard:
+        if keyboard_type == "empty":
+            return KeyBoards.KEYBOARD_EMPTY.get_empty_keyboard()
 
+        elif keyboard_type == "menu":
+            return KeyBoards.KEYBOARD_MENU.get_keyboard()
+
+    def send_message(self, user_id: int, message: str, keyboard: VkKeyboard) -> None:
+        """Send message to user"""
         self.vk_session.method(
             "messages.send",
             {
                 "user_id": user_id,
                 "message": message,
-                "keyboard": keyboard.get_keyboard(),
+                "keyboard": keyboard,
                 "random_id": randint(0, 2 ** 10)
             }
         )
@@ -45,14 +50,14 @@ class DiaryVkBot:
         for event in self.bot_long_poll.listen():
             if event.type == VkBotEventType.MESSAGE_NEW:
                 if event.from_user:
-                    if self.is_member(user_id=event.object.message["from_id"]):
-                        self.send_message(user_id=event.object.message["from_id"], message=event.object.message["text"])
+                    if self.is_member(event.object.message["from_id"]):
+                        self.send_message(event.object.message["from_id"], event.object.message["text"], self.get_keyboard("menu"))
                     else:
-                        self.send_message(user_id=event.object.message["from_id"], message="Перед использованием бота подпишись на группу!")
+                        self.send_message(event.object.message["from_id"], "Перед использованием бота подпишись на группу!", self.get_keyboard("empty"))
 
             elif event.type == VkBotEventType.GROUP_JOIN:
-                self.send_message(user_id=event.object.user_id, message="Добро пожаловать в наше сообщество!\n"
-                                                                        "Что может наш бот? (Инструкция)")
+                self.send_message(event.object.user_id, "Добро пожаловать в наше сообщество!\n"
+                                                                        "Что может наш бот? (Инструкция)", self.get_keyboard("menu"))
 
             else:
                 print(event.type)
