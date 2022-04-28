@@ -60,7 +60,7 @@ class DiaryVkBot:
                                                                         "Что может наш бот? (Инструкция)", self.get_keyboard("menu"))
 
             else:
-                print(event.type)
+                print(event)
 
 
 if __name__ == "__main__":
