@@ -1,5 +1,5 @@
 from vk_api import VkApi
-from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
+from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType, VkBotMessageEvent
 from vk_api.keyboard import VkKeyboard
 
 from random import randint
@@ -45,13 +45,38 @@ class DiaryVkBot:
 
         return is_member
 
+    def filter_message(self, event: VkBotMessageEvent) -> None:
+        """Filtering messages"""
+        if event.object.message["text"] == "":
+            pass
+
+        elif event.object.message["text"] == "":
+            pass
+
+        elif event.object.message["text"] == "":
+            pass
+
+        elif event.object.message["text"] == "":
+            pass
+
+        elif event.object.message["text"] == "":
+            pass
+
+        elif event.object.message["text"] == "":
+            pass
+
+        else:
+            self.send_message(event.object.message["from_id"], "Я бот и общаться пока что не умею :(", self.get_keyboard("menu"))
+
+
     def listen(self) -> None:
         """Listening events"""
         for event in self.bot_long_poll.listen():
             if event.type == VkBotEventType.MESSAGE_NEW:
                 if event.from_user:
                     if self.is_member(event.object.message["from_id"]):
-                        self.send_message(event.object.message["from_id"], event.object.message["text"], self.get_keyboard("menu"))
+                        self.filter_message(event)
+
                     else:
                         self.send_message(event.object.message["from_id"], "Перед использованием бота подпишись на группу!", self.get_keyboard("empty"))
 
