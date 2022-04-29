@@ -47,23 +47,28 @@ class DiaryVkBot:
 
     def filter_message(self, event: VkBotMessageEvent) -> None:
         """Filtering messages"""
-        if event.object.message["text"] == "":
-            pass
+        if event.object.message["text"] == "Найти класс":
+            self.send_message(event.object.message["from_id"], "Нахожу класс...", self.get_keyboard("menu"))
 
-        elif event.object.message["text"] == "":
-            pass
+        elif event.object.message["text"] == "Создать класс":
+            self.send_message(event.object.message["from_id"], "Создаю класс...", self.get_keyboard("menu"))
 
-        elif event.object.message["text"] == "":
-            pass
 
-        elif event.object.message["text"] == "":
-            pass
+        elif event.object.message["text"] == "Мои классы":
+            self.send_message(event.object.message["from_id"], "Твои классы...", self.get_keyboard("menu"))
 
-        elif event.object.message["text"] == "":
-            pass
 
-        elif event.object.message["text"] == "":
-            pass
+        elif event.object.message["text"] == "Создать беседу класса":
+            self.send_message(event.object.message["from_id"], "Создаю беседу класса...", self.get_keyboard("menu"))
+
+
+        elif event.object.message["text"] == "Настройка беседы класса":
+            self.send_message(event.object.message["from_id"], "Настройка беседы класса...", self.get_keyboard("menu"))
+
+
+        elif event.object.message["text"] == "Обращение в тех. поддержку":
+            self.send_message(event.object.message["from_id"], "Вопрос принят...", self.get_keyboard("menu"))
+
 
         else:
             self.send_message(event.object.message["from_id"], "Я бот и общаться пока что не умею :(", self.get_keyboard("menu"))
