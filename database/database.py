@@ -1,6 +1,6 @@
 from mysql.connector import connect, Error
 
-from config import HOST, USER, PASSWORD, DATABASE_NAME
+from .config import HOST, USER, PASSWORD, DATABASE_NAME
 
 
 class DataBase:
