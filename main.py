@@ -31,8 +31,16 @@ class DiaryVkBot:
                                           self.get_keyboard("empty"))
 
             elif event.type == VkBotEventType.GROUP_JOIN:
-                self.send_message(event.object.user_id, "Добро пожаловать в наше сообщество!\n"
-                                                        "Что может наш бот? (Инструкция)",
+                user_id = event.object["user_id"]
+                user_information = self.get_user_info(user_id)
+
+                self.database.insert_new_user(user_information["user_id"],
+                                              user_information["screen_name"],
+                                              user_information["first_name"]
+                                              )
+
+                self.send_message(user_id, "Добро пожаловать в наше сообщество!\n"
+                                           "Что может наш бот? (Инструкция)",
                                   self.get_keyboard("menu"))
 
             else:
@@ -68,6 +76,14 @@ class DiaryVkBot:
             self.send_message(event.object.message["from_id"], "Я бот и общаться пока что не умею :(",
                               self.get_keyboard("menu"))
 
+    def get_keyboard(self, keyboard_type: str) -> VkKeyboard:
+        """Get the keyboard"""
+        if keyboard_type == "empty":
+            return KeyBoards.KEYBOARD_EMPTY.get_empty_keyboard()
+
+        elif keyboard_type == "menu":
+            return KeyBoards.KEYBOARD_MENU.get_keyboard()
+
     def send_message(self, user_id: int, message: str, keyboard: VkKeyboard) -> None:
         """Send message to user"""
         self.vk_session.method(
@@ -80,14 +96,6 @@ class DiaryVkBot:
             }
         )
 
-    def get_keyboard(self, keyboard_type: str) -> VkKeyboard:
-        """Get the keyboard"""
-        if keyboard_type == "empty":
-            return KeyBoards.KEYBOARD_EMPTY.get_empty_keyboard()
-
-        elif keyboard_type == "menu":
-            return KeyBoards.KEYBOARD_MENU.get_keyboard()
-
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""
         is_member = self.vk_session.method(
@@ -99,6 +107,22 @@ class DiaryVkBot:
         )
 
         return is_member
+
+    def get_user_info(self, user_id: int) -> dict:
+        """Get information about user"""
+        user_information = self.vk_session.method(
+            "users.get",
+            {
+                "user_ids": user_id,
+                "fields": "screen_name"
+            }
+        )[0]
+
+        return {
+            "user_id": user_id,
+            "screen_name": user_information["screen_name"],
+            "first_name": user_information["first_name"]
+        }
 
 
 if __name__ == "__main__":
