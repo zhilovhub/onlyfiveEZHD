@@ -1,6 +1,7 @@
 from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType, VkBotMessageEvent
 from vk_api.keyboard import VkKeyboard
+from vk_api.exceptions import VkApiError
 
 from random import randint
 
@@ -86,15 +87,18 @@ class DiaryVkBot:
 
     def send_message(self, user_id: int, message: str, keyboard: VkKeyboard) -> None:
         """Send message to user"""
-        self.vk_session.method(
-            "messages.send",
-            {
-                "user_id": user_id,
-                "message": message,
-                "keyboard": keyboard,
-                "random_id": randint(0, 2 ** 10)
-            }
-        )
+        try:
+            self.vk_session.method(
+                "messages.send",
+                {
+                    "user_id": user_id,
+                    "message": message,
+                    "keyboard": keyboard,
+                    "random_id": randint(0, 2 ** 10)
+                }
+            )
+        except VkApiError as e:
+            print(e)
 
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""
