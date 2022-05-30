@@ -32,15 +32,32 @@ class DataBase:
         except Error as e:
             print(e)
 
+    def insert_new_user(self, user_id: int, screen_name: str, first_name: str) -> None:
+        try:
+            with connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=DATABASE_NAME
+            ) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(DataBaseQueries.insert_new_user_query.format(user_id, screen_name, first_name))
+                    connection.commit()
+
+        except Error as e:
+            print(e)
+
 
 class DataBaseQueries:
     create_db_query = f"""CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}"""
 
     create_table_user_query = """CREATE TABLE IF NOT EXISTS User(
         user_id int NOT NULL UNIQUE PRIMARY KEY,
-        username VARCHAR(255),
-        name VARCHAR(255)
+        screen_name VARCHAR(255),
+        first_name VARCHAR(255)
     )"""
+
+    insert_new_user_query = """INSERT INTO User VALUES({}, '{}', '{}')"""
 
 
 if __name__ == '__main__':
