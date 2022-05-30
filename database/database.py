@@ -27,6 +27,8 @@ class DataBase:
             ) as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(DataBaseQueries.create_table_user_query)
+                    cursor.execute(DataBaseQueries.create_table_classroom_query)
+                    cursor.execute(DataBaseQueries.create_table_student_query)
                     connection.commit()
 
         except Error as e:
@@ -55,6 +57,19 @@ class DataBaseQueries:
         user_id int NOT NULL UNIQUE PRIMARY KEY,
         screen_name VARCHAR(255),
         first_name VARCHAR(255)
+    )"""
+
+    create_table_classroom_query = """CREATE TABLE IF NOT EXISTS Classroom(
+        classroom_id int NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
+        classroom_name VARCHAR(255)
+    )"""
+
+    create_table_student_query = """CREATE TABLE IF NOT EXISTS Student(
+        user_id int,
+        classroom_id int,
+        role VARCHAR(255),
+        FOREIGN KEY (user_id) REFERENCES User (user_id),
+        FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id)
     )"""
 
     insert_new_user_query = """INSERT INTO User VALUES({}, '{}', '{}')"""
