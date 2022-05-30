@@ -4,15 +4,17 @@ from vk_api.keyboard import VkKeyboard
 
 from random import randint
 
+from database import DataBase
 from keyboards import KeyBoards
 import data
 
 
 class DiaryVkBot:
-    def __init__(self, token: str) -> None:
+    def __init__(self, token: str, database: DataBase) -> None:
         """Initialization"""
         self.vk_session = VkApi(token=token)
         self.bot_long_poll = VkBotLongPoll(vk=self.vk_session, group_id=data.GROUP_ID)
+        self.database = database
 
     def get_keyboard(self, keyboard_type: str) -> VkKeyboard:
         if keyboard_type == "empty":
@@ -98,5 +100,7 @@ class DiaryVkBot:
 
 
 if __name__ == "__main__":
-    my_bot = DiaryVkBot(token=data.TOKEN)
+    database = DataBase()
+
+    my_bot = DiaryVkBot(token=data.TOKEN, database=database)
     my_bot.listen()

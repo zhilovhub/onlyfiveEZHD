@@ -26,7 +26,7 @@ class DataBase:
                 database=DATABASE_NAME
             ) as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute(DataBaseQueries.create_table_query)
+                    cursor.execute(DataBaseQueries.create_table_user_query)
                     connection.commit()
 
         except Error as e:
@@ -36,8 +36,10 @@ class DataBase:
 class DataBaseQueries:
     create_db_query = f"""CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}"""
 
-    create_table_query = """CREATE TABLE IF NOT EXISTS User(
-        user_id int NOT NULL PRIMARY KEY
+    create_table_user_query = """CREATE TABLE IF NOT EXISTS User(
+        user_id int NOT NULL UNIQUE PRIMARY KEY,
+        username VARCHAR(255),
+        name VARCHAR(255)
     )"""
 
 
