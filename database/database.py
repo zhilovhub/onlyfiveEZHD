@@ -34,7 +34,7 @@ class DataBase:
         except Error as e:
             print(e)
 
-    def insert_new_user(self, user_id: int, screen_name: str, first_name: str) -> None:
+    def insert_new_user(self, user_id: int, screen_name: str, first_name: str, is_ready: bool) -> None:
         try:
             with connect(
                 host=self.host,
@@ -43,8 +43,39 @@ class DataBase:
                 database=DATABASE_NAME
             ) as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute(DataBaseQueries.insert_new_user_query.format(user_id, screen_name, first_name))
+                    cursor.execute(DataBaseQueries.insert_new_user_query.format(user_id, screen_name, first_name, is_ready))
                     connection.commit()
+
+        except Error as e:
+            print(e)
+
+    def set_user_is_ready(self, user_id: int) -> None:
+        try:
+            with connect(
+                    host=self.host,
+                    user=self.user,
+                    password=self.password,
+                    database=DATABASE_NAME
+            ) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(DataBaseQueries.set_user_is_ready_query.format(user_id))
+                    connection.commit()
+
+        except Error as e:
+            print(e)
+
+    def check_user_is_ready(self, user_id: int) -> bool:
+        try:
+            with connect(
+                    host=self.host,
+                    user=self.user,
+                    password=self.password,
+                    database=DATABASE_NAME
+            ) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(DataBaseQueries.check_user_is_ready_query.format(user_id))
+                    is_ready = cursor.fetchone()[3]
+                    return True if is_ready else False
 
         except Error as e:
             print(e)
@@ -56,7 +87,8 @@ class DataBaseQueries:
     create_table_user_query = """CREATE TABLE IF NOT EXISTS User(
         user_id int NOT NULL UNIQUE PRIMARY KEY,
         screen_name VARCHAR(255),
-        first_name VARCHAR(255)
+        first_name VARCHAR(255),
+        is_ready BOOLEAN
     )"""
 
     create_table_classroom_query = """CREATE TABLE IF NOT EXISTS Classroom(
@@ -72,7 +104,11 @@ class DataBaseQueries:
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id)
     )"""
 
-    insert_new_user_query = """INSERT INTO User VALUES({}, '{}', '{}')"""
+    insert_new_user_query = """INSERT INTO User VALUES({}, '{}', '{}', {})"""
+
+    set_user_is_ready_query = """UPDATE User SET is_ready=TRUE WHERE user_id={}"""
+
+    check_user_is_ready_query = """SELECT * FROM User"""
 
 
 if __name__ == '__main__':
