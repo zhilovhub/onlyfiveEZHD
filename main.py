@@ -20,29 +20,30 @@ class DiaryVkBot:
     def listen(self) -> None:
         """Listening events"""
         for event in self.bot_long_poll.listen():
-            print(event)
             if event.type == VkBotEventType.MESSAGE_NEW:
                 if event.from_user:
-                    if self.is_member(event.object.message["from_id"]):
-                        self.filter_message(event)
+                    user_id = event.object.message["from_id"]
+                    user_information = self.get_user_info(user_id)
+
+                    self.database.insert_new_user(user_information["user_id"],
+                                                  user_information["screen_name"],
+                                                  user_information["first_name"],
+                                                  False
+                                                  )
+
+                    if self.is_member(user_id):
+                        if self.database.check_user_is_ready(user_id):
+                            self.filter_message(event)
+                        else:
+                            self.database.set_user_is_ready(user_id)
+                            self.send_message(user_id, "Добро пожаловать в наше сообщество!\n"
+                                                       "Что может наш бот? (Инструкция)",
+                                              self.get_keyboard("menu"))
 
                     else:
                         self.send_message(event.object.message["from_id"],
                                           "Перед использованием бота подпишись на группу!",
                                           self.get_keyboard("empty"))
-
-            elif event.type == VkBotEventType.GROUP_JOIN:
-                user_id = event.object["user_id"]
-                user_information = self.get_user_info(user_id)
-
-                self.database.insert_new_user(user_information["user_id"],
-                                              user_information["screen_name"],
-                                              user_information["first_name"]
-                                              )
-
-                self.send_message(user_id, "Добро пожаловать в наше сообщество!\n"
-                                           "Что может наш бот? (Инструкция)",
-                                  self.get_keyboard("menu"))
 
             else:
                 print(event)
