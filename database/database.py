@@ -85,26 +85,27 @@ class DataBaseQueries:
     create_db_query = f"""CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}"""
 
     create_table_user_query = """CREATE TABLE IF NOT EXISTS User(
-        user_id int NOT NULL UNIQUE PRIMARY KEY,
+        user_id INT NOT NULL UNIQUE PRIMARY KEY,
         screen_name VARCHAR(255),
         first_name VARCHAR(255),
-        is_ready BOOLEAN
+        is_ready BOOLEAN,
+        state INT
     )"""
 
     create_table_classroom_query = """CREATE TABLE IF NOT EXISTS Classroom(
-        classroom_id int NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
+        classroom_id INT NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
         classroom_name VARCHAR(255)
     )"""
 
     create_table_student_query = """CREATE TABLE IF NOT EXISTS Student(
-        user_id int,
-        classroom_id int,
+        user_id INT,
+        classroom_id INT,
         role VARCHAR(255),
         FOREIGN KEY (user_id) REFERENCES User (user_id),
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id)
     )"""
 
-    insert_new_user_query = """INSERT INTO User VALUES({}, '{}', '{}', {})"""
+    insert_new_user_query = """INSERT INTO User VALUES({}, '{}', '{}', {}, 0)"""
 
     set_user_is_ready_query = """UPDATE User SET is_ready=TRUE WHERE user_id={}"""
 
