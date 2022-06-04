@@ -23,62 +23,69 @@ class DiaryVkBot:
         for event in self.bot_long_poll.listen():
             if event.type == VkBotEventType.MESSAGE_NEW:
                 if event.from_user:
-                    user_id = event.object.message["from_id"]
-                    user_information = self.get_user_info(user_id)
+                    user_id = event.object.message["from_id"]  # Getting user_id
+                    message = event.object.message["text"]  # Getting message's text
+                    user_information = self.get_user_info(user_id)  # User_id, first_name, nickname
 
                     self.database.insert_new_user(user_information["user_id"],
                                                   user_information["screen_name"],
                                                   user_information["first_name"],
                                                   False
-                                                  )
+                                                  )  # Will add a new user if user writes his first message
 
-                    if self.is_member(user_id):
-                        if self.database.check_user_is_ready(user_id):
-                            if self.database.get_user_dialog_state(user_id) == States.S_NOTHING.value:
-                                self.filter_message(event, user_id)
+                    if self.is_member(user_id):  # Checking first condition
+
+                        if self.database.check_user_is_ready(user_id):  # Checking second condition
+                            current_dialog_state = self.database.get_user_dialog_state(user_id)
+                            self.filter_dialog_state(user_id, message, current_dialog_state)
                         else:
-                            self.database.set_user_is_ready(user_id)
+                            self.database.set_user_is_ready(user_id)  # First condition is True but this is a first user's message
                             self.send_message(user_id, "Добро пожаловать в наше сообщество!\n"
                                                        "Что может наш бот? (Инструкция)",
                                               self.get_keyboard("menu"))
-
                     else:
-                        self.send_message(event.object.message["from_id"],
+                        self.send_message(user_id,  # User is not a member
                                           "Перед использованием бота подпишись на группу!",
                                           self.get_keyboard("empty"))
-
             else:
                 print(event)
 
-    def filter_message(self, event: VkBotMessageEvent, user_id: int) -> None:
+    def filter_dialog_state(self, user_id: int, message: str, current_dialog_state: int) -> None:
+        """Filtering dialog states"""
+        match current_dialog_state:
+            case States.S_NOTHING.value:
+                self.filter_message(user_id, message)
+
+
+    def filter_message(self, user_id: int, message: str) -> None:
         """Filtering messages"""
-        if event.object.message["text"] == "Найти класс":
-            self.send_message(event.object.message["from_id"], "Нахожу класс...",
+        if message == "Найти класс":
+            self.send_message(user_id, "Нахожу класс...",
                               self.get_keyboard("menu"))
 
-        elif event.object.message["text"] == "Создать класс":
-            self.send_message(event.object.message["from_id"], "Напишите название будущего класса:",
+        elif message == "Создать класс":
+            self.send_message(user_id, "Напишите название будущего класса:",
                               self.get_keyboard("empty"))
             self.database.set_user_dialog_state(user_id, States.S_ENTER_NAME_CLASSCREATE.value)
 
-        elif event.object.message["text"] == "Мои классы":
-            self.send_message(event.object.message["from_id"], "Твои классы...",
+        elif message == "Мои классы":
+            self.send_message(user_id, "Твои классы...",
                               self.get_keyboard("menu"))
 
-        elif event.object.message["text"] == "Создать беседу класса":
-            self.send_message(event.object.message["from_id"], "Создаю беседу класса...",
+        elif message == "Создать беседу класса":
+            self.send_message(user_id, "Создаю беседу класса...",
                               self.get_keyboard("menu"))
 
-        elif event.object.message["text"] == "Настройка беседы класса":
-            self.send_message(event.object.message["from_id"], "Настройка беседы класса...",
+        elif message == "Настройка беседы класса":
+            self.send_message(user_id, "Настройка беседы класса...",
                               self.get_keyboard("menu"))
 
-        elif event.object.message["text"] == "Обращение в тех. поддержку":
-            self.send_message(event.object.message["from_id"], "Вопрос принят...",
+        elif message == "Обращение в тех. поддержку":
+            self.send_message(user_id, "Вопрос принят...",
                               self.get_keyboard("menu"))
 
         else:
-            self.send_message(event.object.message["from_id"], "Я бот и общаться пока что не умею :(",
+            self.send_message(user_id, "Я бот и общаться пока что не умею :(",
                               self.get_keyboard("menu"))
 
     def get_keyboard(self, keyboard_type: str) -> VkKeyboard:
