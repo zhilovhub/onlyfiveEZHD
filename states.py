@@ -2,6 +2,8 @@ from enum import Enum
 
 
 class States(Enum):
+    """Dialog States"""
+
     S_NOTHING = 0
 
     S_ENTER_NAME_CLASSCREATE = 1
