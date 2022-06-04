@@ -80,6 +80,38 @@ class DataBase:
         except Error as e:
             print(e)
 
+    def get_user_dialog_state(self, user_id: int) -> int:
+        try:
+            with connect(
+                    host=self.host,
+                    user=self.user,
+                    password=self.password,
+                    database=DATABASE_NAME
+            ) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(DataBaseQueries.get_user_dialog_state_query.format(user_id))
+                    state = cursor.fetchone()[0]
+
+                    return state
+
+        except Error as e:
+            print(e)
+
+    def set_user_dialog_state(self, user_id: int, state: int) -> None:
+        try:
+            with connect(
+                    host=self.host,
+                    user=self.user,
+                    password=self.password,
+                    database=DATABASE_NAME
+            ) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(DataBaseQueries.set_user_dialog_state_query.format(state, user_id))
+                    connection.commit()
+
+        except Error as e:
+            print(e)
+
 
 class DataBaseQueries:
     create_db_query = f"""CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}"""
@@ -110,6 +142,10 @@ class DataBaseQueries:
     set_user_is_ready_query = """UPDATE User SET is_ready=TRUE WHERE user_id={}"""
 
     check_user_is_ready_query = """SELECT * FROM User WHERE user_id={} AND is_ready=TRUE"""
+
+    get_user_dialog_state_query = """SELECT state FROM User WHERE user_id={}"""
+
+    set_user_dialog_state_query = """UPDATE User SET state={} WHERE user_id={}"""
 
 
 if __name__ == '__main__':
