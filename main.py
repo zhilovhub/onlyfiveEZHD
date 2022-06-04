@@ -56,6 +56,9 @@ class DiaryVkBot:
             case States.S_NOTHING.value:
                 self.filter_message(user_id, message)
 
+            case States.S_ENTER_NAME_CLASSCREATE.value:
+                self.enter_name_classcreate(user_id, message)
+
     def filter_message(self, user_id: int, message: str) -> None:
         """Filtering messages"""
         if message == "Найти класс":
@@ -85,6 +88,13 @@ class DiaryVkBot:
 
         else:
             self.send_message(user_id, "Я бот и общаться пока что не умею :(",
+                              self.get_keyboard("menu"))
+
+    def enter_name_classcreate(self, user_id: int, message: str) -> None:
+        """Handling States.S_ENTER_NAME_CLASSCREATE"""
+        if message == "Отменить":
+            self.database.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.send_message(user_id, "Создание класса отменено",
                               self.get_keyboard("menu"))
 
     @staticmethod
