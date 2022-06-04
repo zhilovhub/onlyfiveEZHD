@@ -7,6 +7,7 @@ from random import randint
 
 from database import DataBase
 from keyboards import KeyBoards
+from states import States
 import data
 
 
@@ -33,7 +34,8 @@ class DiaryVkBot:
 
                     if self.is_member(user_id):
                         if self.database.check_user_is_ready(user_id):
-                            self.filter_message(event)
+                            if self.database.get_user_dialog_state(user_id) == States.S_NOTHING.value:
+                                self.filter_message(event, user_id)
                         else:
                             self.database.set_user_is_ready(user_id)
                             self.send_message(user_id, "Добро пожаловать в наше сообщество!\n"
@@ -48,15 +50,16 @@ class DiaryVkBot:
             else:
                 print(event)
 
-    def filter_message(self, event: VkBotMessageEvent) -> None:
+    def filter_message(self, event: VkBotMessageEvent, user_id: int) -> None:
         """Filtering messages"""
         if event.object.message["text"] == "Найти класс":
             self.send_message(event.object.message["from_id"], "Нахожу класс...",
                               self.get_keyboard("menu"))
 
         elif event.object.message["text"] == "Создать класс":
-            self.send_message(event.object.message["from_id"], "Создаю класс...",
-                              self.get_keyboard("menu"))
+            self.send_message(event.object.message["from_id"], "Напишите название будущего класса:",
+                              self.get_keyboard("empty"))
+            self.database.set_user_dialog_state(user_id, States.S_ENTER_NAME_CLASSCREATE.value)
 
         elif event.object.message["text"] == "Мои классы":
             self.send_message(event.object.message["from_id"], "Твои классы...",
