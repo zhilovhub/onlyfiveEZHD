@@ -1,5 +1,5 @@
 from vk_api import VkApi
-from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType, VkBotMessageEvent
+from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from vk_api.keyboard import VkKeyboard
 from vk_api.exceptions import VkApiError
 
@@ -56,7 +56,6 @@ class DiaryVkBot:
             case States.S_NOTHING.value:
                 self.filter_message(user_id, message)
 
-
     def filter_message(self, user_id: int, message: str) -> None:
         """Filtering messages"""
         if message == "Найти класс":
@@ -65,7 +64,7 @@ class DiaryVkBot:
 
         elif message == "Создать класс":
             self.send_message(user_id, "Напишите название будущего класса:",
-                              self.get_keyboard("empty"))
+                              self.get_keyboard("cancel"))
             self.database.set_user_dialog_state(user_id, States.S_ENTER_NAME_CLASSCREATE.value)
 
         elif message == "Мои классы":
@@ -88,13 +87,17 @@ class DiaryVkBot:
             self.send_message(user_id, "Я бот и общаться пока что не умею :(",
                               self.get_keyboard("menu"))
 
-    def get_keyboard(self, keyboard_type: str) -> VkKeyboard:
+    @staticmethod
+    def get_keyboard(keyboard_type: str) -> VkKeyboard:
         """Get the keyboard"""
         if keyboard_type == "empty":
             return KeyBoards.KEYBOARD_EMPTY.get_empty_keyboard()
 
         elif keyboard_type == "menu":
             return KeyBoards.KEYBOARD_MENU.get_keyboard()
+
+        elif keyboard_type == "cancel":
+            return KeyBoards.KEYBOARD_CANCEL.get_keyboard()
 
     def send_message(self, user_id: int, message: str, keyboard: VkKeyboard) -> None:
         """Send message to user"""
