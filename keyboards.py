@@ -5,7 +5,7 @@ class KeyBoards:
     """All keyboards"""
 
     # EMPTY KEYBOARD
-    KEYBOARD_EMPTY = VkKeyboard(one_time=True)
+    KEYBOARD_EMPTY = VkKeyboard()
 
     # MENU KEYBOARD
     KEYBOARD_MENU = VkKeyboard()
@@ -17,3 +17,7 @@ class KeyBoards:
     KEYBOARD_MENU.add_button(label="Настройка беседы класса")
     KEYBOARD_MENU.add_line()
     KEYBOARD_MENU.add_button(label="Обращение в тех. поддержку")
+
+    # CANCEL KEYBOARD
+    KEYBOARD_CANCEL = VkKeyboard()
+    KEYBOARD_CANCEL.add_button(label="Отменить")
