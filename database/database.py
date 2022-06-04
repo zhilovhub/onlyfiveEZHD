@@ -74,8 +74,8 @@ class DataBase:
             ) as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(DataBaseQueries.check_user_is_ready_query.format(user_id))
-                    is_ready = cursor.fetchone()[3]
-                    return True if is_ready else False
+                    user = cursor.fetchone()
+                    return True if user else False
 
         except Error as e:
             print(e)
@@ -109,7 +109,7 @@ class DataBaseQueries:
 
     set_user_is_ready_query = """UPDATE User SET is_ready=TRUE WHERE user_id={}"""
 
-    check_user_is_ready_query = """SELECT * FROM User"""
+    check_user_is_ready_query = """SELECT * FROM User WHERE user_id={} AND is_ready=TRUE"""
 
 
 if __name__ == '__main__':
