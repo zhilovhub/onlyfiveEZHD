@@ -11,12 +11,73 @@ from states import States
 import data
 
 
-class Handlers:
+class SupportingFunctions:
     def __init__(self, token: str, group_id: int) -> None:
         """Initialization"""
         self.vk_session = VkApi(token=token)
         self.bot_long_poll = VkBotLongPoll(vk=self.vk_session, group_id=group_id)
-        self.database = DataBase()
+
+    def send_message(self, user_id: int, message: str, keyboard: VkKeyboard) -> None:
+        """Send message to user"""
+        try:
+            self.vk_session.method(
+                "messages.send",
+                {
+                    "user_id": user_id,
+                    "message": message,
+                    "keyboard": keyboard,
+                    "random_id": randint(0, 2 ** 10)
+                }
+            )
+        except VkApiError as e:
+            print(e)
+
+    @staticmethod
+    def get_keyboard(keyboard_type: str) -> VkKeyboard:
+        """Get the keyboard"""
+        if keyboard_type == "empty":
+            return KeyBoards.KEYBOARD_EMPTY.get_empty_keyboard()
+
+        elif keyboard_type == "menu":
+            return KeyBoards.KEYBOARD_MENU.get_keyboard()
+
+        elif keyboard_type == "cancel_back":
+            return KeyBoards.KEYBOARD_CANCEL_BACK.get_keyboard()
+
+    def is_member(self, user_id: int) -> int:
+        """Check is user member of the group"""
+        is_member = self.vk_session.method(
+            "groups.isMember",
+            {
+                "group_id": data.GROUP_ID,
+                "user_id": user_id
+            }
+        )
+
+        return is_member
+
+    def get_user_info(self, user_id: int) -> dict:
+        """Get information about user"""
+        user_information = self.vk_session.method(
+            "users.get",
+            {
+                "user_ids": user_id,
+                "fields": "screen_name"
+            }
+        )[0]
+
+        return {
+            "user_id": user_id,
+            "screen_name": user_information["screen_name"],
+            "first_name": user_information["first_name"]
+        }
+
+
+class Handlers(SupportingFunctions):
+    def __init__(self, token: str, group_id: int, database: DataBase) -> None:
+        """Initialization"""
+        super().__init__(token=token, group_id=group_id)
+        self.database = database
 
     def s_nothing_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_NOTHING"""
@@ -56,39 +117,11 @@ class Handlers:
             self.send_message(user_id, "Создание класса отменено",
                               self.get_keyboard("menu"))
 
-    def send_message(self, user_id: int, message: str, keyboard: VkKeyboard) -> None:
-        """Send message to user"""
-        try:
-            self.vk_session.method(
-                "messages.send",
-                {
-                    "user_id": user_id,
-                    "message": message,
-                    "keyboard": keyboard,
-                    "random_id": randint(0, 2 ** 10)
-                }
-            )
-        except VkApiError as e:
-            print(e)
-
-    @staticmethod
-    def get_keyboard(keyboard_type: str) -> VkKeyboard:
-        """Get the keyboard"""
-        if keyboard_type == "empty":
-            return KeyBoards.KEYBOARD_EMPTY.get_empty_keyboard()
-
-        elif keyboard_type == "menu":
-            return KeyBoards.KEYBOARD_MENU.get_keyboard()
-
-        elif keyboard_type == "cancel_back":
-            return KeyBoards.KEYBOARD_CANCEL_BACK.get_keyboard()
-
 
 class DiaryVkBot(Handlers):
     def __init__(self, token: str, group_id: int, database: DataBase) -> None:
         """Initialization"""
-        super().__init__(token=token, group_id=group_id)
-        self.database = database
+        super().__init__(token=token, group_id=group_id, database=database)
 
     def listen(self) -> None:
         """Listening events"""
@@ -126,65 +159,10 @@ class DiaryVkBot(Handlers):
         """Filtering dialog states"""
         match current_dialog_state:
             case States.S_NOTHING.value:
-                super().s_nothing_handler(user_id, message)
+                self.s_nothing_handler(user_id, message)
 
             case States.S_ENTER_NAME_CLASSCREATE.value:
-                super().s_enter_name_class_create_handler(user_id, message)
-
-    @staticmethod
-    def get_keyboard(keyboard_type: str) -> VkKeyboard:
-        """Get the keyboard"""
-        if keyboard_type == "empty":
-            return KeyBoards.KEYBOARD_EMPTY.get_empty_keyboard()
-
-        elif keyboard_type == "menu":
-            return KeyBoards.KEYBOARD_MENU.get_keyboard()
-
-        elif keyboard_type == "cancel_back":
-            return KeyBoards.KEYBOARD_CANCEL_BACK.get_keyboard()
-
-    def send_message(self, user_id: int, message: str, keyboard: VkKeyboard) -> None:
-        """Send message to user"""
-        try:
-            self.vk_session.method(
-                "messages.send",
-                {
-                    "user_id": user_id,
-                    "message": message,
-                    "keyboard": keyboard,
-                    "random_id": randint(0, 2 ** 10)
-                }
-            )
-        except VkApiError as e:
-            print(e)
-
-    def is_member(self, user_id: int) -> int:
-        """Check is user member of the group"""
-        is_member = self.vk_session.method(
-            "groups.isMember",
-            {
-                "group_id": data.GROUP_ID,
-                "user_id": user_id
-            }
-        )
-
-        return is_member
-
-    def get_user_info(self, user_id: int) -> dict:
-        """Get information about user"""
-        user_information = self.vk_session.method(
-            "users.get",
-            {
-                "user_ids": user_id,
-                "fields": "screen_name"
-            }
-        )[0]
-
-        return {
-            "user_id": user_id,
-            "screen_name": user_information["screen_name"],
-            "first_name": user_information["first_name"]
-        }
+                self.s_enter_name_class_create_handler(user_id, message)
 
 
 if __name__ == "__main__":
