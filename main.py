@@ -12,10 +12,11 @@ import data
 
 
 class Handlers:
-    def __init__(self, vk_session: VkApi, database: DataBase) -> None:
+    def __init__(self, token: str, group_id: int) -> None:
         """Initialization"""
-        self.vk_session = vk_session
-        self.database = database
+        self.vk_session = VkApi(token=token)
+        self.bot_long_poll = VkBotLongPoll(vk=self.vk_session, group_id=group_id)
+        self.database = DataBase()
 
     def s_nothing_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_NOTHING"""
@@ -83,13 +84,11 @@ class Handlers:
             return KeyBoards.KEYBOARD_CANCEL_BACK.get_keyboard()
 
 
-class DiaryVkBot:
-    def __init__(self, vk_session: VkApi, bot_long_poll: VkBotLongPoll, database: DataBase, handlers: Handlers) -> None:
+class DiaryVkBot(Handlers):
+    def __init__(self, token: str, group_id: int, database: DataBase) -> None:
         """Initialization"""
-        self.vk_session = vk_session
-        self.bot_long_poll = bot_long_poll
+        super().__init__(token=token, group_id=group_id)
         self.database = database
-        self.handlers = handlers
 
     def listen(self) -> None:
         """Listening events"""
@@ -127,10 +126,10 @@ class DiaryVkBot:
         """Filtering dialog states"""
         match current_dialog_state:
             case States.S_NOTHING.value:
-                self.handlers.s_nothing_handler(user_id, message)
+                super().s_nothing_handler(user_id, message)
 
             case States.S_ENTER_NAME_CLASSCREATE.value:
-                self.handlers.s_enter_name_class_create_handler(user_id, message)
+                super().s_enter_name_class_create_handler(user_id, message)
 
     @staticmethod
     def get_keyboard(keyboard_type: str) -> VkKeyboard:
@@ -189,11 +188,7 @@ class DiaryVkBot:
 
 
 if __name__ == "__main__":
-    vk_session = VkApi(token=data.TOKEN)
-    bot_long_poll = VkBotLongPoll(vk=vk_session, group_id=data.GROUP_ID)
     database = DataBase()
-
-    handlers = Handlers(vk_session=vk_session, database=database)
-    my_bot = DiaryVkBot(vk_session=vk_session, bot_long_poll=bot_long_poll, database=database, handlers=handlers)
+    my_bot = DiaryVkBot(token=data.TOKEN, group_id=data.GROUP_ID, database=database)
 
     my_bot.listen()
