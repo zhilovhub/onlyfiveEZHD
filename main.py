@@ -44,6 +44,9 @@ class SupportingFunctions:
         elif keyboard_type == "cancel_back":
             return KeyBoards.KEYBOARD_CANCEL_BACK.get_keyboard()
 
+        elif keyboard_type == "cancel":
+            return KeyBoards.KEYBOARD_CANCEL.get_keyboard()
+
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""
         is_member = self.vk_session.method(
@@ -87,7 +90,7 @@ class Handlers(SupportingFunctions):
 
         elif message == "Создать класс":
             self.send_message(user_id, "Напишите название будущего класса:",
-                              self.get_keyboard("cancel_back"))
+                              self.get_keyboard("cancel"))
             self.database.set_user_dialog_state(user_id, States.S_ENTER_NAME_CLASSCREATE.value)
 
         elif message == "Мои классы":
