@@ -19,5 +19,6 @@ class KeyBoards:
     KEYBOARD_MENU.add_button(label="Обращение в тех. поддержку")
 
     # CANCEL KEYBOARD
-    KEYBOARD_CANCEL = VkKeyboard()
-    KEYBOARD_CANCEL.add_button(label="Отменить")
+    KEYBOARD_CANCEL_BACK = VkKeyboard()
+    KEYBOARD_CANCEL_BACK.add_button(label="На шаг назад")
+    KEYBOARD_CANCEL_BACK.add_button(label="Отменить")

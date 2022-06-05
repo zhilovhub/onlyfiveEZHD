@@ -57,17 +57,17 @@ class DiaryVkBot:
                 self.filter_message(user_id, message)
 
             case States.S_ENTER_NAME_CLASSCREATE.value:
-                self.enter_name_classcreate(user_id, message)
+                self.enter_name_class_create(user_id, message)
 
     def filter_message(self, user_id: int, message: str) -> None:
-        """Filtering messages"""
+        """Handling States.S_NOTHING"""
         if message == "Найти класс":
             self.send_message(user_id, "Нахожу класс...",
                               self.get_keyboard("menu"))
 
         elif message == "Создать класс":
             self.send_message(user_id, "Напишите название будущего класса:",
-                              self.get_keyboard("cancel"))
+                              self.get_keyboard("cancel_back"))
             self.database.set_user_dialog_state(user_id, States.S_ENTER_NAME_CLASSCREATE.value)
 
         elif message == "Мои классы":
@@ -90,7 +90,7 @@ class DiaryVkBot:
             self.send_message(user_id, "Я бот и общаться пока что не умею :(",
                               self.get_keyboard("menu"))
 
-    def enter_name_classcreate(self, user_id: int, message: str) -> None:
+    def enter_name_class_create(self, user_id: int, message: str) -> None:
         """Handling States.S_ENTER_NAME_CLASSCREATE"""
         if message == "Отменить":
             self.database.set_user_dialog_state(user_id, States.S_NOTHING.value)
@@ -106,8 +106,8 @@ class DiaryVkBot:
         elif keyboard_type == "menu":
             return KeyBoards.KEYBOARD_MENU.get_keyboard()
 
-        elif keyboard_type == "cancel":
-            return KeyBoards.KEYBOARD_CANCEL.get_keyboard()
+        elif keyboard_type == "cancel_back":
+            return KeyBoards.KEYBOARD_CANCEL_BACK.get_keyboard()
 
     def send_message(self, user_id: int, message: str, keyboard: VkKeyboard) -> None:
         """Send message to user"""
