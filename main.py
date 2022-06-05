@@ -11,12 +11,85 @@ from states import States
 import data
 
 
-class DiaryVkBot:
-    def __init__(self, token: str, database: DataBase) -> None:
+class Handlers:
+    def __init__(self, vk_session: VkApi, database: DataBase) -> None:
         """Initialization"""
-        self.vk_session = VkApi(token=token)
-        self.bot_long_poll = VkBotLongPoll(vk=self.vk_session, group_id=data.GROUP_ID)
+        self.vk_session = vk_session
         self.database = database
+
+    def s_nothing_handler(self, user_id: int, message: str) -> None:
+        """Handling States.S_NOTHING"""
+        if message == "Найти класс":
+            self.send_message(user_id, "Нахожу класс...",
+                              self.get_keyboard("menu"))
+
+        elif message == "Создать класс":
+            self.send_message(user_id, "Напишите название будущего класса:",
+                              self.get_keyboard("cancel_back"))
+            self.database.set_user_dialog_state(user_id, States.S_ENTER_NAME_CLASSCREATE.value)
+
+        elif message == "Мои классы":
+            self.send_message(user_id, "Твои классы...",
+                              self.get_keyboard("menu"))
+
+        elif message == "Создать беседу класса":
+            self.send_message(user_id, "Создаю беседу класса...",
+                              self.get_keyboard("menu"))
+
+        elif message == "Настройка беседы класса":
+            self.send_message(user_id, "Настройка беседы класса...",
+                              self.get_keyboard("menu"))
+
+        elif message == "Обращение в тех. поддержку":
+            self.send_message(user_id, "Вопрос принят...",
+                              self.get_keyboard("menu"))
+
+        else:
+            self.send_message(user_id, "Я бот и общаться пока что не умею :(",
+                              self.get_keyboard("menu"))
+
+    def s_enter_name_class_create_handler(self, user_id: int, message: str) -> None:
+        """Handling States.S_ENTER_NAME_CLASSCREATE"""
+        if message == "Отменить":
+            self.database.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.send_message(user_id, "Создание класса отменено",
+                              self.get_keyboard("menu"))
+
+    def send_message(self, user_id: int, message: str, keyboard: VkKeyboard) -> None:
+        """Send message to user"""
+        try:
+            self.vk_session.method(
+                "messages.send",
+                {
+                    "user_id": user_id,
+                    "message": message,
+                    "keyboard": keyboard,
+                    "random_id": randint(0, 2 ** 10)
+                }
+            )
+        except VkApiError as e:
+            print(e)
+
+    @staticmethod
+    def get_keyboard(keyboard_type: str) -> VkKeyboard:
+        """Get the keyboard"""
+        if keyboard_type == "empty":
+            return KeyBoards.KEYBOARD_EMPTY.get_empty_keyboard()
+
+        elif keyboard_type == "menu":
+            return KeyBoards.KEYBOARD_MENU.get_keyboard()
+
+        elif keyboard_type == "cancel_back":
+            return KeyBoards.KEYBOARD_CANCEL_BACK.get_keyboard()
+
+
+class DiaryVkBot:
+    def __init__(self, vk_session: VkApi, bot_long_poll: VkBotLongPoll, database: DataBase, handlers: Handlers) -> None:
+        """Initialization"""
+        self.vk_session = vk_session
+        self.bot_long_poll = bot_long_poll
+        self.database = database
+        self.handlers = handlers
 
     def listen(self) -> None:
         """Listening events"""
@@ -54,48 +127,10 @@ class DiaryVkBot:
         """Filtering dialog states"""
         match current_dialog_state:
             case States.S_NOTHING.value:
-                self.filter_message(user_id, message)
+                self.handlers.s_nothing_handler(user_id, message)
 
             case States.S_ENTER_NAME_CLASSCREATE.value:
-                self.enter_name_class_create(user_id, message)
-
-    def filter_message(self, user_id: int, message: str) -> None:
-        """Handling States.S_NOTHING"""
-        if message == "Найти класс":
-            self.send_message(user_id, "Нахожу класс...",
-                              self.get_keyboard("menu"))
-
-        elif message == "Создать класс":
-            self.send_message(user_id, "Напишите название будущего класса:",
-                              self.get_keyboard("cancel_back"))
-            self.database.set_user_dialog_state(user_id, States.S_ENTER_NAME_CLASSCREATE.value)
-
-        elif message == "Мои классы":
-            self.send_message(user_id, "Твои классы...",
-                              self.get_keyboard("menu"))
-
-        elif message == "Создать беседу класса":
-            self.send_message(user_id, "Создаю беседу класса...",
-                              self.get_keyboard("menu"))
-
-        elif message == "Настройка беседы класса":
-            self.send_message(user_id, "Настройка беседы класса...",
-                              self.get_keyboard("menu"))
-
-        elif message == "Обращение в тех. поддержку":
-            self.send_message(user_id, "Вопрос принят...",
-                              self.get_keyboard("menu"))
-
-        else:
-            self.send_message(user_id, "Я бот и общаться пока что не умею :(",
-                              self.get_keyboard("menu"))
-
-    def enter_name_class_create(self, user_id: int, message: str) -> None:
-        """Handling States.S_ENTER_NAME_CLASSCREATE"""
-        if message == "Отменить":
-            self.database.set_user_dialog_state(user_id, States.S_NOTHING.value)
-            self.send_message(user_id, "Создание класса отменено",
-                              self.get_keyboard("menu"))
+                self.handlers.s_enter_name_class_create_handler(user_id, message)
 
     @staticmethod
     def get_keyboard(keyboard_type: str) -> VkKeyboard:
@@ -154,7 +189,11 @@ class DiaryVkBot:
 
 
 if __name__ == "__main__":
+    vk_session = VkApi(token=data.TOKEN)
+    bot_long_poll = VkBotLongPoll(vk=vk_session, group_id=data.GROUP_ID)
     database = DataBase()
 
-    my_bot = DiaryVkBot(token=data.TOKEN, database=database)
+    handlers = Handlers(vk_session=vk_session, database=database)
+    my_bot = DiaryVkBot(vk_session=vk_session, bot_long_poll=bot_long_poll, database=database, handlers=handlers)
+
     my_bot.listen()
