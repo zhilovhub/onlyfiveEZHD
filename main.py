@@ -47,6 +47,12 @@ class SupportingFunctions:
         elif keyboard_type == "cancel":
             return KeyBoards.KEYBOARD_CANCEL.get_keyboard()
 
+        elif keyboard_type == "yes_no_cancel_back":
+            return KeyBoards.KEYBOARD_YES_NO_CANCEL_BACK.get_keyboard()
+
+        elif keyboard_type == "submit_back":
+            return KeyBoards.KEYBOARD_SUBMIT_BACK.get_keyboard()
+
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""
         is_member = self.vk_session.method(
@@ -89,9 +95,10 @@ class Handlers(SupportingFunctions):
                               self.get_keyboard("menu"))
 
         elif message == "Создать класс":
-            self.send_message(user_id, "Напишите название будущего класса:",
-                              self.get_keyboard("cancel"))
             self.database.set_user_dialog_state(user_id, States.S_ENTER_NAME_CLASSCREATE.value)
+
+            self.send_message(user_id, "Напишите название будущего класса (макс. 32 символа):",
+                              self.get_keyboard("cancel"))
 
         elif message == "Мои классы":
             self.send_message(user_id, "Твои классы...",
@@ -116,9 +123,39 @@ class Handlers(SupportingFunctions):
     def s_enter_name_class_create_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_ENTER_NAME_CLASSCREATE"""
         if message == "Отменить":
-            self.database.set_user_dialog_state(user_id, States.S_NOTHING.value)
-            self.send_message(user_id, "Создание класса отменено",
-                              self.get_keyboard("menu"))
+            self.set_s_nothing_state(user_id, "Название класса отменено")
+
+        else:
+            if len(message) > 32:
+                self.send_message(user_id, "Длина названия превышает 32 символа. Введите другое название:",
+                                  self.get_keyboard("cancel"))
+            else:
+                self.database.set_user_dialog_state(user_id, States.S_ENTER_CAN_INVITE_EVERYONE_CLASSCREATE.value)
+                self.send_message(user_id, f"Название класса: {message}", self.get_keyboard("empty"))
+                self.send_message(user_id, "Могут ли участники класса приглашать других людей?", self.get_keyboard("yes_no_cancel_back"))
+
+    def s_enter_can_invite_everyone_class_create_handler(self, user_id: int, message: str) -> None:
+        """Handling States.S_ENTER_CAN_INVITE_EVERYONE_CLASSCREATE"""
+        if message == "Отменить":
+            self.set_s_nothing_state(user_id, "Название класса отменено")
+
+        elif message == "На шаг назад":
+            self.database.set_user_dialog_state(user_id, States.S_ENTER_NAME_CLASSCREATE.value)
+            self.send_message(user_id, "Напишите название будущего класса (макс. 32 символа):",
+                              self.get_keyboard("cancel"))
+
+        elif message == "Да":
+            self.database.set_user_dialog_state(user_id, States.S_SUBMIT_CLASSCREATE.value)
+            self.send_message(user_id, "Первоначальные настройки класса: (потом доделаю)\nСоздать класс?", self.get_keyboard("submit_back"))
+
+        elif message == "Нет":
+            self.database.set_user_dialog_state(user_id, States.S_SUBMIT_CLASSCREATE.value)
+            self.send_message(user_id, "Первоначальные настройки класса: (потом доделаю)\nСоздать класс?", self.get_keyboard("submit_back"))
+
+    def set_s_nothing_state(self, user_id: int, message_to_user: str) -> None:
+        """Set state to States.S_NOTHING"""
+        self.database.set_user_dialog_state(user_id, States.S_NOTHING.value)
+        self.send_message(user_id, message_to_user, self.get_keyboard("menu"))
 
 
 class DiaryVkBot(Handlers):
@@ -166,6 +203,9 @@ class DiaryVkBot(Handlers):
 
             case States.S_ENTER_NAME_CLASSCREATE.value:
                 self.s_enter_name_class_create_handler(user_id, message)
+
+            case States.S_ENTER_CAN_INVITE_EVERYONE_CLASSCREATE.value:
+                self.s_enter_can_invite_everyone_class_create_handler(user_id, message)
 
 
 if __name__ == "__main__":
