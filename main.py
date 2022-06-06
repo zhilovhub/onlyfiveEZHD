@@ -152,6 +152,17 @@ class Handlers(SupportingFunctions):
             self.database.set_user_dialog_state(user_id, States.S_SUBMIT_CLASSCREATE.value)
             self.send_message(user_id, "Первоначальные настройки класса: (потом доделаю)\nСоздать класс?", self.get_keyboard("submit_back"))
 
+    def s_submit_class_create_handler(self, user_id: int, message: str) -> None:
+        """Handling States.S_SUBMIT_CLASSCREATE"""
+        if message == "Принять":
+            self.database.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.send_message(user_id, "Поздравляю! Класс создан", self.get_keyboard("menu"))
+
+        if message == "Отклонить":
+            self.database.set_user_dialog_state(user_id, States.S_ENTER_CAN_INVITE_EVERYONE_CLASSCREATE.value)
+            self.send_message(user_id, "Могут ли участники класса приглашать других людей?",
+                              self.get_keyboard("yes_no_cancel_back"))
+
     def set_s_nothing_state(self, user_id: int, message_to_user: str) -> None:
         """Set state to States.S_NOTHING"""
         self.database.set_user_dialog_state(user_id, States.S_NOTHING.value)
@@ -206,6 +217,9 @@ class DiaryVkBot(Handlers):
 
             case States.S_ENTER_CAN_INVITE_EVERYONE_CLASSCREATE.value:
                 self.s_enter_can_invite_everyone_class_create_handler(user_id, message)
+
+            case States.S_SUBMIT_CLASSCREATE.value:
+                self.s_submit_class_create_handler(user_id, message)
 
 
 if __name__ == "__main__":
