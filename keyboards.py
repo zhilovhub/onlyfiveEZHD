@@ -20,9 +20,22 @@ class KeyBoards:
 
     # CANCEL_BACK KEYBOARD
     KEYBOARD_CANCEL_BACK = VkKeyboard()
-    KEYBOARD_CANCEL_BACK.add_button(label="На шаг назад")
     KEYBOARD_CANCEL_BACK.add_button(label="Отменить")
+    KEYBOARD_CANCEL_BACK.add_button(label="На шаг назад")
 
     # CANCEL KEYBOARD
     KEYBOARD_CANCEL = VkKeyboard()
     KEYBOARD_CANCEL.add_button(label="Отменить")
+
+    # YES_NO_CANCEL_BACK KEYBOARD
+    KEYBOARD_YES_NO_CANCEL_BACK = VkKeyboard()
+    KEYBOARD_YES_NO_CANCEL_BACK.add_button(label="Нет")
+    KEYBOARD_YES_NO_CANCEL_BACK.add_button(label="Да")
+    KEYBOARD_YES_NO_CANCEL_BACK.add_line()
+    KEYBOARD_YES_NO_CANCEL_BACK.add_button(label="Отменить")
+    KEYBOARD_YES_NO_CANCEL_BACK.add_button(label="На шаг назад")
+    
+    # SUBMIT_BACK KEYBOARD
+    KEYBOARD_SUBMIT_BACK = VkKeyboard()
+    KEYBOARD_SUBMIT_BACK.add_button(label="Отклонить")
+    KEYBOARD_SUBMIT_BACK.add_button(label="Принять")
