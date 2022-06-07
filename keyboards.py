@@ -1,4 +1,4 @@
-from vk_api.keyboard import VkKeyboard
+from config import *
 
 
 class KeyBoards:

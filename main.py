@@ -1,14 +1,8 @@
-from vk_api import VkApi
-from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
-from vk_api.keyboard import VkKeyboard
-from vk_api.exceptions import VkApiError
-
-from random import randint
+from config import *
 
 from database import DataBase
 from keyboards import KeyBoards
 from states import States
-import data
 
 
 class SupportingFunctions:
@@ -58,7 +52,7 @@ class SupportingFunctions:
         is_member = self.vk_session.method(
             "groups.isMember",
             {
-                "group_id": data.GROUP_ID,
+                "group_id": GROUP_ID,
                 "user_id": user_id
             }
         )
@@ -282,6 +276,6 @@ class DiaryVkBot(Handlers):
 
 if __name__ == "__main__":
     database = DataBase()
-    my_bot = DiaryVkBot(token=data.TOKEN, group_id=data.GROUP_ID, database=database)
+    my_bot = DiaryVkBot(token=TOKEN, group_id=GROUP_ID, database=database)
 
     my_bot.listen()
