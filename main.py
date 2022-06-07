@@ -95,7 +95,7 @@ class Handlers(SupportingFunctions):
                               self.get_keyboard("menu"))
 
         elif message == "Создать класс":
-            self.database.set_user_dialog_state(user_id, States.S_ENTER_NAME_CLASSCREATE.value)
+            self.database.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
 
             self.send_message(user_id, "Напишите название будущего класса (макс. 32 символа):",
                               self.get_keyboard("cancel"))
@@ -120,48 +120,100 @@ class Handlers(SupportingFunctions):
             self.send_message(user_id, "Я бот и общаться пока что не умею :(",
                               self.get_keyboard("menu"))
 
-    def s_enter_name_class_create_handler(self, user_id: int, message: str) -> None:
-        """Handling States.S_ENTER_NAME_CLASSCREATE"""
+    def s_enter_class_name_class_create_handler(self, user_id: int, message: str) -> None:
+        """Handling States.S_ENTER_CLASS_NAME_CLASSCREATE"""
         if message == "Отменить":
-            self.set_s_nothing_state(user_id, "Название класса отменено")
+            self.set_s_nothing_state(user_id, "Создание класса отменено")
 
         else:
             if len(message) > 32:
                 self.send_message(user_id, "Длина названия превышает 32 символа. Введите другое название:",
                                   self.get_keyboard("cancel"))
             else:
-                self.database.set_user_dialog_state(user_id, States.S_ENTER_CAN_INVITE_EVERYONE_CLASSCREATE.value)
+                next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_CLASS_NAME_CLASSCREATE)
                 self.send_message(user_id, f"Название класса: {message}", self.get_keyboard("empty"))
-                self.send_message(user_id, "Могут ли участники класса приглашать других людей?", self.get_keyboard("yes_no_cancel_back"))
 
-    def s_enter_can_invite_everyone_class_create_handler(self, user_id: int, message: str) -> None:
-        """Handling States.S_ENTER_CAN_INVITE_EVERYONE_CLASSCREATE"""
+                self.state_transition(user_id, next_state, keyboard_type, messages)
+
+    def s_enter_school_name_class_create_handler(self, user_id: int, message: str) -> None:
+        """Handling States.S_ENTER_SCHOOL_NAME_CLASSCREATE"""
         if message == "Отменить":
-            self.set_s_nothing_state(user_id, "Название класса отменено")
+            self.set_s_nothing_state(user_id, "Создание класса отменено")
 
         elif message == "На шаг назад":
-            self.database.set_user_dialog_state(user_id, States.S_ENTER_NAME_CLASSCREATE.value)
+            self.database.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
+
             self.send_message(user_id, "Напишите название будущего класса (макс. 32 символа):",
                               self.get_keyboard("cancel"))
 
+        else:
+            if len(message) > 32:
+                self.send_message(user_id, "Длина названия превышает 32 символа. Введите другое название:",
+                                  self.get_keyboard("cancel"))
+            else:
+                next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_SCHOOL_NAME_CLASSCREATE)
+                self.send_message(user_id, f"Название школы будущего класса: {message}", self.get_keyboard("empty"))
+
+                self.state_transition(user_id, next_state, keyboard_type, messages)
+
+    def s_enter_access_class_create_handler(self, user_id: int, message: str) -> None:
+        """Handling States.S_ENTER_ACCESS_CLASSCREATE"""
+        if message == "Отменить":
+            self.set_s_nothing_state(user_id, "Создание класса отменено")
+
+        elif message == "На шаг назад":
+            next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_CLASS_NAME_CLASSCREATE)
+            self.state_transition(user_id, next_state, keyboard_type, messages)
+
         elif message == "Да":
-            self.database.set_user_dialog_state(user_id, States.S_SUBMIT_CLASSCREATE.value)
-            self.send_message(user_id, "Первоначальные настройки класса: (потом доделаю)\nСоздать класс?", self.get_keyboard("submit_back"))
+            next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
+            self.state_transition(user_id, next_state, keyboard_type, messages)
 
         elif message == "Нет":
-            self.database.set_user_dialog_state(user_id, States.S_SUBMIT_CLASSCREATE.value)
-            self.send_message(user_id, "Первоначальные настройки класса: (потом доделаю)\nСоздать класс?", self.get_keyboard("submit_back"))
+            next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
+            self.state_transition(user_id, next_state, keyboard_type, messages)
+
+    def s_enter_description_class_create_handler(self, user_id: int, message: str) -> None:
+        """Handling States.S_ENTER_DESCRIPTION_CLASSCREATE"""
+        if message == "Отменить":
+            self.set_s_nothing_state(user_id, "Создание класса отменено")
+
+        elif message == "На шаг назад":
+            next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_SCHOOL_NAME_CLASSCREATE)
+            self.state_transition(user_id, next_state, keyboard_type, messages)
+
+        else:
+            if len(message) > 200:
+                self.send_message(user_id, "Длина названия превышает 200 символа. Введите другое название:",
+                                  self.get_keyboard("cancel_back"))
+            else:
+                next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_DESCRIPTION_CLASSCREATE)
+                self.send_message(user_id, "Первоначальные настройки класса: (потом доделаю)",
+                                  self.get_keyboard("empty"))
+
+                self.state_transition(user_id, next_state, keyboard_type, messages)
 
     def s_submit_class_create_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_SUBMIT_CLASSCREATE"""
         if message == "Принять":
-            self.database.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            next_state, keyboard_type, messages = States.get_next_state_config(States.S_SUBMIT_CLASSCREATE)
             self.send_message(user_id, "Поздравляю! Класс создан", self.get_keyboard("menu"))
 
+            self.state_transition(user_id, next_state, keyboard_type, messages)
+
         if message == "Отклонить":
-            self.database.set_user_dialog_state(user_id, States.S_ENTER_CAN_INVITE_EVERYONE_CLASSCREATE.value)
-            self.send_message(user_id, "Могут ли участники класса приглашать других людей?",
-                              self.get_keyboard("yes_no_cancel_back"))
+            next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
+            self.state_transition(user_id, next_state, keyboard_type, messages)
+
+    def state_transition(self, user_id: int, next_state, keyboard_type: str, messages: list) -> None:
+        """Changes states"""
+        self.database.set_user_dialog_state(user_id, next_state.value)
+
+        if messages:
+            for message in messages[:-1]:
+                self.send_message(user_id, message, self.get_keyboard("empty"))
+
+            self.send_message(user_id, messages[-1], self.get_keyboard(keyboard_type))
 
     def set_s_nothing_state(self, user_id: int, message_to_user: str) -> None:
         """Set state to States.S_NOTHING"""
@@ -212,11 +264,17 @@ class DiaryVkBot(Handlers):
             case States.S_NOTHING.value:
                 self.s_nothing_handler(user_id, message)
 
-            case States.S_ENTER_NAME_CLASSCREATE.value:
-                self.s_enter_name_class_create_handler(user_id, message)
+            case States.S_ENTER_CLASS_NAME_CLASSCREATE.value:
+                self.s_enter_class_name_class_create_handler(user_id, message)
 
-            case States.S_ENTER_CAN_INVITE_EVERYONE_CLASSCREATE.value:
-                self.s_enter_can_invite_everyone_class_create_handler(user_id, message)
+            case States.S_ENTER_SCHOOL_NAME_CLASSCREATE.value:
+                self.s_enter_school_name_class_create_handler(user_id, message)
+
+            case States.S_ENTER_ACCESS_CLASSCREATE.value:
+                self.s_enter_access_class_create_handler(user_id, message)
+
+            case States.S_ENTER_DESCRIPTION_CLASSCREATE.value:
+                self.s_enter_description_class_create_handler(user_id, message)
 
             case States.S_SUBMIT_CLASSCREATE.value:
                 self.s_submit_class_create_handler(user_id, message)
