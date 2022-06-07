@@ -1,4 +1,4 @@
-from enum import Enum
+from config import *
 
 
 class States(Enum):
