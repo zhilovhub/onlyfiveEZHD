@@ -4,6 +4,9 @@ from config import *
 class ClassroomCommands:
     def __init__(self, classroom_id):
         self.classroom_id = classroom_id
+        self.host = HOST
+        self.user = USER
+        self.password = PASSWORD
 
     def get_classroom_name(self):
         try:
