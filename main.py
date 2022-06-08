@@ -1,6 +1,6 @@
 from config import *
 
-from database import DataBase
+from users import UserDataBase
 from keyboards import KeyBoards
 from states import States
 
@@ -77,10 +77,10 @@ class SupportingFunctions:
 
 
 class Handlers(SupportingFunctions):
-    def __init__(self, token: str, group_id: int, database: DataBase) -> None:
+    def __init__(self, token: str, group_id: int, database: UserDataBase) -> None:
         """Initialization"""
         super().__init__(token=token, group_id=group_id)
-        self.database = database
+        self.user_db = database
 
     def s_nothing_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_NOTHING"""
@@ -89,7 +89,7 @@ class Handlers(SupportingFunctions):
                               self.get_keyboard("menu"))
 
         elif message == "Создать класс":
-            self.database.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
+            self.user_db.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
 
             self.send_message(user_id, "Напишите название будущего класса (макс. 32 символа):",
                               self.get_keyboard("cancel"))
@@ -124,7 +124,8 @@ class Handlers(SupportingFunctions):
                 self.send_message(user_id, "Длина названия превышает 32 символа. Введите другое название:",
                                   self.get_keyboard("cancel"))
             else:
-                next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_CLASS_NAME_CLASSCREATE)
+                next_state, keyboard_type, messages = States.get_next_state_config(
+                    States.S_ENTER_CLASS_NAME_CLASSCREATE)
                 self.send_message(user_id, f"Название класса: {message}", self.get_keyboard("empty"))
 
                 self.state_transition(user_id, next_state, keyboard_type, messages)
@@ -135,7 +136,7 @@ class Handlers(SupportingFunctions):
             self.set_s_nothing_state(user_id, "Создание класса отменено")
 
         elif message == "На шаг назад":
-            self.database.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
+            self.user_db.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
 
             self.send_message(user_id, "Напишите название будущего класса (макс. 32 символа):",
                               self.get_keyboard("cancel"))
@@ -145,7 +146,8 @@ class Handlers(SupportingFunctions):
                 self.send_message(user_id, "Длина названия превышает 32 символа. Введите другое название:",
                                   self.get_keyboard("cancel"))
             else:
-                next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_SCHOOL_NAME_CLASSCREATE)
+                next_state, keyboard_type, messages = States.get_next_state_config(
+                    States.S_ENTER_SCHOOL_NAME_CLASSCREATE)
                 self.send_message(user_id, f"Название школы будущего класса: {message}", self.get_keyboard("empty"))
 
                 self.state_transition(user_id, next_state, keyboard_type, messages)
@@ -181,7 +183,8 @@ class Handlers(SupportingFunctions):
                 self.send_message(user_id, "Длина названия превышает 200 символа. Введите другое название:",
                                   self.get_keyboard("cancel_back"))
             else:
-                next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_DESCRIPTION_CLASSCREATE)
+                next_state, keyboard_type, messages = States.get_next_state_config(
+                    States.S_ENTER_DESCRIPTION_CLASSCREATE)
                 self.send_message(user_id, "Первоначальные настройки класса: (потом доделаю)",
                                   self.get_keyboard("empty"))
 
@@ -201,7 +204,7 @@ class Handlers(SupportingFunctions):
 
     def state_transition(self, user_id: int, next_state, keyboard_type: str, messages: list) -> None:
         """Changes states"""
-        self.database.set_user_dialog_state(user_id, next_state.value)
+        self.user_db.set_user_dialog_state(user_id, next_state.value)
 
         if messages:
             for message in messages[:-1]:
@@ -211,12 +214,12 @@ class Handlers(SupportingFunctions):
 
     def set_s_nothing_state(self, user_id: int, message_to_user: str) -> None:
         """Set state to States.S_NOTHING"""
-        self.database.set_user_dialog_state(user_id, States.S_NOTHING.value)
+        self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
         self.send_message(user_id, message_to_user, self.get_keyboard("menu"))
 
 
 class DiaryVkBot(Handlers):
-    def __init__(self, token: str, group_id: int, database: DataBase) -> None:
+    def __init__(self, token: str, group_id: int, database: UserDataBase) -> None:
         """Initialization"""
         super().__init__(token=token, group_id=group_id, database=database)
 
@@ -229,19 +232,20 @@ class DiaryVkBot(Handlers):
                     message = event.object.message["text"]  # Getting message's text
                     user_information = self.get_user_info(user_id)  # User_id, first_name, nickname
 
-                    self.database.insert_new_user(user_information["user_id"],
-                                                  user_information["screen_name"],
-                                                  user_information["first_name"],
-                                                  False
-                                                  )  # Will add a new user if user writes his first message
+                    self.user_db.insert_new_user(user_information["user_id"],
+                                                 user_information["screen_name"],
+                                                 user_information["first_name"],
+                                                 False
+                                                 )  # Will add a new user if user writes his first message
 
                     if self.is_member(user_id):  # Checking first condition
 
-                        if self.database.check_user_is_ready(user_id):  # Checking second condition
-                            current_dialog_state = self.database.get_user_dialog_state(user_id)
+                        if self.user_db.check_user_is_ready(user_id):  # Checking second condition
+                            current_dialog_state = self.user_db.get_user_dialog_state(user_id)
                             self.filter_dialog_state(user_id, message, current_dialog_state)
                         else:
-                            self.database.set_user_is_ready(user_id)  # First condition is True but this is a first user's message
+                            self.user_db.set_user_is_ready(
+                                user_id)  # First condition is True but this is a first user's message
                             self.send_message(user_id, "Добро пожаловать в наше сообщество!\n"
                                                        "Что может наш бот? (Инструкция)",
                                               self.get_keyboard("menu"))
@@ -275,7 +279,7 @@ class DiaryVkBot(Handlers):
 
 
 if __name__ == "__main__":
-    database = DataBase()
-    my_bot = DiaryVkBot(token=TOKEN, group_id=GROUP_ID, database=database)
+    user_db = UserDataBase()
+    my_bot = DiaryVkBot(token=TOKEN, group_id=GROUP_ID, database=user_db)
 
     my_bot.listen()

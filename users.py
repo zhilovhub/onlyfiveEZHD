@@ -1,7 +1,7 @@
 from config import *
 
 
-class DataBase:
+class UserDataBase:
     def __init__(self) -> None:
         """Initialization"""
         self.host = HOST
@@ -147,4 +147,4 @@ class DataBaseQueries:
 
 
 if __name__ == '__main__':
-    db = DataBase()
+    db = UserDataBase()
