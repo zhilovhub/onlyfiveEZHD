@@ -88,3 +88,7 @@ class ClassroomQueries:
     del_user_from_classroom_query = """DELETE FROM Student WHERE user_id={}"""
 
     get_list_of_classroom_users_query = """SELECT user_id, role FROM Student WHERE classroom_id={}"""
+
+
+if __name__ == "__main__":
+    pass
