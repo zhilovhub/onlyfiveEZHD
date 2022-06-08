@@ -2,13 +2,12 @@ from config import *
 
 
 class ClassroomCommands:
-    def __init__(self, classroom_id):
-        self.classroom_id = classroom_id
+    def __init__(self):
         self.host = HOST
         self.user = USER
         self.password = PASSWORD
 
-    def get_classroom_name(self):
+    def get_classroom_name(self, classroom_id):
         try:
             with connect(
                 host=self.host,
@@ -17,7 +16,7 @@ class ClassroomCommands:
                 database=DATABASE_NAME
             ) as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute(ClassroomQueries.get_classroom_name_query.format(self.classroom_id))
+                    cursor.execute(ClassroomQueries.get_classroom_name_query.format(classroom_id))
                     classroom_name = cursor.fetchone()[0]
 
                     return classroom_name
@@ -25,7 +24,7 @@ class ClassroomCommands:
         except Error as e:
             print(e)
 
-    def set_classroom_name(self, new_classroom_name):
+    def set_classroom_name(self, classroom_id, new_classroom_name):
         try:
             with connect(
                     host=self.host,
@@ -34,15 +33,27 @@ class ClassroomCommands:
                     database=DATABASE_NAME
             ) as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute(ClassroomQueries.set_classroom_name_query.format(new_classroom_name, self.classroom_id))
+                    cursor.execute(ClassroomQueries.set_classroom_name_query.format(new_classroom_name, classroom_id))
                     connection.commit()
 
         except Error as e:
             print(e)
 
     # finish this function with Ilya
-    def add_new_user_in_classroom(self):
-        pass
+    def add_new_user_in_classroom(self, classroom_id):
+        try:
+            with connect(
+                    host=self.host,
+                    user=self.user,
+                    password=self.password,
+                    database=DATABASE_NAME
+            ) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(ClassroomQueries.insert_new_classroom_user_query.format(user_id, classroom_id, "default"))
+                    connection.commit()
+
+        except Error as e:
+            print(e)
 
     def set_role_of_user(self, user_id, user_role):
         try:
@@ -59,7 +70,7 @@ class ClassroomCommands:
         except Error as e:
             print(e)
 
-    def get_list_of_classroom_users(self):
+    def get_list_of_classroom_users(self, classroom_id):
         try:
             with connect(
                     host=self.host,
@@ -69,7 +80,7 @@ class ClassroomCommands:
             ) as connection:
                 with connection.cursor() as cursor:
                     users_dictionary = {}
-                    cursor.execute(ClassroomQueries.get_list_of_classroom_users_query.format(self.classroom_id))
+                    cursor.execute(ClassroomQueries.get_list_of_classroom_users_query.format(classroom_id))
                     for (user_id, user_role) in cursor:
                         users_dictionary[user_id] = user_role
 

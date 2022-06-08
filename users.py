@@ -45,7 +45,7 @@ class UserDataBase:
                     connection.commit()
 
         except Error as e:
-            print(e)
+            print(e, 123)
 
     def set_user_is_ready(self, user_id: int) -> None:
         try:
