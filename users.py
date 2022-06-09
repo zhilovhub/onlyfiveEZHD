@@ -1,10 +1,8 @@
-from database import DataBase
-
-from config import *
+from database import *
 
 
 class UserDataBase(DataBase):
-    def __init__(self, connection) -> None:
+    def __init__(self, connection: CMySQLConnection) -> None:
         """Initialization"""
         super().__init__(connection)
 

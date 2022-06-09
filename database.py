@@ -2,23 +2,13 @@ from config import *
 
 
 class DataBase:
-    def __init__(self):
+    def __init__(self, connection: CMySQLConnection) -> None:
+        """Initialization"""
         self.host = HOST
         self.user = USER
         self.password = PASSWORD
-
-        try:
-            self.connection = connect(
-                        host=self.host,
-                        user=self.user,
-                        password=self.password,
-                        database=DATABASE_NAME
-                )
-        except Error as e:
-            print(e)
-
-    def get_connection(self):
-        return self.connection
+        self.database_name = DATABASE_NAME
+        self.connection = connection
 
     def __del__(self):
         self.connection.close()

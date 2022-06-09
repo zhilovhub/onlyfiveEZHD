@@ -1,6 +1,8 @@
 from config import *
 
 from users import UserDataBase
+from classroom import ClassroomCommands
+
 from keyboards import KeyBoards
 from states import States
 
@@ -295,6 +297,7 @@ if __name__ == "__main__":
     )
 
     user_db = UserDataBase(connection)
+    classroom_db = ClassroomCommands(connection)
     my_bot = DiaryVkBot(token=TOKEN, group_id=GROUP_ID, database=user_db)
 
     my_bot.listen()

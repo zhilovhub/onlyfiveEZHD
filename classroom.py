@@ -1,11 +1,9 @@
-from config import *
 from database import *
 
 
 class ClassroomCommands(DataBase):
-    def __init__(self):
-        super().__init__()
-        self.connection = DataBase.get_connection(self)
+    def __init__(self, connection: CMySQLConnection) -> None:
+        super().__init__(connection)
 
     def get_classroom_name(self, classroom_id):
 
@@ -19,19 +17,19 @@ class ClassroomCommands(DataBase):
 
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.set_classroom_name_query.format(new_classroom_name, classroom_id))
-            connection.commit()
+            self.connection.commit()
 
-    def add_new_user_in_classroom(self, classroom_id):
+    def add_new_user_in_classroom(self, user_id, classroom_id):
 
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.insert_new_classroom_user_query.format(user_id, classroom_id, "default"))
-            connection.commit()
+            self.connection.commit()
 
     def set_role_of_user(self, user_id, user_role):
 
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.set_user_role_query.format(user_role, user_id))
-            connection.commit()
+            self.connection.commit()
 
     def get_list_of_classroom_users(self, classroom_id):
 
