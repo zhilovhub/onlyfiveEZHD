@@ -279,7 +279,22 @@ class DiaryVkBot(Handlers):
 
 
 if __name__ == "__main__":
-    user_db = UserDataBase()
+    with connect(
+            host=HOST,
+            user=USER,
+            password=PASSWORD
+    ) as connection_to_create_db:
+        with connection_to_create_db.cursor() as cursor:
+            cursor.execute(f"""CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}""")
+
+    connection = connect(
+        host=HOST,
+        user=USER,
+        password=PASSWORD,
+        database=DATABASE_NAME
+    )
+
+    user_db = UserDataBase(connection)
     my_bot = DiaryVkBot(token=TOKEN, group_id=GROUP_ID, database=user_db)
 
     my_bot.listen()
