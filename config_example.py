@@ -12,7 +12,7 @@ from mysql.connector import connect, Error
 
 # VK_api constants
 TOKEN = ""  # Write here the group token
-ADMIN_ID = 0  # Write here the admin id
+ADMINS_ID = []  # Write here the admins id
 GROUP_ID = 0  # Write here the group id
 
 # DB constants
