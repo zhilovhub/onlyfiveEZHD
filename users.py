@@ -1,119 +1,73 @@
+from database import DataBase
+
 from config import *
 
 
-class UserDataBase:
-    def __init__(self) -> None:
+class UserDataBase(DataBase):
+    def __init__(self, connection) -> None:
         """Initialization"""
-        self.host = HOST
-        self.user = USER
-        self.password = PASSWORD
+        super().__init__(connection)
 
         try:
-            with connect(
-                host=self.host,
-                user=self.user,
-                password=self.password
-            ) as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(DataBaseQueries.create_db_query)
-
-            with connect(
-                host=self.host,
-                user=self.user,
-                password=self.password,
-                database=DATABASE_NAME
-            ) as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(DataBaseQueries.create_table_user_query)
-                    cursor.execute(DataBaseQueries.create_table_classroom_query)
-                    cursor.execute(DataBaseQueries.create_table_student_query)
-                    connection.commit()
+            with self.connection.cursor() as cursor:
+                cursor.execute(DataBaseQueries.create_table_user_query)
+                cursor.execute(DataBaseQueries.create_table_classroom_query)
+                cursor.execute(DataBaseQueries.create_table_student_query)
+                self.connection.commit()
 
         except Error as e:
             print(e)
 
     def insert_new_user(self, user_id: int, screen_name: str, first_name: str, is_ready: bool) -> None:
         try:
-            with connect(
-                host=self.host,
-                user=self.user,
-                password=self.password,
-                database=DATABASE_NAME
-            ) as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(DataBaseQueries.insert_new_user_query.format(user_id, screen_name, first_name, is_ready))
-                    connection.commit()
+            with self.connection.cursor() as cursor:
+                cursor.execute(DataBaseQueries.insert_new_user_query.format(user_id, screen_name, first_name, is_ready))
+                self.connection.commit()
 
         except Error as e:
             print(e)
 
     def set_user_is_ready(self, user_id: int) -> None:
         try:
-            with connect(
-                    host=self.host,
-                    user=self.user,
-                    password=self.password,
-                    database=DATABASE_NAME
-            ) as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(DataBaseQueries.set_user_is_ready_query.format(user_id))
-                    connection.commit()
+            with self.connection.cursor() as cursor:
+                cursor.execute(DataBaseQueries.set_user_is_ready_query.format(user_id))
+                self.connection.commit()
 
         except Error as e:
             print(e)
 
     def check_user_is_ready(self, user_id: int) -> bool:
         try:
-            with connect(
-                    host=self.host,
-                    user=self.user,
-                    password=self.password,
-                    database=DATABASE_NAME
-            ) as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(DataBaseQueries.check_user_is_ready_query.format(user_id))
-                    user = cursor.fetchone()
-                    return True if user else False
+            with self.connection.cursor() as cursor:
+                cursor.execute(DataBaseQueries.check_user_is_ready_query.format(user_id))
+                user = cursor.fetchone()
+                return True if user else False
 
         except Error as e:
             print(e)
 
     def get_user_dialog_state(self, user_id: int) -> int:
         try:
-            with connect(
-                    host=self.host,
-                    user=self.user,
-                    password=self.password,
-                    database=DATABASE_NAME
-            ) as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(DataBaseQueries.get_user_dialog_state_query.format(user_id))
-                    state = cursor.fetchone()[0]
+            with self.connection.cursor() as cursor:
+                cursor.execute(DataBaseQueries.get_user_dialog_state_query.format(user_id))
+                state = cursor.fetchone()[0]
 
-                    return state
+                return state
 
         except Error as e:
             print(e)
 
     def set_user_dialog_state(self, user_id: int, state: int) -> None:
         try:
-            with connect(
-                    host=self.host,
-                    user=self.user,
-                    password=self.password,
-                    database=DATABASE_NAME
-            ) as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(DataBaseQueries.set_user_dialog_state_query.format(state, user_id))
-                    connection.commit()
+            with self.connection.cursor() as cursor:
+                cursor.execute(DataBaseQueries.set_user_dialog_state_query.format(state, user_id))
+                self.connection.commit()
 
         except Error as e:
             print(e)
 
 
 class DataBaseQueries:
-    create_db_query = f"""CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}"""
-
     create_table_user_query = """CREATE TABLE IF NOT EXISTS User(
         user_id INT NOT NULL UNIQUE PRIMARY KEY,
         screen_name VARCHAR(255),
@@ -147,4 +101,11 @@ class DataBaseQueries:
 
 
 if __name__ == '__main__':
-    db = UserDataBase()
+    connection = connect(
+        host=HOST,
+        user=USER,
+        password=PASSWORD,
+        database=DATABASE_NAME
+    )
+
+    db = UserDataBase(connection)
