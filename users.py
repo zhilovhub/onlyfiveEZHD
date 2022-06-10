@@ -9,8 +9,6 @@ class UserDataBase(DataBase):
         try:
             with self.connection.cursor() as cursor:
                 cursor.execute(DataBaseQueries.create_table_user_query)
-                cursor.execute(DataBaseQueries.create_table_classroom_query)
-                cursor.execute(DataBaseQueries.create_table_student_query)
                 self.connection.commit()
 
         except Error as e:
@@ -72,19 +70,6 @@ class DataBaseQueries:
         first_name VARCHAR(255),
         is_ready BOOLEAN,
         state INT
-    )"""
-
-    create_table_classroom_query = """CREATE TABLE IF NOT EXISTS Classroom(
-        classroom_id INT NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
-        classroom_name VARCHAR(255)
-    )"""
-
-    create_table_student_query = """CREATE TABLE IF NOT EXISTS Student(
-        user_id INT,
-        classroom_id INT,
-        role VARCHAR(255),
-        FOREIGN KEY (user_id) REFERENCES User (user_id),
-        FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id)
     )"""
 
     insert_new_user_query = """INSERT INTO User VALUES({}, '{}', '{}', {}, 0)"""

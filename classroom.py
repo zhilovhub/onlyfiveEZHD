@@ -6,6 +6,14 @@ class ClassroomCommands(DataBase):
     def __init__(self, connection: CMySQLConnection) -> None:
         super().__init__(connection)
 
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(ClassroomQueries.create_table_classroom_query)
+                cursor.execute(ClassroomQueries.create_table_student_query)
+
+        except Error as e:
+            print(e)
+
     def get_classroom_name(self, classroom_id: int) -> str:
         """Get name of the classroom"""
         with self.connection.cursor() as cursor:
@@ -44,6 +52,19 @@ class ClassroomCommands(DataBase):
 
 
 class ClassroomQueries:
+    create_table_classroom_query = """CREATE TABLE IF NOT EXISTS Classroom(
+            classroom_id INT NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
+            classroom_name VARCHAR(255)
+        )"""
+
+    create_table_student_query = """CREATE TABLE IF NOT EXISTS Student(
+            user_id INT,
+            classroom_id INT,
+            role VARCHAR(255),
+            FOREIGN KEY (user_id) REFERENCES User (user_id),
+            FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id)
+        )"""
+
     get_classroom_name_query = """SELECT classroom_name FROM Classroom WHERE classroom_id={}"""
 
     set_classroom_name_query = """UPDATE Classroom SET classroom_name={} WHERE classroom_id={}"""
