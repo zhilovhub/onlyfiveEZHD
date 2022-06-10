@@ -2,37 +2,38 @@ from database import *
 
 
 class ClassroomCommands(DataBase):
+    """Initialization"""
     def __init__(self, connection: CMySQLConnection) -> None:
         super().__init__(connection)
 
-    def get_classroom_name(self, classroom_id):
-
+    def get_classroom_name(self, classroom_id: int) -> str:
+        """Get name of the classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.get_classroom_name_query.format(classroom_id))
             classroom_name = cursor.fetchone()[0]
 
             return classroom_name
 
-    def set_classroom_name(self, classroom_id, new_classroom_name):
-
+    def set_classroom_name(self, classroom_id: int, new_classroom_name: str) -> None:
+        """Set name to the classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.set_classroom_name_query.format(new_classroom_name, classroom_id))
             self.connection.commit()
 
-    def add_new_user_in_classroom(self, user_id, classroom_id):
-
+    def add_new_user_in_classroom(self, user_id: int, classroom_id: int) -> None:
+        """Add user to the classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.insert_new_classroom_user_query.format(user_id, classroom_id, "default"))
             self.connection.commit()
 
-    def set_role_of_user(self, user_id, user_role):
-
+    def set_role_of_user(self, user_id: int, user_role: str) -> None:
+        """Set role to the user"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.set_user_role_query.format(user_role, user_id))
             self.connection.commit()
 
-    def get_list_of_classroom_users(self, classroom_id):
-
+    def get_list_of_classroom_users(self, classroom_id: int) -> dict:
+        """Get dict with classroom's members"""
         with self.connection.cursor() as cursor:
             users_dictionary = {}
             cursor.execute(ClassroomQueries.get_list_of_classroom_users_query.format(classroom_id))
