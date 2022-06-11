@@ -79,10 +79,11 @@ class SupportingFunctions:
 
 
 class Handlers(SupportingFunctions):
-    def __init__(self, token: str, group_id: int, database: UserDataBase) -> None:
+    def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands) -> None:
         """Initialization"""
         super().__init__(token=token, group_id=group_id)
-        self.user_db = database
+        self.user_db = user_db
+        self.classroom_db = classroom_db
 
     def s_nothing_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_NOTHING"""
@@ -92,6 +93,7 @@ class Handlers(SupportingFunctions):
 
         elif message == "Создать класс":
             self.user_db.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
+            self.classroom_db.insert_new_classroom(user_id)
 
             self.send_message(user_id, "Напишите название будущего класса (макс. 32 символа):",
                               self.get_keyboard("cancel"))
@@ -119,7 +121,7 @@ class Handlers(SupportingFunctions):
     def s_enter_class_name_class_create_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_ENTER_CLASS_NAME_CLASSCREATE"""
         if message == "Отменить":
-            self.set_s_nothing_state(user_id, "Создание класса отменено")
+            self.cancel_creating_classroom(user_id)
 
         else:
             if len(message) > 32:
@@ -135,7 +137,7 @@ class Handlers(SupportingFunctions):
     def s_enter_school_name_class_create_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_ENTER_SCHOOL_NAME_CLASSCREATE"""
         if message == "Отменить":
-            self.set_s_nothing_state(user_id, "Создание класса отменено")
+            self.cancel_creating_classroom(user_id)
 
         elif message == "На шаг назад":
             self.user_db.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
@@ -157,7 +159,7 @@ class Handlers(SupportingFunctions):
     def s_enter_access_class_create_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_ENTER_ACCESS_CLASSCREATE"""
         if message == "Отменить":
-            self.set_s_nothing_state(user_id, "Создание класса отменено")
+            self.cancel_creating_classroom(user_id)
 
         elif message == "На шаг назад":
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_CLASS_NAME_CLASSCREATE)
@@ -174,7 +176,7 @@ class Handlers(SupportingFunctions):
     def s_enter_description_class_create_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_ENTER_DESCRIPTION_CLASSCREATE"""
         if message == "Отменить":
-            self.set_s_nothing_state(user_id, "Создание класса отменено")
+            self.cancel_creating_classroom(user_id)
 
         elif message == "На шаг назад":
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_SCHOOL_NAME_CLASSCREATE)
@@ -214,16 +216,17 @@ class Handlers(SupportingFunctions):
 
             self.send_message(user_id, messages[-1], self.get_keyboard(keyboard_type))
 
-    def set_s_nothing_state(self, user_id: int, message_to_user: str) -> None:
+    def cancel_creating_classroom(self, user_id: int) -> None:
         """Set state to States.S_NOTHING"""
+        self.classroom_db.delete_not_created_classroom(user_id)
         self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
-        self.send_message(user_id, message_to_user, self.get_keyboard("menu"))
+        self.send_message(user_id, "Создание класса отменено", self.get_keyboard("menu"))
 
 
 class DiaryVkBot(Handlers):
-    def __init__(self, token: str, group_id: int, database: UserDataBase) -> None:
+    def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands) -> None:
         """Initialization"""
-        super().__init__(token=token, group_id=group_id, database=database)
+        super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db)
 
     def listen(self) -> None:
         """Listening events"""
@@ -298,6 +301,10 @@ if __name__ == "__main__":
 
     user_db = UserDataBase(connection)
     classroom_db = ClassroomCommands(connection)
-    my_bot = DiaryVkBot(token=TOKEN, group_id=GROUP_ID, database=user_db)
+
+    my_bot = DiaryVkBot(token=TOKEN, group_id=GROUP_ID,
+                        user_db=user_db,
+                        classroom_db=classroom_db
+                        )
 
     my_bot.listen()
