@@ -38,7 +38,7 @@ class ClassroomCommands(DataBase):
     def update_classroom_name(self, classroom_id: int, new_classroom_name: str) -> None:
         """Set name to the classroom"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.set_classroom_name_query.format(new_classroom_name, classroom_id))
+            cursor.execute(ClassroomQueries.update_classroom_name_query.format(new_classroom_name, classroom_id))
             self.connection.commit()
 
     def insert_new_user_in_classroom(self, user_id: int, classroom_id: int, role="member") -> None:
@@ -50,7 +50,7 @@ class ClassroomCommands(DataBase):
     def update_role_of_user(self, user_id: int, user_role: str) -> None:
         """Set role to the user"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.set_user_role_query.format(user_role, user_id))
+            cursor.execute(ClassroomQueries.update_user_role_query.format(user_role, user_id))
             self.connection.commit()
 
     def get_list_of_classroom_users(self, classroom_id: int) -> dict:
