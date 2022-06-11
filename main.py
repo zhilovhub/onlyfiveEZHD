@@ -93,7 +93,8 @@ class Handlers(SupportingFunctions):
 
         elif message == "Создать класс":
             self.user_db.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
-            self.classroom_db.insert_new_classroom(user_id)
+            classroom_id = self.classroom_db.insert_new_classroom(user_id)
+            self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
 
             self.send_message(user_id, "Напишите название будущего класса (макс. 32 символа):",
                               self.get_keyboard("cancel"))
@@ -197,12 +198,16 @@ class Handlers(SupportingFunctions):
     def s_submit_class_create_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_SUBMIT_CLASSCREATE"""
         if message == "Принять":
+            classroom_id = self.classroom_db.select_customizing_classroom_id(user_id)
+            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_classroom_create(classroom_id, True)
+
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_SUBMIT_CLASSCREATE)
             self.send_message(user_id, "Поздравляю! Класс создан", self.get_keyboard("menu"))
 
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
-        if message == "Отклонить":
+        elif message == "Отклонить":
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
@@ -218,7 +223,8 @@ class Handlers(SupportingFunctions):
 
     def cancel_creating_classroom(self, user_id: int) -> None:
         """Set state to States.S_NOTHING"""
-        self.classroom_db.delete_not_created_classroom(user_id)
+        classroom_id = self.classroom_db.select_customizing_classroom_id(user_id)
+        self.classroom_db.delete_classroom(classroom_id)
         self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
         self.send_message(user_id, "Создание класса отменено", self.get_keyboard("menu"))
 
@@ -237,11 +243,12 @@ class DiaryVkBot(Handlers):
                     message = event.object.message["text"]  # Getting message's text
                     user_information = self.get_user_info(user_id)  # User_id, first_name, nickname
 
-                    self.user_db.insert_new_user(user_information["user_id"],
+                    self.user_db.insert_new_user(user_id,
                                                  user_information["screen_name"],
                                                  user_information["first_name"],
                                                  False
                                                  )  # Will add a new user if user writes his first message
+                    self.classroom_db.insert_new_customizer(user_id)
 
                     if self.is_member(user_id):  # Checking first condition
 
