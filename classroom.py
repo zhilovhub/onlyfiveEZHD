@@ -35,7 +35,7 @@ class ClassroomCommands(DataBase):
 
             return classroom_name
 
-    def set_classroom_name(self, classroom_id: int, new_classroom_name: str) -> None:
+    def update_classroom_name(self, classroom_id: int, new_classroom_name: str) -> None:
         """Set name to the classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.set_classroom_name_query.format(new_classroom_name, classroom_id))
@@ -47,7 +47,7 @@ class ClassroomCommands(DataBase):
             cursor.execute(ClassroomQueries.insert_new_classroom_user_query.format(user_id, classroom_id, role))
             self.connection.commit()
 
-    def set_role_of_user(self, user_id: int, user_role: str) -> None:
+    def update_role_of_user(self, user_id: int, user_role: str) -> None:
         """Set role to the user"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.set_user_role_query.format(user_role, user_id))
@@ -86,11 +86,11 @@ class ClassroomQueries:
 
     get_classroom_name_query = """SELECT classroom_name FROM Classroom WHERE classroom_id={}"""
 
-    set_classroom_name_query = """UPDATE Classroom SET classroom_name={} WHERE classroom_id={}"""
+    update_classroom_name_query = """UPDATE Classroom SET classroom_name={} WHERE classroom_id={}"""
 
     insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, '{}')"""
 
-    set_user_role_query = """UPDATE Student SET role={} WHERE user_id={}"""
+    update_user_role_query = """UPDATE Student SET role={} WHERE user_id={}"""
 
     delete_user_from_classroom_query = """DELETE FROM Student WHERE user_id={}"""
 
