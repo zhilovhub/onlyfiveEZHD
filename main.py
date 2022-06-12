@@ -202,10 +202,16 @@ class Handlers(SupportingFunctions):
             else:
                 classroom_id = self.classroom_db.select_customizing_classroom_id(user_id)
                 self.classroom_db.update_classroom_description(classroom_id, message)
+                classroom_name, school_name, access, description = self.classroom_db.get_first_classroom_information(classroom_id)
 
                 next_state, keyboard_type, messages = States.get_next_state_config(
                     States.S_ENTER_DESCRIPTION_CLASSCREATE)
-                self.send_message(user_id, "Первоначальные настройки класса: (потом доделаю)",
+                self.send_message(user_id, f"""Первоначальные настройки класса: 
+                                            id: {classroom_id}
+                                            Название класса: {classroom_name}
+                                            Название школы: {school_name}
+                                            Могут ли участники приглашать: {'Да' if access else 'Нет'}
+                                            Описание класса: {description}""",
                                   self.get_keyboard("empty"))
 
                 self.state_transition(user_id, next_state, keyboard_type, messages)

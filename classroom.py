@@ -15,6 +15,14 @@ class ClassroomCommands(DataBase):
         except Error as e:
             print(e)
 
+    def get_first_classroom_information(self, classroom_id: id) -> tuple:
+        """Returns name, school_name, access and description"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.select_first_classroom_information_query.format(classroom_id))
+            classroom_name, school_name, access, description = cursor.fetchone()[1:-1]
+
+            return classroom_name, school_name, access, description
+
     def insert_new_classroom(self, user_id: int) -> int:
         """Insert new classroom and student-owner"""
         with self.connection.cursor() as cursor:
@@ -169,6 +177,8 @@ class ClassroomQueries:
     update_classroom_created_query = """UPDATE Classroom SET created={} WHERE classroom_id={}"""
 
     select_customizing_classroom_id_query = """SELECT classroom_id FROM UserCustomize WHERE user_id={}"""
+
+    select_first_classroom_information_query = """SELECT * FROM Classroom WHERE classroom_id={}"""
 
 
 if __name__ == "__main__":
