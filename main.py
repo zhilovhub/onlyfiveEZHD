@@ -200,7 +200,7 @@ class Handlers(SupportingFunctions):
         if message == "Принять":
             classroom_id = self.classroom_db.select_customizing_classroom_id(user_id)
             self.classroom_db.update_user_customize_classroom(user_id, "null")
-            self.classroom_db.update_classroom_create(classroom_id, True)
+            self.classroom_db.update_classroom_created(classroom_id, True)
 
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_SUBMIT_CLASSCREATE)
             self.send_message(user_id, "Поздравляю! Класс создан", self.get_keyboard("menu"))

@@ -82,7 +82,7 @@ class ClassroomCommands(DataBase):
             cursor.execute(ClassroomQueries.update_user_customize_query.format(classroom_id, user_id))
             self.connection.commit()
 
-    def update_classroom_create(self, classroom_id: int, created: bool) -> None:
+    def update_classroom_created(self, classroom_id: int, created: bool) -> None:
         """Update created of classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.update_classroom_created_query.format(created, classroom_id))
