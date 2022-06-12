@@ -11,6 +11,7 @@ class States(Enum):
     S_ENTER_ACCESS_CLASSCREATE = 3
     S_ENTER_DESCRIPTION_CLASSCREATE = 4
     S_SUBMIT_CLASSCREATE = 5
+    S_ENTER_TECHNICAL_SUPPORT_MESSAGE = 6
 
     @staticmethod
     def get_next_state_config(current_state: Enum) -> tuple:
@@ -37,6 +38,10 @@ class States(Enum):
                        ["Создать класс?"]
 
             case States.S_SUBMIT_CLASSCREATE:
+                return States.S_NOTHING, \
+                       "menu", \
+                       []
+            case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE:
                 return States.S_NOTHING, \
                        "menu", \
                        []

@@ -39,3 +39,8 @@ class KeyBoards:
     KEYBOARD_SUBMIT_BACK = VkKeyboard()
     KEYBOARD_SUBMIT_BACK.add_button(label="Отклонить")
     KEYBOARD_SUBMIT_BACK.add_button(label="Принять")
+
+    # CANCEL_SEND KEYBOARD
+    KEYBOARD_CANCEL_SEND = VkKeyboard()
+    KEYBOARD_CANCEL_SEND.add_button(label="Отменить")
+    KEYBOARD_CANCEL_SEND.add_button(label="Отправить")

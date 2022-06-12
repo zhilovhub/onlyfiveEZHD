@@ -49,6 +49,9 @@ class SupportingFunctions:
         elif keyboard_type == "submit_back":
             return KeyBoards.KEYBOARD_SUBMIT_BACK.get_keyboard()
 
+        elif keyboard_type == "cancel_send":
+            return KeyBoards.KEYBOARD_CANCEL_SEND.get_keyboard()
+
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""
         is_member = self.vk_session.method(
@@ -112,8 +115,9 @@ class Handlers(SupportingFunctions):
                               self.get_keyboard("menu"))
 
         elif message == "Обращение в тех. поддержку":
-            self.send_message(user_id, "Вопрос принят...",
-                              self.get_keyboard("menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value)
+            self.send_message(user_id, "Опишите свой вопрос...",
+                              self.get_keyboard("cancel_send"))
 
         else:
             self.send_message(user_id, "Я бот и общаться пока что не умею :(",
@@ -228,6 +232,21 @@ class Handlers(SupportingFunctions):
         self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
         self.send_message(user_id, "Создание класса отменено", self.get_keyboard("menu"))
 
+    def s_enter_technical_support_message(self, user_id: int, message: str) -> None:
+        """Handling States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE"""
+        if message == "Отменить":
+            self.cancel_entering_technical_support_message(user_id)
+
+        elif message == "Отправить":
+            next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE)
+
+        else:
+            pass
+
+    def cancel_entering_technical_support_message(self, user_id: int) -> None:
+        """Cancel creating technical support message and set state to States.S_NOTHING"""
+        self.send_message(user_id, "Отправка обращения в тех. поддержку отменено", self.get_keyboard("menu"))
+
 
 class DiaryVkBot(Handlers):
     def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands) -> None:
@@ -288,6 +307,9 @@ class DiaryVkBot(Handlers):
 
             case States.S_SUBMIT_CLASSCREATE.value:
                 self.s_submit_class_create_handler(user_id, message)
+
+            case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value:
+                self.s_enter_technical_support_message(user_id, message)
 
 
 if __name__ == "__main__":
