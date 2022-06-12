@@ -173,10 +173,16 @@ class Handlers(SupportingFunctions):
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
         elif message == "Да":
+            classroom_id = self.classroom_db.select_customizing_classroom_id(user_id)
+            self.classroom_db.update_classroom_access(classroom_id, True)
+
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
         elif message == "Нет":
+            classroom_id = self.classroom_db.select_customizing_classroom_id(user_id)
+            self.classroom_db.update_classroom_access(classroom_id, False)
+
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
