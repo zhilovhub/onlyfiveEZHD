@@ -56,6 +56,12 @@ class ClassroomCommands(DataBase):
             cursor.execute(ClassroomQueries.update_classroom_access_query.format(access, classroom_id))
             self.connection.commit()
 
+    def update_classroom_description(self, classroom_id: int, description: str) -> None:
+        """Update description of the classroom"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.update_classroom_description_query.format(description, classroom_id))
+            self.connection.commit()
+
     def insert_new_user_in_classroom(self, user_id: int, classroom_id: int, role="member") -> None:
         """Add user to the classroom"""
         with self.connection.cursor() as cursor:
@@ -143,6 +149,8 @@ class ClassroomQueries:
     update_school_name_query = """UPDATE Classroom SET school_name="{}" WHERE classroom_id={}"""
 
     update_classroom_access_query = """UPDATE Classroom SET everyone_can_invite={} WHERE classroom_id={}"""
+
+    update_classroom_description_query = """UPDATE Classroom SET description="{}" WHERE classroom_id={}"""
 
     insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, "{}")"""
 
