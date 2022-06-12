@@ -129,6 +129,9 @@ class Handlers(SupportingFunctions):
                 self.send_message(user_id, "Длина названия превышает 32 символа. Введите другое название:",
                                   self.get_keyboard("cancel"))
             else:
+                classroom_id = self.classroom_db.select_customizing_classroom_id(user_id)
+                self.classroom_db.update_classroom_name(classroom_id, message)
+
                 next_state, keyboard_type, messages = States.get_next_state_config(
                     States.S_ENTER_CLASS_NAME_CLASSCREATE)
                 self.send_message(user_id, f"Название класса: {message}", self.get_keyboard("empty"))

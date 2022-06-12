@@ -126,7 +126,7 @@ class ClassroomQueries:
 
     get_classroom_name_query = """SELECT classroom_name FROM Classroom WHERE classroom_id={}"""
 
-    update_classroom_name_query = """UPDATE Classroom SET classroom_name={} WHERE classroom_id={}"""
+    update_classroom_name_query = """UPDATE Classroom SET classroom_name="{}" WHERE classroom_id={}"""
 
     insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, '{}')"""
 
