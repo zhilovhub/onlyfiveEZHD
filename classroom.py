@@ -15,23 +15,65 @@ class ClassroomCommands(DataBase):
         except Error as e:
             print(e)
 
+    def get_classroom_name(self, classroom_id: int) -> str:
+        """Get name of the classroom"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.get_classroom_name_query.format(classroom_id))
+            classroom_name = cursor.fetchone()[0]
+
+            return classroom_name
+
     def get_user_classrooms_with_role(self, user_id: int) -> dict:
         """Returns user's classrooms_id and his role"""
         with self.connection.cursor() as cursor:
             classrooms_dictionary = {}
-            cursor.execute(ClassroomQueries.select_user_classrooms_with_role.format(user_id))
+            cursor.execute(ClassroomQueries.get_user_classrooms_with_role.format(user_id))
             for (classroom_id, role) in cursor:
                 classrooms_dictionary[classroom_id] = role
 
             return classrooms_dictionary
 
+    def get_list_of_classroom_users(self, classroom_id: int) -> dict:
+        """Get dict with classroom's members"""
+        with self.connection.cursor() as cursor:
+            users_dictionary = {}
+            cursor.execute(ClassroomQueries.get_list_of_classroom_users_query.format(classroom_id))
+            for (user_id, user_role) in cursor:
+                users_dictionary[user_id] = user_role
+
+            return users_dictionary
+
+    def get_customizing_classroom_id(self, user_id: int) -> int:
+        """Select classroomd_id that user_id is customizing"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.get_customizing_classroom_id_query.format(user_id))
+            classroom_id = cursor.fetchone()[0]
+
+            return classroom_id
+
     def get_information_for_creating_classroom(self, classroom_id: id) -> tuple:
         """Returns name, school_name, access and description"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.select_information_for_creating_query.format(classroom_id))
+            cursor.execute(ClassroomQueries.get_information_for_creating_query.format(classroom_id))
             classroom_name, school_name, access, description = cursor.fetchone()[1:-1]
 
             return classroom_name, school_name, access, description
+
+    def insert_new_customizer(self, user_id: int) -> None:
+        """Insert customizer into UserCustomize"""
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(ClassroomQueries.insert_new_customizer_query.format(user_id))
+                self.connection.commit()
+
+        except Error as e:
+            print(e)
+
+    def insert_new_user_in_classroom(self, user_id: int, classroom_id: int, role="member") -> None:
+        """Add user to the classroom"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.insert_new_classroom_user_query.format(user_id, classroom_id, role))
+            self.connection.commit()
 
     def insert_new_classroom(self, user_id: int) -> int:
         """Insert new classroom and student-owner"""
@@ -41,20 +83,6 @@ class ClassroomCommands(DataBase):
             self.insert_new_user_in_classroom(user_id, cursor.lastrowid, "owner")
 
         return classroom_id
-
-    def delete_classroom(self, classroom_id: int) -> None:
-        """Delete classroom and its owner from Student"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.delete_classroom_query.format(classroom_id))
-            self.connection.commit()
-
-    def get_classroom_name(self, classroom_id: int) -> str:
-        """Get name of the classroom"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.get_classroom_name_query.format(classroom_id))
-            classroom_name = cursor.fetchone()[0]
-
-            return classroom_name
 
     def update_classroom_name(self, classroom_id: int, new_classroom_name: str) -> None:
         """Set name to the classroom"""
@@ -80,10 +108,10 @@ class ClassroomCommands(DataBase):
             cursor.execute(ClassroomQueries.update_classroom_description_query.format(description, classroom_id))
             self.connection.commit()
 
-    def insert_new_user_in_classroom(self, user_id: int, classroom_id: int, role="member") -> None:
-        """Add user to the classroom"""
+    def update_classroom_created(self, classroom_id: int, created: bool) -> None:
+        """Update created of classroom"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.insert_new_classroom_user_query.format(user_id, classroom_id, role))
+            cursor.execute(ClassroomQueries.update_classroom_created_query.format(created, classroom_id))
             self.connection.commit()
 
     def update_role_of_user(self, user_id: int, user_role: str) -> None:
@@ -92,45 +120,17 @@ class ClassroomCommands(DataBase):
             cursor.execute(ClassroomQueries.update_user_role_query.format(user_role, user_id))
             self.connection.commit()
 
-    def get_list_of_classroom_users(self, classroom_id: int) -> dict:
-        """Get dict with classroom's members"""
-        with self.connection.cursor() as cursor:
-            users_dictionary = {}
-            cursor.execute(ClassroomQueries.get_list_of_classroom_users_query.format(classroom_id))
-            for (user_id, user_role) in cursor:
-                users_dictionary[user_id] = user_role
-
-            return users_dictionary
-
-    def insert_new_customizer(self, user_id: int) -> None:
-        """Insert customizer into UserCustomize"""
-        try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(ClassroomQueries.insert_new_customizer_query.format(user_id))
-                self.connection.commit()
-
-        except Error as e:
-            print(e)
-
     def update_user_customize_classroom(self, user_id: int, classroom_id) -> None:
         """Update classroom_id that user is customizing"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.update_user_customize_query.format(classroom_id, user_id))
             self.connection.commit()
 
-    def update_classroom_created(self, classroom_id: int, created: bool) -> None:
-        """Update created of classroom"""
+    def delete_classroom(self, classroom_id: int) -> None:
+        """Delete classroom and its owner from Student"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_classroom_created_query.format(created, classroom_id))
+            cursor.execute(ClassroomQueries.delete_classroom_query.format(classroom_id))
             self.connection.commit()
-
-    def select_customizing_classroom_id(self, user_id: int) -> int:
-        """Select classroomd_id that user_id is customizing"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.select_customizing_classroom_id_query.format(user_id))
-            classroom_id = cursor.fetchone()[0]
-
-            return classroom_id
 
 
 class ClassroomQueries:
@@ -158,9 +158,15 @@ class ClassroomQueries:
             FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE SET NULL
         )"""
 
-    insert_classroom_query = """INSERT INTO Classroom VALUES(null, null, null, null, null, FALSE)"""
+    get_customizing_classroom_id_query = """SELECT classroom_id FROM UserCustomize WHERE user_id={}"""
+
+    get_information_for_creating_query = """SELECT * FROM Classroom WHERE classroom_id={}"""
+
+    get_user_classrooms_with_role = """SELECT classroom_id, role FROM Student WHERE user_id={}"""
 
     get_classroom_name_query = """SELECT classroom_name FROM Classroom WHERE classroom_id={}"""
+
+    insert_classroom_query = """INSERT INTO Classroom VALUES(null, null, null, null, null, FALSE)"""
 
     update_classroom_name_query = """UPDATE Classroom SET classroom_name="{}" WHERE classroom_id={}"""
 
@@ -185,12 +191,6 @@ class ClassroomQueries:
     update_user_customize_query = """UPDATE UserCustomize SET classroom_id={} WHERE user_id={}"""
 
     update_classroom_created_query = """UPDATE Classroom SET created={} WHERE classroom_id={}"""
-
-    select_customizing_classroom_id_query = """SELECT classroom_id FROM UserCustomize WHERE user_id={}"""
-
-    select_information_for_creating_query = """SELECT * FROM Classroom WHERE classroom_id={}"""
-
-    select_user_classrooms_with_role = """SELECT classroom_id, role FROM Student WHERE user_id={}"""
 
 
 if __name__ == "__main__":

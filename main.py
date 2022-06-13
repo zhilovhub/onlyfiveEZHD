@@ -131,7 +131,7 @@ class Handlers(SupportingFunctions):
                 self.send_message(user_id, "Длина названия превышает 32 символа. Введите другое название:",
                                   self.get_keyboard("cancel"))
             else:
-                classroom_id = self.classroom_db.select_customizing_classroom_id(user_id)
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 self.classroom_db.update_classroom_name(classroom_id, message)
 
                 next_state, keyboard_type, messages = States.get_next_state_config(
@@ -156,7 +156,7 @@ class Handlers(SupportingFunctions):
                 self.send_message(user_id, "Длина названия превышает 32 символа. Введите другое название:",
                                   self.get_keyboard("cancel"))
             else:
-                classroom_id = self.classroom_db.select_customizing_classroom_id(user_id)
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 self.classroom_db.update_school_name(classroom_id, message)
 
                 next_state, keyboard_type, messages = States.get_next_state_config(
@@ -175,14 +175,14 @@ class Handlers(SupportingFunctions):
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
         elif message == "Да":
-            classroom_id = self.classroom_db.select_customizing_classroom_id(user_id)
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             self.classroom_db.update_classroom_access(classroom_id, True)
 
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
         elif message == "Нет":
-            classroom_id = self.classroom_db.select_customizing_classroom_id(user_id)
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             self.classroom_db.update_classroom_access(classroom_id, False)
 
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
@@ -202,7 +202,7 @@ class Handlers(SupportingFunctions):
                 self.send_message(user_id, "Длина названия превышает 200 символа. Введите другое название:",
                                   self.get_keyboard("cancel_back"))
             else:
-                classroom_id = self.classroom_db.select_customizing_classroom_id(user_id)
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 self.classroom_db.update_classroom_description(classroom_id, message)
                 classroom_name, school_name, access, description = self.classroom_db.get_information_for_creating_classroom(
                     classroom_id)
@@ -222,7 +222,7 @@ class Handlers(SupportingFunctions):
     def s_submit_class_create_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_SUBMIT_CLASSCREATE"""
         if message == "Принять":
-            classroom_id = self.classroom_db.select_customizing_classroom_id(user_id)
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             self.classroom_db.update_user_customize_classroom(user_id, "null")
             self.classroom_db.update_classroom_created(classroom_id, True)
 
@@ -247,7 +247,7 @@ class Handlers(SupportingFunctions):
 
     def cancel_creating_classroom(self, user_id: int) -> None:
         """Set state to States.S_NOTHING"""
-        classroom_id = self.classroom_db.select_customizing_classroom_id(user_id)
+        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
         self.classroom_db.delete_classroom(classroom_id)
         self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
         self.send_message(user_id, "Создание класса отменено", self.get_keyboard("menu"))
