@@ -49,6 +49,9 @@ class SupportingFunctions:
         elif keyboard_type == "submit_back":
             return KeyBoards.KEYBOARD_SUBMIT_BACK.get_keyboard()
 
+        elif keyboard_type == "enter_the_classroom":
+            return KeyBoards.KEYBOARD_ENTER_THE_CLASSROOM.get_keyboard()
+
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""
         is_member = self.vk_session.method(
@@ -100,10 +103,20 @@ class Handlers(SupportingFunctions):
                               self.get_keyboard("cancel"))
 
         elif message == "Мои классы":
-            classrooms_id = self.classroom_db.get_user_classrooms_with_role(user_id)
-            for classroom_id, role in classrooms_id.items():
+            user_classrooms_dictionary = self.classroom_db.get_user_classrooms_with_role(user_id)
+            keyboard = self.get_keyboard("enter_the_classroom")
+
+            for classroom_id, role in user_classrooms_dictionary.items():
+                members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
+                classroom_name, school_name, access, description = self.classroom_db.get_information_for_creating_classroom(classroom_id)
+
                 self.send_message(user_id, f"#{classroom_id}\n"
-                                           f"Вы: {role}", self.get_keyboard("menu"))
+                                           f"Класс: {classroom_name}\n"
+                                           f"Школа: {school_name}\n"
+                                           f"Описание: {description}\n"
+                                           f"Могут ли все участники приглашать: {'Да' if access else 'Нет'}\n"
+                                           f"Вы: {role}\n"
+                                           f"Участиники: {len(members_dictionary)}", keyboard)
 
         elif message == "Создать беседу класса":
             self.send_message(user_id, "Создаю беседу класса...",

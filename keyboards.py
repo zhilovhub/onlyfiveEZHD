@@ -39,3 +39,7 @@ class KeyBoards:
     KEYBOARD_SUBMIT_BACK = VkKeyboard()
     KEYBOARD_SUBMIT_BACK.add_button(label="Отклонить")
     KEYBOARD_SUBMIT_BACK.add_button(label="Принять")
+
+    # ENTER THE CLASSROOM
+    KEYBOARD_ENTER_THE_CLASSROOM = VkKeyboard(inline=True)
+    KEYBOARD_ENTER_THE_CLASSROOM.add_callback_button("Перейти")
