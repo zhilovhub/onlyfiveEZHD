@@ -100,8 +100,10 @@ class Handlers(SupportingFunctions):
                               self.get_keyboard("cancel"))
 
         elif message == "Мои классы":
-            self.send_message(user_id, "Твои классы...",
-                              self.get_keyboard("menu"))
+            classrooms_id = self.classroom_db.get_user_classrooms_with_role(user_id)
+            for classroom_id, role in classrooms_id.items():
+                self.send_message(user_id, f"#{classroom_id}\n"
+                                           f"Вы: {role}", self.get_keyboard("menu"))
 
         elif message == "Создать беседу класса":
             self.send_message(user_id, "Создаю беседу класса...",
@@ -202,16 +204,17 @@ class Handlers(SupportingFunctions):
             else:
                 classroom_id = self.classroom_db.select_customizing_classroom_id(user_id)
                 self.classroom_db.update_classroom_description(classroom_id, message)
-                classroom_name, school_name, access, description = self.classroom_db.get_first_classroom_information(classroom_id)
+                classroom_name, school_name, access, description = self.classroom_db.get_information_for_creating_classroom(
+                    classroom_id)
 
                 next_state, keyboard_type, messages = States.get_next_state_config(
                     States.S_ENTER_DESCRIPTION_CLASSCREATE)
-                self.send_message(user_id, f"""Первоначальные настройки класса: 
-                                            id: {classroom_id}
-                                            Название класса: {classroom_name}
-                                            Название школы: {school_name}
-                                            Могут ли участники приглашать: {'Да' if access else 'Нет'}
-                                            Описание класса: {description}""",
+                self.send_message(user_id, f"Первоначальные настройки класса:\n"
+                                           f"id: {classroom_id}\n"
+                                           f"Название класса: {classroom_name}\n"
+                                           f"Название школы: {school_name}\n"
+                                           f"Могут ли участники приглашать: {'Да' if access else 'Нет'}\n"
+                                           f"Описание класса: {description}",
                                   self.get_keyboard("empty"))
 
                 self.state_transition(user_id, next_state, keyboard_type, messages)

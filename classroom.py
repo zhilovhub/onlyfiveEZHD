@@ -15,10 +15,20 @@ class ClassroomCommands(DataBase):
         except Error as e:
             print(e)
 
-    def get_first_classroom_information(self, classroom_id: id) -> tuple:
+    def get_user_classrooms_with_role(self, user_id: int) -> dict:
+        """Returns user's classrooms_id and his role"""
+        with self.connection.cursor() as cursor:
+            classrooms_dictionary = {}
+            cursor.execute(ClassroomQueries.select_user_classrooms_with_role.format(user_id))
+            for (classroom_id, role) in cursor:
+                classrooms_dictionary[classroom_id] = role
+
+            return classrooms_dictionary
+
+    def get_information_for_creating_classroom(self, classroom_id: id) -> tuple:
         """Returns name, school_name, access and description"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.select_first_classroom_information_query.format(classroom_id))
+            cursor.execute(ClassroomQueries.select_information_for_creating_query.format(classroom_id))
             classroom_name, school_name, access, description = cursor.fetchone()[1:-1]
 
             return classroom_name, school_name, access, description
@@ -178,8 +188,20 @@ class ClassroomQueries:
 
     select_customizing_classroom_id_query = """SELECT classroom_id FROM UserCustomize WHERE user_id={}"""
 
-    select_first_classroom_information_query = """SELECT * FROM Classroom WHERE classroom_id={}"""
+    select_information_for_creating_query = """SELECT * FROM Classroom WHERE classroom_id={}"""
+
+    select_user_classrooms_with_role = """SELECT classroom_id, role FROM Student WHERE user_id={}"""
 
 
 if __name__ == "__main__":
-    pass
+    connection = connect(
+        host=HOST,
+        user=USER,
+        password=PASSWORD,
+        database=DATABASE_NAME
+    )
+
+    db = ClassroomCommands(connection)
+    print(db.get_information_for_creating_classroom(5))
+    print(db.get_list_of_classroom_users(5))
+    print(db.get_user_classrooms_with_role(341106876))
