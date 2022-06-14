@@ -28,6 +28,22 @@ class SupportingFunctions:
         except VkApiError as e:
             print(e)
 
+    def send_message_event_answer(self, event_id: str, user_id: int, peer_id: int, event_data: str) -> None:
+        """Send message to user after callback-button using"""
+        try:
+            self.vk_session.method(
+                "messages.sendMessageEventAnswer",
+                {
+                    "event_id": event_id,
+                    "user_id": user_id,
+                    "peer_id": peer_id,
+                    "event_data": event_data
+                }
+            )
+
+        except VkApiError as e:
+            print(e)
+
     @staticmethod
     def get_keyboard(keyboard_type: str) -> VkKeyboard:
         """Get the keyboard"""
@@ -302,9 +318,19 @@ class DiaryVkBot(Handlers):
                                           "Перед использованием бота подпишись на группу!",
                                           self.get_keyboard("empty"))
             elif event.type == VkBotEventType.MESSAGE_EVENT:
+                event_id = event.object["event_id"]
                 user_id = event.object["user_id"]
+                peer_id = event.object["peer_id"]
                 payload = event.object["payload"]
-                print(user_id, payload)
+
+                if self.is_member(user_id):
+                    pass
+
+                else:
+                    self.send_message_event_answer(event_id, user_id, peer_id, "")
+                    self.send_message(user_id,
+                                      "Перед использованием бота подпишись на группу!",
+                                      self.get_keyboard("empty"))
 
             else:
                 print(event)
