@@ -12,6 +12,8 @@ class States(Enum):
     S_ENTER_DESCRIPTION_CLASSCREATE = 4
     S_SUBMIT_CLASSCREATE = 5
 
+    S_IN_CLASS_MYCLASSES = 6
+
     @staticmethod
     def get_next_state_config(current_state: Enum) -> tuple:
         """Returns next state's configuration"""

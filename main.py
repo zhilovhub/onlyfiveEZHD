@@ -65,6 +65,9 @@ class SupportingFunctions:
         elif keyboard_type == "submit_back":
             return KeyBoards.KEYBOARD_SUBMIT_BACK.get_keyboard()
 
+        elif keyboard_type == "my_class_menu":
+            return KeyBoards.KEYBOARD_MY_CLASS_MENU.get_keyboard()
+
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""
         is_member = self.vk_session.method(
@@ -146,7 +149,12 @@ class Handlers(SupportingFunctions):
                               self.get_keyboard("menu"))
 
         elif payload is not None and payload["type"] == "enter_the_classroom":
-            self.send_message(user_id, f"Заходим в класс с id: #{payload['classroom_id']}")
+            classroom_id = payload["classroom_id"]
+            classroom_name = self.classroom_db.get_classroom_name(classroom_id)
+            self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
+
+            self.send_message(user_id, f"Ты в классе {classroom_name}", self.get_keyboard("my_class_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
 
         else:
             self.send_message(user_id, "Я бот и общаться пока что не умею :(",
@@ -266,6 +274,12 @@ class Handlers(SupportingFunctions):
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
+    def s_in_class_my_classes_handler(self, user_id: int, message: str) -> None:
+        """Handling STATES.S_IN_CLASS_MYCLASSES"""
+        if message == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню", keyboard=self.get_keyboard("menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
     def state_transition(self, user_id: int, next_state, keyboard_type: str, messages: list) -> None:
         """Changes states"""
         self.user_db.set_user_dialog_state(user_id, next_state.value)
@@ -364,6 +378,10 @@ class DiaryVkBot(Handlers):
 
             case States.S_SUBMIT_CLASSCREATE.value:
                 self.s_submit_class_create_handler(user_id, message)
+
+            #MYCLASSES
+            case States.S_IN_CLASS_MYCLASSES.value:
+                self.s_in_class_my_classes_handler(user_id, message)
 
 
 if __name__ == "__main__":
