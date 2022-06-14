@@ -120,7 +120,7 @@ class Handlers(SupportingFunctions):
 
             for classroom_id, role in user_classrooms_dictionary.items():
                 keyboard = VkKeyboard(inline=True)
-                keyboard.add_callback_button("Войти", payload=str(classroom_id))
+                keyboard.add_callback_button("Войти", payload={"classroom_id": classroom_id})
 
                 members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
                 classroom_name, school_name, access, description = self.classroom_db.get_information_for_creating_classroom(classroom_id)
