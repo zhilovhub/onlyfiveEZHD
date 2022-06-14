@@ -324,7 +324,8 @@ class DiaryVkBot(Handlers):
                 payload = event.object["payload"]
 
                 if self.is_member(user_id):
-                    pass
+                    current_dialog_state = self.user_db.get_user_dialog_state(user_id)
+                    self.filter_dialog_state(user_id, payload, current_dialog_state)
 
                 else:
                     self.send_message_event_answer(event_id, user_id, peer_id, "")
