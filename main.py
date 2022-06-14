@@ -13,7 +13,7 @@ class SupportingFunctions:
         self.vk_session = VkApi(token=token)
         self.bot_long_poll = VkBotLongPoll(vk=self.vk_session, group_id=group_id)
 
-    def send_message(self, user_id: int, message: str, keyboard: VkKeyboard) -> None:
+    def send_message(self, user_id: int, message: str, keyboard=None) -> None:
         """Send message to user"""
         try:
             self.vk_session.method(
@@ -108,12 +108,12 @@ class Handlers(SupportingFunctions):
                               self.get_keyboard("menu"))
 
         elif message == "Создать класс":
-            self.user_db.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
             classroom_id = self.classroom_db.insert_new_classroom(user_id)
             self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
-
             self.send_message(user_id, "Напишите название будущего класса (макс. 32 символа):",
                               self.get_keyboard("cancel"))
+
+            self.user_db.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
 
         elif message == "Мои классы":
             user_classrooms_dictionary = self.classroom_db.get_user_classrooms_with_role(user_id)
@@ -131,7 +131,7 @@ class Handlers(SupportingFunctions):
                                            f"Описание: {description}\n"
                                            f"Могут ли все участники приглашать: {'Да' if access else 'Нет'}\n"
                                            f"Вы: {role}\n"
-                                           f"Участиники: {len(members_dictionary)}", keyboard.get_keyboard())
+                                           f"Участники: {len(members_dictionary)}", keyboard.get_keyboard())
 
         elif message == "Создать беседу класса":
             self.send_message(user_id, "Создаю беседу класса...",
@@ -323,12 +323,16 @@ class DiaryVkBot(Handlers):
                 peer_id = event.object["peer_id"]
                 payload = event.object["payload"]
 
+                self.send_message_event_answer(event_id, user_id, peer_id, "")
                 if self.is_member(user_id):
                     current_dialog_state = self.user_db.get_user_dialog_state(user_id)
-                    self.filter_dialog_state(user_id, payload, current_dialog_state)
+
+                    if current_dialog_state == States.S_NOTHING.value:
+                        self.send_message(user_id, "Переходим в состояние нахождения в классе...", self.get_keyboard("menu"))
+                    else:
+                        self.send_message(user_id, "Закончи текущее действие или выйди в главное меню")
 
                 else:
-                    self.send_message_event_answer(event_id, user_id, peer_id, "")
                     self.send_message(user_id,
                                       "Перед использованием бота подпишись на группу!",
                                       self.get_keyboard("empty"))
@@ -342,6 +346,7 @@ class DiaryVkBot(Handlers):
             case States.S_NOTHING.value:
                 self.s_nothing_handler(user_id, message)
 
+            # CLASSCREATE
             case States.S_ENTER_CLASS_NAME_CLASSCREATE.value:
                 self.s_enter_class_name_class_create_handler(user_id, message)
 
