@@ -101,7 +101,7 @@ class Handlers(SupportingFunctions):
         self.user_db = user_db
         self.classroom_db = classroom_db
 
-    def s_nothing_handler(self, user_id: int, message: str) -> None:
+    def s_nothing_handler(self, user_id: int, message: str, payload=None) -> None:
         """Handling States.S_NOTHING"""
         if message == "Найти класс":
             self.send_message(user_id, "Нахожу класс...",
@@ -120,7 +120,7 @@ class Handlers(SupportingFunctions):
 
             for classroom_id, role in user_classrooms_dictionary.items():
                 keyboard = VkKeyboard(inline=True)
-                keyboard.add_callback_button("Войти", payload={"classroom_id": classroom_id})
+                keyboard.add_callback_button("Войти", payload={"type": "enter_the_classroom", "classroom_id": classroom_id})
 
                 members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
                 classroom_name, school_name, access, description = self.classroom_db.get_information_for_creating_classroom(classroom_id)
@@ -144,6 +144,9 @@ class Handlers(SupportingFunctions):
         elif message == "Обращение в тех. поддержку":
             self.send_message(user_id, "Вопрос принят...",
                               self.get_keyboard("menu"))
+
+        elif payload is not None and payload["type"] == "enter_the_classroom":
+            self.send_message(user_id, f"Заходим в класс с id: #{payload['classroom_id']}")
 
         else:
             self.send_message(user_id, "Я бот и общаться пока что не умею :(",
@@ -328,7 +331,7 @@ class DiaryVkBot(Handlers):
                     current_dialog_state = self.user_db.get_user_dialog_state(user_id)
 
                     if current_dialog_state == States.S_NOTHING.value:
-                        self.send_message(user_id, "Переходим в состояние нахождения в классе...", self.get_keyboard("menu"))
+                        self.s_nothing_handler(user_id, "", payload)
                     else:
                         self.send_message(user_id, "Закончи текущее действие или выйди в главное меню")
 
