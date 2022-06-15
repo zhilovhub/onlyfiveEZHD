@@ -123,10 +123,13 @@ class Handlers(SupportingFunctions):
 
             for classroom_id, role in user_classrooms_dictionary.items():
                 keyboard = VkKeyboard(inline=True)
-                keyboard.add_callback_button("Войти", payload={"type": "enter_the_classroom", "classroom_id": classroom_id})
+                keyboard.add_callback_button("Войти", payload={
+                    "type": "enter_the_classroom", "classroom_id": classroom_id
+                })
 
                 members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
-                classroom_name, school_name, access, description = self.classroom_db.get_information_for_creating_classroom(classroom_id)
+                classroom_name, school_name, access, description = \
+                    self.classroom_db.get_information_for_creating_classroom(classroom_id)
 
                 self.send_message(user_id, f"#{classroom_id}\n"
                                            f"Класс: {classroom_name}\n"
@@ -243,8 +246,8 @@ class Handlers(SupportingFunctions):
             else:
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 self.classroom_db.update_classroom_description(classroom_id, message)
-                classroom_name, school_name, access, description = self.classroom_db.get_information_for_creating_classroom(
-                    classroom_id)
+                classroom_name, school_name, access, description = \
+                    self.classroom_db.get_information_for_creating_classroom(classroom_id)
 
                 next_state, keyboard_type, messages = States.get_next_state_config(
                     States.S_ENTER_DESCRIPTION_CLASSCREATE)
@@ -379,7 +382,7 @@ class DiaryVkBot(Handlers):
             case States.S_SUBMIT_CLASSCREATE.value:
                 self.s_submit_class_create_handler(user_id, message)
 
-            #MYCLASSES
+            # MYCLASSES
             case States.S_IN_CLASS_MYCLASSES.value:
                 self.s_in_class_my_classes_handler(user_id, message)
 
