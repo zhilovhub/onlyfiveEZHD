@@ -42,4 +42,8 @@ class KeyBoards:
 
     # MY_CLASS_MENU KEYBOARD
     KEYBOARD_MY_CLASS_MENU = VkKeyboard()
+    KEYBOARD_MY_CLASS_MENU.add_button(label="Участники")
+    KEYBOARD_MY_CLASS_MENU.add_button(label="Расписание")
+    KEYBOARD_MY_CLASS_MENU.add_button(label="Настройки")
+    KEYBOARD_MY_CLASS_MENU.add_line()
     KEYBOARD_MY_CLASS_MENU.add_button(label="Главное меню")
