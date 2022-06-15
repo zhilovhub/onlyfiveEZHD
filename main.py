@@ -121,6 +121,9 @@ class Handlers(SupportingFunctions):
         elif message == "Мои классы":
             user_classrooms_dictionary = self.classroom_db.get_user_classrooms_with_role(user_id)
 
+            if not user_classrooms_dictionary:
+                self.send_message(user_id, "Пока что ты не состоишь ни в одном классе!", self.get_keyboard("menu"))
+
             for classroom_id, role in user_classrooms_dictionary.items():
                 keyboard = VkKeyboard(inline=True)
                 keyboard.add_callback_button("Войти", payload={
