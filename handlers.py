@@ -6,6 +6,8 @@ from states import States
 
 
 class StateHandlers(SupportingFunctions):
+    """Handles states"""
+
     def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands) -> None:
         """Initialization"""
         super().__init__(token=token, group_id=group_id)
@@ -213,6 +215,8 @@ class StateHandlers(SupportingFunctions):
 
 
 class CallbackPayloadHandlers(StateHandlers):
+    """Handles callback payloads"""
+
     def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands) -> None:
         """Initialization"""
         super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db)

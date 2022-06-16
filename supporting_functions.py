@@ -4,6 +4,8 @@ from keyboards import KeyBoards
 
 
 class SupportingFunctions:
+    """Some functions that can be used in handlers.py and main.py"""
+
     def __init__(self, token: str, group_id: int) -> None:
         """Initialization"""
         self.vk_session = VkApi(token=token)
