@@ -6,6 +6,8 @@ from classroom import ClassroomCommands
 from keyboards import KeyBoards
 from states import States
 
+from json import loads
+
 
 class SupportingFunctions:
     def __init__(self, token: str, group_id: int) -> None:
@@ -104,13 +106,16 @@ class Handlers(SupportingFunctions):
         self.user_db = user_db
         self.classroom_db = classroom_db
 
-    def s_nothing_handler(self, user_id: int, message: str) -> None:
+    def s_nothing_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_NOTHING"""
-        if message == "Найти класс":
+        if payload is None:
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻")
+
+        elif payload["text"] == "Найти класс":
             self.send_message(user_id, "Нахожу класс...",
                               self.get_keyboard("menu"))
 
-        elif message == "Создать класс":
+        elif payload["text"] == "Создать класс":
             classroom_id = self.classroom_db.insert_new_classroom(user_id)
             self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
             self.send_message(user_id, "Напишите название будущего класса (макс. 32 символа):",
@@ -118,7 +123,7 @@ class Handlers(SupportingFunctions):
 
             self.user_db.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
 
-        elif message == "Мои классы":
+        elif payload["text"] == "Мои классы":
             user_classrooms_dictionary = self.classroom_db.get_user_classrooms_with_role(user_id)
 
             if not user_classrooms_dictionary:
@@ -142,28 +147,21 @@ class Handlers(SupportingFunctions):
                                            f"Вы: {role}\n"
                                            f"Участники: {len(members_dictionary)}", keyboard.get_keyboard())
 
-        elif message == "Создать беседу класса":
+        elif payload["text"] == "Создать беседу класса":
             self.send_message(user_id, "Создаю беседу класса...",
                               self.get_keyboard("menu"))
 
-        elif message == "Настройка беседы класса":
+        elif payload["text"] == "Настройка беседы класса":
             self.send_message(user_id, "Настройка беседы класса...",
                               self.get_keyboard("menu"))
 
-        elif message == "Обращение в тех. поддержку":
+        elif payload["text"] == "Обращение в тех. поддержку":
             self.send_message(user_id, "Вопрос принят...",
                               self.get_keyboard("menu"))
 
-        else:
-            self.send_message(user_id, "Я бот и общаться пока что не умею :(",
-                              self.get_keyboard("menu"))
-
-    def s_enter_class_name_class_create_handler(self, user_id: int, message: str) -> None:
+    def s_enter_class_name_class_create_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_CLASS_NAME_CLASSCREATE"""
-        if message == "Отменить":
-            self.cancel_creating_classroom(user_id)
-
-        else:
+        if payload is None:
             if len(message) > 32:
                 self.send_message(user_id, "Длина названия превышает 32 символа. Введите другое название:",
                                   self.get_keyboard("cancel"))
@@ -177,18 +175,12 @@ class Handlers(SupportingFunctions):
 
                 self.state_transition(user_id, next_state, keyboard_type, messages)
 
-    def s_enter_school_name_class_create_handler(self, user_id: int, message: str) -> None:
-        """Handling States.S_ENTER_SCHOOL_NAME_CLASSCREATE"""
-        if message == "Отменить":
+        elif payload["text"] == "Отменить":
             self.cancel_creating_classroom(user_id)
 
-        elif message == "На шаг назад":
-            self.user_db.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
-
-            self.send_message(user_id, "Напишите название будущего класса (макс. 32 символа):",
-                              self.get_keyboard("cancel"))
-
-        else:
+    def s_enter_school_name_class_create_handler(self, user_id: int, message: str, payload: dict) -> None:
+        """Handling States.S_ENTER_SCHOOL_NAME_CLASSCREATE"""
+        if payload is None:
             if len(message) > 32:
                 self.send_message(user_id, "Длина названия превышает 32 символа. Введите другое название:",
                                   self.get_keyboard("cancel"))
@@ -202,39 +194,44 @@ class Handlers(SupportingFunctions):
 
                 self.state_transition(user_id, next_state, keyboard_type, messages)
 
-    def s_enter_access_class_create_handler(self, user_id: int, message: str) -> None:
-        """Handling States.S_ENTER_ACCESS_CLASSCREATE"""
-        if message == "Отменить":
+        elif payload["text"] == "Отменить":
             self.cancel_creating_classroom(user_id)
 
-        elif message == "На шаг назад":
+        elif payload["text"] == "На шаг назад":
+            self.user_db.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
+
+            self.send_message(user_id, "Напишите название будущего класса (макс. 32 символа):",
+                              self.get_keyboard("cancel"))
+
+    def s_enter_access_class_create_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_ENTER_ACCESS_CLASSCREATE"""
+        if payload is None:
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻")
+
+        elif payload["text"] == "Отменить":
+            self.cancel_creating_classroom(user_id)
+
+        elif payload["text"] == "На шаг назад":
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_CLASS_NAME_CLASSCREATE)
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
-        elif message == "Да":
+        elif payload["text"] == "Да":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             self.classroom_db.update_classroom_access(classroom_id, True)
 
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
-        elif message == "Нет":
+        elif payload["text"] == "Нет":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             self.classroom_db.update_classroom_access(classroom_id, False)
 
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
-    def s_enter_description_class_create_handler(self, user_id: int, message: str) -> None:
+    def s_enter_description_class_create_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_DESCRIPTION_CLASSCREATE"""
-        if message == "Отменить":
-            self.cancel_creating_classroom(user_id)
-
-        elif message == "На шаг назад":
-            next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_SCHOOL_NAME_CLASSCREATE)
-            self.state_transition(user_id, next_state, keyboard_type, messages)
-
-        else:
+        if payload is None:
             if len(message) > 200:
                 self.send_message(user_id, "Длина названия превышает 200 символа. Введите другое название:",
                                   self.get_keyboard("cancel_back"))
@@ -256,9 +253,19 @@ class Handlers(SupportingFunctions):
 
                 self.state_transition(user_id, next_state, keyboard_type, messages)
 
-    def s_submit_class_create_handler(self, user_id: int, message: str) -> None:
+        elif payload["text"] == "Отменить":
+            self.cancel_creating_classroom(user_id)
+
+        elif payload["text"] == "На шаг назад":
+            next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_SCHOOL_NAME_CLASSCREATE)
+            self.state_transition(user_id, next_state, keyboard_type, messages)
+
+    def s_submit_class_create_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_SUBMIT_CLASSCREATE"""
-        if message == "Принять":
+        if payload is None:
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻")
+
+        elif payload["text"] == "Принять":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             self.classroom_db.update_user_customize_classroom(user_id, "null")
             self.classroom_db.update_classroom_created(classroom_id, True)
@@ -268,13 +275,16 @@ class Handlers(SupportingFunctions):
 
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
-        elif message == "Отклонить":
+        elif payload["text"] == "Отклонить":
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
-    def s_in_class_my_classes_handler(self, user_id: int, message: str) -> None:
+    def s_in_class_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling STATES.S_IN_CLASS_MYCLASSES"""
-        if message == "Главное меню":
+        if payload is None:
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻")
+
+        elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", keyboard=self.get_keyboard("menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
@@ -320,6 +330,8 @@ class DiaryVkBot(Handlers):
                 if event.from_user:
                     user_id = event.object.message["from_id"]  # Getting user_id
                     message = event.object.message["text"]  # Getting message's text
+                    payload = loads(event.object.message["payload"]) if "payload" in event.object.message else None  # Payload
+
                     user_information = self.get_user_info(user_id)  # User_id, first_name, nickname
 
                     self.user_db.insert_new_user(user_id,
@@ -333,7 +345,7 @@ class DiaryVkBot(Handlers):
 
                         if self.user_db.check_user_is_ready(user_id):  # Checking second condition
                             current_dialog_state = self.user_db.get_user_dialog_state(user_id)
-                            self.filter_dialog_state(user_id, message, current_dialog_state)
+                            self.filter_dialog_state(user_id, message, payload, current_dialog_state)
                         else:
                             self.user_db.set_user_is_ready(
                                 user_id)  # First condition is True but this is a first user's message
@@ -362,31 +374,31 @@ class DiaryVkBot(Handlers):
             else:
                 print(event)
 
-    def filter_dialog_state(self, user_id: int, message: str, current_dialog_state: int) -> None:
+    def filter_dialog_state(self, user_id: int, message: str, payload: dict, current_dialog_state: int) -> None:
         """Filtering dialog states"""
         match current_dialog_state:
             case States.S_NOTHING.value:
-                self.s_nothing_handler(user_id, message)
+                self.s_nothing_handler(user_id, payload)
 
             # CLASSCREATE
             case States.S_ENTER_CLASS_NAME_CLASSCREATE.value:
-                self.s_enter_class_name_class_create_handler(user_id, message)
+                self.s_enter_class_name_class_create_handler(user_id, message, payload)
 
             case States.S_ENTER_SCHOOL_NAME_CLASSCREATE.value:
-                self.s_enter_school_name_class_create_handler(user_id, message)
+                self.s_enter_school_name_class_create_handler(user_id, message, payload)
 
             case States.S_ENTER_ACCESS_CLASSCREATE.value:
-                self.s_enter_access_class_create_handler(user_id, message)
+                self.s_enter_access_class_create_handler(user_id, payload)
 
             case States.S_ENTER_DESCRIPTION_CLASSCREATE.value:
-                self.s_enter_description_class_create_handler(user_id, message)
+                self.s_enter_description_class_create_handler(user_id, message, payload)
 
             case States.S_SUBMIT_CLASSCREATE.value:
-                self.s_submit_class_create_handler(user_id, message)
+                self.s_submit_class_create_handler(user_id, payload)
 
             # MYCLASSES
             case States.S_IN_CLASS_MYCLASSES.value:
-                self.s_in_class_my_classes_handler(user_id, message)
+                self.s_in_class_my_classes_handler(user_id, payload)
 
     def filter_payload_type(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Filtering payload types"""
@@ -396,6 +408,7 @@ class DiaryVkBot(Handlers):
 
             case "time_table_menu":
                 pass
+
 
 if __name__ == "__main__":
     with connect(
