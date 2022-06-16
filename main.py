@@ -104,7 +104,7 @@ class Handlers(SupportingFunctions):
         self.user_db = user_db
         self.classroom_db = classroom_db
 
-    def s_nothing_handler(self, user_id: int, message: str, payload=None) -> None:
+    def s_nothing_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_NOTHING"""
         if message == "Найти класс":
             self.send_message(user_id, "Нахожу класс...",
@@ -153,14 +153,6 @@ class Handlers(SupportingFunctions):
         elif message == "Обращение в тех. поддержку":
             self.send_message(user_id, "Вопрос принят...",
                               self.get_keyboard("menu"))
-
-        elif payload is not None and payload["type"] == "enter_the_classroom":
-            classroom_id = payload["classroom_id"]
-            classroom_name = self.classroom_db.get_classroom_name(classroom_id)
-            self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
-
-            self.send_message(user_id, f"Ты в классе {classroom_name}", self.get_keyboard("my_class_menu"))
-            self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
 
         else:
             self.send_message(user_id, "Я бот и общаться пока что не умею :(",
@@ -303,6 +295,18 @@ class Handlers(SupportingFunctions):
         self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
         self.send_message(user_id, "Создание класса отменено", self.get_keyboard("menu"))
 
+    def p_enter_the_classroom_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
+        """Handling payload with type: enter_the_classroom"""
+        if current_dialog_state == States.S_NOTHING.value:
+            classroom_id = payload["classroom_id"]
+            classroom_name = self.classroom_db.get_classroom_name(classroom_id)
+            self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
+
+            self.send_message(user_id, f"Ты в классе {classroom_name}", self.get_keyboard("my_class_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
+        else:
+            self.send_message(user_id, "Закончи текущее действие или выйди в главное меню")
+
 
 class DiaryVkBot(Handlers):
     def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands) -> None:
@@ -349,12 +353,7 @@ class DiaryVkBot(Handlers):
                 self.send_message_event_answer(event_id, user_id, peer_id, "")
                 if self.is_member(user_id):
                     current_dialog_state = self.user_db.get_user_dialog_state(user_id)
-
-                    if current_dialog_state == States.S_NOTHING.value:
-                        self.s_nothing_handler(user_id, "", payload)
-                    else:
-                        self.send_message(user_id, "Закончи текущее действие или выйди в главное меню")
-
+                    self.filter_payload_type(user_id, payload, current_dialog_state)
                 else:
                     self.send_message(user_id,
                                       "Перед использованием бота подпишись на группу!",
@@ -389,6 +388,14 @@ class DiaryVkBot(Handlers):
             case States.S_IN_CLASS_MYCLASSES.value:
                 self.s_in_class_my_classes_handler(user_id, message)
 
+    def filter_payload_type(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
+        """Filtering payload types"""
+        match payload["type"]:
+            case "enter_the_classroom":
+                self.p_enter_the_classroom_handler(user_id, payload, current_dialog_state)
+
+            case "time_table_menu":
+                pass
 
 if __name__ == "__main__":
     with connect(
