@@ -66,6 +66,9 @@ class SupportingFunctions:
         elif keyboard_type == "my_class_menu":
             return KeyBoards.KEYBOARD_MY_CLASS_MENU.get_keyboard()
 
+        elif keyboard_type == "timetable_menu":
+            return KeyBoards.TIMETABLE_MENU_KEYBOARD.get_keyboard()
+
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""
         is_member = self.vk_session.method(

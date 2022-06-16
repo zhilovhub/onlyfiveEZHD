@@ -17,7 +17,7 @@ class StateHandlers(SupportingFunctions):
     def s_nothing_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_NOTHING"""
         if payload is None:
-            self.send_message(user_id, "Для навигации используй кнопки!👇🏻")
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("menu"))
 
         elif payload["text"] == "Найти класс":
             self.send_message(user_id, "Нахожу класс...",
@@ -200,8 +200,12 @@ class StateHandlers(SupportingFunctions):
         if payload is None:
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻")
 
+        elif payload["text"] == "Расписание":
+            self.state_transition(user_id, States.S_TIMETABLE_MYCLASSES,
+                                  "timetable_menu", ["Здесь находится вся важная информация!"])
+
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", keyboard=self.get_keyboard("menu"))
+            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def state_transition(self, user_id: int, next_state, keyboard_type: str, messages: list) -> None:
@@ -230,7 +234,7 @@ class CallbackPayloadHandlers(StateHandlers):
         super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db)
 
     def p_enter_the_classroom_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
-        """Handling payload with type: enter_the_classroom"""
+        """Handling payload with text: enter_the_classroom"""
         if current_dialog_state == States.S_NOTHING.value:
             self.s_nothing_handler(user_id, payload)
         else:

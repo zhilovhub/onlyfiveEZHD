@@ -13,6 +13,7 @@ class States(Enum):
     S_SUBMIT_CLASSCREATE = 5
 
     S_IN_CLASS_MYCLASSES = 6
+    S_TIMETABLE_MYCLASSES = 7
 
     @staticmethod
     def get_next_state_config(current_state: Enum) -> tuple:

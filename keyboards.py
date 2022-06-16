@@ -51,7 +51,7 @@ class KeyBoards:
     # MY_CLASS_MENU KEYBOARD
     KEYBOARD_MY_CLASS_MENU = VkKeyboard()
     KEYBOARD_MY_CLASS_MENU.add_button(label="Участники", payload=get_payload("Участники"))
-    KEYBOARD_MY_CLASS_MENU.add_callback_button(label="Расписание", payload=get_payload("Расписание"))
+    KEYBOARD_MY_CLASS_MENU.add_button(label="Расписание", payload=get_payload("Расписание"))
     KEYBOARD_MY_CLASS_MENU.add_button(label="Настройки", payload=get_payload("Настройки"))
     KEYBOARD_MY_CLASS_MENU.add_line()
     KEYBOARD_MY_CLASS_MENU.add_button(label="Главное меню", payload=get_payload("Главное меню"))
@@ -60,5 +60,8 @@ class KeyBoards:
     TIMETABLE_MENU_KEYBOARD = VkKeyboard()
     TIMETABLE_MENU_KEYBOARD.add_button(label="Список уроков", payload=get_payload("Список уроков"))
     TIMETABLE_MENU_KEYBOARD.add_button(label="Дз", payload=get_payload("Дз"))
+    TIMETABLE_MENU_KEYBOARD.add_line()
     TIMETABLE_MENU_KEYBOARD.add_button(label="Мероприятия", payload=get_payload("Мероприятия"))
     TIMETABLE_MENU_KEYBOARD.add_button(label="Важные сообщения", payload=get_payload("Важные сообщения"))
+    TIMETABLE_MENU_KEYBOARD.add_line()
+    TIMETABLE_MENU_KEYBOARD.add_button(label="Главное меню", payload=get_payload("Главное меню"))
