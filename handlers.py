@@ -5,7 +5,7 @@ from users import UserDataBase
 from states import States
 
 
-class Handlers(SupportingFunctions):
+class StateHandlers(SupportingFunctions):
     def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands) -> None:
         """Initialization"""
         super().__init__(token=token, group_id=group_id)
@@ -210,6 +210,12 @@ class Handlers(SupportingFunctions):
         self.classroom_db.delete_classroom(classroom_id)
         self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
         self.send_message(user_id, "Создание класса отменено", self.get_keyboard("menu"))
+
+
+class CallbackPayloadHandlers(StateHandlers):
+    def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands) -> None:
+        """Initialization"""
+        super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db)
 
     def p_enter_the_classroom_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Handling payload with type: enter_the_classroom"""

@@ -3,7 +3,7 @@ from handlers import *
 from json import loads
 
 
-class DiaryVkBot(Handlers):
+class DiaryVkBot(CallbackPayloadHandlers):
     def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands) -> None:
         """Initialization"""
         super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db)
