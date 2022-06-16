@@ -67,6 +67,14 @@ class StateHandlers(SupportingFunctions):
             self.send_message(user_id, "Вопрос принят...",
                               self.get_keyboard("menu"))
 
+        elif payload["text"] == "enter_the_classroom":
+            classroom_id = payload["classroom_id"]
+            classroom_name = self.classroom_db.get_classroom_name(classroom_id)
+            self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
+
+            self.send_message(user_id, f"Ты в классе {classroom_name}", self.get_keyboard("my_class_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
+
     def s_enter_class_name_class_create_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_CLASS_NAME_CLASSCREATE"""
         if payload is None:
@@ -224,11 +232,6 @@ class CallbackPayloadHandlers(StateHandlers):
     def p_enter_the_classroom_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Handling payload with type: enter_the_classroom"""
         if current_dialog_state == States.S_NOTHING.value:
-            classroom_id = payload["classroom_id"]
-            classroom_name = self.classroom_db.get_classroom_name(classroom_id)
-            self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
-
-            self.send_message(user_id, f"Ты в классе {classroom_name}", self.get_keyboard("my_class_menu"))
-            self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
+            self.s_nothing_handler(user_id, payload)
         else:
             self.send_message(user_id, "Закончи текущее действие или выйди в главное меню")
