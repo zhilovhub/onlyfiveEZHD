@@ -43,7 +43,14 @@ class KeyBoards:
     # MY_CLASS_MENU KEYBOARD
     KEYBOARD_MY_CLASS_MENU = VkKeyboard()
     KEYBOARD_MY_CLASS_MENU.add_button(label="Участники")
-    KEYBOARD_MY_CLASS_MENU.add_button(label="Расписание")
+    KEYBOARD_MY_CLASS_MENU.add_callback_button(label="Расписание", payload={"type": "timetable_menu"})
     KEYBOARD_MY_CLASS_MENU.add_button(label="Настройки")
     KEYBOARD_MY_CLASS_MENU.add_line()
     KEYBOARD_MY_CLASS_MENU.add_button(label="Главное меню")
+
+    # TIMETABLE_MENU KEYBOARD
+    TIMETABLE_MENU_KEYBOARD = VkKeyboard()
+    TIMETABLE_MENU_KEYBOARD.add_button(label="Список уроков")
+    TIMETABLE_MENU_KEYBOARD.add_button(label="Дз")
+    TIMETABLE_MENU_KEYBOARD.add_button(label="Мероприятия")
+    TIMETABLE_MENU_KEYBOARD.add_button(label="Важные сообщения")
