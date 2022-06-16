@@ -64,4 +64,6 @@ class KeyBoards:
     TIMETABLE_MENU_KEYBOARD.add_button(label="Мероприятия", payload=get_payload("Мероприятия"))
     TIMETABLE_MENU_KEYBOARD.add_button(label="Важные сообщения", payload=get_payload("Важные сообщения"))
     TIMETABLE_MENU_KEYBOARD.add_line()
+    TIMETABLE_MENU_KEYBOARD.add_button(label="Назад", payload=get_payload("Назад"))
+    TIMETABLE_MENU_KEYBOARD.add_line()
     TIMETABLE_MENU_KEYBOARD.add_button(label="Главное меню", payload=get_payload("Главное меню"))

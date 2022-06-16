@@ -87,6 +87,9 @@ class DiaryVkBot(CallbackPayloadHandlers):
             case States.S_IN_CLASS_MYCLASSES.value:
                 self.s_in_class_my_classes_handler(user_id, payload)
 
+            case States.S_TIMETABLE_MENU_MYCLASSES.value:
+                self.s_timetable_menu_my_classes_handler(user_id, payload)
+
     def filter_callback_button_payload(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Filtering payload types"""
         match payload["text"]:
