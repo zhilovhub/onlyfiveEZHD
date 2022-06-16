@@ -132,7 +132,7 @@ class Handlers(SupportingFunctions):
             for classroom_id, role in user_classrooms_dictionary.items():
                 keyboard = VkKeyboard(inline=True)
                 keyboard.add_callback_button("Войти", payload={
-                    "type": "enter_the_classroom", "classroom_id": classroom_id
+                    "text": "enter_the_classroom", "classroom_id": classroom_id
                 })
 
                 members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
@@ -365,7 +365,7 @@ class DiaryVkBot(Handlers):
                 self.send_message_event_answer(event_id, user_id, peer_id, "")
                 if self.is_member(user_id):
                     current_dialog_state = self.user_db.get_user_dialog_state(user_id)
-                    self.filter_payload_type(user_id, payload, current_dialog_state)
+                    self.filter_callback_button_payload(user_id, payload, current_dialog_state)
                 else:
                     self.send_message(user_id,
                                       "Перед использованием бота подпишись на группу!",
@@ -400,9 +400,9 @@ class DiaryVkBot(Handlers):
             case States.S_IN_CLASS_MYCLASSES.value:
                 self.s_in_class_my_classes_handler(user_id, payload)
 
-    def filter_payload_type(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
+    def filter_callback_button_payload(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Filtering payload types"""
-        match payload["type"]:
+        match payload["text"]:
             case "enter_the_classroom":
                 self.p_enter_the_classroom_handler(user_id, payload, current_dialog_state)
 
