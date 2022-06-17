@@ -213,6 +213,18 @@ class StateHandlers(SupportingFunctions):
         if payload is None:
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻")
 
+        elif payload["text"] == "Список уроков":
+            self.send_message(user_id, "Список уроков этого класса:", self.get_keyboard("timetable_menu"))
+
+        elif payload["text"] == "Дз":
+            self.send_message(user_id, "Дз этого класса:", self.get_keyboard("timetable_menu"))
+
+        elif payload["text"] == "Мероприятия":
+            self.send_message(user_id, "Мероприятия этого класса:", self.get_keyboard("timetable_menu"))
+
+        elif payload["text"] == "Важные сообщения":
+            self.send_message(user_id, "Важные сообщения этого класса:", self.get_keyboard("timetable_menu"))
+
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
