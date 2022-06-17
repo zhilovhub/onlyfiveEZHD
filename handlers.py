@@ -122,7 +122,7 @@ class StateHandlers(SupportingFunctions):
     def s_enter_access_class_create_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_ENTER_ACCESS_CLASSCREATE"""
         if payload is None:
-            self.send_message(user_id, "Для навигации используй кнопки!👇🏻")
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("yes_no_cancel_back"))
 
         elif payload["text"] == "Отменить":
             self.cancel_creating_classroom(user_id)
@@ -179,7 +179,7 @@ class StateHandlers(SupportingFunctions):
     def s_submit_class_create_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_SUBMIT_CLASSCREATE"""
         if payload is None:
-            self.send_message(user_id, "Для навигации используй кнопки!👇🏻")
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("submit_back"))
 
         elif payload["text"] == "Принять":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -198,7 +198,7 @@ class StateHandlers(SupportingFunctions):
     def s_in_class_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_IN_CLASS_MYCLASSES"""
         if payload is None:
-            self.send_message(user_id, "Для навигации используй кнопки!👇🏻")
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("my_class_menu"))
 
         elif payload["text"] == "Расписание":
             self.state_transition(user_id, States.S_TIMETABLE_MENU_MYCLASSES,
@@ -211,7 +211,7 @@ class StateHandlers(SupportingFunctions):
     def s_timetable_menu_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_TIMETABLE_MENU_MYCLASSES"""
         if payload is None:
-            self.send_message(user_id, "Для навигации используй кнопки!👇🏻")
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("timetable_menu"))
 
         elif payload["text"] == "Список уроков":
             self.send_message(user_id, "Список уроков этого класса:", self.get_keyboard("timetable"))
