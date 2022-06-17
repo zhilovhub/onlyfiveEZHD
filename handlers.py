@@ -215,6 +215,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Список уроков":
             self.send_message(user_id, "Список уроков этого класса:", self.get_keyboard("timetable"))
+            self.user_db.set_user_dialog_state(user_id, States.S_TIMETABLE_MYCLASSES.value)
 
         elif payload["text"] == "Дз":
             self.send_message(user_id, "Дз этого класса:", self.get_keyboard("timetable_menu"))
@@ -232,6 +233,22 @@ class StateHandlers(SupportingFunctions):
         elif payload["text"] == "Назад":
             self.send_message(user_id, "Возвращаемся...", self.get_keyboard("my_class_menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
+
+    def s_timetable_my_classes_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_TIMETABLE_MYCLASSES"""
+        if payload is None:
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("timetable"))
+
+        elif payload["text"] == "Внести правки":
+            self.send_message(user_id, "Вносим правки...")
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+        elif payload["text"] == "Назад":
+            self.send_message(user_id, "Возвращаемся...", self.get_keyboard("timetable_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_TIMETABLE_MENU_MYCLASSES.value)
 
     def state_transition(self, user_id: int, next_state, keyboard_type: str, messages: list) -> None:
         """Changes states"""
