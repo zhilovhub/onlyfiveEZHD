@@ -214,7 +214,7 @@ class StateHandlers(SupportingFunctions):
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Список уроков":
-            self.send_message(user_id, "Список уроков этого класса:", self.get_keyboard("timetable_menu"))
+            self.send_message(user_id, "Список уроков этого класса:", self.get_keyboard("timetable"))
 
         elif payload["text"] == "Дз":
             self.send_message(user_id, "Дз этого класса:", self.get_keyboard("timetable_menu"))
