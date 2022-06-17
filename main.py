@@ -87,12 +87,6 @@ class DiaryVkBot(CallbackPayloadHandlers):
             case States.S_IN_CLASS_MYCLASSES.value:
                 self.s_in_class_my_classes_handler(user_id, payload)
 
-            case States.S_TIMETABLE_MENU_MYCLASSES.value:
-                self.s_timetable_menu_my_classes_handler(user_id, payload)
-
-            case States.S_TIMETABLE_MYCLASSES.value:
-                self.s_timetable_my_classes_handler(user_id, payload)
-
             case States.S_STANDARD_WEEK_MYCLASSES.value:
                 self.s_standard_week_my_classes_handler(user_id, payload)
 

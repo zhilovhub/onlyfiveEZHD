@@ -50,33 +50,19 @@ class KeyBoards:
 
     # MY_CLASS_MENU KEYBOARD
     KEYBOARD_MY_CLASS_MENU = VkKeyboard()
+    KEYBOARD_MY_CLASS_MENU.add_button(label="Дз текущее", payload=get_payload("Дз текущее"))
+    KEYBOARD_MY_CLASS_MENU.add_button(label="Дз будущее", payload=get_payload("Дз будущее"))
+    KEYBOARD_MY_CLASS_MENU.add_line()
+    KEYBOARD_MY_CLASS_MENU.add_button(label="Расписание текущее", payload=get_payload("Расписание текущее"))
+    KEYBOARD_MY_CLASS_MENU.add_button(label="Расписание будущее", payload=get_payload("Расписание будущее"))
+    KEYBOARD_MY_CLASS_MENU.add_line()
+    KEYBOARD_MY_CLASS_MENU.add_button(label="Расписание эталонное", payload=get_payload("Расписание эталонное"))
+    KEYBOARD_MY_CLASS_MENU.add_line()
     KEYBOARD_MY_CLASS_MENU.add_button(label="Участники", payload=get_payload("Участники"))
-    KEYBOARD_MY_CLASS_MENU.add_button(label="Расписание", payload=get_payload("Расписание"))
     KEYBOARD_MY_CLASS_MENU.add_button(label="Настройки", payload=get_payload("Настройки"))
+    KEYBOARD_MY_CLASS_MENU.add_button(label="Доп. инфа", payload=get_payload("Доп. инфа"))
     KEYBOARD_MY_CLASS_MENU.add_line()
     KEYBOARD_MY_CLASS_MENU.add_button(label="Главное меню", payload=get_payload("Главное меню"))
-
-    # TIMETABLE_MENU KEYBOARD
-    TIMETABLE_MENU_KEYBOARD = VkKeyboard()
-    TIMETABLE_MENU_KEYBOARD.add_button(label="Список уроков", payload=get_payload("Список уроков"))
-    TIMETABLE_MENU_KEYBOARD.add_button(label="Дз", payload=get_payload("Дз"))
-    TIMETABLE_MENU_KEYBOARD.add_line()
-    TIMETABLE_MENU_KEYBOARD.add_button(label="Мероприятия", payload=get_payload("Мероприятия"))
-    TIMETABLE_MENU_KEYBOARD.add_button(label="Важные сообщения", payload=get_payload("Важные сообщения"))
-    TIMETABLE_MENU_KEYBOARD.add_line()
-    TIMETABLE_MENU_KEYBOARD.add_button(label="Назад", payload=get_payload("Назад"))
-    TIMETABLE_MENU_KEYBOARD.add_line()
-    TIMETABLE_MENU_KEYBOARD.add_button(label="Главное меню", payload=get_payload("Главное меню"))
-
-    # TIMETABLE KEYBOARD
-    TIMETABLE_KEYBOARD = VkKeyboard()
-    TIMETABLE_KEYBOARD.add_button("Текущая неделя", payload=get_payload("Текущая неделя"))
-    TIMETABLE_KEYBOARD.add_button("Следующая неделя", payload=get_payload("Следующая неделя"))
-    TIMETABLE_KEYBOARD.add_line()
-    TIMETABLE_KEYBOARD.add_button("Эталонная неделя", payload=get_payload("Эталонная неделя"))
-    TIMETABLE_KEYBOARD.add_line()
-    TIMETABLE_KEYBOARD.add_button("Назад", payload=get_payload("Назад"))
-    TIMETABLE_KEYBOARD.add_button("Главное меню", payload=get_payload("Главное меню"))
 
     # STANDARD_WEEK KEYBOARD
     STANDARD_WEEK_KEYBOARD = VkKeyboard()

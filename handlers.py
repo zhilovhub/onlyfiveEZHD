@@ -200,64 +200,9 @@ class StateHandlers(SupportingFunctions):
         if payload is None:
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("my_class_menu"))
 
-        elif payload["text"] == "Расписание":
-            self.state_transition(user_id, States.S_TIMETABLE_MENU_MYCLASSES,
-                                  "timetable_menu", ["Здесь находится вся важная информация!"])
-
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
-
-    def s_timetable_menu_my_classes_handler(self, user_id: int, payload: dict) -> None:
-        """Handling States.S_TIMETABLE_MENU_MYCLASSES"""
-        if payload is None:
-            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("timetable_menu"))
-
-        elif payload["text"] == "Список уроков":
-            self.send_message(user_id, "Список уроков этого класса:", self.get_keyboard("timetable"))
-            self.user_db.set_user_dialog_state(user_id, States.S_TIMETABLE_MYCLASSES.value)
-
-        elif payload["text"] == "Дз":
-            self.send_message(user_id, "Дз этого класса:", self.get_keyboard("timetable_menu"))
-
-        elif payload["text"] == "Мероприятия":
-            self.send_message(user_id, "Мероприятия этого класса:", self.get_keyboard("timetable_menu"))
-
-        elif payload["text"] == "Важные сообщения":
-            self.send_message(user_id, "Важные сообщения этого класса:", self.get_keyboard("timetable_menu"))
-
-        elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
-
-        elif payload["text"] == "Назад":
-            self.send_message(user_id, "Возвращаемся...", self.get_keyboard("my_class_menu"))
-            self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
-
-    def s_timetable_my_classes_handler(self, user_id: int, payload: dict) -> None:
-        """Handling States.S_TIMETABLE_MYCLASSES"""
-        if payload is None:
-            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("timetable"))
-
-        elif payload["text"] == "Текущая неделя":
-            self.send_message(user_id, "Текущая неделя...")
-
-        elif payload["text"] == "Следующая неделя":
-            self.send_message(user_id, "Следующая неделя...")
-
-        elif payload["text"] == "Эталонная неделя":
-            self.send_message(user_id, "Эталонная неделя...\n\nАвтоматически добавляется"
-                                       "в каждую будущую неделю, можно копировать в текущую неделю",
-                              self.get_keyboard("standard_week"))
-            self.user_db.set_user_dialog_state(user_id, States.S_STANDARD_WEEK_MYCLASSES.value)
-
-        elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
-
-        elif payload["text"] == "Назад":
-            self.send_message(user_id, "Возвращаемся...", self.get_keyboard("timetable_menu"))
-            self.user_db.set_user_dialog_state(user_id, States.S_TIMETABLE_MENU_MYCLASSES.value)
 
     def s_standard_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_STANDARD_WEEK_MYCLASSES"""
@@ -272,8 +217,8 @@ class StateHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
         elif payload["text"] == "Назад":
-            self.send_message(user_id, "Возвращаемся...", self.get_keyboard("timetable"))
-            self.user_db.set_user_dialog_state(user_id, States.S_TIMETABLE_MYCLASSES.value)
+            self.send_message(user_id, "Возвращаемся...", self.get_keyboard("my_class_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
 
     def state_transition(self, user_id: int, next_state, keyboard_type: str, messages: list) -> None:
         """Changes states"""
