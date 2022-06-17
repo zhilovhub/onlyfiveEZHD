@@ -239,8 +239,14 @@ class StateHandlers(SupportingFunctions):
         if payload is None:
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("timetable"))
 
-        elif payload["text"] == "Внести правки":
-            self.send_message(user_id, "Вносим правки...")
+        elif payload["text"] == "Текущая неделя":
+            self.send_message(user_id, "Текущая неделя...")
+
+        elif payload["text"] == "Следующая неделя":
+            self.send_message(user_id, "Следующая неделя...")
+
+        elif payload["text"] == "Эталонная неделя":
+            self.send_message(user_id, "Эталонная неделя...")
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
