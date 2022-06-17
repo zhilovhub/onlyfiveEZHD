@@ -67,3 +67,11 @@ class KeyBoards:
     TIMETABLE_MENU_KEYBOARD.add_button(label="Назад", payload=get_payload("Назад"))
     TIMETABLE_MENU_KEYBOARD.add_line()
     TIMETABLE_MENU_KEYBOARD.add_button(label="Главное меню", payload=get_payload("Главное меню"))
+
+    # TIMETABLE KEYBOARD
+    TIMETABLE_KEYBOARD = VkKeyboard()
+    TIMETABLE_KEYBOARD.add_button("Внести правки")
+    TIMETABLE_KEYBOARD.add_line()
+    TIMETABLE_KEYBOARD.add_button("Назад")
+    TIMETABLE_KEYBOARD.add_line()
+    TIMETABLE_KEYBOARD.add_button("Главное меню")
