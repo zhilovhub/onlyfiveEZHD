@@ -20,7 +20,7 @@ class SupportingFunctions:
                     "user_id": user_id,
                     "message": message,
                     "keyboard": keyboard,
-                    "random_id": randint(0, 2 ** 10)
+                    "random_id": randint(0, 2147483648)
                 }
             )
         except VkApiError as e:
