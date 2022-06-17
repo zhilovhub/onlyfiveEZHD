@@ -70,8 +70,7 @@ class KeyBoards:
 
     # TIMETABLE KEYBOARD
     TIMETABLE_KEYBOARD = VkKeyboard()
-    TIMETABLE_KEYBOARD.add_button("Внести правки")
+    TIMETABLE_KEYBOARD.add_button("Внести правки", payload=get_payload("Внести правки"))
     TIMETABLE_KEYBOARD.add_line()
-    TIMETABLE_KEYBOARD.add_button("Назад")
-    TIMETABLE_KEYBOARD.add_line()
-    TIMETABLE_KEYBOARD.add_button("Главное меню")
+    TIMETABLE_KEYBOARD.add_button("Назад", payload=get_payload("Назад"))
+    TIMETABLE_KEYBOARD.add_button("Главное меню", payload=get_payload("Главное меню"))
