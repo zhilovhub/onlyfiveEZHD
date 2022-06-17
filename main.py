@@ -6,6 +6,8 @@ from classroom import ClassroomCommands
 from keyboards import KeyBoards
 from states import States
 
+from technical_support import TechnicalSupportCommands
+
 
 class SupportingFunctions:
     def __init__(self, token: str, group_id: int) -> None:
@@ -82,11 +84,12 @@ class SupportingFunctions:
 
 
 class Handlers(SupportingFunctions):
-    def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands) -> None:
+    def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands) -> None:
         """Initialization"""
         super().__init__(token=token, group_id=group_id)
         self.user_db = user_db
         self.classroom_db = classroom_db
+        self.technical_support_db = technical_support_db
 
     def s_nothing_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_NOTHING"""
@@ -239,9 +242,12 @@ class Handlers(SupportingFunctions):
 
         elif message == "Отправить":
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE)
+            self.state_transition(user_id, next_state, keyboard_type, messages)
 
         else:
-            pass
+            user_message = self.technical_support_db.get_message(user_id)
+            user_message += message
+            self.technical_support_db.insert_message(user_id, user_message)
 
     def cancel_entering_technical_support_message(self, user_id: int) -> None:
         """Cancel creating technical support message and set state to States.S_NOTHING"""
@@ -249,9 +255,9 @@ class Handlers(SupportingFunctions):
 
 
 class DiaryVkBot(Handlers):
-    def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands) -> None:
+    def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands) -> None:
         """Initialization"""
-        super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db)
+        super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db, technical_support_db=technical_support_db)
 
     def listen(self) -> None:
         """Listening events"""
@@ -330,10 +336,12 @@ if __name__ == "__main__":
 
     user_db = UserDataBase(connection)
     classroom_db = ClassroomCommands(connection)
+    technical_support_db = TechnicalSupportCommands(connection)
 
     my_bot = DiaryVkBot(token=TOKEN, group_id=GROUP_ID,
                         user_db=user_db,
-                        classroom_db=classroom_db
+                        classroom_db=classroom_db,
+                        technical_support_db=technical_support_db
                         )
 
     my_bot.listen()
