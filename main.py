@@ -6,9 +6,9 @@ from json import loads
 class DiaryVkBot(CallbackPayloadHandlers):
     """Listens events and filtering States/CallbackPayloads"""
 
-    def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands) -> None:
+    def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands) -> None:
         """Initialization"""
-        super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db)
+        super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db, technical_support_db=technical_support_db)
 
     def listen(self) -> None:
         """Listening events"""
@@ -90,6 +90,10 @@ class DiaryVkBot(CallbackPayloadHandlers):
             case States.S_STANDARD_WEEK_MYCLASSES.value:
                 self.s_standard_week_my_classes_handler(user_id, payload)
 
+            # TECHNICALSUPPORT
+            case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value:
+                self.s_enter_technical_support_message(user_id, message)
+
     def filter_callback_button_payload(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Filtering payload types"""
         match payload["text"]:
@@ -115,10 +119,12 @@ if __name__ == "__main__":
 
     user_db = UserDataBase(connection)
     classroom_db = ClassroomCommands(connection)
+    technical_support_db = TechnicalSupportCommands(connection)
 
     my_bot = DiaryVkBot(token=TOKEN, group_id=GROUP_ID,
                         user_db=user_db,
-                        classroom_db=classroom_db
+                        classroom_db=classroom_db,
+                        technical_support_db=technical_support_db
                         )
 
     my_bot.listen()

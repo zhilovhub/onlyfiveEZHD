@@ -63,6 +63,9 @@ class SupportingFunctions:
         elif keyboard_type == "submit_back":
             return KeyBoards.KEYBOARD_SUBMIT_BACK.get_keyboard()
 
+        elif keyboard_type == "cancel_send":
+            return KeyBoards.KEYBOARD_CANCEL_SEND.get_keyboard()
+
         elif keyboard_type == "my_class_menu":
             return KeyBoards.KEYBOARD_MY_CLASS_MENU.get_keyboard()
 

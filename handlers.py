@@ -2,17 +2,19 @@ from supporting_functions import *
 
 from classroom import ClassroomCommands
 from users import UserDataBase
+from technical_support import TechnicalSupportCommands
 from states import States
 
 
 class StateHandlers(SupportingFunctions):
     """Handles states"""
 
-    def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands) -> None:
+    def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands) -> None:
         """Initialization"""
         super().__init__(token=token, group_id=group_id)
         self.user_db = user_db
         self.classroom_db = classroom_db
+        self.technical_support_db = technical_support_db
 
     def s_nothing_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_NOTHING"""
@@ -64,8 +66,9 @@ class StateHandlers(SupportingFunctions):
                               self.get_keyboard("menu"))
 
         elif payload["text"] == "Обращение в тех. поддержку":
-            self.send_message(user_id, "Вопрос принят...",
-                              self.get_keyboard("menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value)
+            self.send_message(user_id, "Опишите свой вопрос...",
+                              self.get_keyboard("cancel_send"))
 
         elif payload["text"] == "enter_the_classroom":
             classroom_id = payload["classroom_id"]
@@ -195,6 +198,20 @@ class StateHandlers(SupportingFunctions):
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
+    def s_enter_technical_support_message(self, user_id: int, message: str) -> None:
+        """Handling States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE"""
+        if message == "Отменить":
+            self.cancel_entering_technical_support_message(user_id)
+
+        elif message == "Отправить":
+            next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE)
+            self.state_transition(user_id, next_state, keyboard_type, messages)
+
+        else:
+            user_message = self.technical_support_db.get_message(user_id) + "\n"
+            user_message += message
+            self.technical_support_db.insert_message(user_id, user_message)
+
     def s_in_class_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_IN_CLASS_MYCLASSES"""
         if payload is None:
@@ -237,13 +254,18 @@ class StateHandlers(SupportingFunctions):
         self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
         self.send_message(user_id, "Создание класса отменено", self.get_keyboard("menu"))
 
+    def cancel_entering_technical_support_message(self, user_id: int) -> None:
+        """Cancel creating technical support message and set state to States.S_NOTHING"""
+        self.send_message(user_id, "Отправка обращения в тех. поддержку отменено", self.get_keyboard("menu"))
+        self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
 
 class CallbackPayloadHandlers(StateHandlers):
     """Handles callback payloads"""
 
-    def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands) -> None:
+    def __init__(self, token: str, group_id: int, user_db: UserDataBase, classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands) -> None:
         """Initialization"""
-        super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db)
+        super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db, technical_support_db=technical_support_db)
 
     def p_enter_the_classroom_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Handling payload with text: enter_the_classroom"""

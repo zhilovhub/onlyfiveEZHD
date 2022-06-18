@@ -70,3 +70,8 @@ class KeyBoards:
     STANDARD_WEEK_KEYBOARD.add_line()
     STANDARD_WEEK_KEYBOARD.add_button("Назад", payload=get_payload("Назад"))
     STANDARD_WEEK_KEYBOARD.add_button("Главное меню", payload=get_payload("Главное меню"))
+
+    # CANCEL_SEND KEYBOARD
+    KEYBOARD_CANCEL_SEND = VkKeyboard()
+    KEYBOARD_CANCEL_SEND.add_button(label="Отменить")
+    KEYBOARD_CANCEL_SEND.add_button(label="Отправить")

@@ -12,8 +12,10 @@ class States(Enum):
     S_ENTER_DESCRIPTION_CLASSCREATE = 4
     S_SUBMIT_CLASSCREATE = 5
 
-    S_IN_CLASS_MYCLASSES = 6
-    S_STANDARD_WEEK_MYCLASSES = 7
+    S_ENTER_TECHNICAL_SUPPORT_MESSAGE = 6
+
+    S_IN_CLASS_MYCLASSES = 7
+    S_STANDARD_WEEK_MYCLASSES = 8
 
     @staticmethod
     def get_next_state_config(current_state: Enum) -> tuple:
@@ -43,3 +45,8 @@ class States(Enum):
                 return States.S_NOTHING, \
                        "menu", \
                        []
+
+            case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE:
+                return States.S_NOTHING, \
+                       "menu", \
+                       ["Вопросы отправлены администраторам!"]
