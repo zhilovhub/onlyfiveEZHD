@@ -15,30 +15,31 @@ class TechnicalSupportCommands(DataBase):
 
     def insert_message(self, user_id: int, message: str) -> None:
         """Add a new message to message table"""
-        date = str(struct_time[0]) + str(struct_time[1]) + str(struct_time[2])
+        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with self.connection.cursor() as cursor:
-            cursor.execute(TechnicalSupportQueries.insert_message_query.format(user_id, message, date))
+            cursor.execute(TechnicalSupportQueries.insert_message_query.format(user_id, message, current_datetime))
+            self.connection.commit()
 
     def get_message(self, user_id: int) -> str:
         """Return the message from DB by user_id"""
         with self.connection.cursor() as cursor:
             try:
                 cursor.execute(TechnicalSupportQueries.get_message_query.format(user_id))
-                message = cursor.fetchone()[0]
+                message = cursor.fetchone()
 
-                return message
-            except Error as e:
+                return message[0] if message else ''
+            except Error:
                 return ''
 
 
 class TechnicalSupportQueries:
-    create_table_technical_support_messages_query = """CREATE TABLE IF NOT EXIST Technical_support_messages(
+    create_table_technical_support_messages_query = """CREATE TABLE IF NOT EXISTS Technical_support_messages(
     user_id INT,
     message TEXT,
-    date DATE,
+    datetime DATETIME,
     FOREIGN KEY (user_id) REFERENCES User (user_id)
     )"""
 
-    insert_message_query = """INSERT INTO Technical_support_messages VALUES({}, {}, {})"""
+    insert_message_query = """INSERT INTO Technical_support_messages VALUES({}, '{}', '{}')"""
 
-    get_message_query = """SELECT message FROM Technical_support_messages WHERE user_id={}"""
+    get_message_query = """SELECT message FROM Technical_support_messages WHERE user_id={} ORDER BY datetime DESC LIMIT 1"""

@@ -245,13 +245,14 @@ class Handlers(SupportingFunctions):
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
         else:
-            user_message = self.technical_support_db.get_message(user_id)
+            user_message = self.technical_support_db.get_message(user_id) + "\n"
             user_message += message
             self.technical_support_db.insert_message(user_id, user_message)
 
     def cancel_entering_technical_support_message(self, user_id: int) -> None:
         """Cancel creating technical support message and set state to States.S_NOTHING"""
         self.send_message(user_id, "Отправка обращения в тех. поддержку отменено", self.get_keyboard("menu"))
+        self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
 
 class DiaryVkBot(Handlers):

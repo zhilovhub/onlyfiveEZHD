@@ -44,4 +44,4 @@ class States(Enum):
             case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE:
                 return States.S_NOTHING, \
                        "menu", \
-                       []
+                       ["Вопросы отправлены администраторам!"]
