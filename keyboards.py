@@ -73,5 +73,5 @@ class KeyBoards:
 
     # CANCEL_SEND KEYBOARD
     KEYBOARD_CANCEL_SEND = VkKeyboard()
-    KEYBOARD_CANCEL_SEND.add_button(label="Отменить")
-    KEYBOARD_CANCEL_SEND.add_button(label="Отправить")
+    KEYBOARD_CANCEL_SEND.add_button(label="Отменить", payload=get_payload("Отменить"))
+    KEYBOARD_CANCEL_SEND.add_button(label="Отправить", payload=get_payload("Отправить"))

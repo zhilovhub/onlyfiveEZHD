@@ -92,7 +92,7 @@ class DiaryVkBot(CallbackPayloadHandlers):
 
             # TECHNICALSUPPORT
             case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value:
-                self.s_enter_technical_support_message(user_id, message)
+                self.s_enter_technical_support_message_handler(user_id, message)
 
     def filter_callback_button_payload(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Filtering payload types"""

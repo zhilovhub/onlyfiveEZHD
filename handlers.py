@@ -66,9 +66,9 @@ class StateHandlers(SupportingFunctions):
                               self.get_keyboard("menu"))
 
         elif payload["text"] == "Обращение в тех. поддержку":
-            self.user_db.set_user_dialog_state(user_id, States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value)
             self.send_message(user_id, "Опишите свой вопрос...",
                               self.get_keyboard("cancel_send"))
+            self.user_db.set_user_dialog_state(user_id, States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value)
 
         elif payload["text"] == "enter_the_classroom":
             classroom_id = payload["classroom_id"]
@@ -198,7 +198,7 @@ class StateHandlers(SupportingFunctions):
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
-    def s_enter_technical_support_message(self, user_id: int, message: str) -> None:
+    def s_enter_technical_support_message_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE"""
         if message == "Отменить":
             self.cancel_entering_technical_support_message(user_id)
@@ -256,7 +256,7 @@ class StateHandlers(SupportingFunctions):
 
     def cancel_entering_technical_support_message(self, user_id: int) -> None:
         """Cancel creating technical support message and set state to States.S_NOTHING"""
-        self.send_message(user_id, "Отправка обращения в тех. поддержку отменено", self.get_keyboard("menu"))
+        self.send_message(user_id, "Отправка обращения в тех. поддержку отменена", self.get_keyboard("menu"))
         self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
 
