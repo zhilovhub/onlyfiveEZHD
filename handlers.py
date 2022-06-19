@@ -3,18 +3,22 @@ from supporting_functions import *
 from classroom import ClassroomCommands
 from users import UserDataCommands
 from technical_support import TechnicalSupportCommands
+from diary_homework import DiaryHomeworkCommands
 from states import States
 
 
 class StateHandlers(SupportingFunctions):
     """Handles states"""
 
-    def __init__(self, token: str, group_id: int, user_db: UserDataCommands, classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands) -> None:
+    def __init__(self, token: str, group_id: int, user_db: UserDataCommands,
+                 classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
+                 diary_homework_db: DiaryHomeworkCommands) -> None:
         """Initialization"""
         super().__init__(token=token, group_id=group_id)
         self.user_db = user_db
         self.classroom_db = classroom_db
         self.technical_support_db = technical_support_db
+        self.diary_homework_db = diary_homework_db
 
     def s_nothing_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_NOTHING"""
@@ -231,7 +235,6 @@ class StateHandlers(SupportingFunctions):
                                        "и будущее расписание.\nБудет автоматически устанавливаться в будущее "
                                        "расписание каждую неделю", self.get_keyboard("standard_week"))
             self.send_message(user_id, "Расписание:", keyboard.get_keyboard())
-            self.user_db.set_user_dialog_state(user_id, States.S_STANDARD_WEEK_MYCLASSES.value)
 
     def s_standard_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_STANDARD_WEEK_MYCLASSES"""
@@ -276,9 +279,13 @@ class StateHandlers(SupportingFunctions):
 class CallbackPayloadHandlers(StateHandlers):
     """Handles callback payloads"""
 
-    def __init__(self, token: str, group_id: int, user_db: UserDataCommands, classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands) -> None:
+    def __init__(self, token: str, group_id: int, user_db: UserDataCommands,
+                 classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
+                 diary_homework_db: DiaryHomeworkCommands) -> None:
         """Initialization"""
-        super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db, technical_support_db=technical_support_db)
+        super().__init__(token=token, group_id=group_id, user_db=user_db,
+                         classroom_db=classroom_db, technical_support_db=technical_support_db,
+                         diary_homework_db=diary_homework_db)
 
     def p_enter_the_classroom_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Handling payload with text: enter_the_classroom"""

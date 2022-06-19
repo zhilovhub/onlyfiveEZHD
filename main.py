@@ -6,9 +6,13 @@ from json import loads
 class DiaryVkBot(CallbackPayloadHandlers):
     """Listens events and filtering States/CallbackPayloads"""
 
-    def __init__(self, token: str, group_id: int, user_db: UserDataCommands, classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands) -> None:
+    def __init__(self, token: str, group_id: int, user_db: UserDataCommands,
+                 classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
+                 diary_homework_db: DiaryHomeworkCommands) -> None:
         """Initialization"""
-        super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db, technical_support_db=technical_support_db)
+        super().__init__(token=token, group_id=group_id, user_db=user_db,
+                         classroom_db=classroom_db, technical_support_db=technical_support_db,
+                         diary_homework_db=diary_homework_db)
 
     def listen(self) -> None:
         """Listening events"""
@@ -120,11 +124,13 @@ if __name__ == "__main__":
     user_db = UserDataCommands(connection)
     classroom_db = ClassroomCommands(connection)
     technical_support_db = TechnicalSupportCommands(connection)
+    diary_homework_db= DiaryHomeworkCommands(connection)
 
     my_bot = DiaryVkBot(token=TOKEN, group_id=GROUP_ID,
                         user_db=user_db,
                         classroom_db=classroom_db,
-                        technical_support_db=technical_support_db
+                        technical_support_db=technical_support_db,
+                        diary_homework_db=diary_homework_db
                         )
 
     my_bot.listen()
