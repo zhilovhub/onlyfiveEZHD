@@ -15,6 +15,30 @@ class DiaryHomeworkCommands(DataBase):
         except Error as e:
             print(e)
 
+    def get_all_days_from_standard_week(self, classroom_id: int) -> list:
+        """Gets everyday diary from standard week"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(DiaryHomeworkQueries.get_all_days_from_standard_week_query.format(classroom_id))
+            all_lessons = cursor.fetchone()[1:]
+
+        return all_lessons
+
+    def get_all_days_from_current_week(self, classroom_id: int) -> list:
+        """Gets everyday diary from current week"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(DiaryHomeworkQueries.get_all_days_from_current_week_query.format(classroom_id))
+            all_lessons = cursor.fetchone()[1:]
+
+        return all_lessons
+
+    def get_all_days_from_next_week(self, classroom_id: int) -> list:
+        """Gets everyday diary from next week"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(DiaryHomeworkQueries.get_all_days_from_next_week_query.format(classroom_id))
+            all_lessons = cursor.fetchone()[1:]
+
+        return all_lessons
+
     def insert_classroom_id(self, classroom_id: int) -> None:
         """Inserts classroom_id into the tables"""
         with self.connection.cursor() as cursor:
@@ -312,6 +336,10 @@ class DiaryHomeworkQueries:
         sunday_lesson11 TEXT,
         sunday_lesson12 TEXT
     )"""
+
+    get_all_days_from_standard_week_query = """SELECT * FROM diary_standard_week WHERE classroom_id={}"""
+    get_all_days_from_current_week_query = """SELECT * FROM diary_current_week WHERE classroom_id={}"""
+    get_all_days_from_next_week_query = """SELECT * FROM diary_next_week WHERE classroom_id={}"""
 
     insert_classroom_id_standard_week_query = "INSERT into diary_standard_week (classroom_id) VALUES({})"
     insert_classroom_id_current_week_query = "INSERT into diary_current_week (classroom_id) VALUES({})"
