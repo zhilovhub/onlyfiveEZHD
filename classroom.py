@@ -159,38 +159,25 @@ class ClassroomQueries:
         )"""
 
     get_customizing_classroom_id_query = """SELECT classroom_id FROM UserCustomize WHERE user_id={}"""
-
     get_information_for_creating_query = """SELECT * FROM Classroom WHERE classroom_id={}"""
-
     get_user_classrooms_with_role = """SELECT classroom_id, role FROM Student WHERE user_id={}"""
-
     get_classroom_name_query = """SELECT classroom_name FROM Classroom WHERE classroom_id={}"""
-
-    insert_classroom_query = """INSERT INTO Classroom VALUES(null, null, null, null, null, FALSE)"""
-
-    update_classroom_name_query = """UPDATE Classroom SET classroom_name="{}" WHERE classroom_id={}"""
-
-    update_school_name_query = """UPDATE Classroom SET school_name="{}" WHERE classroom_id={}"""
-
-    update_classroom_access_query = """UPDATE Classroom SET everyone_can_invite={} WHERE classroom_id={}"""
-
-    update_classroom_description_query = """UPDATE Classroom SET description="{}" WHERE classroom_id={}"""
-
-    insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, "{}")"""
-
-    update_user_role_query = """UPDATE Student SET role={} WHERE user_id={}"""
-
-    delete_user_from_classroom_query = """DELETE FROM Student WHERE user_id={}"""
-
-    delete_classroom_query = """DELETE FROM classroom WHERE classroom_id={}"""
-
     get_list_of_classroom_users_query = """SELECT user_id, role FROM Student WHERE classroom_id={}"""
 
+    insert_classroom_query = """INSERT INTO Classroom VALUES(null, null, null, null, null, FALSE)"""
+    insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, "{}")"""
     insert_new_customizer_query = """INSERT INTO UserCustomize VALUES({}, null)"""
 
+    update_classroom_name_query = """UPDATE Classroom SET classroom_name="{}" WHERE classroom_id={}"""
+    update_school_name_query = """UPDATE Classroom SET school_name="{}" WHERE classroom_id={}"""
+    update_classroom_access_query = """UPDATE Classroom SET everyone_can_invite={} WHERE classroom_id={}"""
+    update_classroom_description_query = """UPDATE Classroom SET description="{}" WHERE classroom_id={}"""
+    update_user_role_query = """UPDATE Student SET role={} WHERE user_id={}"""
     update_user_customize_query = """UPDATE UserCustomize SET classroom_id={} WHERE user_id={}"""
-
     update_classroom_created_query = """UPDATE Classroom SET created={} WHERE classroom_id={}"""
+
+    delete_user_from_classroom_query = """DELETE FROM Student WHERE user_id={}"""
+    delete_classroom_query = """DELETE FROM classroom WHERE classroom_id={}"""
 
 
 if __name__ == "__main__":
