@@ -219,7 +219,19 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+        elif payload["text"] == "Расписание эталонное":
+            keyboard = VkKeyboard(inline=True)
+            keyboard.add_button("Изменить", payload={"text": "Изменить эталонное расписание",
+                                                     "classroom_id": self.classroom_db.get_customizing_classroom_id(user_id)})
+
+            self.send_message(user_id, "Эталонное расписание\n\nМожно копировать в текущее "
+                                       "и будущее расписание.\nБудет автоматически устанавливаться в будущее "
+                                       "расписание каждую неделю", self.get_keyboard("standard_week"))
+            self.send_message(user_id, "Расписание:", keyboard.get_keyboard())
+            self.user_db.set_user_dialog_state(user_id, States.S_STANDARD_WEEK_MYCLASSES.value)
 
     def s_standard_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_STANDARD_WEEK_MYCLASSES"""
@@ -231,6 +243,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
         elif payload["text"] == "Назад":
