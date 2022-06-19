@@ -1,14 +1,14 @@
 from database import *
 
 
-class UserDataBase(DataBase):
+class UserDataCommands(DataBase):
     def __init__(self, connection: CMySQLConnection) -> None:
         """Initialization"""
         super().__init__(connection)
 
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(DataBaseQueries.create_table_user_query)
+                cursor.execute(UserDataQueries.create_table_user_query)
                 self.connection.commit()
 
         except Error as e:
@@ -17,7 +17,7 @@ class UserDataBase(DataBase):
     def insert_new_user(self, user_id: int, screen_name: str, first_name: str, is_ready: bool) -> None:
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(DataBaseQueries.insert_new_user_query.format(user_id, screen_name, first_name, is_ready))
+                cursor.execute(UserDataQueries.insert_new_user_query.format(user_id, screen_name, first_name, is_ready))
                 self.connection.commit()
 
         except Error as e:
@@ -26,7 +26,7 @@ class UserDataBase(DataBase):
     def set_user_is_ready(self, user_id: int) -> None:
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(DataBaseQueries.set_user_is_ready_query.format(user_id))
+                cursor.execute(UserDataQueries.set_user_is_ready_query.format(user_id))
                 self.connection.commit()
 
         except Error as e:
@@ -35,7 +35,7 @@ class UserDataBase(DataBase):
     def check_user_is_ready(self, user_id: int) -> bool:
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(DataBaseQueries.check_user_is_ready_query.format(user_id))
+                cursor.execute(UserDataQueries.check_user_is_ready_query.format(user_id))
                 user = cursor.fetchone()
                 return True if user else False
 
@@ -45,7 +45,7 @@ class UserDataBase(DataBase):
     def get_user_dialog_state(self, user_id: int) -> int:
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(DataBaseQueries.get_user_dialog_state_query.format(user_id))
+                cursor.execute(UserDataQueries.get_user_dialog_state_query.format(user_id))
                 state = cursor.fetchone()[0]
 
                 return state
@@ -56,14 +56,14 @@ class UserDataBase(DataBase):
     def set_user_dialog_state(self, user_id: int, state: int) -> None:
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(DataBaseQueries.set_user_dialog_state_query.format(state, user_id))
+                cursor.execute(UserDataQueries.set_user_dialog_state_query.format(state, user_id))
                 self.connection.commit()
 
         except Error as e:
             print(e)
 
 
-class DataBaseQueries:
+class UserDataQueries:
     create_table_user_query = """CREATE TABLE IF NOT EXISTS User(
         user_id INT NOT NULL UNIQUE PRIMARY KEY,
         screen_name VARCHAR(255),
@@ -91,4 +91,4 @@ if __name__ == '__main__':
         database=DATABASE_NAME
     )
 
-    db = UserDataBase(connection)
+    db = UserDataCommands(connection)
