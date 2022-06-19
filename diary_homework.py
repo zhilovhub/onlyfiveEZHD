@@ -49,6 +49,25 @@ class DiaryHomeworkCommands(DataBase):
         
 
 class DiaryHomeworkQueries:
+    @staticmethod
+    def create_get_weekday_query(weekday: str, table_name: str) -> str:
+        """Creates get_weekday query"""
+        template = """SELECT 
+                        weekday_lesson1,
+                        weekday_lesson2,
+                        weekday_lesson3,
+                        weekday_lesson4,
+                        weekday_lesson5,
+                        weekday_lesson6,
+                        weekday_lesson7,
+                        weekday_lesson8,
+                        weekday_lesson9,
+                        weekday_lesson10,
+                        weekday_lesson11,
+                        weekday_lesson12
+                      FROM table_name WHERE classroom_id={}"""
+        return template.replace("weekday", weekday).replace("table_name", table_name)
+    
     create_table_diary_standard_week_query = """CREATE TABLE IF NOT EXISTS diary_standard_week(
         classroom_id INT,
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE,
@@ -341,6 +360,30 @@ class DiaryHomeworkQueries:
     get_all_days_from_current_week_query = """SELECT * FROM diary_current_week WHERE classroom_id={}"""
     get_all_days_from_next_week_query = """SELECT * FROM diary_next_week WHERE classroom_id={}"""
 
+    get_monday_from_standard_week_query = create_get_weekday_query("monday", "diary_standard_week")
+    get_tuesday_from_standard_week_query = create_get_weekday_query("tuesday", "diary_standard_week")
+    get_wednesday_from_standard_week_query = create_get_weekday_query("wednesday", "diary_standard_week")
+    get_thursday_from_standard_week_query = create_get_weekday_query("thursday", "diary_standard_week")
+    get_friday_from_standard_week_query = create_get_weekday_query("friday", "diary_standard_week")
+    get_saturday_from_standard_week_query = create_get_weekday_query("saturday", "diary_standard_week")
+    get_sunday_from_standard_week_query = create_get_weekday_query("sunday", "diary_standard_week")
+
+    get_monday_from_current_week_query = create_get_weekday_query("monday", "diary_current_week")
+    get_tuesday_from_current_week_query = create_get_weekday_query("tuesday", "diary_current_week")
+    get_wednesday_from_current_week_query = create_get_weekday_query("wednesday", "diary_current_week")
+    get_thursday_from_current_week_query = create_get_weekday_query("thursday", "diary_current_week")
+    get_friday_from_current_week_query = create_get_weekday_query("friday", "diary_current_week")
+    get_saturday_from_current_week_query = create_get_weekday_query("saturday", "diary_current_week")
+    get_sunday_from_current_week_query = create_get_weekday_query("sunday", "diary_current_week")
+
+    get_monday_from_next_week_query = create_get_weekday_query("monday", "diary_next_week")
+    get_tuesday_from_next_week_query = create_get_weekday_query("tuesday", "diary_next_week")
+    get_wednesday_from_next_week_query = create_get_weekday_query("wednesday", "diary_next_week")
+    get_thursday_from_next_week_query = create_get_weekday_query("thursday", "diary_next_week")
+    get_friday_from_next_week_query = create_get_weekday_query("friday", "diary_next_week")
+    get_saturday_from_next_week_query = create_get_weekday_query("saturday", "diary_next_week")
+    get_sunday_from_next_week_query = create_get_weekday_query("sunday", "diary_next_week")
+
     insert_classroom_id_standard_week_query = "INSERT into diary_standard_week (classroom_id) VALUES({})"
     insert_classroom_id_current_week_query = "INSERT into diary_current_week (classroom_id) VALUES({})"
     insert_classroom_id_next_week_query = "INSERT into diary_next_week (classroom_id) VALUES({})"
@@ -355,4 +398,6 @@ if __name__ == '__main__':
     )
 
     diary_homework_db = DiaryHomeworkCommands(connection)
-    # diary_homework_db.insert_classroom_id(2)
+    # diary_homework_db.insert_classroom_id(3)
+    print(diary_homework_db.get_all_days_from_standard_week(3))
+    print(diary_homework_db.get_all_days_from_standard_week(3))
