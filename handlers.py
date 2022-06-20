@@ -241,8 +241,7 @@ class StateHandlers(SupportingFunctions):
 
             self.send_message(user_id, "Эталонное расписание\n\nМожно копировать в текущее "
                                        "и будущее расписание.\nБудет автоматически устанавливаться в будущее "
-                                       "расписание каждую неделю", self.get_keyboard("standard_week"))
-            self.send_message(user_id, diary, keyboard.get_keyboard())
+                                       "расписание каждую неделю\n\n" + diary, keyboard.get_keyboard())
 
     def s_standard_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_STANDARD_WEEK_MYCLASSES"""
