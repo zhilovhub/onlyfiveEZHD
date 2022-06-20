@@ -192,6 +192,7 @@ class StateHandlers(SupportingFunctions):
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             self.classroom_db.update_user_customize_classroom(user_id, "null")
             self.classroom_db.update_classroom_created(classroom_id, True)
+            self.diary_homework_db.insert_classroom_id(classroom_id)
 
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_SUBMIT_CLASSCREATE)
             self.send_message(user_id, "Поздравляю! Класс создан", self.get_keyboard("menu"))
@@ -228,7 +229,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Расписание эталонное":
             keyboard = VkKeyboard(inline=True)
-            keyboard.add_button("Изменить", payload={"text": "Изменить эталонное расписание",
+            keyboard.add_callback_button("Изменить", payload={"text": "Изменить эталонное расписание",
                                                      "classroom_id": self.classroom_db.get_customizing_classroom_id(user_id)})
 
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -242,6 +243,11 @@ class StateHandlers(SupportingFunctions):
             self.send_message(user_id, "Эталонное расписание\n\nМожно копировать в текущее "
                                        "и будущее расписание.\nБудет автоматически устанавливаться в будущее "
                                        "расписание каждую неделю\n\n" + diary, keyboard.get_keyboard())
+
+        elif payload["text"] == "Изменить эталонное расписание":
+            self.send_message(user_id, "Редактирование эталонного расписания\n\nИзменения увидят ВСЕ участники класса!",
+                              self.get_keyboard("standard_week"))
+            self.user_db.set_user_dialog_state(user_id, States.S_STANDARD_WEEK_MYCLASSES.value)
 
     def s_standard_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_STANDARD_WEEK_MYCLASSES"""
@@ -319,3 +325,14 @@ class CallbackPayloadHandlers(StateHandlers):
             self.s_nothing_handler(user_id, payload)
         else:
             self.send_message(user_id, "Закончи текущее действие или выйди в главное меню")
+
+    def p_change_standard_week_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
+        if current_dialog_state == States.S_IN_CLASS_MYCLASSES.value:
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+
+            if classroom_id == payload["classroom_id"]:
+                self.s_in_class_my_classes_handler(user_id, payload)
+            else:
+                self.send_message(user_id, "Это расписание не того класса, в котором ты находишься!")
+        else:
+            self.send_message(user_id, "Ты должен находиться в классе, расписание которого собираешься изменить!")
