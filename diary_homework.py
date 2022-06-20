@@ -528,22 +528,6 @@ class DiaryHomeworkQueries:
     get_all_days_from_current_week_query = """SELECT * FROM diary_current_week WHERE classroom_id={}"""
     get_all_days_from_next_week_query = """SELECT * FROM diary_next_week WHERE classroom_id={}"""
 
-    # get_monday_from_current_week_query = create_get_weekday_query("monday", "diary_current_week")
-    # get_tuesday_from_current_week_query = create_get_weekday_query("tuesday", "diary_current_week")
-    # get_wednesday_from_current_week_query = create_get_weekday_query("wednesday", "diary_current_week")
-    # get_thursday_from_current_week_query = create_get_weekday_query("thursday", "diary_current_week")
-    # get_friday_from_current_week_query = create_get_weekday_query("friday", "diary_current_week")
-    # get_saturday_from_current_week_query = create_get_weekday_query("saturday", "diary_current_week")
-    # get_sunday_from_current_week_query = create_get_weekday_query("sunday", "diary_current_week")
-    #
-    # get_monday_from_next_week_query = create_get_weekday_query("monday", "diary_next_week")
-    # get_tuesday_from_next_week_query = create_get_weekday_query("tuesday", "diary_next_week")
-    # get_wednesday_from_next_week_query = create_get_weekday_query("wednesday", "diary_next_week")
-    # get_thursday_from_next_week_query = create_get_weekday_query("thursday", "diary_next_week")
-    # get_friday_from_next_week_query = create_get_weekday_query("friday", "diary_next_week")
-    # get_saturday_from_next_week_query = create_get_weekday_query("saturday", "diary_next_week")
-    # get_sunday_from_next_week_query = create_get_weekday_query("sunday", "diary_next_week")
-
     insert_classroom_id_standard_week_query = "INSERT into diary_standard_week (classroom_id) VALUES({})"
     insert_classroom_id_current_week_query = "INSERT into diary_current_week (classroom_id) VALUES({})"
     insert_classroom_id_next_week_query = "INSERT into diary_next_week (classroom_id) VALUES({})"

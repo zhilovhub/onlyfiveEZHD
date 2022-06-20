@@ -15,7 +15,7 @@ class States(Enum):
     S_ENTER_TECHNICAL_SUPPORT_MESSAGE = 6
 
     S_IN_CLASS_MYCLASSES = 7
-    S_STANDARD_WEEK_MYCLASSES = 8
+    S_EDIT_STANDARD_WEEK_MYCLASSES = 8
 
     @staticmethod
     def get_next_state_config(current_state: Enum) -> tuple:

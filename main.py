@@ -91,8 +91,8 @@ class DiaryVkBot(CallbackPayloadHandlers):
             case States.S_IN_CLASS_MYCLASSES.value:
                 self.s_in_class_my_classes_handler(user_id, payload)
 
-            case States.S_STANDARD_WEEK_MYCLASSES.value:
-                self.s_standard_week_my_classes_handler(user_id, payload)
+            case States.S_EDIT_STANDARD_WEEK_MYCLASSES.value:
+                self.s_edit_standard_week_my_classes_handler(user_id, payload)
 
             # TECHNICALSUPPORT
             case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value:
@@ -105,7 +105,7 @@ class DiaryVkBot(CallbackPayloadHandlers):
                 self.p_enter_the_classroom_handler(user_id, payload, current_dialog_state)
 
             case "Изменить эталонное расписание":
-                self.p_change_standard_week_handler(user_id, payload, current_dialog_state)
+                self.p_edit_standard_week_handler(user_id, payload, current_dialog_state)
 
 
 if __name__ == "__main__":

@@ -64,12 +64,12 @@ class KeyBoards:
     KEYBOARD_MY_CLASS_MENU.add_line()
     KEYBOARD_MY_CLASS_MENU.add_button(label="Главное меню", payload=get_payload("Главное меню"))
 
-    # STANDARD_WEEK KEYBOARD
-    STANDARD_WEEK_KEYBOARD = VkKeyboard()
-    STANDARD_WEEK_KEYBOARD.add_button("Внести правки", payload=get_payload("Внести правки"))
-    STANDARD_WEEK_KEYBOARD.add_line()
-    STANDARD_WEEK_KEYBOARD.add_button("Назад", payload=get_payload("Назад"))
-    STANDARD_WEEK_KEYBOARD.add_button("Главное меню", payload=get_payload("Главное меню"))
+    # EDIT_STANDARD_WEEK KEYBOARD
+    EDIT_STANDARD_WEEK_KEYBOARD = VkKeyboard()
+    EDIT_STANDARD_WEEK_KEYBOARD.add_button("Внести правки", payload=get_payload("Внести правки"))
+    EDIT_STANDARD_WEEK_KEYBOARD.add_line()
+    EDIT_STANDARD_WEEK_KEYBOARD.add_button("Назад", payload=get_payload("Назад"))
+    EDIT_STANDARD_WEEK_KEYBOARD.add_button("Главное меню", payload=get_payload("Главное меню"))
 
     # CANCEL_SEND KEYBOARD
     KEYBOARD_CANCEL_SEND = VkKeyboard()
