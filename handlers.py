@@ -231,10 +231,18 @@ class StateHandlers(SupportingFunctions):
             keyboard.add_button("Изменить", payload={"text": "Изменить эталонное расписание",
                                                      "classroom_id": self.classroom_db.get_customizing_classroom_id(user_id)})
 
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            raw_standard_week = self.diary_homework_db.get_all_days_from_standard_week(classroom_id)
+            formatted_standard_week = []
+
+            for i in range(0, len(raw_standard_week), 12):
+                formatted_standard_week.append(raw_standard_week[i:i+12])
+            diary = self.get_diary_text(formatted_standard_week)
+
             self.send_message(user_id, "Эталонное расписание\n\nМожно копировать в текущее "
                                        "и будущее расписание.\nБудет автоматически устанавливаться в будущее "
                                        "расписание каждую неделю", self.get_keyboard("standard_week"))
-            self.send_message(user_id, "Расписание:", keyboard.get_keyboard())
+            self.send_message(user_id, diary, keyboard.get_keyboard())
 
     def s_standard_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_STANDARD_WEEK_MYCLASSES"""
@@ -274,6 +282,25 @@ class StateHandlers(SupportingFunctions):
         """Cancel creating technical support message and set state to States.S_NOTHING"""
         self.send_message(user_id, "Отправка обращения в тех. поддержку отменена", self.get_keyboard("menu"))
         self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    @staticmethod
+    def get_diary_text(formatted_week: list) -> str:
+        diary = []
+
+        weekdays = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]
+        for weekday_name, weekday_list in zip(weekdays, formatted_week):
+            if not any(weekday_list):
+                diary.append(weekday_name + "\n" + "1. ПУСТО")
+            else:
+                if None in weekday_list:
+                    weekday_list_without_empty = weekday_list[:weekday_list.index(None)]
+                else:
+                    weekday_list_without_empty = weekday_list.copy()
+
+                lessons = [f"{i}. {weekday_list[i]}" for i in range(1, len(weekday_list_without_empty) + 1)]
+                diary.append(weekday_name + "\n" + "\n".join(lessons))
+
+        return "\n\n".join(diary)
 
 
 class CallbackPayloadHandlers(StateHandlers):
