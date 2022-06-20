@@ -271,7 +271,8 @@ class StateHandlers(SupportingFunctions):
             formatted_days = self.diary_homework_db.get_weekday_from_standard_week(classroom_id, english_weekday)
             weekday_diary_text = self.get_weekday_diary_text(formatted_days, russian_weekday)
 
-            self.send_message(user_id, weekday_diary_text)
+            self.send_message(user_id, weekday_diary_text, self.get_keyboard("edit_standard_weekday"))
+            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEKDAY_MYCLASSES.value)
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
@@ -281,6 +282,20 @@ class StateHandlers(SupportingFunctions):
         elif payload["text"] == "Назад":
             self.send_message(user_id, "Возвращаемся в меню класса", self.get_keyboard("my_class_menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
+
+    def s_edit_standard_weekday_my_classes_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_EDIT_STANDARD_WEEKDAY_MYCLASSES"""
+        if payload is None:
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("edit_standard_weekday"))
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+        elif payload["text"] == "Отменить":
+            self.send_message(user_id, "Все изменения отменены!", self.get_keyboard("edit_standard_week"))
+            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEK_MYCLASSES.value)
 
     def state_transition(self, user_id: int, next_state, keyboard_type: str, messages: list) -> None:
         """Changes states"""

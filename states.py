@@ -16,6 +16,7 @@ class States(Enum):
 
     S_IN_CLASS_MYCLASSES = 7
     S_EDIT_STANDARD_WEEK_MYCLASSES = 8
+    S_EDIT_STANDARD_WEEKDAY_MYCLASSES = 9
 
     @staticmethod
     def get_next_state_config(current_state: Enum) -> tuple:

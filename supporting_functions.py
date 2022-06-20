@@ -72,6 +72,9 @@ class SupportingFunctions:
         elif keyboard_type == "edit_standard_week":
             return KeyBoards.EDIT_STANDARD_WEEK_KEYBOARD.get_keyboard()
 
+        elif keyboard_type == "edit_standard_weekday":
+            return KeyBoards.EDIT_STANDARD_WEEKDAY_KEYBOARD.get_keyboard()
+
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""
         is_member = self.vk_session.method(
