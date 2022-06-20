@@ -252,18 +252,15 @@ class StateHandlers(SupportingFunctions):
     def s_edit_standard_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_STANDARD_WEEK_MYCLASSES"""
         if payload is None:
-            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("standard_week"))
-
-        elif payload["text"] == "Внести правки":
-            self.send_message(user_id, "Внесение правок...", self.get_keyboard("standard_week"))
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("edit_standard_week"))
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
             self.classroom_db.update_user_customize_classroom(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
-        elif payload["text"] == "Назад":
-            self.send_message(user_id, "Возвращаемся...", self.get_keyboard("my_class_menu"))
+        elif payload["text"] == "Отменить":
+            self.send_message(user_id, "Изменения отменены", self.get_keyboard("my_class_menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
 
     def state_transition(self, user_id: int, next_state, keyboard_type: str, messages: list) -> None:
