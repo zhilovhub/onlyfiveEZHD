@@ -278,8 +278,8 @@ class StateHandlers(SupportingFunctions):
             self.classroom_db.update_user_customize_classroom(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
-        elif payload["text"] == "Отменить":
-            self.send_message(user_id, "Изменения отменены", self.get_keyboard("my_class_menu"))
+        elif payload["text"] == "Назад":
+            self.send_message(user_id, "Возвращаемся в меню класса", self.get_keyboard("my_class_menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
 
     def state_transition(self, user_id: int, next_state, keyboard_type: str, messages: list) -> None:

@@ -75,9 +75,9 @@ class KeyBoards:
     EDIT_STANDARD_WEEK_KEYBOARD.add_button("СБ", payload=get_payload("СБ"))
     EDIT_STANDARD_WEEK_KEYBOARD.add_button("ВС", payload=get_payload("ВС"))
     EDIT_STANDARD_WEEK_KEYBOARD.add_line()
-    EDIT_STANDARD_WEEK_KEYBOARD.add_button("Отменить", payload=get_payload("Отменить"))
     EDIT_STANDARD_WEEK_KEYBOARD.add_button("Сохранить", payload=get_payload("Сохранить"))
     EDIT_STANDARD_WEEK_KEYBOARD.add_line()
+    EDIT_STANDARD_WEEK_KEYBOARD.add_button("Назад", payload=get_payload("Назад"))
     EDIT_STANDARD_WEEK_KEYBOARD.add_button("Главное меню", payload=get_payload("Главное меню"))
 
     # CANCEL_SEND KEYBOARD
