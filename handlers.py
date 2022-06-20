@@ -285,22 +285,22 @@ class StateHandlers(SupportingFunctions):
 
     @staticmethod
     def get_diary_text(formatted_week: list) -> str:
-        diary = []
+        week_diary = []
 
         weekdays = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]
         for weekday_name, weekday_list in zip(weekdays, formatted_week):
             if not any(weekday_list):
-                diary.append(weekday_name + "\n" + "1. ПУСТО")
+                week_diary.append(weekday_name + "\n" + "1. ПУСТО")
             else:
                 if None in weekday_list:
                     weekday_list_without_empty = weekday_list[:weekday_list.index(None)]
                 else:
                     weekday_list_without_empty = weekday_list.copy()
 
-                lessons = [f"{i}. {weekday_list[i - 1]}" for i in range(1, len(weekday_list_without_empty) + 1)]
-                diary.append(weekday_name + "\n" + "\n".join(lessons))
+                day_lessons = [f"{i}. {weekday_list[i - 1]}" for i in range(1, len(weekday_list_without_empty) + 1)]
+                week_diary.append(weekday_name + "\n" + "\n".join(day_lessons))
 
-        return "\n\n".join(diary)
+        return "\n\n".join(week_diary)
 
 
 class CallbackPayloadHandlers(StateHandlers):
