@@ -297,7 +297,7 @@ class StateHandlers(SupportingFunctions):
                 else:
                     weekday_list_without_empty = weekday_list.copy()
 
-                lessons = [f"{i}. {weekday_list[i]}" for i in range(1, len(weekday_list_without_empty) + 1)]
+                lessons = [f"{i}. {weekday_list[i - 1]}" for i in range(1, len(weekday_list_without_empty) + 1)]
                 diary.append(weekday_name + "\n" + "\n".join(lessons))
 
         return "\n\n".join(diary)
