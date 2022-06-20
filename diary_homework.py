@@ -39,170 +39,26 @@ class DiaryHomeworkCommands(DataBase):
 
         return lessons
 
-    def get_monday_from_standard_week(self, classroom_id: int) -> list:
-        """Gets Monday diary from standard week"""
+    def get_weekday_from_standard_week(self, classroom_id: int, weekday: str) -> list:
+        """Gets weekday diary from standard week"""
         with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("monday", "diary_standard_week").format(classroom_id))
+            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, "diary_standard_week").format(classroom_id))
             lessons = cursor.fetchone()
 
         return lessons
 
-    def get_tuesday_from_standard_week(self, classroom_id: int) -> list:
-        """Gets Tuesday diary from standard week"""
+    def get_weekday_from_current_week(self, classroom_id: int, weekday: str) -> list:
+        """Gets weekday diary from current week"""
         with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("tuesday", "diary_standard_week").format(classroom_id))
+            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, "diary_current_week").format(classroom_id))
             lessons = cursor.fetchone()
 
         return lessons
 
-    def get_wednesday_from_standard_week(self, classroom_id: int) -> list:
-        """Gets Wednesday diary from standard week"""
+    def get_weekday_from_next_week(self, classroom_id: int, weekday: str) -> list:
+        """Gets weekday diary from next week"""
         with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("wednesday", "diary_standard_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_thursday_from_standard_week(self, classroom_id: int) -> list:
-        """Gets Thursday diary from standard week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("thursday", "diary_standard_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_friday_from_standard_week(self, classroom_id: int) -> list:
-        """Gets Friday diary from standard week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("friday", "diary_standard_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_saturday_from_standard_week(self, classroom_id: int) -> list:
-        """Gets Saturday diary from standard week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("saturday", "diary_standard_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_sunday_from_standard_week(self, classroom_id: int) -> list:
-        """Gets Sunday diary from standard week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("sunday", "diary_standard_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_monday_from_current_week(self, classroom_id: int) -> list:
-        """Gets Monday diary from current week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("monday", "diary_current_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_tuesday_from_current_week(self, classroom_id: int) -> list:
-        """Gets Tuesday diary from current week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("tuesday", "diary_current_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_wednesday_from_current_week(self, classroom_id: int) -> list:
-        """Gets Wednesday diary from current week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("wednesday", "diary_current_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_thursday_from_current_week(self, classroom_id: int) -> list:
-        """Gets Thursday diary from current week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("thursday", "diary_current_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_friday_from_current_week(self, classroom_id: int) -> list:
-        """Gets Friday diary from current week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("friday", "diary_current_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_saturday_from_current_week(self, classroom_id: int) -> list:
-        """Gets Saturday diary from current week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("saturday", "diary_current_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_sunday_from_current_week(self, classroom_id: int) -> list:
-        """Gets Sunday diary from current week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("sunday", "diary_current_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_monday_from_next_week(self, classroom_id: int) -> list:
-        """Gets Monday diary from next week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("monday", "diary_next_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_tuesday_from_next_week(self, classroom_id: int) -> list:
-        """Gets Tuesday diary from next week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("tuesday", "diary_next_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_wednesday_from_next_week(self, classroom_id: int) -> list:
-        """Gets Wednesday diary from next week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("wednesday", "diary_next_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_thursday_from_next_week(self, classroom_id: int) -> list:
-        """Gets Thursday diary from next week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("thursday", "diary_next_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_friday_from_next_week(self, classroom_id: int) -> list:
-        """Gets Friday diary from next week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("friday", "diary_next_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_saturday_from_next_week(self, classroom_id: int) -> list:
-        """Gets Saturday diary from next week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("saturday", "diary_next_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_sunday_from_next_week(self, classroom_id: int) -> list:
-        """Gets Sunday diary from next week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query("sunday", "diary_next_week").format(classroom_id))
+            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, "diary_next_week").format(classroom_id))
             lessons = cursor.fetchone()
 
         return lessons
@@ -542,7 +398,7 @@ if __name__ == '__main__':
     )
 
     diary_homework_db = DiaryHomeworkCommands(connection)
-    print(diary_homework_db.get_all_days_from_standard_week(3))
-    print(diary_homework_db.get_wednesday_from_standard_week(3))
-    print(diary_homework_db.get_monday_from_next_week(3))
-    print(diary_homework_db.get_friday_from_current_week(3))
+    print(diary_homework_db.get_all_days_from_standard_week(2))
+    print(diary_homework_db.get_weekday_from_standard_week(2, "wednesday"))
+    print(diary_homework_db.get_weekday_from_next_week(2, "monday"))
+    print(diary_homework_db.get_weekday_from_current_week(2, "friday"))

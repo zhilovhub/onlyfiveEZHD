@@ -238,7 +238,7 @@ class StateHandlers(SupportingFunctions):
 
             for i in range(0, len(raw_standard_week), 12):
                 formatted_standard_week.append(raw_standard_week[i:i+12])
-            diary = self.get_diary_text(formatted_standard_week)
+            diary = self.get_week_diary_text(formatted_standard_week)
 
             self.send_message(user_id, "Эталонное расписание\n\nМожно копировать в текущее "
                                        "и будущее расписание.\nБудет автоматически устанавливаться в будущее "
@@ -253,6 +253,25 @@ class StateHandlers(SupportingFunctions):
         """Handling States.S_EDIT_STANDARD_WEEK_MYCLASSES"""
         if payload is None:
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("edit_standard_week"))
+
+        elif payload["text"] in ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]:
+            weekday_translation_dict = {
+                "ПН": ("monday", "Понедельник"),
+                "ВТ": ("tuesday", "Вторник"),
+                "СР": ("wednesday", "Среда"),
+                "ЧТ": ("thursday", "Четверг"),
+                "ПТ": ("friday", "Пятница"),
+                "СБ": ("saturday", "Суббота"),
+                "ВС": ("sunday", "Воскресение"),
+            }
+            english_weekday = weekday_translation_dict[payload["text"]][0]
+            russian_weekday = weekday_translation_dict[payload["text"]][1]
+
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            formatted_days = self.diary_homework_db.get_weekday_from_standard_week(classroom_id, english_weekday)
+            weekday_diary_text = self.get_weekday_diary_text(formatted_days, russian_weekday)
+
+            self.send_message(user_id, weekday_diary_text)
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
@@ -286,7 +305,22 @@ class StateHandlers(SupportingFunctions):
         self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     @staticmethod
-    def get_diary_text(formatted_week: list) -> str:
+    def get_weekday_diary_text(formatted_days: list, weekday: str) -> str:
+        """Returns text of weekday's diary"""
+        if not any(formatted_days):
+            weekday_diary = ["1. ПУСТО"]
+        else:
+            if None in formatted_days:
+                weekday_without_empty = formatted_days[:formatted_days.index(None)]
+            else:
+                weekday_without_empty = formatted_days.copy()
+            weekday_diary = [f"{i}. {weekday_without_empty[i - 1]}" for i in range(1, len(weekday_without_empty) + 1)]
+
+        return weekday + "\n" + "\n".join(weekday_diary)
+
+    @staticmethod
+    def get_week_diary_text(formatted_week: list) -> str:
+        """Returns text of week's diary"""
         week_diary = []
 
         weekdays = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]
