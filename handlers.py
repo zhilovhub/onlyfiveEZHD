@@ -233,12 +233,12 @@ class StateHandlers(SupportingFunctions):
                                                      "classroom_id": self.classroom_db.get_customizing_classroom_id(user_id)})
 
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            raw_standard_week = self.diary_homework_db.get_all_days_from_standard_week(classroom_id)
-            formatted_standard_week = []
+            raw_week_lessons = self.diary_homework_db.get_all_days_from_standard_week(classroom_id)
+            formatted_week_lessons = []
 
-            for i in range(0, len(raw_standard_week), 12):
-                formatted_standard_week.append(raw_standard_week[i:i+12])
-            diary = self.get_week_diary_text(formatted_standard_week)
+            for i in range(0, len(raw_week_lessons), 12):
+                formatted_week_lessons.append(raw_week_lessons[i:i+12])
+            diary = self.get_week_diary_text(formatted_week_lessons)
 
             self.send_message(user_id, "Эталонное расписание\n\nМожно копировать в текущее "
                                        "и будущее расписание.\nБудет автоматически устанавливаться в будущее "
@@ -269,9 +269,10 @@ class StateHandlers(SupportingFunctions):
             next_state = weekday_meanings_dict[payload["text"]][2]
 
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            formatted_days = self.diary_homework_db.get_weekday_from_standard_week(classroom_id, english_weekday)
-            weekday_diary_text = self.get_weekday_diary_text(formatted_days, russian_weekday)
+            formatted_day_lessons = self.diary_homework_db.get_weekday_from_standard_week(classroom_id, english_weekday)
+            weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, russian_weekday)
 
+            self.diary_homework_db.insert_lessons_into_temp_weekday_table(user_id, formatted_day_lessons)
             self.send_message(user_id, weekday_diary_text, self.get_keyboard("edit_standard_weekday"))
             self.user_db.set_user_dialog_state(user_id, next_state.value)
 
@@ -291,11 +292,13 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
             self.classroom_db.update_user_customize_classroom(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
         elif payload["text"] == "Отменить":
             self.send_message(user_id, "Все изменения отменены!", self.get_keyboard("edit_standard_week"))
+            self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
             self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEK_MYCLASSES.value)
 
     def state_transition(self, user_id: int, next_state, keyboard_type: str, messages: list) -> None:
@@ -383,4 +386,4 @@ class CallbackPayloadHandlers(StateHandlers):
             else:
                 self.send_message(user_id, "Это расписание не того класса, в котором ты находишься!")
         else:
-            self.send_message(user_id, "Ты должен находиться в классе, расписание которого собираешься изменить!")
+            self.send_message(user_id, "Ты должен находиться в меню класса, расписание которого собираешься изменить!")
