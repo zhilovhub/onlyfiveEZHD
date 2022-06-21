@@ -382,7 +382,7 @@ class DiaryHomeworkQueries:
     )"""
 
     create_table_temp_weekday_diary = """CREATE TABLE IF NOT EXISTS temp_weekday_diary(
-        user_id INT,
+        user_id INT UNIQUE,
         classroom_id INT,
         FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE,
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE,
