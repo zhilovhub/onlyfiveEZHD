@@ -88,6 +88,7 @@ class DiaryHomeworkCommands(DataBase):
             cursor.execute(DiaryHomeworkQueries.delete_row_from_temp_weekday_diary_query.format(user_id))
             self.connection.commit()
 
+
 class DiaryHomeworkQueries:
     @staticmethod
     def get_weekday_lessons_query(weekday: str, table_name: str) -> str:
