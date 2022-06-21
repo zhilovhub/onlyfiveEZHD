@@ -21,7 +21,8 @@ class DiaryVkBot(CallbackPayloadHandlers):
                 if event.from_user:
                     user_id = event.object.message["from_id"]  # Getting user_id
                     message = event.object.message["text"]  # Getting message's text
-                    payload = loads(event.object.message["payload"]) if "payload" in event.object.message else None  # Payload
+                    payload = loads(
+                        event.object.message["payload"]) if "payload" in event.object.message else None  # Payload
 
                     user_information = self.get_user_info(user_id)  # User_id, first_name, nickname
 
@@ -94,7 +95,10 @@ class DiaryVkBot(CallbackPayloadHandlers):
             case States.S_EDIT_STANDARD_WEEK_MYCLASSES.value:
                 self.s_edit_standard_week_my_classes_handler(user_id, payload)
 
-            case States.S_EDIT_STANDARD_WEEKDAY_MYCLASSES.value:
+            case (States.S_EDIT_STANDARD_MONDAY_MYCLASSES.value | States.S_EDIT_STANDARD_TUESDAY_MYCLASSES.value \
+                  | States.S_EDIT_STANDARD_WEDNESDAY_MYCLASSES.value | States.S_EDIT_STANDARD_THURSDAY_MYCLASSES.value \
+                  | States.S_EDIT_STANDARD_FRIDAY_MYCLASSES.value | States.S_EDIT_STANDARD_SATURDAY_MYCLASSES.value \
+                  | States.S_EDIT_STANDARD_SUNDAY_MYCLASSES.value):
                 self.s_edit_standard_weekday_my_classes_handler(user_id, payload)
 
             # TECHNICALSUPPORT
@@ -130,7 +134,7 @@ if __name__ == "__main__":
     user_db = UserDataCommands(connection)
     classroom_db = ClassroomCommands(connection)
     technical_support_db = TechnicalSupportCommands(connection)
-    diary_homework_db= DiaryHomeworkCommands(connection)
+    diary_homework_db = DiaryHomeworkCommands(connection)
 
     my_bot = DiaryVkBot(token=TOKEN, group_id=GROUP_ID,
                         user_db=user_db,

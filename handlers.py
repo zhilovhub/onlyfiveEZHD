@@ -255,24 +255,25 @@ class StateHandlers(SupportingFunctions):
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("edit_standard_week"))
 
         elif payload["text"] in ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]:
-            weekday_translation_dict = {
-                "ПН": ("monday", "Понедельник"),
-                "ВТ": ("tuesday", "Вторник"),
-                "СР": ("wednesday", "Среда"),
-                "ЧТ": ("thursday", "Четверг"),
-                "ПТ": ("friday", "Пятница"),
-                "СБ": ("saturday", "Суббота"),
-                "ВС": ("sunday", "Воскресение"),
+            weekday_meanings_dict = {
+                "ПН": ("monday", "Понедельник", States.S_EDIT_STANDARD_MONDAY_MYCLASSES),
+                "ВТ": ("tuesday", "Вторник", States.S_EDIT_STANDARD_TUESDAY_MYCLASSES),
+                "СР": ("wednesday", "Среда", States.S_EDIT_STANDARD_WEDNESDAY_MYCLASSES),
+                "ЧТ": ("thursday", "Четверг", States.S_EDIT_STANDARD_THURSDAY_MYCLASSES),
+                "ПТ": ("friday", "Пятница", States.S_EDIT_STANDARD_FRIDAY_MYCLASSES),
+                "СБ": ("saturday", "Суббота", States.S_EDIT_STANDARD_SATURDAY_MYCLASSES),
+                "ВС": ("sunday", "Воскресение", States.S_EDIT_STANDARD_SUNDAY_MYCLASSES),
             }
-            english_weekday = weekday_translation_dict[payload["text"]][0]
-            russian_weekday = weekday_translation_dict[payload["text"]][1]
+            english_weekday = weekday_meanings_dict[payload["text"]][0]
+            russian_weekday = weekday_meanings_dict[payload["text"]][1]
+            next_state = weekday_meanings_dict[payload["text"]][2]
 
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             formatted_days = self.diary_homework_db.get_weekday_from_standard_week(classroom_id, english_weekday)
             weekday_diary_text = self.get_weekday_diary_text(formatted_days, russian_weekday)
 
             self.send_message(user_id, weekday_diary_text, self.get_keyboard("edit_standard_weekday"))
-            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEKDAY_MYCLASSES.value)
+            self.user_db.set_user_dialog_state(user_id, next_state.value)
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
