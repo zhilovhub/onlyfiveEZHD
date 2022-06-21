@@ -73,10 +73,10 @@ class SupportingFunctions:
             return KeyBoards.KEYBOARD_MY_CLASS_MENU.get_keyboard()
 
         elif keyboard_type == "edit_standard_week":
-            return KeyBoards.EDIT_STANDARD_WEEK_KEYBOARD.get_keyboard()
+            return KeyBoards.KEYBOARD_EDIT_STANDARD_WEEK.get_keyboard()
 
         elif keyboard_type == "edit_standard_weekday":
-            return KeyBoards.EDIT_STANDARD_WEEKDAY_KEYBOARD.get_keyboard()
+            return KeyBoards.KEYBOARD_EDIT_STANDARD_WEEKDAY.get_keyboard()
 
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""
