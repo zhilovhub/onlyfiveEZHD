@@ -11,6 +11,7 @@ class DiaryHomeworkCommands(DataBase):
                 cursor.execute(DiaryHomeworkQueries.create_table_diary_standard_week_query)
                 cursor.execute(DiaryHomeworkQueries.create_table_diary_current_week_query)
                 cursor.execute(DiaryHomeworkQueries.create_table_diary_next_week_query)
+                cursor.execute(DiaryHomeworkQueries.create_table_temp_weekday_diary)
 
         except Error as e:
             print(e)
@@ -378,6 +379,26 @@ class DiaryHomeworkQueries:
         sunday_lesson10 TEXT,
         sunday_lesson11 TEXT,
         sunday_lesson12 TEXT
+    )"""
+
+    create_table_temp_weekday_diary = """CREATE TABLE IF NOT EXISTS temp_weekday_diary(
+        user_id INT,
+        classroom_id INT,
+        FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE,
+        FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE,
+        
+        lesson1 TEXT,
+        lesson2 TEXT,
+        lesson3 TEXT,
+        lesson4 TEXT,
+        lesson5 TEXT,
+        lesson6 TEXT,
+        lesson7 TEXT,
+        lesson8 TEXT,
+        lesson9 TEXT,
+        lesson10 TEXT,
+        lesson11 TEXT,
+        lesson12 TEXT
     )"""
 
     get_all_days_from_standard_week_query = """SELECT * FROM diary_standard_week WHERE classroom_id={}"""
