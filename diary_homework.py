@@ -64,6 +64,14 @@ class DiaryHomeworkCommands(DataBase):
 
         return lessons
 
+    def get_weekday_from_temp_table(self, user_id: int) -> str:
+        """Returns weekday's name from temp table"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(DiaryHomeworkQueries.get_temp_weekday_name_query.format(user_id))
+            weekday = cursor.fetchone()[0]
+
+        return weekday
+
     def insert_classroom_id(self, classroom_id: int) -> None:
         """Inserts classroom_id into the tables"""
         with self.connection.cursor() as cursor:
@@ -72,14 +80,14 @@ class DiaryHomeworkCommands(DataBase):
             cursor.execute(DiaryHomeworkQueries.insert_classroom_id_next_week_query.format(classroom_id))
             self.connection.commit()
 
-    def insert_lessons_into_temp_weekday_table(self, user_id: int, lessons: list) -> None:
+    def insert_lessons_into_temp_weekday_table(self, user_id: int, weekday: str, lessons: list) -> None:
         """Inserts lessons into the temp weekday table"""
         query = DiaryHomeworkQueries.insert_lessons_into_temp_weekday_diary_query
         for lesson in lessons:
             query = query.replace("null", f"'{lesson}'", 1)
 
         with self.connection.cursor() as cursor:
-            cursor.execute(query.format(user_id))
+            cursor.execute(query.format(user_id, weekday))
             self.connection.commit()
 
     def delete_row_from_temp_weekday_table(self, user_id: int) -> None:
@@ -399,6 +407,7 @@ class DiaryHomeworkQueries:
 
     create_table_temp_weekday_diary = """CREATE TABLE IF NOT EXISTS temp_weekday_diary(
         user_id INT UNIQUE,
+        weekday TEXT,
         FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE,
         
         lesson1 TEXT,
@@ -419,12 +428,14 @@ class DiaryHomeworkQueries:
     get_all_days_from_current_week_query = """SELECT * FROM diary_current_week WHERE classroom_id={}"""
     get_all_days_from_next_week_query = """SELECT * FROM diary_next_week WHERE classroom_id={}"""
 
+    get_temp_weekday_name_query = """SELECT weekday FROM temp_weekday_diary WHERE user_id={}"""
+
     insert_classroom_id_standard_week_query = "INSERT INTO diary_standard_week (classroom_id) VALUES({})"
     insert_classroom_id_current_week_query = "INSERT INTO diary_current_week (classroom_id) VALUES({})"
     insert_classroom_id_next_week_query = "INSERT INTO diary_next_week (classroom_id) VALUES({})"
 
     insert_lessons_into_temp_weekday_diary_query = """INSERT INTO temp_weekday_diary VALUES(
-        {}, null, null, null, null, null, null, null, null, null, null, null, null
+        {}, '{}', null, null, null, null, null, null, null, null, null, null, null, null
     )"""
 
     delete_row_from_temp_weekday_diary_query = """DELETE FROM temp_weekday_diary WHERE user_id={}"""
@@ -443,5 +454,5 @@ if __name__ == '__main__':
     print(diary_homework_db.get_weekday_from_standard_week(2, "wednesday"))
     print(diary_homework_db.get_weekday_from_next_week(2, "monday"))
     print(diary_homework_db.get_weekday_from_current_week(2, "friday"))
-    diary_homework_db.insert_lessons_into_temp_weekday_table(341106876, ["af", "Пусто", "Матешка"])
+    diary_homework_db.insert_lessons_into_temp_weekday_table(341106876, "wednesay", ["af", "Пусто", "Матешка"])
     diary_homework_db.delete_row_from_temp_weekday_table(341106876)

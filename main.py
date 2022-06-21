@@ -95,11 +95,11 @@ class DiaryVkBot(CallbackPayloadHandlers):
             case States.S_EDIT_STANDARD_WEEK_MYCLASSES.value:
                 self.s_edit_standard_week_my_classes_handler(user_id, payload)
 
-            case (States.S_EDIT_STANDARD_MONDAY_MYCLASSES.value | States.S_EDIT_STANDARD_TUESDAY_MYCLASSES.value \
-                  | States.S_EDIT_STANDARD_WEDNESDAY_MYCLASSES.value | States.S_EDIT_STANDARD_THURSDAY_MYCLASSES.value \
-                  | States.S_EDIT_STANDARD_FRIDAY_MYCLASSES.value | States.S_EDIT_STANDARD_SATURDAY_MYCLASSES.value \
-                  | States.S_EDIT_STANDARD_SUNDAY_MYCLASSES.value):
+            case States.S_EDIT_STANDARD_WEEKDAY_MYCLASSES.value:
                 self.s_edit_standard_weekday_my_classes_handler(user_id, payload)
+
+            case States.S_ADD_NEW_LESSON_MYCLASSES.value:
+                self.s_add_new_lesson_my_classes_handler(user_id, message, payload)
 
             # TECHNICALSUPPORT
             case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value:

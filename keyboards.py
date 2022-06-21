@@ -95,3 +95,8 @@ class KeyBoards:
     EDIT_STANDARD_WEEKDAY_KEYBOARD.add_button("Сохранить", payload=get_payload("Сохранить"))
     EDIT_STANDARD_WEEKDAY_KEYBOARD.add_line()
     EDIT_STANDARD_WEEKDAY_KEYBOARD.add_button("Главное меню", payload=get_payload("Главное меню"))
+
+    # CANCEL_MENU KEYBOARD
+    KEYBOARD_CANCEL_MENU = VkKeyboard()
+    KEYBOARD_CANCEL_MENU.add_button("Отменить", payload=get_payload("Отменить"))
+    KEYBOARD_CANCEL_MENU.add_button("Главное меню", payload=get_payload("Главное меню"))
