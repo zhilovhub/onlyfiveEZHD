@@ -104,6 +104,12 @@ class DiaryHomeworkCommands(DataBase):
             cursor.execute(DiaryHomeworkQueries.update_add_new_lesson_into_temp_weekday_diary_query.format(new_lesson_index, lesson, user_id))
             self.connection.commit()
 
+    def update_delete_all_lessons_from_temp_table(self, user_id: int) -> None:
+        """Deletes all lessons from temp table"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(DiaryHomeworkQueries.update_delete_all_lessons_from_temp_table_query.format(user_id))
+            self.connection.commit()
+
     def delete_row_from_temp_weekday_table(self, user_id: int) -> None:
         """Deletes row from temp table"""
         with self.connection.cursor() as cursor:
@@ -455,6 +461,21 @@ class DiaryHomeworkQueries:
 
     update_add_new_lesson_into_temp_weekday_diary_query = """UPDATE temp_weekday_diary SET lesson{}='{}'
         WHERE user_id={}"""
+
+    update_delete_all_lessons_from_temp_table_query = """UPDATE temp_weekday_diary SET
+        lesson1=NULL,
+        lesson2=NULL,
+        lesson3=NULL,
+        lesson4=NULL,
+        lesson5=NULL,
+        lesson6=NULL,
+        lesson7=NULL,
+        lesson8=NULL,
+        lesson9=NULL,
+        lesson10=NULL,
+        lesson11=NULL,
+        lesson12=NULL
+    WHERE user_id={}"""
 
     delete_row_from_temp_weekday_diary_query = """DELETE FROM temp_weekday_diary WHERE user_id={}"""
 

@@ -303,6 +303,20 @@ class StateHandlers(SupportingFunctions):
                 self.send_message(user_id, f"Напишите название {new_lesson_index}-го урока (макс 70 символов):", self.get_keyboard("cancel_menu"))
                 self.user_db.set_user_dialog_state(user_id, States.S_ADD_NEW_LESSON_MYCLASSES.value)
 
+        elif payload["text"] == "Удалить всё":
+            formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
+
+            if not any(formatted_day_lessons):
+                self.send_message(user_id, "Расписание на этот день и так пусто", self.get_keyboard("edit_standard_weekday"))
+
+            else:
+                self.diary_homework_db.update_delete_all_lessons_from_temp_table(user_id)
+                weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
+                new_formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
+                new_weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday)
+
+                self.send_message(user_id, f"Все уроки удалены!\n\n{new_weekday_diary_text}", self.get_keyboard("edit_standard_weekday"))
+
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
