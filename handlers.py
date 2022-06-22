@@ -301,9 +301,11 @@ class StateHandlers(SupportingFunctions):
                 self.send_message(user_id, "Максимальное число (12) уроков уже записано!",
                                   self.get_keyboard("edit_standard_weekday"))
             else:
+                weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
+                weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
                 new_lesson_index = formatted_day_lessons.index(None) + 1
 
-                self.send_message(user_id, f"Напишите название {new_lesson_index}-го урока (макс 70 символов):",
+                self.send_message(user_id, f"{weekday_diary_text}\n\nНапишите название {new_lesson_index}-го урока (макс 70 символов):",
                                   self.get_keyboard("back_menu"))
                 self.user_db.set_user_dialog_state(user_id, States.S_ADD_NEW_LESSON_MYCLASSES.value)
 
