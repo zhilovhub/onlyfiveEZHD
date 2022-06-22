@@ -307,7 +307,11 @@ class StateHandlers(SupportingFunctions):
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
 
             if not any(formatted_day_lessons):
-                self.send_message(user_id, "Расписание на этот день и так пусто", self.get_keyboard("edit_standard_weekday"))
+                weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
+                formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
+                weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
+
+                self.send_message(user_id, f"Расписание на этот день и так пусто\n\n{weekday_diary_text}", self.get_keyboard("edit_standard_weekday"))
 
             else:
                 self.diary_homework_db.update_delete_all_lessons_from_temp_table(user_id)
