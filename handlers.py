@@ -394,7 +394,7 @@ class StateHandlers(SupportingFunctions):
         self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     @staticmethod
-    def get_weekday_diary_text(formatted_days: list, weekday: str) -> str:
+    def get_weekday_diary_text(formatted_days: tuple, weekday: str) -> str:
         """Returns text of weekday's diary"""
         weekday_meanings_dict = {
             "monday": "Понедельник",
