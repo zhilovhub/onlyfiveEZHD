@@ -299,7 +299,7 @@ class StateHandlers(SupportingFunctions):
 
             if all(formatted_day_lessons):
                 self.send_message(user_id, "Максимальное число (12) уроков уже записано!",
-                                  sealf.get_keyboard("edit_standard_weekday"))
+                                  self.get_keyboard("edit_standard_weekday"))
             else:
                 weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
                 weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
