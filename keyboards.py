@@ -96,7 +96,7 @@ class KeyBoards:
     KEYBOARD_EDIT_STANDARD_WEEKDAY.add_line()
     KEYBOARD_EDIT_STANDARD_WEEKDAY.add_button("Главное меню", payload=get_payload("Главное меню"))
 
-    # CANCEL_MENU KEYBOARD
-    KEYBOARD_CANCEL_MENU = VkKeyboard()
-    KEYBOARD_CANCEL_MENU.add_button("Отменить", payload=get_payload("Отменить"))
-    KEYBOARD_CANCEL_MENU.add_button("Главное меню", payload=get_payload("Главное меню"))
+    # BACK_MENU KEYBOARD
+    KEYBOARD_BACK_MENU = VkKeyboard()
+    KEYBOARD_BACK_MENU.add_button("Назад", payload=get_payload("Назад"))
+    KEYBOARD_BACK_MENU.add_button("Главное меню", payload=get_payload("Главное меню"))
