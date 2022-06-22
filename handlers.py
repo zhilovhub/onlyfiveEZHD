@@ -294,12 +294,12 @@ class StateHandlers(SupportingFunctions):
         if payload is None:
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("edit_standard_weekday"))
 
-        elif payload["text"] == "Добавить урок":
+        elif payload["text"] == "Добавить":
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
 
             if all(formatted_day_lessons):
                 self.send_message(user_id, "Максимальное число (12) уроков уже записано!",
-                                  self.get_keyboard("edit_standard_weekday"))
+                                  sealf.get_keyboard("edit_standard_weekday"))
             else:
                 weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
                 weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
