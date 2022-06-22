@@ -16,55 +16,63 @@ class DiaryHomeworkCommands(DataBase):
         except Error as e:
             print(e)
 
-    def get_all_days_from_standard_week(self, classroom_id: int) -> list:
-        """Gets everyday diary from standard week"""
+    def get_all_days_lessons_from_standard_week(self, classroom_id: int) -> list:
+        """Returns everyday diary from standard week"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_all_days_from_standard_week_query.format(classroom_id))
             all_lessons = cursor.fetchone()[1:]
 
         return all_lessons
 
-    def get_all_days_from_current_week(self, classroom_id: int) -> list:
-        """Gets everyday diary from current week"""
+    def get_all_days_lessons_from_current_week(self, classroom_id: int) -> list:
+        """Returns everyday diary from current week"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_all_days_from_current_week_query.format(classroom_id))
             all_lessons = cursor.fetchone()[1:]
 
         return all_lessons
 
-    def get_all_days_from_next_week(self, classroom_id: int) -> list:
-        """Gets everyday diary from next week"""
+    def get_all_days_lessons_from_next_week(self, classroom_id: int) -> list:
+        """Returns everyday diary from next week"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_all_days_from_next_week_query.format(classroom_id))
             lessons = cursor.fetchone()[1:]
 
         return lessons
 
-    def get_weekday_from_standard_week(self, classroom_id: int, weekday: str) -> list:
-        """Gets weekday diary from standard week"""
+    def get_weekday_lessons_from_standard_week(self, classroom_id: int, weekday: str) -> list:
+        """Returns weekday diary from standard week"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, "diary_standard_week").format(classroom_id))
             lessons = cursor.fetchone()
 
         return lessons
 
-    def get_weekday_from_current_week(self, classroom_id: int, weekday: str) -> list:
-        """Gets weekday diary from current week"""
+    def get_weekday_lessons_from_current_week(self, classroom_id: int, weekday: str) -> list:
+        """Returns weekday diary from current week"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, "diary_current_week").format(classroom_id))
             lessons = cursor.fetchone()
 
         return lessons
 
-    def get_weekday_from_next_week(self, classroom_id: int, weekday: str) -> list:
-        """Gets weekday diary from next week"""
+    def get_weekday_lessons_from_next_week(self, classroom_id: int, weekday: str) -> list:
+        """Returns weekday diary from next week"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, "diary_next_week").format(classroom_id))
             lessons = cursor.fetchone()
 
         return lessons
 
-    def get_weekday_from_temp_table(self, user_id: int) -> str:
+    def get_weekday_lessons_from_temp_table(self, user_id: int) -> list:
+        """Returns weekday's lessons from the temp table"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_from_temp_table_query.format(user_id))
+            lessons = cursor.fetchone()[2:]
+
+        return lessons
+
+    def get_weekday_name_from_temp_table(self, user_id: int) -> str:
         """Returns weekday's name from temp table"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_temp_weekday_name_query.format(user_id))
@@ -84,10 +92,16 @@ class DiaryHomeworkCommands(DataBase):
         """Inserts lessons into the temp weekday table"""
         query = DiaryHomeworkQueries.insert_lessons_into_temp_weekday_diary_query
         for lesson in lessons:
-            query = query.replace("null", f"'{lesson}'", 1)
+            query = query.replace("NULL", f"'{lesson}'", 1)
 
         with self.connection.cursor() as cursor:
             cursor.execute(query.format(user_id, weekday))
+            self.connection.commit()
+
+    def update_add_new_lesson_into_temp_table(self, user_id: int, lesson: str, new_lesson_index: int) -> None:
+        """Update the row with new lesson"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(DiaryHomeworkQueries.update_add_new_lesson_into_temp_weekday_diary_query.format(new_lesson_index, lesson, user_id))
             self.connection.commit()
 
     def delete_row_from_temp_weekday_table(self, user_id: int) -> None:
@@ -428,6 +442,7 @@ class DiaryHomeworkQueries:
     get_all_days_from_current_week_query = """SELECT * FROM diary_current_week WHERE classroom_id={}"""
     get_all_days_from_next_week_query = """SELECT * FROM diary_next_week WHERE classroom_id={}"""
 
+    get_weekday_lessons_from_temp_table_query = """SELECT * FROM temp_weekday_diary WHERE user_id={}"""
     get_temp_weekday_name_query = """SELECT weekday FROM temp_weekday_diary WHERE user_id={}"""
 
     insert_classroom_id_standard_week_query = "INSERT INTO diary_standard_week (classroom_id) VALUES({})"
@@ -435,8 +450,11 @@ class DiaryHomeworkQueries:
     insert_classroom_id_next_week_query = "INSERT INTO diary_next_week (classroom_id) VALUES({})"
 
     insert_lessons_into_temp_weekday_diary_query = """INSERT INTO temp_weekday_diary VALUES(
-        {}, '{}', null, null, null, null, null, null, null, null, null, null, null, null
+        {}, '{}', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
     )"""
+
+    update_add_new_lesson_into_temp_weekday_diary_query = """UPDATE temp_weekday_diary SET lesson{}='{}'
+        WHERE user_id={}"""
 
     delete_row_from_temp_weekday_diary_query = """DELETE FROM temp_weekday_diary WHERE user_id={}"""
 
@@ -450,9 +468,10 @@ if __name__ == '__main__':
     )
 
     diary_homework_db = DiaryHomeworkCommands(connection)
-    print(diary_homework_db.get_all_days_from_standard_week(2))
-    print(diary_homework_db.get_weekday_from_standard_week(2, "wednesday"))
-    print(diary_homework_db.get_weekday_from_next_week(2, "monday"))
-    print(diary_homework_db.get_weekday_from_current_week(2, "friday"))
-    diary_homework_db.insert_lessons_into_temp_weekday_table(341106876, "wednesay", ["af", "Пусто", "Матешка"])
-    diary_homework_db.delete_row_from_temp_weekday_table(341106876)
+    print(diary_homework_db.get_all_days_lessons_from_standard_week(2))
+    print(diary_homework_db.get_weekday_lessons_from_standard_week(2, "wednesday"))
+    print(diary_homework_db.get_weekday_lessons_from_next_week(2, "monday"))
+    print(diary_homework_db.get_weekday_lessons_from_current_week(2, "friday"))
+    diary_homework_db.insert_lessons_into_temp_weekday_table(341106876, "wednesay", [])
+    print(diary_homework_db.get_weekday_lessons_from_temp_table(341106876))
+    # diary_homework_db.delete_row_from_temp_weekday_table(341106876)

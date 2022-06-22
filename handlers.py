@@ -233,7 +233,7 @@ class StateHandlers(SupportingFunctions):
                                                      "classroom_id": self.classroom_db.get_customizing_classroom_id(user_id)})
 
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            raw_week_lessons = self.diary_homework_db.get_all_days_from_standard_week(classroom_id)
+            raw_week_lessons = self.diary_homework_db.get_all_days_lessons_from_standard_week(classroom_id)
             formatted_week_lessons = []
 
             for i in range(0, len(raw_week_lessons), 12):
@@ -256,20 +256,23 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] in ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]:
             weekday_meanings_dict = {
-                "ПН": ("monday", "Понедельник"),
-                "ВТ": ("tuesday", "Вторник"),
-                "СР": ("wednesday", "Среда"),
-                "ЧТ": ("thursday", "Четверг"),
-                "ПТ": ("friday", "Пятница"),
-                "СБ": ("saturday", "Суббота"),
-                "ВС": ("sunday", "Воскресение"),
+                "ПН": "monday",
+                "ВТ": "tuesday",
+                "СР": "wednesday",
+                "ЧТ": "thursday",
+                "ПТ": "friday",
+                "СБ": "saturday",
+                "ВС": "sunday"
             }
-            english_weekday = weekday_meanings_dict[payload["text"]][0]
-            russian_weekday = weekday_meanings_dict[payload["text"]][1]
+            english_weekday = weekday_meanings_dict[payload["text"]]
 
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            formatted_day_lessons = self.diary_homework_db.get_weekday_from_standard_week(classroom_id, english_weekday)
-            weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, russian_weekday)
+            formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_standard_week(classroom_id, english_weekday)
+
+            if None in formatted_day_lessons:
+                formatted_day_lessons = formatted_day_lessons[:formatted_day_lessons.index(None)]
+
+            weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, english_weekday)
 
             self.diary_homework_db.insert_lessons_into_temp_weekday_table(user_id, english_weekday, formatted_day_lessons)
             self.send_message(user_id, weekday_diary_text, self.get_keyboard("edit_standard_weekday"))
@@ -290,8 +293,15 @@ class StateHandlers(SupportingFunctions):
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("edit_standard_weekday"))
 
         elif payload["text"] == "Добавить урок":
-            self.send_message(user_id, "Напишите название нового урока (макс 70 символов):", self.get_keyboard("cancel_menu"))
-            self.user_db.set_user_dialog_state(user_id, States.S_ADD_NEW_LESSON_MYCLASSES.value)
+            formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
+
+            if all(formatted_day_lessons):
+                self.send_message(user_id, "Максимальное число (12) уроков уже записано!", self.get_keyboard("edit_standard_weekday"))
+            else:
+                new_lesson_index = formatted_day_lessons.index(None) + 1
+
+                self.send_message(user_id, f"Напишите название {new_lesson_index}-го урока (макс 70 символов):", self.get_keyboard("cancel_menu"))
+                self.user_db.set_user_dialog_state(user_id, States.S_ADD_NEW_LESSON_MYCLASSES.value)
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
@@ -310,7 +320,15 @@ class StateHandlers(SupportingFunctions):
             if len(message) > 70:
                 self.send_message(user_id, "Длина названия превышает 70 символов!", self.get_keyboard("cancel_menu"))
             else:
-                self.send_message(user_id, "Урок добавлен!", self.get_keyboard("edit_standard_weekday"))
+                formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
+                new_lesson_index = formatted_day_lessons.index(None) + 1
+                self.diary_homework_db.update_add_new_lesson_into_temp_table(user_id, message, new_lesson_index)
+
+                new_formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
+                weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
+                new_weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday)
+
+                self.send_message(user_id, f"Урок добавлен!\n\n{new_weekday_diary_text}", self.get_keyboard("edit_standard_weekday"))
                 self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEKDAY_MYCLASSES.value)
 
         elif payload["text"] == "Главное меню":
@@ -348,6 +366,17 @@ class StateHandlers(SupportingFunctions):
     @staticmethod
     def get_weekday_diary_text(formatted_days: list, weekday: str) -> str:
         """Returns text of weekday's diary"""
+        weekday_meanings_dict = {
+            "monday": "Понедельник",
+            "tuesday": "Вторник",
+            "wednesday": "Среда",
+            "thursday": "Четверг",
+            "friday": "Пятница",
+            "saturday": "Суббота",
+            "sunday": "Воскресение"
+        }
+        weekday_russian = weekday_meanings_dict[weekday]
+
         if not any(formatted_days):
             weekday_diary = ["1. ПУСТО"]
         else:
@@ -357,7 +386,7 @@ class StateHandlers(SupportingFunctions):
                 weekday_without_empty = formatted_days.copy()
             weekday_diary = [f"{i}. {weekday_without_empty[i - 1]}" for i in range(1, len(weekday_without_empty) + 1)]
 
-        return weekday + "\n" + "\n".join(weekday_diary)
+        return weekday_russian + "\n" + "\n".join(weekday_diary)
 
     @staticmethod
     def get_week_diary_text(formatted_week: list) -> str:
