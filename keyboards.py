@@ -83,20 +83,33 @@ class KeyBoards:
     KEYBOARD_CANCEL_SEND.add_button(label="Отменить", payload=get_payload("Отменить"))
     KEYBOARD_CANCEL_SEND.add_button(label="Отправить", payload=get_payload("Отправить"))
 
-    # EDIT_STANDARD_WEEKDAY KEYBOARD
-    KEYBOARD_EDIT_STANDARD_WEEKDAY = VkKeyboard()
-    KEYBOARD_EDIT_STANDARD_WEEKDAY.add_button("Добавить", payload=get_payload("Добавить"))
-    KEYBOARD_EDIT_STANDARD_WEEKDAY.add_button("Удалить урок", payload=get_payload("Удалить урок"))
-    KEYBOARD_EDIT_STANDARD_WEEKDAY.add_button("Изменить", payload=get_payload("Изменить"))
-    KEYBOARD_EDIT_STANDARD_WEEKDAY.add_line()
-    KEYBOARD_EDIT_STANDARD_WEEKDAY.add_button("Удалить всё", payload=get_payload("Удалить всё"))
-    KEYBOARD_EDIT_STANDARD_WEEKDAY.add_line()
-    KEYBOARD_EDIT_STANDARD_WEEKDAY.add_button("Отменить", payload=get_payload("Отменить"), color="negative")
-    KEYBOARD_EDIT_STANDARD_WEEKDAY.add_button("Сохранить", payload=get_payload("Сохранить"), color="positive")
-    KEYBOARD_EDIT_STANDARD_WEEKDAY.add_line()
-    KEYBOARD_EDIT_STANDARD_WEEKDAY.add_button("Главное меню", payload=get_payload("Главное меню"), color="primary")
-
     # BACK_MENU KEYBOARD
     KEYBOARD_BACK_MENU = VkKeyboard()
     KEYBOARD_BACK_MENU.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_BACK_MENU.add_button("Главное меню", payload=get_payload("Главное меню"))
+
+    # CUSTOMIZED EDIT_STANDARD_WEEKDAY KEYBOARD
+    @staticmethod
+    def get_edit_standard_weekday_keyboard(add_button_color="secondary", delete_button_color="secondary",
+                                           redact_button_color="secondary") -> VkKeyboard:
+        keyboard_edit_standard_weekday = VkKeyboard()
+        keyboard_edit_standard_weekday.add_button("Добавить", payload=KeyBoards.get_payload("Добавить"),
+                                                  color=add_button_color)
+        keyboard_edit_standard_weekday.add_button("Удалить урок",
+                                                  payload=KeyBoards.get_payload("Удалить урок"),
+                                                  color=delete_button_color)
+        keyboard_edit_standard_weekday.add_button("Изменить", payload=KeyBoards.get_payload("Изменить"),
+                                                  color=redact_button_color)
+        keyboard_edit_standard_weekday.add_line()
+        keyboard_edit_standard_weekday.add_button("Удалить всё", payload=KeyBoards.get_payload("Удалить всё"))
+        keyboard_edit_standard_weekday.add_line()
+        keyboard_edit_standard_weekday.add_button("Отменить", payload=KeyBoards.get_payload("Отменить"),
+                                                  color="negative")
+        keyboard_edit_standard_weekday.add_button("Сохранить", payload=KeyBoards.get_payload("Сохранить"),
+                                                  color="positive")
+        keyboard_edit_standard_weekday.add_line()
+        keyboard_edit_standard_weekday.add_button("Главное меню",
+                                                  payload=KeyBoards.get_payload("Главное меню"),
+                                                  color="primary")
+
+        return keyboard_edit_standard_weekday.get_keyboard()
