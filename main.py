@@ -21,6 +21,7 @@ class DiaryVkBot(CallbackPayloadHandlers):
                 if event.from_user:
                     user_id = event.object.message["from_id"]  # Getting user_id
                     message = event.object.message["text"]  # Getting message's text
+                    attachments = event.object.message["attachments"]
                     payload = loads(
                         event.object.message["payload"]) if "payload" in event.object.message else None  # Payload
 
@@ -36,8 +37,12 @@ class DiaryVkBot(CallbackPayloadHandlers):
                     if self.is_member(user_id):  # Checking first condition
 
                         if self.user_db.check_user_is_ready(user_id):  # Checking second condition
-                            current_dialog_state = self.user_db.get_user_dialog_state(user_id)
-                            self.filter_dialog_state(user_id, message, payload, current_dialog_state)
+
+                            if not attachments:  # Checking user didn't send attachment
+                                current_dialog_state = self.user_db.get_user_dialog_state(user_id)
+                                self.filter_dialog_state(user_id, message, payload, current_dialog_state)
+                            else:
+                                self.send_message(user_id, "Пиши текстом... Или используй кнопки для навигации!👇🏻")
                         else:
                             self.user_db.set_user_is_ready(
                                 user_id)  # First condition is True but this is a first user's message
