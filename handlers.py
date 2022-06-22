@@ -424,17 +424,17 @@ class StateHandlers(SupportingFunctions):
         week_diary = []
 
         weekdays = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]
-        for weekday_name, weekday_list in zip(weekdays, formatted_week):
-            if not any(weekday_list):
+        for weekday_name, weekday_tuple in zip(weekdays, formatted_week):
+            if not any(weekday_tuple):
                 week_diary.append(weekday_name + "\n" + "1. ПУСТО")
             else:
-                if None in weekday_list:
-                    weekday_list_without_empty = weekday_list[:weekday_list.index(None)]
+                if None in weekday_tuple:
+                    weekday_tuple_without_empty = weekday_tuple[:weekday_tuple.index(None)]
                 else:
-                    weekday_list_without_empty = weekday_list.copy()
+                    weekday_tuple_without_empty = weekday_tuple
 
-                day_lessons = [f"{i}. {weekday_list_without_empty[i - 1]}"
-                               for i in range(1, len(weekday_list_without_empty) + 1)]
+                day_lessons = [f"{i}. {weekday_tuple_without_empty[i - 1]}"
+                               for i in range(1, len(weekday_tuple_without_empty) + 1)]
                 week_diary.append(weekday_name + "\n" + "\n".join(day_lessons))
 
         return "\n\n".join(week_diary)

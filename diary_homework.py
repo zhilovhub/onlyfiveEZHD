@@ -16,7 +16,7 @@ class DiaryHomeworkCommands(DataBase):
         except Error as e:
             print(e)
 
-    def get_all_days_lessons_from_standard_week(self, classroom_id: int) -> list:
+    def get_all_days_lessons_from_standard_week(self, classroom_id: int) -> tuple:
         """Returns everyday diary from standard week"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_all_days_from_standard_week_query.format(classroom_id))
@@ -24,7 +24,7 @@ class DiaryHomeworkCommands(DataBase):
 
         return all_lessons
 
-    def get_all_days_lessons_from_current_week(self, classroom_id: int) -> list:
+    def get_all_days_lessons_from_current_week(self, classroom_id: int) -> tuple:
         """Returns everyday diary from current week"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_all_days_from_current_week_query.format(classroom_id))
@@ -32,7 +32,7 @@ class DiaryHomeworkCommands(DataBase):
 
         return all_lessons
 
-    def get_all_days_lessons_from_next_week(self, classroom_id: int) -> list:
+    def get_all_days_lessons_from_next_week(self, classroom_id: int) -> tuple:
         """Returns everyday diary from next week"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_all_days_from_next_week_query.format(classroom_id))
@@ -40,7 +40,7 @@ class DiaryHomeworkCommands(DataBase):
 
         return lessons
 
-    def get_weekday_lessons_from_standard_week(self, classroom_id: int, weekday: str) -> list:
+    def get_weekday_lessons_from_standard_week(self, classroom_id: int, weekday: str) -> tuple:
         """Returns weekday diary from standard week"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, "diary_standard_week").format(classroom_id))
@@ -48,7 +48,7 @@ class DiaryHomeworkCommands(DataBase):
 
         return lessons
 
-    def get_weekday_lessons_from_current_week(self, classroom_id: int, weekday: str) -> list:
+    def get_weekday_lessons_from_current_week(self, classroom_id: int, weekday: str) -> tuple:
         """Returns weekday diary from current week"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, "diary_current_week").format(classroom_id))
@@ -56,7 +56,7 @@ class DiaryHomeworkCommands(DataBase):
 
         return lessons
 
-    def get_weekday_lessons_from_next_week(self, classroom_id: int, weekday: str) -> list:
+    def get_weekday_lessons_from_next_week(self, classroom_id: int, weekday: str) -> tuple:
         """Returns weekday diary from next week"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, "diary_next_week").format(classroom_id))
@@ -64,7 +64,7 @@ class DiaryHomeworkCommands(DataBase):
 
         return lessons
 
-    def get_weekday_lessons_from_temp_table(self, user_id: int) -> list:
+    def get_weekday_lessons_from_temp_table(self, user_id: int) -> tuple:
         """Returns weekday's lessons from the temp table"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_from_temp_table_query.format(user_id))
