@@ -325,24 +325,43 @@ class StateHandlers(SupportingFunctions):
                                            self.get_keyboard("edit_standard_weekday_redact"))
                 self.user_db.set_user_dialog_state(user_id, States.S_EDIT_LESSON_STANDARD_WEEKDAY_MYCLASSES.value)
 
-        elif payload["text"] == "Удалить всё":
+        elif payload["text"] == "Удалить урок":
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
+            weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
 
             if not any(formatted_day_lessons):
-                weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
-                formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
                 weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
+                self.send_message(user_id, f"Расписание на этот день и так пустое\n\n{weekday_diary_text}",
+                                  self.get_keyboard("edit_standard_weekday_default"))
 
+            else:
+                last_lesson_index = formatted_day_lessons.index(None) if None in formatted_day_lessons else 12
+                deleted_lesson = formatted_day_lessons[last_lesson_index - 1]
+                self.diary_homework_db.update_delete_lesson_from_temp_table(user_id, last_lesson_index)
+
+                new_formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
+                weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday)
+
+                self.send_message(user_id, f"Удалён {last_lesson_index}. {deleted_lesson}\n\n{weekday_diary_text}",
+                                  self.get_keyboard("edit_standard_weekday_default"))
+
+            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEKDAY_MYCLASSES.value)
+
+        elif payload["text"] == "Удалить всё":
+            formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
+            weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
+
+            if not any(formatted_day_lessons):
+                weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
                 self.send_message(user_id, f"Расписание на этот день и так пустое\n\n{weekday_diary_text}",
                                   self.get_keyboard("edit_standard_weekday_default"))
 
             else:
                 self.diary_homework_db.update_delete_all_lessons_from_temp_table(user_id)
-                weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
                 new_formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
-                new_weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday)
+                weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday)
 
-                self.send_message(user_id, f"Все уроки удалены!\n\n{new_weekday_diary_text}",
+                self.send_message(user_id, f"Все уроки удалены!\n\n{weekday_diary_text}",
                                   self.get_keyboard("edit_standard_weekday_default"))
 
             self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEKDAY_MYCLASSES.value)
