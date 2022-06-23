@@ -233,16 +233,12 @@ class StateHandlers(SupportingFunctions):
                                          "classroom_id": self.classroom_db.get_customizing_classroom_id(user_id)})
 
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            raw_week_lessons = self.diary_homework_db.get_all_days_lessons_from_standard_week(classroom_id)
-            formatted_week_lessons = []
-
-            for i in range(0, len(raw_week_lessons), 12):
-                formatted_week_lessons.append(raw_week_lessons[i:i+12])
-            diary = self.get_week_diary_text(formatted_week_lessons)
+            formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_standard_week(classroom_id)
+            diary_text = self.get_week_diary_text(formatted_week_lessons)
 
             self.send_message(user_id, "Эталонное расписание\n\nМожно копировать в текущее "
                                        "и будущее расписание.\nБудет автоматически устанавливаться в будущее "
-                                       "расписание каждую неделю\n\n" + diary, keyboard.get_keyboard())
+                                       "расписание каждую неделю\n\n" + diary_text, keyboard.get_keyboard())
 
         elif payload["text"] == "Изменить эталонное расписание":
             self.send_message(user_id, "Редактирование эталонного расписания\n\nИзменения увидят ВСЕ участники класса!",
@@ -366,6 +362,21 @@ class StateHandlers(SupportingFunctions):
 
             self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEKDAY_MYCLASSES.value)
 
+        elif payload["text"] == "Сохранить":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
+            weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
+
+            self.diary_homework_db.update_weekday_in_standard_week(classroom_id, formatted_day_lessons, weekday)
+            self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
+
+            formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_standard_week(classroom_id)
+            diary_text = self.get_week_diary_text(formatted_week_lessons)
+
+            self.send_message(user_id, f"{diary_text}\n\nВсе изменения сохранены!",
+                              self.get_keyboard("edit_standard_week"))
+            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEK_MYCLASSES.value)
+
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
@@ -373,7 +384,11 @@ class StateHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
         elif payload["text"] == "Отменить":
-            self.send_message(user_id, "Все изменения отменены!", self.get_keyboard("edit_standard_week"))
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_standard_week(classroom_id)
+            diary_text = self.get_week_diary_text(formatted_week_lessons)
+
+            self.send_message(user_id, f"{diary_text}\n\nВсе изменения отменены!", self.get_keyboard("edit_standard_week"))
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
             self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEK_MYCLASSES.value)
 

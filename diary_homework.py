@@ -16,29 +16,41 @@ class DiaryHomeworkCommands(DataBase):
         except Error as e:
             print(e)
 
-    def get_all_days_lessons_from_standard_week(self, classroom_id: int) -> tuple:
+    def get_all_days_lessons_from_standard_week(self, classroom_id: int) -> list:
         """Returns everyday diary from standard week"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_all_days_from_standard_week_query.format(classroom_id))
             all_lessons = cursor.fetchone()[1:]
 
-        return all_lessons
+            formatted_all_lessons = []
+            for i in range(0, len(all_lessons), 12):
+                formatted_all_lessons.append(all_lessons[i:i+12])
 
-    def get_all_days_lessons_from_current_week(self, classroom_id: int) -> tuple:
+        return formatted_all_lessons
+
+    def get_all_days_lessons_from_current_week(self, classroom_id: int) -> list:
         """Returns everyday diary from current week"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_all_days_from_current_week_query.format(classroom_id))
             all_lessons = cursor.fetchone()[1:]
 
-        return all_lessons
+            formatted_all_lessons = []
+            for i in range(0, len(all_lessons), 12):
+                formatted_all_lessons.append(all_lessons[i:i + 12])
 
-    def get_all_days_lessons_from_next_week(self, classroom_id: int) -> tuple:
+        return formatted_all_lessons
+
+    def get_all_days_lessons_from_next_week(self, classroom_id: int) -> list:
         """Returns everyday diary from next week"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_all_days_from_next_week_query.format(classroom_id))
-            lessons = cursor.fetchone()[1:]
+            all_lessons = cursor.fetchone()[1:]
 
-        return lessons
+            formatted_all_lessons = []
+            for i in range(0, len(all_lessons), 12):
+                formatted_all_lessons.append(all_lessons[i:i + 12])
+
+        return formatted_all_lessons
 
     def get_weekday_lessons_from_standard_week(self, classroom_id: int, weekday: str) -> tuple:
         """Returns weekday diary from standard week"""
@@ -98,6 +110,16 @@ class DiaryHomeworkCommands(DataBase):
             cursor.execute(query.format(user_id, weekday))
             self.connection.commit()
 
+    def update_weekday_in_standard_week(self, classroom_id: int, lessons: tuple, weekday: str) -> None:
+        """Updates standard week's weekday"""
+        query = DiaryHomeworkQueries.update_weekday_lessons_query(weekday, "diary_standard_week")
+        for lesson in lessons:
+            query = query.replace("NULL", f"'{lesson}'", 1) if lesson is not None else query
+
+        with self.connection.cursor() as cursor:
+            cursor.execute(query.format(classroom_id))
+            self.connection.commit()
+
     def update_add_new_lesson_into_temp_table(self, user_id: int, lesson: str, new_lesson_index: int) -> None:
         """Update the row with new lesson"""
         with self.connection.cursor() as cursor:
@@ -147,6 +169,25 @@ class DiaryHomeworkQueries:
                         weekday_lesson11,
                         weekday_lesson12
                       FROM table_name WHERE classroom_id={}"""
+        return template.replace("weekday", weekday).replace("table_name", table_name)
+
+    @staticmethod
+    def update_weekday_lessons_query(weekday: str, table_name: str) -> str:
+        """Creates update_weekday query"""
+        template = """UPDATE table_name SET
+                        weekday_lesson1=NULL,
+                        weekday_lesson2=NULL,
+                        weekday_lesson3=NULL,
+                        weekday_lesson4=NULL,
+                        weekday_lesson5=NULL,
+                        weekday_lesson6=NULL,
+                        weekday_lesson7=NULL,
+                        weekday_lesson8=NULL,
+                        weekday_lesson9=NULL,
+                        weekday_lesson10=NULL,
+                        weekday_lesson11=NULL,
+                        weekday_lesson12=NULL
+                      WHERE classroom_id={}"""
         return template.replace("weekday", weekday).replace("table_name", table_name)
     
     create_table_diary_standard_week_query = """CREATE TABLE IF NOT EXISTS diary_standard_week(
