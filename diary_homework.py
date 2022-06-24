@@ -16,39 +16,15 @@ class DiaryHomeworkCommands(DataBase):
         except Error as e:
             print(e)
 
-    def get_all_days_lessons_from_standard_week(self, classroom_id: int) -> list:
-        """Returns everyday diary from standard week"""
+    def get_all_days_lessons_from_week(self, classroom_id: int, week: str) -> list:
+        """Returns everyday diary from week"""
         with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_all_days_from_standard_week_query.format(classroom_id))
+            cursor.execute(DiaryHomeworkQueries.get_all_days_from_standard_week_query.format(week, classroom_id))
             all_lessons = cursor.fetchone()[1:]
 
             formatted_all_lessons = []
             for i in range(0, len(all_lessons), 12):
                 formatted_all_lessons.append(all_lessons[i:i+12])
-
-        return formatted_all_lessons
-
-    def get_all_days_lessons_from_current_week(self, classroom_id: int) -> list:
-        """Returns everyday diary from current week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_all_days_from_current_week_query.format(classroom_id))
-            all_lessons = cursor.fetchone()[1:]
-
-            formatted_all_lessons = []
-            for i in range(0, len(all_lessons), 12):
-                formatted_all_lessons.append(all_lessons[i:i + 12])
-
-        return formatted_all_lessons
-
-    def get_all_days_lessons_from_next_week(self, classroom_id: int) -> list:
-        """Returns everyday diary from next week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_all_days_from_next_week_query.format(classroom_id))
-            all_lessons = cursor.fetchone()[1:]
-
-            formatted_all_lessons = []
-            for i in range(0, len(all_lessons), 12):
-                formatted_all_lessons.append(all_lessons[i:i + 12])
 
         return formatted_all_lessons
 
@@ -497,9 +473,7 @@ class DiaryHomeworkQueries:
         lesson12 TEXT
     )"""
 
-    get_all_days_from_standard_week_query = """SELECT * FROM diary_standard_week WHERE classroom_id={}"""
-    get_all_days_from_current_week_query = """SELECT * FROM diary_current_week WHERE classroom_id={}"""
-    get_all_days_from_next_week_query = """SELECT * FROM diary_next_week WHERE classroom_id={}"""
+    get_all_days_from_standard_week_query = """SELECT * FROM diary_{}_week WHERE classroom_id={}"""
 
     get_weekday_lessons_from_temp_table_query = """SELECT * FROM temp_weekday_diary WHERE user_id={}"""
     get_temp_weekday_name_query = """SELECT weekday FROM temp_weekday_diary WHERE user_id={}"""
