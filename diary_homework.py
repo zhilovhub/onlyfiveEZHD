@@ -19,7 +19,7 @@ class DiaryHomeworkCommands(DataBase):
     def get_all_days_lessons_from_week(self, classroom_id: int, week: str) -> list:
         """Returns everyday diary from week"""
         with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_all_days_from_standard_week_query.format(week, classroom_id))
+            cursor.execute(DiaryHomeworkQueries.get_all_days_from_week_query.format(week, classroom_id))
             all_lessons = cursor.fetchone()[1:]
 
             formatted_all_lessons = []
@@ -473,7 +473,7 @@ class DiaryHomeworkQueries:
         lesson12 TEXT
     )"""
 
-    get_all_days_from_standard_week_query = """SELECT * FROM diary_{}_week WHERE classroom_id={}"""
+    get_all_days_from_week_query = """SELECT * FROM diary_{}_week WHERE classroom_id={}"""
 
     get_weekday_lessons_from_temp_table_query = """SELECT * FROM temp_weekday_diary WHERE user_id={}"""
     get_temp_weekday_name_query = """SELECT weekday FROM temp_weekday_diary WHERE user_id={}"""
@@ -519,7 +519,6 @@ if __name__ == '__main__':
     )
 
     diary_homework_db = DiaryHomeworkCommands(connection)
-    print(diary_homework_db.get_all_days_lessons_from_standard_week(2))
     print(diary_homework_db.get_weekday_lessons_from_standard_week(2, "wednesday"))
     print(diary_homework_db.get_weekday_lessons_from_next_week(2, "monday"))
     print(diary_homework_db.get_weekday_lessons_from_current_week(2, "friday"))
