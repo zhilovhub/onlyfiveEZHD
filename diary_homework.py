@@ -28,26 +28,10 @@ class DiaryHomeworkCommands(DataBase):
 
         return formatted_all_lessons
 
-    def get_weekday_lessons_from_standard_week(self, classroom_id: int, weekday: str) -> tuple:
-        """Returns weekday diary from standard week"""
+    def get_weekday_lessons_from_week(self, classroom_id: int, week: str, weekday: str) -> tuple:
+        """Returns weekday diary from week"""
         with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, "diary_standard_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_weekday_lessons_from_current_week(self, classroom_id: int, weekday: str) -> tuple:
-        """Returns weekday diary from current week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, "diary_current_week").format(classroom_id))
-            lessons = cursor.fetchone()
-
-        return lessons
-
-    def get_weekday_lessons_from_next_week(self, classroom_id: int, weekday: str) -> tuple:
-        """Returns weekday diary from next week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, "diary_next_week").format(classroom_id))
+            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, week).format(classroom_id))
             lessons = cursor.fetchone()
 
         return lessons
@@ -99,7 +83,9 @@ class DiaryHomeworkCommands(DataBase):
     def update_add_new_lesson_into_temp_table(self, user_id: int, lesson: str, new_lesson_index: int) -> None:
         """Update the row with new lesson"""
         with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.update_add_new_lesson_into_temp_weekday_diary_query.format(new_lesson_index, lesson, user_id))
+            cursor.execute(DiaryHomeworkQueries.update_add_new_lesson_into_temp_weekday_diary_query.format(
+                new_lesson_index, lesson, user_id)
+            )
             self.connection.commit()
 
     def update_delete_all_lessons_from_temp_table(self, user_id: int) -> None:
@@ -129,7 +115,7 @@ class DiaryHomeworkCommands(DataBase):
 
 class DiaryHomeworkQueries:
     @staticmethod
-    def get_weekday_lessons_query(weekday: str, table_name: str) -> str:
+    def get_weekday_lessons_query(weekday: str, week: str) -> str:
         """Creates get_weekday query"""
         template = """SELECT 
                         weekday_lesson1,
@@ -144,8 +130,8 @@ class DiaryHomeworkQueries:
                         weekday_lesson10,
                         weekday_lesson11,
                         weekday_lesson12
-                      FROM table_name WHERE classroom_id={}"""
-        return template.replace("weekday", weekday).replace("table_name", table_name)
+                      FROM diary_week_type_week WHERE classroom_id={}"""
+        return template.replace("weekday", weekday).replace("week_type", week)
 
     @staticmethod
     def update_weekday_lessons_query(weekday: str, table_name: str) -> str:
@@ -519,9 +505,9 @@ if __name__ == '__main__':
     )
 
     diary_homework_db = DiaryHomeworkCommands(connection)
-    print(diary_homework_db.get_weekday_lessons_from_standard_week(2, "wednesday"))
-    print(diary_homework_db.get_weekday_lessons_from_next_week(2, "monday"))
-    print(diary_homework_db.get_weekday_lessons_from_current_week(2, "friday"))
-    diary_homework_db.insert_lessons_into_temp_weekday_table(341106876, "wednesay", [])
-    print(diary_homework_db.get_weekday_lessons_from_temp_table(341106876))
+    print(diary_homework_db.get_weekday_lessons_from_week(1, "standard", "wednesday"))
+    print(diary_homework_db.get_weekday_lessons_from_week(2, "current", "monday"))
+    print(diary_homework_db.get_weekday_lessons_from_week(2, "next", "friday"))
+    # diary_homework_db.insert_lessons_into_temp_weekday_table(341106876, "wednesay", [])
+    # print(diary_homework_db.get_weekday_lessons_from_temp_table(341106876))
     # diary_homework_db.delete_row_from_temp_weekday_table(341106876)
