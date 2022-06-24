@@ -75,6 +75,9 @@ class SupportingFunctions:
         elif keyboard_type == "edit_standard_week":
             return KeyBoards.KEYBOARD_EDIT_STANDARD_WEEK.get_keyboard()
 
+        elif keyboard_type == "edit_current_next_week":
+            return KeyBoards.KEYBOARD_EDIT_CURRENT_NEXT_WEEK.get_keyboard()
+
         elif keyboard_type == "edit_standard_weekday_default":
             return KeyBoards.get_edit_standard_weekday_keyboard()
 

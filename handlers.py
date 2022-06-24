@@ -252,10 +252,20 @@ class StateHandlers(SupportingFunctions):
 
             self.send_message(user_id, help_text + diary_text, keyboard.get_keyboard())
 
-        elif payload["text"] == "standard":
-            self.send_message(user_id, "Редактирование эталонного расписания\n\nИзменения увидят ВСЕ участники класса!",
-                              self.get_keyboard("edit_standard_week"))
-            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEK_MYCLASSES.value)
+        elif payload["text"] in ("standard", "current", "next"):
+            payload_meanings_dict = {
+                "standard": (States.S_EDIT_STANDARD_WEEK_MYCLASSES, "edit_standard_week", "эталонного"),
+                "current": (States.S_EDIT_STANDARD_WEEK_MYCLASSES, "edit_current_next_week", "текущего"),
+                "next": (States.S_EDIT_STANDARD_WEEK_MYCLASSES, "edit_current_next_week", "будущего")
+            }
+            next_state = payload_meanings_dict[payload["text"]][0]
+            keyboard_type = payload_meanings_dict[payload["text"]][1]
+            week_type = payload_meanings_dict[payload["text"]][2]
+
+            self.send_message(user_id, f"Редактирование {week_type} расписания\n\nИзменения "
+                                       f"увидят ВСЕ участники класса!",
+                              self.get_keyboard(keyboard_type))
+            self.user_db.set_user_dialog_state(user_id, next_state.value)
 
     def s_edit_standard_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_STANDARD_WEEK_MYCLASSES"""
@@ -570,8 +580,8 @@ class CallbackPayloadHandlers(StateHandlers):
         else:
             self.send_message(user_id, "Закончи текущее действие или выйди в главное меню")
 
-    def p_edit_standard_week_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
-        """Handling payload with text: Изменить эталонное расписание"""
+    def p_edit_week_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
+        """Handling payloads with text: standard | current | next"""
         if current_dialog_state == States.S_IN_CLASS_MYCLASSES.value:
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
 
