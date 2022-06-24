@@ -229,34 +229,35 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] in ["Расписание эталонное", "Расписание текущее", "Расписание будущее"]:
             payload_meanings_dict = {
-                "Расписание эталонное": ("standard", "Эталонное расписание\n\nМожно копировать в текущее "
-                                                     "и будущее расписание.\nБудет автоматически устанавливаться в "
-                                                     "будущее расписание каждую неделю\n\n"),
-                "Расписание текущее": ("current", "Расписание на текущую неделю\n\n"),
-                "Расписание будущее": ("next", "Расписание на следующую неделю\n\n")
+                "Расписание эталонное": ("edit_standard", "standard", "Эталонное расписание\n\nМожно копировать в "
+                                                                      "текущее и будущее расписание.\nБудет "
+                                                                      "автоматически устанавливаться в будущее "
+                                                                      "расписание каждую неделю\n\n"),
+                "Расписание текущее": ("edit_current", "current", "Расписание на текущую неделю\n\n"),
+                "Расписание будущее": ("edit_next", "next", "Расписание на следующую неделю\n\n")
             }
             callback_payload_text = payload_meanings_dict[payload["text"]][0]
-            help_text = payload_meanings_dict[payload["text"]][1]
+            week_type = payload_meanings_dict[payload["text"]][1]
+            help_text = payload_meanings_dict[payload["text"]][2]
+
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, week_type)
+            diary_text = self.get_week_diary_text(formatted_week_lessons)
 
             keyboard = VkKeyboard(inline=True)
             keyboard.add_callback_button("Изменить",
                                          payload={
                                              "text": callback_payload_text,
-                                             "classroom_id": self.classroom_db.get_customizing_classroom_id(user_id)
+                                             "classroom_id": classroom_id
                                          })
-
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id,
-                                                                                           callback_payload_text)
-            diary_text = self.get_week_diary_text(formatted_week_lessons)
 
             self.send_message(user_id, help_text + diary_text, keyboard.get_keyboard())
 
-        elif payload["text"] in ("standard", "current", "next"):
+        elif payload["text"] in ("edit_standard", "edit_current", "edit_next"):
             payload_meanings_dict = {
-                "standard": (States.S_EDIT_STANDARD_WEEK_MYCLASSES, "edit_standard_week", "эталонного"),
-                "current": (States.S_EDIT_STANDARD_WEEK_MYCLASSES, "edit_current_next_week", "текущего"),
-                "next": (States.S_EDIT_STANDARD_WEEK_MYCLASSES, "edit_current_next_week", "будущего")
+                "edit_standard": (States.S_EDIT_STANDARD_WEEK_MYCLASSES, "edit_standard_week", "эталонного"),
+                "edit_current": (States.S_EDIT_STANDARD_WEEK_MYCLASSES, "edit_current_week", "текущего"),
+                "edit_next": (States.S_EDIT_STANDARD_WEEK_MYCLASSES, "edit_next_week", "будущего")
             }
             next_state = payload_meanings_dict[payload["text"]][0]
             keyboard_type = payload_meanings_dict[payload["text"]][1]
@@ -285,8 +286,8 @@ class StateHandlers(SupportingFunctions):
             english_weekday = weekday_meanings_dict[payload["text"]]
 
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_standard_week(classroom_id,
-                                                                                                  english_weekday)
+            formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_week(classroom_id, "standard",
+                                                                                         english_weekday)
 
             if None in formatted_day_lessons:
                 formatted_day_lessons = formatted_day_lessons[:formatted_day_lessons.index(None)]

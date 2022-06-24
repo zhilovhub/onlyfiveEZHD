@@ -119,7 +119,7 @@ class DiaryVkBot(CallbackPayloadHandlers):
             case "enter_the_classroom":
                 self.p_enter_the_classroom_handler(user_id, payload, current_dialog_state)
 
-            case ("standard" | "current" | "next"):
+            case ("edit_standard" | "edit_current" | "edit_next"):
                 self.p_edit_week_handler(user_id, payload, current_dialog_state)
 
 
