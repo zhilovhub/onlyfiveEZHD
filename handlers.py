@@ -26,8 +26,8 @@ class StateHandlers(SupportingFunctions):
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("menu"))
 
         elif payload["text"] == "Найти класс":
-            self.send_message(user_id, "Нахожу класс...",
-                              self.get_keyboard("menu"))
+            self.send_message(user_id, "Нахожу класс...", self.get_keyboard("just_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_FIND_CLASS.value)
 
         elif payload["text"] == "Создать класс":
             classroom_id = self.classroom_db.insert_new_classroom(user_id)
@@ -517,6 +517,12 @@ class StateHandlers(SupportingFunctions):
 
     def s_find_class_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_FIND_CLASS"""
+        if payload is None:
+            pass
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def state_transition(self, user_id: int, next_state, keyboard_type: str, messages: list) -> None:
         """Changes states"""

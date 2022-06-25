@@ -57,6 +57,9 @@ class SupportingFunctions:
         elif keyboard_type == "back_menu":
             return KeyBoards.KEYBOARD_BACK_MENU.get_keyboard()
 
+        elif keyboard_type == "just_menu":
+            return KeyBoards.KEYBOARD_JUST_MENU.get_keyboard()
+
         elif keyboard_type == "cancel":
             return KeyBoards.KEYBOARD_CANCEL.get_keyboard()
 
