@@ -111,6 +111,10 @@ class DiaryVkBot(CallbackPayloadHandlers):
             case States.S_EDIT_LESSON_WEEKDAY_MYCLASSES.value:
                 self.s_edit_lesson_weekday_my_classes_handler(user_id, message, payload)
 
+            # FINDCLASS
+            case States.S_FIND_CLASS.value:
+                self.s_find_class_handler(user_id, message, payload)
+
             # TECHNICALSUPPORT
             case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value:
                 self.s_enter_technical_support_message_handler(user_id, message)

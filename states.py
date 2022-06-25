@@ -20,6 +20,8 @@ class States(Enum):
     S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES = 10
     S_EDIT_LESSON_WEEKDAY_MYCLASSES = 11
 
+    S_FIND_CLASS = 12
+
     @staticmethod
     def get_next_state_config(current_state: Enum) -> tuple:
         """Returns next state's configuration"""

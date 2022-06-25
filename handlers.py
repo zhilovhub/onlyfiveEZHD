@@ -515,6 +515,9 @@ class StateHandlers(SupportingFunctions):
         elif payload["text"]:
             self.s_edit_weekday_my_classes_handler(user_id, payload)
 
+    def s_find_class_handler(self, user_id: int, message: str, payload: dict) -> None:
+        """Handling States.S_FIND_CLASS"""
+
     def state_transition(self, user_id: int, next_state, keyboard_type: str, messages: list) -> None:
         """Changes states"""
         self.user_db.set_user_dialog_state(user_id, next_state.value)
