@@ -75,23 +75,20 @@ class SupportingFunctions:
         elif keyboard_type == "edit_standard_week":
             return KeyBoards.KEYBOARD_EDIT_STANDARD_WEEK.get_keyboard()
 
-        elif keyboard_type == "edit_current_week":
-            return KeyBoards.KEYBOARD_EDIT_CURRENT_WEEK.get_keyboard()
+        elif keyboard_type == "edit_current_week" or keyboard_type == "edit_next_week":
+            return KeyBoards.KEYBOARD_EDIT_CURRENT_NEXT_WEEK.get_keyboard()
 
-        elif keyboard_type == "edit_next_week":
-            return KeyBoards.KEYBOARD_EDIT_NEXT_WEEK.get_keyboard()
+        elif keyboard_type == "edit_weekday_default":
+            return KeyBoards.get_edit_weekday_keyboard()
 
-        elif keyboard_type == "edit_standard_weekday_default":
-            return KeyBoards.get_edit_standard_weekday_keyboard()
+        elif keyboard_type == "edit_weekday_add":
+            return KeyBoards.get_edit_weekday_keyboard(add_button_color="positive")
 
-        elif keyboard_type == "edit_standard_weekday_add":
-            return KeyBoards.get_edit_standard_weekday_keyboard(add_button_color="positive")
+        elif keyboard_type == "edit_weekday_delete":
+            return KeyBoards.get_edit_weekday_keyboard(delete_button_color="positive")
 
-        elif keyboard_type == "edit_standard_weekday_delete":
-            return KeyBoards.get_edit_standard_weekday_keyboard(delete_button_color="positive")
-
-        elif keyboard_type == "edit_standard_weekday_redact":
-            return KeyBoards.get_edit_standard_weekday_keyboard(redact_button_color="positive")
+        elif keyboard_type == "edit_weekday_redact":
+            return KeyBoards.get_edit_weekday_keyboard(redact_button_color="positive")
 
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""

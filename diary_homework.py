@@ -40,7 +40,7 @@ class DiaryHomeworkCommands(DataBase):
         """Returns weekday's lessons from the temp table"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_from_temp_table_query.format(user_id))
-            lessons = cursor.fetchone()[2:]
+            lessons = cursor.fetchone()[3:]
 
         return lessons
 
@@ -52,6 +52,14 @@ class DiaryHomeworkCommands(DataBase):
 
         return weekday
 
+    def get_week_type_from_temp_table(self, user_id: int) -> str:
+        """Returns week's type from temp table"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(DiaryHomeworkQueries.get_week_type_from_temp_table_query.format(user_id))
+            week_type = cursor.fetchone()[0]
+
+        return week_type
+
     def insert_classroom_id(self, classroom_id: int) -> None:
         """Inserts classroom_id into the tables"""
         with self.connection.cursor() as cursor:
@@ -60,19 +68,25 @@ class DiaryHomeworkCommands(DataBase):
             cursor.execute(DiaryHomeworkQueries.insert_classroom_id_next_week_query.format(classroom_id))
             self.connection.commit()
 
-    def insert_lessons_into_temp_weekday_table(self, user_id: int, weekday: str, lessons: list) -> None:
-        """Inserts lessons into the temp weekday table"""
-        query = DiaryHomeworkQueries.insert_lessons_into_temp_weekday_diary_query
+    def insert_row_into_temp_weekday_table(self, user_id: int, week_type: str) -> None:
+        """Inserts new row into temp table"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(DiaryHomeworkQueries.insert_new_row_into_temp_weekday_diary_query.format(user_id, week_type))
+            self.connection.commit()
+
+    def update_all_lessons_in_temp_weekday_table(self, user_id: int, weekday: str, lessons: list) -> None:
+        """Updates lessons in temp weekday table"""
+        query = DiaryHomeworkQueries.update_all_lessons_in_temp_table
         for lesson in lessons:
             query = query.replace("NULL", f"'{lesson}'", 1)
 
         with self.connection.cursor() as cursor:
-            cursor.execute(query.format(user_id, weekday))
+            cursor.execute(query.format(weekday, user_id))
             self.connection.commit()
 
-    def update_weekday_in_standard_week(self, classroom_id: int, lessons: tuple, weekday: str) -> None:
-        """Updates standard week's weekday"""
-        query = DiaryHomeworkQueries.update_weekday_lessons_query(weekday, "diary_standard_week")
+    def update_weekday_in_week(self, classroom_id: int, lessons: tuple, week_type: str, weekday: str) -> None:
+        """Updates week's weekday"""
+        query = DiaryHomeworkQueries.update_weekday_lessons_query(weekday, f"diary_{week_type}_week")
         for lesson in lessons:
             query = query.replace("NULL", f"'{lesson}'", 1) if lesson is not None else query
 
@@ -104,6 +118,12 @@ class DiaryHomeworkCommands(DataBase):
         """Deletes lesson from the row in the temp table"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.update_delete_lesson_from_temp_table.format(lesson_index, user_id))
+            self.connection.commit()
+
+    def update_delete_weekday_from_temp_table(self, user_id: int) -> None:
+        """Deletes weekday from the row in the temp table"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(DiaryHomeworkQueries.update_delete_weekday_from_temp_table.format(user_id))
             self.connection.commit()
 
     def delete_row_from_temp_weekday_table(self, user_id: int) -> None:
@@ -443,6 +463,7 @@ class DiaryHomeworkQueries:
     create_table_temp_weekday_diary = """CREATE TABLE IF NOT EXISTS temp_weekday_diary(
         user_id INT UNIQUE,
         weekday TEXT,
+        week_type TEXT,
         FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE,
         
         lesson1 TEXT,
@@ -462,15 +483,33 @@ class DiaryHomeworkQueries:
     get_all_days_from_week_query = """SELECT * FROM diary_{}_week WHERE classroom_id={}"""
 
     get_weekday_lessons_from_temp_table_query = """SELECT * FROM temp_weekday_diary WHERE user_id={}"""
+    get_week_type_from_temp_table_query = """SELECT week_type FROM temp_weekday_diary WHERE user_id={}"""
     get_temp_weekday_name_query = """SELECT weekday FROM temp_weekday_diary WHERE user_id={}"""
 
     insert_classroom_id_standard_week_query = "INSERT INTO diary_standard_week (classroom_id) VALUES({})"
     insert_classroom_id_current_week_query = "INSERT INTO diary_current_week (classroom_id) VALUES({})"
     insert_classroom_id_next_week_query = "INSERT INTO diary_next_week (classroom_id) VALUES({})"
 
-    insert_lessons_into_temp_weekday_diary_query = """INSERT INTO temp_weekday_diary VALUES(
-        {}, '{}', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+    insert_new_row_into_temp_weekday_diary_query = """INSERT INTO temp_weekday_diary VALUES(
+        {}, NULL, '{}', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
     )"""
+
+    update_all_lessons_in_temp_table = """UPDATE temp_weekday_diary SET
+        weekday='{}',
+        lesson1=NULL,
+        lesson2=NULL,
+        lesson3=NULL,
+        lesson4=NULL,
+        lesson5=NULL,
+        lesson6=NULL,
+        lesson7=NULL,
+        lesson8=NULL,
+        lesson9=NULL,
+        lesson10=NULL,
+        lesson11=NULL,
+        lesson12=NULL
+    WHERE user_id={}
+        """
 
     update_add_new_lesson_into_temp_weekday_diary_query = """UPDATE temp_weekday_diary SET lesson{}='{}'
         WHERE user_id={}"""
@@ -492,6 +531,7 @@ class DiaryHomeworkQueries:
 
     update_lesson_in_temp_table = "UPDATE temp_weekday_diary SET lesson{}='{}' WHERE user_id={}"
     update_delete_lesson_from_temp_table = """UPDATE temp_weekday_diary SET lesson{}=NULL WHERE user_id={}"""
+    update_delete_weekday_from_temp_table = """UPDATE temp_weekday_diary SET weekday=NULL WHERE user_id={}"""
 
     delete_row_from_temp_weekday_diary_query = """DELETE FROM temp_weekday_diary WHERE user_id={}"""
 

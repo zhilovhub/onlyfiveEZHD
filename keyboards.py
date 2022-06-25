@@ -78,39 +78,21 @@ class KeyBoards:
     KEYBOARD_EDIT_STANDARD_WEEK.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_EDIT_STANDARD_WEEK.add_button("Главное меню", payload=get_payload("Главное меню"))
 
-    # EDIT_CURRENT_WEEK KEYBOARD
-    KEYBOARD_EDIT_CURRENT_WEEK = VkKeyboard()
-    KEYBOARD_EDIT_CURRENT_WEEK.add_button("ПН", payload=get_payload("ПН", weektype="current"))
-    KEYBOARD_EDIT_CURRENT_WEEK.add_button("ВТ", payload=get_payload("ВТ", weektype="current"))
-    KEYBOARD_EDIT_CURRENT_WEEK.add_button("СР", payload=get_payload("СР", weektype="current"))
-    KEYBOARD_EDIT_CURRENT_WEEK.add_button("ЧТ", payload=get_payload("ЧТ", weektype="current"))
-    KEYBOARD_EDIT_CURRENT_WEEK.add_button("ПТ", payload=get_payload("ПТ", weektype="current"))
-    KEYBOARD_EDIT_CURRENT_WEEK.add_line()
-    KEYBOARD_EDIT_CURRENT_WEEK.add_button("СБ", payload=get_payload("СБ", weektype="current"))
-    KEYBOARD_EDIT_CURRENT_WEEK.add_button("ВС", payload=get_payload("ВС", weektype="current"))
-    KEYBOARD_EDIT_CURRENT_WEEK.add_line()
-    KEYBOARD_EDIT_CURRENT_WEEK.add_button("Скопировать с эталонного", payload=get_payload("Скопировать с эталонного",
-                                                                                          weektype="current"))
-    KEYBOARD_EDIT_CURRENT_WEEK.add_line()
-    KEYBOARD_EDIT_CURRENT_WEEK.add_button("Назад", payload=get_payload("Назад"))
-    KEYBOARD_EDIT_CURRENT_WEEK.add_button("Главное меню", payload=get_payload("Главное меню"))
-
-    # EDIT_NEXT_WEEK KEYBOARD
-    KEYBOARD_EDIT_NEXT_WEEK = VkKeyboard()
-    KEYBOARD_EDIT_NEXT_WEEK.add_button("ПН", payload=get_payload("ПН", weektype="next"))
-    KEYBOARD_EDIT_NEXT_WEEK.add_button("ВТ", payload=get_payload("ВТ", weektype="next"))
-    KEYBOARD_EDIT_NEXT_WEEK.add_button("СР", payload=get_payload("СР", weektype="next"))
-    KEYBOARD_EDIT_NEXT_WEEK.add_button("ЧТ", payload=get_payload("ЧТ", weektype="next"))
-    KEYBOARD_EDIT_NEXT_WEEK.add_button("ПТ", payload=get_payload("ПТ", weektype="next"))
-    KEYBOARD_EDIT_NEXT_WEEK.add_line()
-    KEYBOARD_EDIT_NEXT_WEEK.add_button("СБ", payload=get_payload("СБ", weektype="next"))
-    KEYBOARD_EDIT_NEXT_WEEK.add_button("ВС", payload=get_payload("ВС", weektype="next"))
-    KEYBOARD_EDIT_NEXT_WEEK.add_line()
-    KEYBOARD_EDIT_NEXT_WEEK.add_button("Скопировать с эталонного", payload=get_payload("Скопировать с эталонного",
-                                                                                       weektype="next"))
-    KEYBOARD_EDIT_NEXT_WEEK.add_line()
-    KEYBOARD_EDIT_NEXT_WEEK.add_button("Назад", payload=get_payload("Назад"))
-    KEYBOARD_EDIT_NEXT_WEEK.add_button("Главное меню", payload=get_payload("Главное меню"))
+    # EDIT_CURRENT_NEXT_WEEK KEYBOARD
+    KEYBOARD_EDIT_CURRENT_NEXT_WEEK = VkKeyboard()
+    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("ПН", payload=get_payload("ПН"))
+    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("ВТ", payload=get_payload("ВТ"))
+    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("СР", payload=get_payload("СР"))
+    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("ЧТ", payload=get_payload("ЧТ"))
+    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("ПТ", payload=get_payload("ПТ"))
+    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_line()
+    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("СБ", payload=get_payload("СБ"))
+    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("ВС", payload=get_payload("ВС"))
+    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_line()
+    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("Скопировать с эталонного", payload=get_payload("Скопировать с эталонного"))
+    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_line()
+    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("Назад", payload=get_payload("Назад"))
+    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("Главное меню", payload=get_payload("Главное меню"))
 
     # CANCEL_SEND KEYBOARD
     KEYBOARD_CANCEL_SEND = VkKeyboard()
@@ -122,28 +104,33 @@ class KeyBoards:
     KEYBOARD_BACK_MENU.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_BACK_MENU.add_button("Главное меню", payload=get_payload("Главное меню"))
 
-    # CUSTOMIZED EDIT_STANDARD_WEEKDAY KEYBOARD
+    # CUSTOMIZED EDIT_WEEKDAY KEYBOARD
     @staticmethod
-    def get_edit_standard_weekday_keyboard(add_button_color="secondary", delete_button_color="secondary",
-                                           redact_button_color="secondary") -> VkKeyboard:
-        keyboard_edit_standard_weekday = VkKeyboard()
-        keyboard_edit_standard_weekday.add_button("Добавить", payload=KeyBoards.get_payload("Добавить"),
-                                                  color=add_button_color)
-        keyboard_edit_standard_weekday.add_button("Удалить урок",
-                                                  payload=KeyBoards.get_payload("Удалить урок"),
-                                                  color=delete_button_color)
-        keyboard_edit_standard_weekday.add_button("Изменить", payload=KeyBoards.get_payload("Изменить"),
-                                                  color=redact_button_color)
-        keyboard_edit_standard_weekday.add_line()
-        keyboard_edit_standard_weekday.add_button("Удалить всё", payload=KeyBoards.get_payload("Удалить всё"))
-        keyboard_edit_standard_weekday.add_line()
-        keyboard_edit_standard_weekday.add_button("Отменить", payload=KeyBoards.get_payload("Отменить"),
-                                                  color="negative")
-        keyboard_edit_standard_weekday.add_button("Сохранить", payload=KeyBoards.get_payload("Сохранить"),
-                                                  color="positive")
-        keyboard_edit_standard_weekday.add_line()
-        keyboard_edit_standard_weekday.add_button("Главное меню",
-                                                  payload=KeyBoards.get_payload("Главное меню"),
-                                                  color="primary")
+    def get_edit_weekday_keyboard(add_button_color="secondary", delete_button_color="secondary",
+                                  redact_button_color="secondary") -> VkKeyboard:
+        keyboard_edit_weekday = VkKeyboard()
+        keyboard_edit_weekday.add_button("Добавить",
+                                         payload=KeyBoards.get_payload("Добавить"),
+                                         color=add_button_color)
+        keyboard_edit_weekday.add_button("Удалить урок",
+                                         payload=KeyBoards.get_payload("Удалить урок"),
+                                         color=delete_button_color)
+        keyboard_edit_weekday.add_button("Изменить",
+                                         payload=KeyBoards.get_payload("Изменить"),
+                                         color=redact_button_color)
+        keyboard_edit_weekday.add_line()
+        keyboard_edit_weekday.add_button("Удалить всё",
+                                         payload=KeyBoards.get_payload("Удалить всё"))
+        keyboard_edit_weekday.add_line()
+        keyboard_edit_weekday.add_button("Отменить",
+                                         payload=KeyBoards.get_payload("Отменить"),
+                                         color="negative")
+        keyboard_edit_weekday.add_button("Сохранить",
+                                         payload=KeyBoards.get_payload("Сохранить"),
+                                         color="positive")
+        keyboard_edit_weekday.add_line()
+        keyboard_edit_weekday.add_button("Главное меню",
+                                         payload=KeyBoards.get_payload("Главное меню"),
+                                         color="primary")
 
-        return keyboard_edit_standard_weekday.get_keyboard()
+        return keyboard_edit_weekday.get_keyboard()

@@ -255,23 +255,24 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] in ("edit_standard", "edit_current", "edit_next"):
             payload_meanings_dict = {
-                "edit_standard": (States.S_EDIT_STANDARD_WEEK_MYCLASSES, "edit_standard_week", "эталонного"),
-                "edit_current": (States.S_EDIT_STANDARD_WEEK_MYCLASSES, "edit_current_week", "текущего"),
-                "edit_next": (States.S_EDIT_STANDARD_WEEK_MYCLASSES, "edit_next_week", "будущего")
+                "edit_standard": ("standard", "эталонного"),
+                "edit_current": ("current", "текущего"),
+                "edit_next": ("next", "будущего")
             }
-            next_state = payload_meanings_dict[payload["text"]][0]
-            keyboard_type = payload_meanings_dict[payload["text"]][1]
-            week_type = payload_meanings_dict[payload["text"]][2]
+            week_type = payload_meanings_dict[payload["text"]][0]
+            week_type_russian = payload_meanings_dict[payload["text"]][1]
 
-            self.send_message(user_id, f"Редактирование {week_type} расписания\n\nИзменения "
+            self.diary_homework_db.insert_row_into_temp_weekday_table(user_id, week_type)
+            self.send_message(user_id, f"Редактирование {week_type_russian} расписания\n\nИзменения "
                                        f"увидят ВСЕ участники класса!",
-                              self.get_keyboard(keyboard_type))
-            self.user_db.set_user_dialog_state(user_id, next_state.value)
+                              self.get_keyboard(f"edit_{week_type}_week"))
+            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_WEEK_MYCLASSES.value)
 
-    def s_edit_standard_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
-        """Handling States.S_EDIT_STANDARD_WEEK_MYCLASSES"""
+    def s_edit_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_EDIT_WEEK_MYCLASSES"""
         if payload is None:
-            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("edit_standard_week"))
+            week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard(f"edit_{week_type}_week"))
 
         elif payload["text"] in ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]:
             weekday_meanings_dict = {
@@ -285,8 +286,9 @@ class StateHandlers(SupportingFunctions):
             }
             english_weekday = weekday_meanings_dict[payload["text"]]
 
+            week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_week(classroom_id, "standard",
+            formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_week(classroom_id, week_type,
                                                                                          english_weekday)
 
             if None in formatted_day_lessons:
@@ -294,41 +296,42 @@ class StateHandlers(SupportingFunctions):
 
             weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, english_weekday)
 
-            self.diary_homework_db.insert_lessons_into_temp_weekday_table(user_id, english_weekday,
-                                                                          formatted_day_lessons)
-            self.send_message(user_id, weekday_diary_text, self.get_keyboard("edit_standard_weekday_default"))
-            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEKDAY_MYCLASSES.value)
+            self.diary_homework_db.update_all_lessons_in_temp_weekday_table(user_id, english_weekday,
+                                                                            formatted_day_lessons)
+            self.send_message(user_id, weekday_diary_text, self.get_keyboard(f"edit_weekday_default"))
+            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_WEEKDAY_MYCLASSES.value)
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
             self.classroom_db.update_user_customize_classroom(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
         elif payload["text"] == "Назад":
             self.send_message(user_id, "Возвращаемся в меню класса", self.get_keyboard("my_class_menu"))
+            self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
             self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
 
-    def s_edit_standard_weekday_my_classes_handler(self, user_id: int, payload: dict) -> None:
-        """Handling States.S_EDIT_STANDARD_WEEKDAY_MYCLASSES"""
+    def s_edit_weekday_my_classes_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_EDIT_WEEKDAY_MYCLASSES"""
         if payload is None:
-            self.send_message(user_id, "Для навигации используй кнопки!👇🏻",
-                              self.get_keyboard("edit_standard_weekday_default"))
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("edit_weekday_default"))
 
         elif payload["text"] == "Добавить":
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
+            weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
+            weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
 
             if all(formatted_day_lessons):
-                self.send_message(user_id, "Максимальное число (12) уроков уже записано!",
-                                  self.get_keyboard("edit_standard_weekday"))
+                self.send_message(user_id, f"Максимальное число (12) уроков уже записано!\n\n{weekday_diary_text}",
+                                  self.get_keyboard(f"edit_weekday_default"))
             else:
-                weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
-                weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
                 new_lesson_index = formatted_day_lessons.index(None) + 1
 
                 self.send_message(user_id, f"{weekday_diary_text}\n\nНапишите название {new_lesson_index}-го урока"
                                            f" (макс 70 символов):",
-                                  self.get_keyboard("edit_standard_weekday_add"))
-                self.user_db.set_user_dialog_state(user_id, States.S_ADD_NEW_LESSON_STANDARD_WEEKDAY_MYCLASSES.value)
+                                  self.get_keyboard(f"edit_weekday_add"))
+                self.user_db.set_user_dialog_state(user_id, States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES.value)
 
         elif payload["text"] == "Изменить":
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
@@ -337,12 +340,12 @@ class StateHandlers(SupportingFunctions):
 
             if not any(formatted_day_lessons):
                 self.send_message(user_id, f"Расписание пустое, нечего редактировать\n\n{weekday_diary_text}",
-                                  self.get_keyboard("edit_standard_weekday_default"))
+                                  self.get_keyboard(f"edit_weekday_default"))
             else:
                 self.send_message(user_id, f"{weekday_diary_text}\n\nВпишите номер урока и его новое название в "
                                            f"следующем формате: номер_урока. новое_название (например,\n7. Алгебра)",
-                                  self.get_keyboard("edit_standard_weekday_redact"))
-                self.user_db.set_user_dialog_state(user_id, States.S_EDIT_LESSON_STANDARD_WEEKDAY_MYCLASSES.value)
+                                  self.get_keyboard(f"edit_weekday_redact"))
+                self.user_db.set_user_dialog_state(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES.value)
 
         elif payload["text"] == "Удалить урок":
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
@@ -351,7 +354,7 @@ class StateHandlers(SupportingFunctions):
             if not any(formatted_day_lessons):
                 weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
                 self.send_message(user_id, f"Расписание на этот день и так пустое\n\n{weekday_diary_text}",
-                                  self.get_keyboard("edit_standard_weekday_default"))
+                                  self.get_keyboard(f"edit_weekday_default"))
 
             else:
                 last_lesson_index = formatted_day_lessons.index(None) if None in formatted_day_lessons else 12
@@ -362,9 +365,9 @@ class StateHandlers(SupportingFunctions):
                 weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday)
 
                 self.send_message(user_id, f"Удалён {last_lesson_index}. {deleted_lesson}\n\n{weekday_diary_text}",
-                                  self.get_keyboard("edit_standard_weekday_default"))
+                                  self.get_keyboard(f"edit_weekday_default"))
 
-            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEKDAY_MYCLASSES.value)
+            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_WEEKDAY_MYCLASSES.value)
 
         elif payload["text"] == "Удалить всё":
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
@@ -373,7 +376,7 @@ class StateHandlers(SupportingFunctions):
             if not any(formatted_day_lessons):
                 weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
                 self.send_message(user_id, f"Расписание на этот день и так пустое\n\n{weekday_diary_text}",
-                                  self.get_keyboard("edit_standard_weekday_default"))
+                                  self.get_keyboard(f"edit_weekday_default"))
 
             else:
                 self.diary_homework_db.update_delete_all_lessons_from_temp_table(user_id)
@@ -381,24 +384,25 @@ class StateHandlers(SupportingFunctions):
                 weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday)
 
                 self.send_message(user_id, f"Все уроки удалены!\n\n{weekday_diary_text}",
-                                  self.get_keyboard("edit_standard_weekday_default"))
-
-            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEKDAY_MYCLASSES.value)
+                                  self.get_keyboard(f"edit_weekday_default"))
 
         elif payload["text"] == "Сохранить":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
             weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
 
-            self.diary_homework_db.update_weekday_in_standard_week(classroom_id, formatted_day_lessons, weekday)
-            self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
+            week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
 
-            formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, "standard")
+            self.diary_homework_db.update_weekday_in_week(classroom_id, formatted_day_lessons, week_type, weekday)
+            self.diary_homework_db.update_delete_all_lessons_from_temp_table(user_id)
+            self.diary_homework_db.update_delete_weekday_from_temp_table(user_id)
+
+            formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, week_type)
             diary_text = self.get_week_diary_text(formatted_week_lessons)
 
             self.send_message(user_id, f"{diary_text}\n\nВсе изменения сохранены!",
-                              self.get_keyboard("edit_standard_week"))
-            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEK_MYCLASSES.value)
+                              self.get_keyboard(f"edit_{week_type}_week"))
+            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_WEEK_MYCLASSES.value)
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
@@ -407,21 +411,24 @@ class StateHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
         elif payload["text"] == "Отменить":
+            week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
+
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, "standard")
+            formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, week_type)
             diary_text = self.get_week_diary_text(formatted_week_lessons)
 
             self.send_message(user_id, f"{diary_text}\n\nВсе изменения отменены!",
-                              self.get_keyboard("edit_standard_week"))
-            self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
-            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEK_MYCLASSES.value)
+                              self.get_keyboard(f"edit_{week_type}_week"))
+            self.diary_homework_db.update_delete_all_lessons_from_temp_table(user_id)
+            self.diary_homework_db.update_delete_weekday_from_temp_table(user_id)
+            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_WEEK_MYCLASSES.value)
 
-    def s_add_new_lesson_standard_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
-        """Handling States.S_ADD_NEW_LESSON_STANDARD_WEEKDAY_MYCLASSES"""
+    def s_add_new_lesson_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
+        """Handling States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES"""
         if payload is None:
             if len(message) > 70:
                 self.send_message(user_id, "Длина названия превышает 70 символов!",
-                                  self.get_keyboard("edit_standard_weekend_add"))
+                                  self.get_keyboard("edit_weekday_add"))
             else:
                 formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
                 new_lesson_index = formatted_day_lessons.index(None) + 1
@@ -434,21 +441,21 @@ class StateHandlers(SupportingFunctions):
                 if new_lesson_index <= 11:
                     self.send_message(user_id, f"Урок добавлен!\n\n{new_weekday_diary_text}\n\n"
                                                f"Напишите название {new_lesson_index + 1}-го урока (макс 70 символов):",
-                                      self.get_keyboard("edit_standard_weekday_add"))
+                                      self.get_keyboard("edit_weekday_add"))
                 else:
                     self.send_message(user_id, f"Урок добавлен!\n\n{new_weekday_diary_text}.\n\nДостигнут лимит!",
-                                      self.get_keyboard("edit_standard_weekday_default"))
-                    self.user_db.set_user_dialog_state(user_id, States.S_EDIT_STANDARD_WEEKDAY_MYCLASSES.value)
+                                      self.get_keyboard(f"edit_weekday_default"))
+                    self.user_db.set_user_dialog_state(user_id, States.S_EDIT_WEEKDAY_MYCLASSES.value)
 
         elif payload["text"] == "Добавить":
             self.send_message(user_id, "Ты уже в режиме добавления уроков",
-                              self.get_keyboard("edit_standard_weekday_add"))
+                              self.get_keyboard(f"edit_weekday_add"))
 
         elif payload["text"]:
-            self.s_edit_standard_weekday_my_classes_handler(user_id, payload)
+            self.s_edit_weekday_my_classes_handler(user_id, payload)
 
-    def s_edit_lesson_standard_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
-        """Handling States.S_EDIT_LESSON_STANDARD_WEEKDAY_MYCLASSES"""
+    def s_edit_lesson_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
+        """Handling States.S_EDIT_LESSON_WEEKDAY_MYCLASSES"""
         if payload is None:
             ask_message = "Впишите номер урока и его новое название в следующем формате: " \
                           "номер_урока. новое_название (например,\n7. Алгебра)"
@@ -471,28 +478,28 @@ class StateHandlers(SupportingFunctions):
 
                             self.send_message(user_id, f"Название урока изменено!\n\n{weekday_diary_text}\n\n"
                                                        f"{ask_message}",
-                                              self.get_keyboard("edit_standard_weekday_redact"))
+                                              self.get_keyboard("edit_weekday_redact"))
                         else:
                             self.send_message(user_id, f"Название урока не может быть пустым или быть длиннее "
                                                        f"70 символов\n\n{ask_message}",
-                                              self.get_keyboard("edit_standard_weekday_redact"))
+                                              self.get_keyboard("edit_weekday_redact"))
                     else:
                         self.send_message(user_id, f"Урока с таким номером нет.\n\n{ask_message}",
-                                          self.get_keyboard("edit_standard_weekday_redact"))
+                                          self.get_keyboard("edit_weekday_redact"))
                 else:
                     self.send_message(user_id,
                                       f"Неверный формат записи\n\n{ask_message}",
-                                      self.get_keyboard("edit_standard_weekday_redact"))
+                                      self.get_keyboard("edit_weekday_redact"))
             else:
                 self.send_message(user_id, f"Неверный формат записи\n\n{ask_message}",
-                                  self.get_keyboard("edit_standard_weekday_redact"))
+                                  self.get_keyboard("edit_weekday_redact"))
 
         elif payload["text"] == "Изменить":
             self.send_message(user_id, "Ты уже в режиме редактирования уроков",
-                              self.get_keyboard("edit_standard_weekday_redact"))
+                              self.get_keyboard("edit_weekday_redact"))
 
         elif payload["text"]:
-            self.s_edit_standard_weekday_my_classes_handler(user_id, payload)
+            self.s_edit_weekday_my_classes_handler(user_id, payload)
 
     def state_transition(self, user_id: int, next_state, keyboard_type: str, messages: list) -> None:
         """Changes states"""
