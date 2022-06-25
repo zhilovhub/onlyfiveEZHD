@@ -301,6 +301,20 @@ class StateHandlers(SupportingFunctions):
             self.send_message(user_id, weekday_diary_text, self.get_keyboard(f"edit_weekday_default"))
             self.user_db.set_user_dialog_state(user_id, States.S_EDIT_WEEKDAY_MYCLASSES.value)
 
+        elif payload["text"] == "Скопировать с эталонного":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, "standard")
+            week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
+
+            self.diary_homework_db.update_copy_diary_from_standard_week_into_another_week(classroom_id, week_type,
+                                                                                          formatted_week_lessons)
+
+            new_formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, week_type)
+            week_diary_text = self.get_week_diary_text(new_formatted_week_lessons)
+
+            self.send_message(user_id, f"Расписание скопировано с эталонного!\n\n{week_diary_text}",
+                              self.get_keyboard(f"edit_{week_type}_week"))
+
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)

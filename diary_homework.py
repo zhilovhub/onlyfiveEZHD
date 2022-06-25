@@ -126,6 +126,23 @@ class DiaryHomeworkCommands(DataBase):
             cursor.execute(DiaryHomeworkQueries.update_delete_weekday_from_temp_table.format(user_id))
             self.connection.commit()
 
+    def update_copy_diary_from_standard_week_into_another_week(self, classroom_id: int, week_type: str,
+                                                               week_lessons: list) -> None:
+        """Copy standard week's diary into another type week's diary"""
+        all_values = [week_type]
+        for weekday_lessons in week_lessons:
+            for lesson in weekday_lessons:
+                if lesson is None:
+                    all_values.append("NULL")
+                else:
+                    all_values.append(f"'{lesson}'")
+        all_values.append(classroom_id)
+
+        with self.connection.cursor() as cursor:
+            cursor.execute(DiaryHomeworkQueries.update_copy_diary_from_standard_week_into_another_week_query.
+                           format(*all_values))
+            self.connection.commit()
+
     def delete_row_from_temp_weekday_table(self, user_id: int) -> None:
         """Deletes row from temp table"""
         with self.connection.cursor() as cursor:
@@ -532,6 +549,99 @@ class DiaryHomeworkQueries:
     update_lesson_in_temp_table = "UPDATE temp_weekday_diary SET lesson{}='{}' WHERE user_id={}"
     update_delete_lesson_from_temp_table = """UPDATE temp_weekday_diary SET lesson{}=NULL WHERE user_id={}"""
     update_delete_weekday_from_temp_table = """UPDATE temp_weekday_diary SET weekday=NULL WHERE user_id={}"""
+
+    update_copy_diary_from_standard_week_into_another_week_query = """UPDATE diary_{}_week SET
+        monday_lesson1={},
+        monday_lesson2={},
+        monday_lesson3={},
+        monday_lesson4={},
+        monday_lesson5={},
+        monday_lesson6={},
+        monday_lesson7={},
+        monday_lesson8={},
+        monday_lesson9={},
+        monday_lesson10={},
+        monday_lesson11={},
+        monday_lesson12={},
+        
+        tuesday_lesson1={},
+        tuesday_lesson2={},
+        tuesday_lesson3={},
+        tuesday_lesson4={},
+        tuesday_lesson5={},
+        tuesday_lesson6={},
+        tuesday_lesson7={},
+        tuesday_lesson8={},
+        tuesday_lesson9={},
+        tuesday_lesson10={},
+        tuesday_lesson11={},
+        tuesday_lesson12={},
+        
+        wednesday_lesson1={},
+        wednesday_lesson2={},
+        wednesday_lesson3={},
+        wednesday_lesson4={},
+        wednesday_lesson5={},
+        wednesday_lesson6={},
+        wednesday_lesson7={},
+        wednesday_lesson8={},
+        wednesday_lesson9={},
+        wednesday_lesson10={},
+        wednesday_lesson11={},
+        wednesday_lesson12={},
+        
+        thursday_lesson1={},
+        thursday_lesson2={},
+        thursday_lesson3={},
+        thursday_lesson4={},
+        thursday_lesson5={},
+        thursday_lesson6={},
+        thursday_lesson7={},
+        thursday_lesson8={},
+        thursday_lesson9={},
+        thursday_lesson10={},
+        thursday_lesson11={},
+        thursday_lesson12={},
+        
+        friday_lesson1={},
+        friday_lesson2={},
+        friday_lesson3={},
+        friday_lesson4={},
+        friday_lesson5={},
+        friday_lesson6={},
+        friday_lesson7={},
+        friday_lesson8={},
+        friday_lesson9={},
+        friday_lesson10={},
+        friday_lesson11={},
+        friday_lesson12={},
+        
+        saturday_lesson1={},
+        saturday_lesson2={},
+        saturday_lesson3={},
+        saturday_lesson4={},
+        saturday_lesson5={},
+        saturday_lesson6={},
+        saturday_lesson7={},
+        saturday_lesson8={},
+        saturday_lesson9={},
+        saturday_lesson10={},
+        saturday_lesson11={},
+        saturday_lesson12={},
+        
+        sunday_lesson1={},
+        sunday_lesson2={},
+        sunday_lesson3={},
+        sunday_lesson4={},
+        sunday_lesson5={},
+        sunday_lesson6={},
+        sunday_lesson7={},
+        sunday_lesson8={},
+        sunday_lesson9={},
+        sunday_lesson10={},
+        sunday_lesson11={},
+        sunday_lesson12={}
+    WHERE classroom_id={}"""
 
     delete_row_from_temp_weekday_diary_query = """DELETE FROM temp_weekday_diary WHERE user_id={}"""
 
