@@ -306,8 +306,8 @@ class StateHandlers(SupportingFunctions):
             formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, "standard")
             week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
 
-            self.diary_homework_db.update_copy_diary_from_standard_week_into_another_week(classroom_id, week_type,
-                                                                                          formatted_week_lessons)
+            self.diary_homework_db.update_copy_diary_from_week_into_another_week(classroom_id, week_type,
+                                                                                 formatted_week_lessons)
 
             new_formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, week_type)
             week_diary_text = self.get_week_diary_text(new_formatted_week_lessons)

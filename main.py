@@ -39,6 +39,8 @@ class DiaryVkBot(CallbackPayloadHandlers):
                         if self.user_db.check_user_is_ready(user_id):  # Checking second condition
 
                             if not attachments:  # Checking user didn't send attachment
+                                self.diary_homework_db.update_change_current_and_next_diary()
+
                                 current_dialog_state = self.user_db.get_user_dialog_state(user_id)
                                 self.filter_dialog_state(user_id, message, payload, current_dialog_state)
                             else:
