@@ -116,6 +116,10 @@ class DiaryVkBot(CallbackPayloadHandlers):
             case States.S_FIND_CLASS.value:
                 self.s_find_class_handler(user_id, message, payload)
 
+            # CLASSROOMSETTINGS
+            case States.S_CLASSROOM_SETTINGS.value:
+                self.s_classroom_settings_handler(user_id, payload)
+
             # TECHNICALSUPPORT
             case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value:
                 self.s_enter_technical_support_message_handler(user_id, message)

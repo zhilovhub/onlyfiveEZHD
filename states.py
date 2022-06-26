@@ -22,6 +22,8 @@ class States(Enum):
 
     S_FIND_CLASS = 12
 
+    S_CLASSROOM_SETTINGS = 13
+
     @staticmethod
     def get_next_state_config(current_state: Enum) -> tuple:
         """Returns next state's configuration"""
