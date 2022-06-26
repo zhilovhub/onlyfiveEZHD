@@ -51,13 +51,21 @@ class ClassroomCommands(DataBase):
 
             return classroom_id
 
-    def get_information_for_creating_classroom(self, classroom_id: id) -> tuple:
+    def get_information_of_classroom(self, classroom_id: id) -> tuple:
         """Returns name, school_name, access and description"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.get_information_for_creating_query.format(classroom_id))
             classroom_name, school_name, access, description = cursor.fetchone()[1:-1]
 
             return classroom_name, school_name, access, description
+
+    def get_list_of_classroom_ids(self) -> list:
+        """Returns list of all classroom ids"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.get_list_of_classroom_ids)
+            classroom_ids = [row[0] for row in cursor.fetchall()]
+
+            return classroom_ids
 
     def insert_new_customizer(self, user_id: int) -> None:
         """Insert customizer into UserCustomize"""
@@ -163,6 +171,7 @@ class ClassroomQueries:
     get_user_classrooms_with_role = """SELECT classroom_id, role FROM Student WHERE user_id={}"""
     get_classroom_name_query = """SELECT classroom_name FROM Classroom WHERE classroom_id={}"""
     get_list_of_classroom_users_query = """SELECT user_id, role FROM Student WHERE classroom_id={}"""
+    get_list_of_classroom_ids = """SELECT classroom_id FROM Classroom"""
 
     insert_classroom_query = """INSERT INTO Classroom VALUES(null, null, null, null, null, FALSE)"""
     insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, "{}")"""
@@ -189,6 +198,7 @@ if __name__ == "__main__":
     )
 
     db = ClassroomCommands(connection)
-    print(db.get_information_for_creating_classroom(5))
-    print(db.get_list_of_classroom_users(5))
+    print(db.get_information_of_classroom(1))
+    print(db.get_list_of_classroom_users(1))
     print(db.get_user_classrooms_with_role(341106876))
+    print(db.get_list_of_classroom_ids())

@@ -52,7 +52,7 @@ class StateHandlers(SupportingFunctions):
 
                 members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
                 classroom_name, school_name, access, description = \
-                    self.classroom_db.get_information_for_creating_classroom(classroom_id)
+                    self.classroom_db.get_information_of_classroom(classroom_id)
 
                 self.send_message(user_id, f"#{classroom_id}\n"
                                            f"Класс: {classroom_name}\n"
@@ -163,7 +163,7 @@ class StateHandlers(SupportingFunctions):
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 self.classroom_db.update_classroom_description(classroom_id, message)
                 classroom_name, school_name, access, description = \
-                    self.classroom_db.get_information_for_creating_classroom(classroom_id)
+                    self.classroom_db.get_information_of_classroom(classroom_id)
 
                 next_state, keyboard_type, messages = States.get_next_state_config(
                     States.S_ENTER_DESCRIPTION_CLASSCREATE)
@@ -519,20 +519,48 @@ class StateHandlers(SupportingFunctions):
     def s_find_class_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_FIND_CLASS"""
         if payload is None:
+            classroom_id = None
             stripped_message = message.strip()
 
             if fullmatch(r"#\d+", stripped_message):
-                classroom_id = stripped_message[1:]
-                self.send_message(user_id, f"id класса: {classroom_id}", self.get_keyboard("just_menu"))
+                classroom_id = int(stripped_message[1:])
 
             elif search(r"onlyfiveEZHD/invite_link/\d+", stripped_message):
                 result = search(r"onlyfiveEZHD/invite_link/\d+", stripped_message)
-                link = stripped_message[result.start():result.end()]
-                classroom_id = link.split("/")[-1]
-                self.send_message(user_id, f"id класса: {classroom_id}", self.get_keyboard("just_menu"))
+                classroom_id = int(stripped_message[result.start():result.end()].split("/")[-1])
+
+            if classroom_id:
+                existing_classroom_ids = self.classroom_db.get_list_of_classroom_ids()
+
+                if classroom_id in existing_classroom_ids:
+                    keyboard = VkKeyboard(inline=True)
+                    keyboard.add_callback_button("Посмотреть", payload={
+                        "text": "look_at_the_classroom", "classroom_id": classroom_id
+                    })
+
+                    classroom_name, school_name, access, description = \
+                        self.classroom_db.get_information_of_classroom(classroom_id)
+                    members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
+
+                    for member_user_id in members_dictionary.keys():
+                        if user_id == member_user_id:
+                            user_in_classroom_text = "Вы состоите в этом классе ✔"
+                            break
+                    else:
+                        user_in_classroom_text = "Вы не состоите в этом классе ❌"
+
+                    self.send_message(user_id, f"#{classroom_id}\n"
+                                               f"Класс: {classroom_name}\n"
+                                               f"Школа: {school_name}\n"
+                                               f"Описание: {description}\n"
+                                               f"Могут ли все участники приглашать: {'Да' if access else 'Нет'}\n"
+                                               f"Участники: {len(members_dictionary)}\n\n"
+                                               f"{user_in_classroom_text}", keyboard.get_keyboard())
+                else:
+                    self.send_message(user_id, f"Класса с id {classroom_id} не существует!",
+                                      self.get_keyboard("just_menu"))
 
             else:
-                print(message)
                 self.send_message(user_id, "Неверный формат записи\n\nОтправьте ссылку-приглашение или id класса в "
                                            "формате #id (например, #1223)", self.get_keyboard("just_menu"))
 
