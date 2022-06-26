@@ -118,5 +118,6 @@ class SupportingFunctions:
         return {
             "user_id": user_id,
             "screen_name": user_information["screen_name"],
-            "first_name": user_information["first_name"]
+            "first_name": user_information["first_name"],
+            "last_name": user_information["last_name"]
         }

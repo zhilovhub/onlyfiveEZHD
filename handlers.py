@@ -228,6 +228,30 @@ class StateHandlers(SupportingFunctions):
             self.classroom_db.update_user_customize_classroom(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
+        elif payload["text"] == "Участники":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
+            roles_dictionary = {}
+
+            for member_id, role in members_dictionary.items():
+                first_name, last_name = self.user_db.get_user_first_and_last_name(member_id)
+
+                if role in roles_dictionary:
+                    roles_dictionary[role].append(f"[id{member_id}|{first_name} {last_name}]")
+                else:
+                    roles_dictionary[role] = [f"[id{member_id}|{first_name} {last_name}]"]
+
+            members_text = ""
+            ind = 1
+            for role, members in roles_dictionary.items():
+                members_text += f"{role}\n"
+                for member in members:
+                    members_text += f"{ind}. {member}\n"
+                    ind += 1
+                members_text += "\n"
+
+            self.send_message(user_id, members_text, self.get_keyboard("my_class_menu"))
+
         elif payload["text"] in ["Расписание эталонное", "Расписание текущее", "Расписание будущее"]:
             payload_meanings_dict = {
                 "Расписание эталонное": ("edit_standard", "standard", "Эталонное расписание\n\nМожно копировать в "
@@ -544,7 +568,7 @@ class StateHandlers(SupportingFunctions):
 
                     for member_user_id in members_dictionary.keys():
                         if user_id == member_user_id:
-                            user_in_classroom_text = "Вы состоите в этом классе ✔"
+                            user_in_classroom_text = "Вы состоите в этом классе ✅"
                             break
                     else:
                         user_in_classroom_text = "Вы не состоите в этом классе ❌"

@@ -88,7 +88,7 @@ class ClassroomCommands(DataBase):
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.insert_classroom_query)
             classroom_id = cursor.lastrowid
-            self.insert_new_user_in_classroom(user_id, cursor.lastrowid, "owner")
+            self.insert_new_user_in_classroom(user_id, cursor.lastrowid, "Админ")
 
         return classroom_id
 
@@ -200,7 +200,12 @@ if __name__ == "__main__":
     db = ClassroomCommands(connection)
     flag = input("Тестовый режим: ")
 
-    if flag == "new students":
-        for i in range(1, 55):
-            if randint(0, 1):
-                db.insert_new_user_in_classroom(i, 1)
+    # if flag == "new":
+    #     for i in range(1, 55):
+    #         if randint(0, 1):
+    #             db.insert_new_user_in_classroom(i, 1, choice(["Помощник", "Участник", "Крутые", "Наказанные", "..."]))
+    # elif flag == "del":
+    #     for i in range(1, 55):
+    #         with connection.cursor() as cursor:
+    #             cursor.execute(ClassroomQueries.delete_user_from_classroom_query.format(i))
+    #             connection.commit()

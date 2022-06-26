@@ -30,6 +30,7 @@ class DiaryVkBot(CallbackPayloadHandlers):
                     self.user_db.insert_new_user(user_id,
                                                  user_information["screen_name"],
                                                  user_information["first_name"],
+                                                 user_information["last_name"],
                                                  False
                                                  )  # Will add a new user if user writes his first message
                     self.classroom_db.insert_new_customizer(user_id)

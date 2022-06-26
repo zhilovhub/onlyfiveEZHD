@@ -14,10 +14,19 @@ class UserDataCommands(DataBase):
         except Error as e:
             print(e)
 
-    def insert_new_user(self, user_id: int, screen_name: str, first_name: str, is_ready: bool) -> None:
+    def get_user_first_and_last_name(self, user_id: int) -> tuple:
+        """Returns user's first and last name"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(UserDataQueries.get_user_first_and_last_name_query.format(user_id))
+            first_name, last_name = cursor.fetchone()
+
+            return first_name, last_name
+
+    def insert_new_user(self, user_id: int, screen_name: str, first_name: str, last_name: str, is_ready: bool) -> None:
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(UserDataQueries.insert_new_user_query.format(user_id, screen_name, first_name, is_ready))
+                cursor.execute(UserDataQueries.insert_new_user_query.format(user_id, screen_name, first_name,
+                                                                            last_name, is_ready))
                 self.connection.commit()
 
         except Error as e:
@@ -68,17 +77,20 @@ class UserDataQueries:
         user_id INT NOT NULL UNIQUE PRIMARY KEY,
         screen_name VARCHAR(255),
         first_name VARCHAR(255),
+        last_name VARCHAR(255),
         is_ready BOOLEAN,
         state INT
     )"""
 
-    insert_new_user_query = """INSERT INTO User VALUES({}, '{}', '{}', {}, 0)"""
+    insert_new_user_query = """INSERT INTO User VALUES({}, '{}', '{}', '{}', {}, 0)"""
 
     set_user_is_ready_query = """UPDATE User SET is_ready=TRUE WHERE user_id={}"""
 
     check_user_is_ready_query = """SELECT * FROM User WHERE user_id={} AND is_ready=TRUE"""
 
     get_user_dialog_state_query = """SELECT state FROM User WHERE user_id={}"""
+
+    get_user_first_and_last_name_query = """SELECT first_name, last_name FROM User WHERE user_id={}"""
 
     set_user_dialog_state_query = """UPDATE User SET state={} WHERE user_id={}"""
 
@@ -94,6 +106,6 @@ if __name__ == '__main__':
     db = UserDataCommands(connection)
     flag = input("Тестовый режим: ")
 
-    if flag == "new users":
-        for i in range(1, 55):
-            db.insert_new_user(i, "test_user", "Тест", True)
+    # if flag == "new users":
+    #     for i in range(1, 55):
+    #         db.insert_new_user(i, "test_user", "Артём", "Пурапов", True)
