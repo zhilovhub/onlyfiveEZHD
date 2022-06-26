@@ -93,6 +93,9 @@ class SupportingFunctions:
         elif keyboard_type == "edit_weekday_redact":
             return KeyBoards.get_edit_weekday_keyboard(redact_button_color="positive")
 
+        elif keyboard_type == "classroom_settings":
+            return KeyBoards.KEYBOARD_CLASSROOM_SETTINGS.get_keyboard()
+
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""
         is_member = self.vk_session.method(

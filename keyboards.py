@@ -108,6 +108,11 @@ class KeyBoards:
     KEYBOARD_JUST_MENU = VkKeyboard()
     KEYBOARD_JUST_MENU.add_button("Главное меню", payload=get_payload("Главное меню"))
 
+    # CLASSROOM_SETTINGS KEYBOARD
+    KEYBOARD_CLASSROOM_SETTINGS = VkKeyboard()
+    KEYBOARD_CLASSROOM_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
+    KEYBOARD_CLASSROOM_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
+
     # CUSTOMIZED EDIT_WEEKDAY KEYBOARD
     @staticmethod
     def get_edit_weekday_keyboard(add_button_color="secondary", delete_button_color="secondary",
