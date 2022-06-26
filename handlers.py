@@ -522,10 +522,14 @@ class StateHandlers(SupportingFunctions):
             stripped_message = message.strip()
 
             if fullmatch(r"#\d+", stripped_message):
-                self.send_message(user_id, "Ага, idшник", self.get_keyboard("just_menu"))
+                classroom_id = stripped_message[1:]
+                self.send_message(user_id, f"id класса: {classroom_id}", self.get_keyboard("just_menu"))
 
-            elif fullmatch(r"onlyfiveEZHD/invite_link/\d+", stripped_message):
-                self.send_message(user_id, "Ясно, ссылочка", self.get_keyboard("just_menu"))
+            elif search(r"onlyfiveEZHD/invite_link/\d+", stripped_message):
+                result = search(r"onlyfiveEZHD/invite_link/\d+", stripped_message)
+                link = stripped_message[result.start():result.end()]
+                classroom_id = link.split("/")[-1]
+                self.send_message(user_id, f"id класса: {classroom_id}", self.get_keyboard("just_menu"))
 
             else:
                 print(message)
