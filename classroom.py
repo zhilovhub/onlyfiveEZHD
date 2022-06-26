@@ -198,7 +198,9 @@ if __name__ == "__main__":
     )
 
     db = ClassroomCommands(connection)
-    print(db.get_information_of_classroom(1))
-    print(db.get_list_of_classroom_users(1))
-    print(db.get_user_classrooms_with_role(341106876))
-    print(db.get_list_of_classroom_ids())
+    flag = input("Тестовый режим: ")
+
+    if flag == "new students":
+        for i in range(1, 55):
+            if randint(0, 1):
+                db.insert_new_user_in_classroom(i, 1)

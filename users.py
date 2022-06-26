@@ -92,3 +92,8 @@ if __name__ == '__main__':
     )
 
     db = UserDataCommands(connection)
+    flag = input("Тестовый режим: ")
+
+    if flag == "new users":
+        for i in range(1, 55):
+            db.insert_new_user(i, "test_user", "Тест", True)
