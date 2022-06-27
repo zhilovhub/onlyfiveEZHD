@@ -98,8 +98,8 @@ class StateHandlers(SupportingFunctions):
     def s_enter_class_name_class_create_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_CLASS_NAME_CLASSCREATE"""
         if payload is None:
-            if len(message) > 32:
-                self.send_message(user_id, "Длина названия превышает 32 символа. Введите другое название:",
+            if len(message) > 12:
+                self.send_message(user_id, "Длина названия превышает 12 символов. Введите другое название:",
                                   self.get_keyboard("cancel"))
             else:
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
