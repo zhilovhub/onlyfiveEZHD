@@ -47,12 +47,12 @@ class StateHandlers(SupportingFunctions):
             elements = []
             for classroom_id, role in user_classrooms_dictionary.items():
                 button = {"action":
-                              {
-                                  "type": "callback",
-                                  "label": "Войти",
-                                  "payload": {"text": "enter_the_classroom","classroom_id": classroom_id},
-                              }
-                          }
+                    {
+                        "type": "callback",
+                        "label": "Войти",
+                        "payload": {"text": "enter_the_classroom", "classroom_id": classroom_id},
+                    }
+                }
 
                 members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
                 classroom_name, school_name, access, description = \
@@ -89,10 +89,14 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "enter_the_classroom":
             classroom_id = payload["classroom_id"]
-            classroom_name = self.classroom_db.get_classroom_name(classroom_id)
+            classroom_name, school_name, access, description = \
+                self.classroom_db.get_information_of_classroom(classroom_id)
             self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
 
-            self.send_message(user_id, f"Ты в классе {classroom_name}", self.get_keyboard("my_class_menu"))
+            self.send_message(user_id, f"Ты в классе {classroom_name}\n\n#{classroom_id}\n"
+                                       f"Школа: {school_name}\n"
+                                       f"Описание: {description}\n"
+                                       f"Тип класса: {access}\n", self.get_keyboard("my_class_menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
 
     def s_enter_class_name_class_create_handler(self, user_id: int, message: str, payload: dict) -> None:
@@ -235,7 +239,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Настройки":
             self.send_message(user_id, "Настройки класса\n\nКоличество настроек зависит от твоей роли в этом классе!",
-                                       self.get_keyboard("classroom_settings"))
+                              self.get_keyboard("classroom_settings"))
             self.user_db.set_user_dialog_state(user_id, States.S_CLASSROOM_SETTINGS.value)
 
         elif payload["text"] == "Участники":
@@ -414,7 +418,8 @@ class StateHandlers(SupportingFunctions):
         """Handling States.S_EDIT_WEEK_MYCLASSES"""
         if payload is None:
             week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
-            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard(f"edit_{week_type}_week"))
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻",
+                              self.get_keyboard(f"edit_{week_type}_week"))
 
         elif payload["text"] in ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]:
             weekday_meanings_dict = {
