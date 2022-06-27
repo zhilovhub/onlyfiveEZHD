@@ -46,11 +46,14 @@ class StateHandlers(SupportingFunctions):
 
             elements = []
             for classroom_id, role in user_classrooms_dictionary.items():
-                button = {"action":
-                    {
+                button = {
+                    "action": {
                         "type": "callback",
                         "label": "Войти",
-                        "payload": {"text": "enter_the_classroom", "classroom_id": classroom_id},
+                        "payload": {
+                            "text": "enter_the_classroom",
+                            "classroom_id": classroom_id
+                        }
                     }
                 }
 
