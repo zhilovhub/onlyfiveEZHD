@@ -90,7 +90,8 @@ class KeyBoards:
     KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("СБ", payload=get_payload("СБ"))
     KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("ВС", payload=get_payload("ВС"))
     KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_line()
-    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("Скопировать с эталонного", payload=get_payload("Скопировать с эталонного"))
+    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("Скопировать с эталонного",
+                                               payload=get_payload("Скопировать с эталонного"))
     KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_line()
     KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("Главное меню", payload=get_payload("Главное меню"))
@@ -128,10 +129,37 @@ class KeyBoards:
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Лимит участников", payload=get_payload("Лимит участников"))
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Опасная зона", payload=get_payload("Опасная зона"))
+    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Опасная зона", payload=get_payload("Опасная зона"), color="negative")
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
+
+    KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS = VkKeyboard()
+    KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.add_button("Покинуть класс", payload=get_payload("Покинуть класс"))
+    KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.add_button("Удалить класс", payload=get_payload("Удалить класс"),
+                                                               color="negative")
+    KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.add_line()
+    KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
+    KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
+
+    KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS = VkKeyboard()
+    KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS.add_button("Да", payload=get_payload("Да"),
+                                                                          color="negative")
+    KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS.add_button("Нет", payload=get_payload("Нет"),
+                                                                          color="positive")
+    KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS.add_line()
+    KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS.add_button("Главное меню",
+                                                                          payload=get_payload("Главное меню"))
+
+    KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS = VkKeyboard()
+    KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.add_button("Удалить", payload=get_payload("Удалить"),
+                                                                          color="negative")
+    KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.add_button("Не удалять",
+                                                                          payload=get_payload("Не удалять"),
+                                                                          color="positive")
+    KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.add_line()
+    KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.add_button("Главное меню",
+                                                                          payload=get_payload("Главное меню"))
 
     # CUSTOMIZED EDIT_WEEKDAY KEYBOARD
     @staticmethod
