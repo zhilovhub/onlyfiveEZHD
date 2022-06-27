@@ -110,6 +110,10 @@ class KeyBoards:
 
     # CLASSROOM_SETTINGS KEYBOARD
     KEYBOARD_CLASSROOM_SETTINGS = VkKeyboard()
+    KEYBOARD_CLASSROOM_SETTINGS.add_button("Основные", payload=get_payload("Основные"))
+    KEYBOARD_CLASSROOM_SETTINGS.add_line()
+    KEYBOARD_CLASSROOM_SETTINGS.add_button("Уведомления", payload=get_payload("Уведомления"))
+    KEYBOARD_CLASSROOM_SETTINGS.add_line()
     KEYBOARD_CLASSROOM_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_CLASSROOM_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
 

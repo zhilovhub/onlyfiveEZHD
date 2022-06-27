@@ -55,7 +55,7 @@ class ClassroomCommands(DataBase):
         """Returns name, school_name, access and description"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.get_information_for_creating_query.format(classroom_id))
-            classroom_name, school_name, access, description = cursor.fetchone()[1:-1]
+            classroom_name, school_name, access, description = cursor.fetchone()
 
             return classroom_name, school_name, access, description
 
@@ -167,13 +167,18 @@ class ClassroomQueries:
         )"""
 
     get_customizing_classroom_id_query = """SELECT classroom_id FROM UserCustomize WHERE user_id={}"""
-    get_information_for_creating_query = """SELECT * FROM Classroom WHERE classroom_id={}"""
+    get_information_for_creating_query = """SELECT 
+        classroom_name, 
+        school_name,
+        everyone_can_invite,
+        description
+    FROM Classroom WHERE classroom_id={}"""
     get_user_classrooms_with_role = """SELECT classroom_id, role FROM Student WHERE user_id={}"""
     get_classroom_name_query = """SELECT classroom_name FROM Classroom WHERE classroom_id={}"""
     get_list_of_classroom_users_query = """SELECT user_id, role FROM Student WHERE classroom_id={}"""
     get_list_of_classroom_ids = """SELECT classroom_id FROM Classroom"""
 
-    insert_classroom_query = """INSERT INTO Classroom VALUES(null, null, null, null, null, FALSE)"""
+    insert_classroom_query = """INSERT INTO Classroom (created) VALUES(FALSE)"""
     insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, "{}")"""
     insert_new_customizer_query = """INSERT INTO UserCustomize VALUES({}, null)"""
 
