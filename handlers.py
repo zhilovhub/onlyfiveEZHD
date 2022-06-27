@@ -58,7 +58,7 @@ class StateHandlers(SupportingFunctions):
                                            f"Класс: {classroom_name}\n"
                                            f"Школа: {school_name}\n"
                                            f"Описание: {description}\n"
-                                           f"Могут ли все участники приглашать: {'Да' if access else 'Нет'}\n"
+                                           f"Тип класса: {access}\n"
                                            f"Вы: {role}\n"
                                            f"Участники: {len(members_dictionary)}", keyboard.get_keyboard())
 
@@ -130,7 +130,7 @@ class StateHandlers(SupportingFunctions):
     def s_enter_access_class_create_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_ENTER_ACCESS_CLASSCREATE"""
         if payload is None:
-            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("yes_no_cancel_back"))
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("access_cancel_back"))
 
         elif payload["text"] == "Отменить":
             self.cancel_creating_classroom(user_id)
@@ -139,16 +139,9 @@ class StateHandlers(SupportingFunctions):
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_CLASS_NAME_CLASSCREATE)
             self.state_transition(user_id, next_state, keyboard_type, messages)
 
-        elif payload["text"] == "Да":
+        elif payload["text"] in ["Открытый", "Приглашения", "Закрытый"]:
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            self.classroom_db.update_classroom_access(classroom_id, True)
-
-            next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
-            self.state_transition(user_id, next_state, keyboard_type, messages)
-
-        elif payload["text"] == "Нет":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            self.classroom_db.update_classroom_access(classroom_id, False)
+            self.classroom_db.update_classroom_access(classroom_id, payload["text"])
 
             next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
             self.state_transition(user_id, next_state, keyboard_type, messages)
@@ -171,7 +164,7 @@ class StateHandlers(SupportingFunctions):
                                            f"id: {classroom_id}\n"
                                            f"Название класса: {classroom_name}\n"
                                            f"Название школы: {school_name}\n"
-                                           f"Могут ли участники приглашать: {'Да' if access else 'Нет'}\n"
+                                           f"Тип класса: {access}\n"
                                            f"Описание класса: {description}",
                                   self.get_keyboard("empty"))
 
@@ -596,7 +589,7 @@ class StateHandlers(SupportingFunctions):
                                                f"Класс: {classroom_name}\n"
                                                f"Школа: {school_name}\n"
                                                f"Описание: {description}\n"
-                                               f"Могут ли все участники приглашать: {'Да' if access else 'Нет'}\n"
+                                               f"Тип класса: {access}\n"
                                                f"Участники: {len(members_dictionary)}\n\n"
                                                f"{user_in_classroom_text}", keyboard.get_keyboard())
                 else:

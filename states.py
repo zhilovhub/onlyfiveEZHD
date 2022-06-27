@@ -35,8 +35,8 @@ class States(Enum):
 
             case States.S_ENTER_SCHOOL_NAME_CLASSCREATE:
                 return States.S_ENTER_ACCESS_CLASSCREATE, \
-                       "yes_no_cancel_back", \
-                       ["Могут ли участники класса приглашать других людей?"]
+                       "access_cancel_back", \
+                       ["Тип будущего класса?"]
 
             case States.S_ENTER_ACCESS_CLASSCREATE:
                 return States.S_ENTER_DESCRIPTION_CLASSCREATE, \

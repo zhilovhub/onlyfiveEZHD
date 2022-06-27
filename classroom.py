@@ -104,7 +104,7 @@ class ClassroomCommands(DataBase):
             cursor.execute(ClassroomQueries.update_school_name_query.format(new_school_name, classroom_id))
             self.connection.commit()
 
-    def update_classroom_access(self, classroom_id: int, access: bool) -> None:
+    def update_classroom_access(self, classroom_id: int, access: str) -> None:
         """Update access of the classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.update_classroom_access_query.format(access, classroom_id))
@@ -146,7 +146,7 @@ class ClassroomQueries:
             classroom_id INT NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
             classroom_name VARCHAR(255),
             school_name VARCHAR(255),
-            everyone_can_invite BOOLEAN,
+            access TEXT,
             description TEXT,
             created BOOLEAN
         )"""
@@ -170,7 +170,7 @@ class ClassroomQueries:
     get_information_for_creating_query = """SELECT 
         classroom_name, 
         school_name,
-        everyone_can_invite,
+        access,
         description
     FROM Classroom WHERE classroom_id={}"""
     get_user_classrooms_with_role = """SELECT classroom_id, role FROM Student WHERE user_id={}"""
@@ -184,7 +184,7 @@ class ClassroomQueries:
 
     update_classroom_name_query = """UPDATE Classroom SET classroom_name="{}" WHERE classroom_id={}"""
     update_school_name_query = """UPDATE Classroom SET school_name="{}" WHERE classroom_id={}"""
-    update_classroom_access_query = """UPDATE Classroom SET everyone_can_invite={} WHERE classroom_id={}"""
+    update_classroom_access_query = """UPDATE Classroom SET access="{}" WHERE classroom_id={}"""
     update_classroom_description_query = """UPDATE Classroom SET description="{}" WHERE classroom_id={}"""
     update_user_role_query = """UPDATE Student SET role={} WHERE user_id={}"""
     update_user_customize_query = """UPDATE UserCustomize SET classroom_id={} WHERE user_id={}"""

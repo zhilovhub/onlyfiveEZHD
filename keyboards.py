@@ -36,12 +36,13 @@ class KeyBoards:
     KEYBOARD_CANCEL.add_button(label="Отменить", payload=get_payload("Отменить"))
 
     # YES_NO_CANCEL_BACK KEYBOARD
-    KEYBOARD_YES_NO_CANCEL_BACK = VkKeyboard()
-    KEYBOARD_YES_NO_CANCEL_BACK.add_button(label="Нет", payload=get_payload("Нет"))
-    KEYBOARD_YES_NO_CANCEL_BACK.add_button(label="Да", payload=get_payload("Да"))
-    KEYBOARD_YES_NO_CANCEL_BACK.add_line()
-    KEYBOARD_YES_NO_CANCEL_BACK.add_button(label="Отменить", payload=get_payload("Отменить"))
-    KEYBOARD_YES_NO_CANCEL_BACK.add_button(label="На шаг назад", payload=get_payload("На шаг назад"))
+    KEYBOARD_ACCESS_CANCEL_BACK = VkKeyboard()
+    KEYBOARD_ACCESS_CANCEL_BACK.add_button(label="Открытый", payload=get_payload("Открытый"))
+    KEYBOARD_ACCESS_CANCEL_BACK.add_button(label="Приглашения", payload=get_payload("Приглашения"))
+    KEYBOARD_ACCESS_CANCEL_BACK.add_button(label="Закрытый", payload=get_payload("Закрытый"))
+    KEYBOARD_ACCESS_CANCEL_BACK.add_line()
+    KEYBOARD_ACCESS_CANCEL_BACK.add_button(label="Отменить", payload=get_payload("Отменить"))
+    KEYBOARD_ACCESS_CANCEL_BACK.add_button(label="На шаг назад", payload=get_payload("На шаг назад"))
     
     # SUBMIT_BACK KEYBOARD
     KEYBOARD_SUBMIT_BACK = VkKeyboard()
