@@ -344,6 +344,18 @@ class StateHandlers(SupportingFunctions):
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻",
                               self.get_keyboard("main_classroom_settings"))
 
+        elif payload["text"] == "Тип класса":
+            pass
+
+        elif payload["text"] == "Название класса":
+            pass
+
+        elif payload["text"] == "Название школы":
+            pass
+
+        elif payload["text"] == "Лимит участников":
+            pass
+
         elif payload["text"] == "Опасная зона":
             self.send_message(user_id, "Место, где стоит быть поосторожнее",
                               self.get_keyboard("main_dangerous_zone_classroom_settings"))
