@@ -93,10 +93,20 @@ class StateHandlers(SupportingFunctions):
                 self.classroom_db.get_information_of_classroom(classroom_id)
             self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
 
+            members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
+            for key, value in members_dictionary.items():
+                if key == user_id:
+                    role = value
+                    break
+            else:
+                role = None
+
             self.send_message(user_id, f"Ты в классе {classroom_name}\n\n#{classroom_id}\n"
                                        f"Школа: {school_name}\n"
                                        f"Описание: {description}\n"
-                                       f"Тип класса: {access}\n", self.get_keyboard("my_class_menu"))
+                                       f"Тип класса: {access}\n"
+                                       f"Вы: {role}\n"
+                                       f"Участники: {len(members_dictionary)}", self.get_keyboard("my_class_menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
 
     def s_enter_class_name_class_create_handler(self, user_id: int, message: str, payload: dict) -> None:
