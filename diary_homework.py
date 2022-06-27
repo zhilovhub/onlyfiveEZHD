@@ -25,7 +25,7 @@ class DiaryHomeworkCommands(DataBase):
 
             formatted_all_lessons = []
             for i in range(0, len(all_lessons), 12):
-                formatted_all_lessons.append(all_lessons[i:i+12])
+                formatted_all_lessons.append(all_lessons[i:i + 12])
 
         return formatted_all_lessons
 
@@ -130,7 +130,7 @@ class DiaryHomeworkCommands(DataBase):
             self.connection.commit()
 
     def update_copy_diary_from_week_into_another_week(self, classroom_id: int, week_type: str,
-                                                               week_lessons: list) -> None:
+                                                      week_lessons: list) -> None:
         """Copy week's diary into another type week's diary"""
         all_values = [week_type]
         for weekday_lessons in week_lessons:
@@ -220,7 +220,7 @@ class DiaryHomeworkQueries:
                         weekday_lesson12=NULL
                       WHERE classroom_id={}"""
         return template.replace("weekday", weekday).replace("table_name", table_name)
-    
+
     create_table_diary_standard_week_query = """CREATE TABLE IF NOT EXISTS diary_standard_week(
         classroom_id INT,
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE,
