@@ -1,7 +1,5 @@
 from handlers import *
 
-from json import loads
-
 
 class DiaryVkBot(CallbackPayloadHandlers):
     """Listens events and filtering States/CallbackPayloads"""

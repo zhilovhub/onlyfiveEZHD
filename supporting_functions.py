@@ -11,7 +11,7 @@ class SupportingFunctions:
         self.vk_session = VkApi(token=token)
         self.bot_long_poll = VkBotLongPoll(vk=self.vk_session, group_id=group_id)
 
-    def send_message(self, user_id: int, message: str, keyboard=None) -> None:
+    def send_message(self, user_id: int, message=None, keyboard=None, template=None) -> None:
         """Send message to user"""
         try:
             self.vk_session.method(
@@ -20,6 +20,7 @@ class SupportingFunctions:
                     "user_id": user_id,
                     "message": message,
                     "keyboard": keyboard,
+                    "template": template,
                     "random_id": randint(0, 2147483648)
                 }
             )

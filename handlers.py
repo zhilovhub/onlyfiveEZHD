@@ -44,23 +44,35 @@ class StateHandlers(SupportingFunctions):
             if not user_classrooms_dictionary:
                 self.send_message(user_id, "Пока что ты не состоишь ни в одном классе!", self.get_keyboard("menu"))
 
+            elements = []
             for classroom_id, role in user_classrooms_dictionary.items():
-                keyboard = VkKeyboard(inline=True)
-                keyboard.add_callback_button("Войти", payload={
-                    "text": "enter_the_classroom", "classroom_id": classroom_id
-                })
+                button = {"action":
+                              {
+                                  "type": "callback",
+                                  "label": "Войти",
+                                  "payload": {"text": "enter_the_classroom","classroom_id": classroom_id},
+                              }
+                          }
 
                 members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
                 classroom_name, school_name, access, description = \
                     self.classroom_db.get_information_of_classroom(classroom_id)
 
-                self.send_message(user_id, f"#{classroom_id}\n"
-                                           f"Класс: {classroom_name}\n"
-                                           f"Школа: {school_name}\n"
-                                           f"Описание: {description}\n"
-                                           f"Тип класса: {access}\n"
-                                           f"Вы: {role}\n"
-                                           f"Участники: {len(members_dictionary)}", keyboard.get_keyboard())
+                elements.append(
+                    {
+                        "title": classroom_name + "\n" + school_name,
+                        "description": f"#{classroom_id}\n"
+                                       f"Тип класса: {access}\n"
+                                       f"Вы: {role}\n"
+                                       f"Участники: {len(members_dictionary)}",
+                        "buttons": [button]
+                    }
+                )
+
+            self.send_message(user_id, message="Список твоих классов:", template=dumps({
+                "type": "carousel",
+                "elements": elements
+            }))
 
         elif payload["text"] == "Создать беседу класса":
             self.send_message(user_id, "Создаю беседу класса...",
