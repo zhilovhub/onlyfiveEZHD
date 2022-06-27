@@ -24,6 +24,9 @@ class States(Enum):
 
     S_CLASSROOM_SETTINGS = 13
     S_MAIN_CLASSROOM_SETTINGS = 14
+    S_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS = 15
+    S_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS = 16
+    S_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS = 17
 
     @staticmethod
     def get_next_state_config(current_state: Enum) -> tuple:

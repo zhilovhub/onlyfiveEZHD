@@ -327,9 +327,83 @@ class StateHandlers(SupportingFunctions):
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻",
                               self.get_keyboard("main_classroom_settings"))
 
+        elif payload["text"] == "Опасная зона":
+            self.send_message(user_id, "Место, где стоит быть поосторожнее",
+                              self.get_keyboard("main_dangerous_zone_classroom_settings"))
+            self.user_db.set_user_dialog_state(user_id, States.S_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.value)
+
         elif payload["text"] == "Назад":
             self.send_message(user_id, "Возвращаемся в настройки класса...", self.get_keyboard("classroom_settings"))
             self.user_db.set_user_dialog_state(user_id, States.S_CLASSROOM_SETTINGS.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def s_main_dangerous_zone_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS"""
+        if payload is None:
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻",
+                              self.get_keyboard("main_dangerous_zone_classroom_settings"))
+
+        elif payload["text"] == "Удалить класс":
+            self.send_message(user_id, "Ты уверен, что хочешь удалить класс?",
+                              self.get_keyboard("main_dangerous_zone_delete_one_classroom_settings"))
+            self.user_db.set_user_dialog_state(user_id,
+                                               States.S_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS.value)
+
+        elif payload["text"] == "Назад":
+            self.send_message(user_id, "Возвращаемся в основные настройки класса...",
+                              self.get_keyboard("main_classroom_settings"))
+            self.user_db.set_user_dialog_state(user_id, States.S_MAIN_CLASSROOM_SETTINGS.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def s_main_dangerous_zone_delete_one_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS"""
+        if payload is None:
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻",
+                              self.get_keyboard("main_dangerous_zone_delete_one_classroom_settings"))
+
+        elif payload["text"] == "Да":
+            self.send_message(user_id, "Последнее предупреждение",
+                              self.get_keyboard("main_dangerous_zone_delete_two_classroom_settings"))
+            self.user_db.set_user_dialog_state(user_id,
+                                               States.S_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.value)
+
+        elif payload["text"] == "Нет":
+            self.send_message(user_id, "Возвращаемся в опасную зону...",
+                              self.get_keyboard("main_dangerous_zone_classroom_settings"))
+            self.user_db.set_user_dialog_state(user_id, States.S_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def s_main_dangerous_zone_delete_two_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS"""
+        if payload is None:
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻",
+                              self.get_keyboard("main_dangerous_zone_delete_two_classroom_settings"))
+
+        elif payload["text"] == "Удалить":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            classroom_name = self.classroom_db.get_classroom_name(classroom_id)
+            self.classroom_db.delete_classroom(classroom_id)
+
+            self.send_message(user_id, f"Класс с именем {classroom_name} удалён!", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+        elif payload["text"] == "Не удалять":
+            self.send_message(user_id, "Возвращаемся в опасную зону...",
+                              self.get_keyboard("main_dangerous_zone_classroom_settings"))
+            self.user_db.set_user_dialog_state(user_id, States.S_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
