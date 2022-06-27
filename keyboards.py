@@ -115,15 +115,13 @@ class KeyBoards:
 
     # CUSTOMIZED EDIT_WEEKDAY KEYBOARD
     @staticmethod
-    def get_edit_weekday_keyboard(add_button_color="secondary", delete_button_color="secondary",
-                                  redact_button_color="secondary") -> VkKeyboard:
+    def get_edit_weekday_keyboard(add_button_color="secondary", redact_button_color="secondary") -> VkKeyboard:
         keyboard_edit_weekday = VkKeyboard()
         keyboard_edit_weekday.add_button("Добавить",
                                          payload=KeyBoards.get_payload("Добавить"),
                                          color=add_button_color)
         keyboard_edit_weekday.add_button("Удалить урок",
-                                         payload=KeyBoards.get_payload("Удалить урок"),
-                                         color=delete_button_color)
+                                         payload=KeyBoards.get_payload("Удалить урок"))
         keyboard_edit_weekday.add_button("Изменить",
                                          payload=KeyBoards.get_payload("Изменить"),
                                          color=redact_button_color)

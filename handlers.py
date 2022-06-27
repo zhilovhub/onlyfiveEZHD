@@ -229,7 +229,8 @@ class StateHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
         elif payload["text"] == "Настройки":
-            self.send_message(user_id, "Настройки класса...", self.get_keyboard("classroom_settings"))
+            self.send_message(user_id, "Настройки класса\n\nКоличество настроек зависит от твоей роли в этом классе!",
+                                       self.get_keyboard("classroom_settings"))
             self.user_db.set_user_dialog_state(user_id, States.S_CLASSROOM_SETTINGS.value)
 
         elif payload["text"] == "Участники":
