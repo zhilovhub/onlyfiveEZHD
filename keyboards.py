@@ -120,6 +120,16 @@ class KeyBoards:
 
     # MAIN_CLASSROOM_SETTINGS KEYBOARD
     KEYBOARD_MAIN_CLASSROOM_SETTINGS = VkKeyboard()
+    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Тип класса", payload=get_payload("Тип класса"))
+    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
+    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Название класса", payload=get_payload("Тип класса"))
+    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
+    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Название школы", payload=get_payload("Название школы"))
+    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
+    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Лимит участников", payload=get_payload("Лимит участников"))
+    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
+    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Опасная зона", payload=get_payload("Опасная зона"))
+    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
 
