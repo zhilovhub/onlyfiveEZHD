@@ -23,6 +23,7 @@ class States(Enum):
     S_FIND_CLASS = 12
 
     S_CLASSROOM_SETTINGS = 13
+    S_MAIN_CLASSROOM_SETTINGS = 14
 
     @staticmethod
     def get_next_state_config(current_state: Enum) -> tuple:
