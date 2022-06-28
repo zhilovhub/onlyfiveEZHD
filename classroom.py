@@ -156,6 +156,7 @@ class ClassroomQueries:
             school_name VARCHAR(255),
             access TEXT,
             description TEXT,
+            members_limit INT,
             created BOOLEAN
         )"""
 
@@ -187,7 +188,7 @@ class ClassroomQueries:
     get_list_of_classroom_users_query = """SELECT user_id, role FROM Student WHERE classroom_id={}"""
     get_list_of_classroom_ids = """SELECT classroom_id FROM Classroom"""
 
-    insert_classroom_query = """INSERT INTO Classroom (created) VALUES(FALSE)"""
+    insert_classroom_query = """INSERT INTO Classroom (members_limit, created) VALUES(40, FALSE)"""
     insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, "{}")"""
     insert_new_customizer_query = """INSERT INTO UserCustomize VALUES({}, null)"""
 
