@@ -903,7 +903,6 @@ class StateHandlers(SupportingFunctions):
             else:
                 self.send_message(user_id, f"Неверный формат записи\n\n{ask_message}", self.get_keyboard("back_menu"))
 
-
         elif payload["text"] == "Назад":
             self.send_message(user_id, "Назад к основным настройкам...", self.get_keyboard("main_classroom_settings"))
             self.user_db.set_user_dialog_state(user_id, States.S_MAIN_CLASSROOM_SETTINGS.value)
