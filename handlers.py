@@ -768,6 +768,14 @@ class StateHandlers(SupportingFunctions):
 
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard(keyboard_type))
 
+        elif payload["text"] in ["Публичный", "Приглашения", "Закрытый"]:
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            self.classroom_db.update_classroom_access(classroom_id, payload["text"])
+
+            self.send_message(user_id, f"Тип класса изменен на {payload['text']}!",
+                              self.get_keyboard("main_classroom_settings"))
+            self.user_db.set_user_dialog_state(user_id, States.S_MAIN_CLASSROOM_SETTINGS.value)
+
         elif payload["text"] == "Назад":
             self.send_message(user_id, "Назад к основным настройкам...", self.get_keyboard("main_classroom_settings"))
             self.user_db.set_user_dialog_state(user_id, States.S_MAIN_CLASSROOM_SETTINGS.value)
