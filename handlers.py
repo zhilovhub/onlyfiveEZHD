@@ -60,6 +60,7 @@ class StateHandlers(SupportingFunctions):
                 members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
                 classroom_name, school_name, access, description = \
                     self.classroom_db.get_information_of_classroom(classroom_id)
+                members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
 
                 elements.append(
                     {
@@ -67,7 +68,7 @@ class StateHandlers(SupportingFunctions):
                         "description": f"#{classroom_id}\n"
                                        f"Тип класса: {access}\n"
                                        f"Вы: {role}\n"
-                                       f"Участники: {len(members_dictionary)}",
+                                       f"Участники: {len(members_dictionary)}/{members_limit}",
                         "buttons": [button]
                     }
                 )
@@ -97,6 +98,8 @@ class StateHandlers(SupportingFunctions):
             self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
 
             members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
+            members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
+
             for key, value in members_dictionary.items():
                 if key == user_id:
                     role = value
@@ -109,7 +112,8 @@ class StateHandlers(SupportingFunctions):
                                        f"Описание: {description}\n"
                                        f"Тип класса: {access}\n"
                                        f"Вы: {role}\n"
-                                       f"Участники: {len(members_dictionary)}", self.get_keyboard("my_class_menu"))
+                                       f"Участники: {len(members_dictionary)}/{members_limit}",
+                              self.get_keyboard("my_class_menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
 
     def s_enter_class_name_class_create_handler(self, user_id: int, message: str, payload: dict) -> None:
@@ -736,6 +740,7 @@ class StateHandlers(SupportingFunctions):
                     classroom_name, school_name, access, description = \
                         self.classroom_db.get_information_of_classroom(classroom_id)
                     members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
+                    members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
 
                     for member_user_id in members_dictionary.keys():
                         if user_id == member_user_id:
@@ -749,7 +754,7 @@ class StateHandlers(SupportingFunctions):
                                                f"Школа: {school_name}\n"
                                                f"Описание: {description}\n"
                                                f"Тип класса: {access}\n"
-                                               f"Участники: {len(members_dictionary)}\n\n"
+                                               f"Участники: {len(members_dictionary)}/{members_limit}\n\n"
                                                f"{user_in_classroom_text}", keyboard.get_keyboard())
                 else:
                     self.send_message(user_id, f"Класса с id {classroom_id} не существует!",

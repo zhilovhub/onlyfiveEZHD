@@ -31,6 +31,14 @@ class ClassroomCommands(DataBase):
 
             return access
 
+    def get_classroom_members_limit(self, classroom_id: int) -> int:
+        """Get access of the classroom"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.get_classroom_members_limit_query.format(classroom_id))
+            members_limit = cursor.fetchone()[0]
+
+            return members_limit
+
     def get_user_classrooms_with_role(self, user_id: int) -> dict:
         """Returns user's classrooms_id and his role"""
         with self.connection.cursor() as cursor:
@@ -185,6 +193,7 @@ class ClassroomQueries:
     get_user_classrooms_with_role = """SELECT classroom_id, role FROM Student WHERE user_id={}"""
     get_classroom_name_query = """SELECT classroom_name FROM Classroom WHERE classroom_id={}"""
     get_classroom_access_query = """SELECT access FROM Classroom WHERE classroom_id={}"""
+    get_classroom_members_limit_query = """SELECT members_limit FROM Classroom WHERE classroom_id={}"""
     get_list_of_classroom_users_query = """SELECT user_id, role FROM Student WHERE classroom_id={}"""
     get_list_of_classroom_ids = """SELECT classroom_id FROM Classroom"""
 
