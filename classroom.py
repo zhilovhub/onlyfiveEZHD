@@ -132,6 +132,12 @@ class ClassroomCommands(DataBase):
             cursor.execute(ClassroomQueries.update_classroom_description_query.format(description, classroom_id))
             self.connection.commit()
 
+    def update_classroom_members_limit(self, classroom_id: int, members_limit: int) -> None:
+        """Update members_limit of the classroom"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.update_classroom_members_limit_query.format(members_limit, classroom_id))
+            self.connection.commit()
+
     def update_classroom_created(self, classroom_id: int, created: bool) -> None:
         """Update created of classroom"""
         with self.connection.cursor() as cursor:
@@ -205,6 +211,7 @@ class ClassroomQueries:
     update_school_name_query = """UPDATE Classroom SET school_name="{}" WHERE classroom_id={}"""
     update_classroom_access_query = """UPDATE Classroom SET access="{}" WHERE classroom_id={}"""
     update_classroom_description_query = """UPDATE Classroom SET description="{}" WHERE classroom_id={}"""
+    update_classroom_members_limit_query = """UPDATE Classroom SET members_limit={} WHERE classroom_id={}"""
     update_user_role_query = """UPDATE Student SET role={} WHERE user_id={}"""
     update_user_customize_query = """UPDATE UserCustomize SET classroom_id={} WHERE user_id={}"""
     update_classroom_created_query = """UPDATE Classroom SET created={} WHERE classroom_id={}"""

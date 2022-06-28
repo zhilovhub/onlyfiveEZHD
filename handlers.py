@@ -382,7 +382,14 @@ class StateHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_DESCRIPTION_MAIN_CLASSROOM_SETTINGS.value)
 
         elif payload["text"] == "Лимит участников":
-            pass
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
+
+            self.send_message(user_id, f"Текущий лимит участников: {members_limit}\n\n"
+                                       f"Впишите новое число максимального количества участников (не может быть меньше "
+                                       f"текущего количества участников и не может быть больше 40)",
+                              self.get_keyboard("back_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_LIMIT_MAIN_CLASSROOM_SETTINGS.value)
 
         elif payload["text"] == "Опасная зона":
             self.send_message(user_id, "Место, где стоит быть поосторожнее",
@@ -858,6 +865,44 @@ class StateHandlers(SupportingFunctions):
                 self.send_message(user_id, f"Новое описание класса: {message}",
                                   self.get_keyboard("main_classroom_settings"))
                 self.user_db.set_user_dialog_state(user_id, States.S_MAIN_CLASSROOM_SETTINGS.value)
+
+        elif payload["text"] == "Назад":
+            self.send_message(user_id, "Назад к основным настройкам...", self.get_keyboard("main_classroom_settings"))
+            self.user_db.set_user_dialog_state(user_id, States.S_MAIN_CLASSROOM_SETTINGS.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def s_limit_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
+        """Handling States.S_LIMIT_MAIN_CLASSROOM_SETTINGS"""
+        if payload is None:
+            ask_message = f"Впишите новое число максимального количества участников (не может быть меньше " \
+                          f"текущего количества участников и не может быть больше 40)"
+
+            if message.strip().isdigit():
+                new_members_limit = int(message.strip())
+
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                members_count = len(self.classroom_db.get_list_of_classroom_users(classroom_id))
+                old_members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
+
+                if new_members_limit == old_members_limit:
+                    self.send_message(user_id, f"Такой лимит уже и так задан\n\n{ask_message}",
+                                      self.get_keyboard("back_menu"))
+                elif members_count <= new_members_limit <= 40:
+                    self.classroom_db.update_classroom_members_limit(classroom_id, new_members_limit)
+
+                    self.send_message(user_id, "Новый лимит участников сохранён!",
+                                      self.get_keyboard("main_classroom_settings"))
+                    self.user_db.set_user_dialog_state(user_id, States.S_MAIN_CLASSROOM_SETTINGS.value)
+                else:
+                    self.send_message(user_id, f"Введенное число меньше текущего кол-ва участников или больше 40\n\n"
+                                               f"{ask_message}", self.get_keyboard("back_menu"))
+            else:
+                self.send_message(user_id, f"Неверный формат записи\n\n{ask_message}", self.get_keyboard("back_menu"))
+
 
         elif payload["text"] == "Назад":
             self.send_message(user_id, "Назад к основным настройкам...", self.get_keyboard("main_classroom_settings"))
