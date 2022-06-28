@@ -349,7 +349,18 @@ class StateHandlers(SupportingFunctions):
                               self.get_keyboard("main_classroom_settings"))
 
         elif payload["text"] == "Тип класса":
-            pass
+            keyboard_type_dictionary = {
+                "Публичный": "access_menu_back_public",
+                "Приглашения": "access_menu_back_invite",
+                "Закрытый": "access_menu_back_close"
+            }
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            access = self.classroom_db.get_classroom_access(classroom_id)
+            keyboard_type = keyboard_type_dictionary[access]
+
+            self.send_message(user_id, "Выберете новый тип класса (зеленым покрашен текущий тип):",
+                              self.get_keyboard(keyboard_type))
+            self.user_db.set_user_dialog_state(user_id, States.S_ACCESS_MAIN_CLASSROOM_SETTINGS.value)
 
         elif payload["text"] == "Название класса":
             pass
@@ -738,6 +749,28 @@ class StateHandlers(SupportingFunctions):
             else:
                 self.send_message(user_id, "Неверный формат записи\n\nОтправьте ссылку-приглашение или id класса в "
                                            "формате #id (например, #1223)", self.get_keyboard("just_menu"))
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def s_access_main_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_ACCESS_MAIN_CLASSROOM_SETTINGS"""
+        if payload is None:
+            keyboard_type_dictionary = {
+                "Публичный": "access_menu_back_public",
+                "Приглашения": "access_menu_back_invite",
+                "Закрытый": "access_menu_back_close"
+            }
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            access = self.classroom_db.get_classroom_access(classroom_id)
+            keyboard_type = keyboard_type_dictionary[access]
+
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard(keyboard_type))
+
+        elif payload["text"] == "Назад":
+            self.send_message(user_id, "Назад к основным настройкам...", self.get_keyboard("main_classroom_settings"))
+            self.user_db.set_user_dialog_state(user_id, States.S_MAIN_CLASSROOM_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))

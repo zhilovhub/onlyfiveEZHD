@@ -59,7 +59,22 @@ class SupportingFunctions:
             return KeyBoards.KEYBOARD_JUST_MENU.get_keyboard()
 
         elif keyboard_type == "access_menu_back":
-            return KeyBoards.KEYBOARD_ACCESS_MENU_BACK.get_keyboard()
+            return KeyBoards.get_access_menu_back_keyboard()
+
+        elif keyboard_type == "access_menu_back_public":
+            return KeyBoards.get_access_menu_back_keyboard(public_color="positive",
+                                                           invite_color="negative",
+                                                           close_color="negative")
+
+        elif keyboard_type == "access_menu_back_invite":
+            return KeyBoards.get_access_menu_back_keyboard(public_color="negative",
+                                                           invite_color="positive",
+                                                           close_color="negative")
+
+        elif keyboard_type == "access_menu_back_close":
+            return KeyBoards.get_access_menu_back_keyboard(public_color="negative",
+                                                           invite_color="negative",
+                                                           close_color="positive")
 
         elif keyboard_type == "submit_back":
             return KeyBoards.KEYBOARD_SUBMIT_BACK.get_keyboard()

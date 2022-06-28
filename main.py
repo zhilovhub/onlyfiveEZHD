@@ -130,6 +130,9 @@ class DiaryVkBot(CallbackPayloadHandlers):
             case States.S_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.value:
                 self.s_main_dangerous_zone_delete_two_classroom_settings_handler(user_id, payload)
 
+            case States.S_ACCESS_MAIN_CLASSROOM_SETTINGS.value:
+                self.s_access_main_classroom_settings_handler(user_id, payload)
+
             # TECHNICALSUPPORT
             case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value:
                 self.s_enter_technical_support_message_handler(user_id, message)

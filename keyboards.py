@@ -25,15 +25,6 @@ class KeyBoards:
     KEYBOARD_MENU.add_button(label="Настройка беседы класса", payload=get_payload("Настройка беседы класса"))
     KEYBOARD_MENU.add_line()
     KEYBOARD_MENU.add_button(label="Обращение в тех. поддержку", payload=get_payload("Обращение в тех. поддержку"))
-
-    # ACCESS_MENU_BACK KEYBOARD
-    KEYBOARD_ACCESS_MENU_BACK = VkKeyboard()
-    KEYBOARD_ACCESS_MENU_BACK.add_button(label="Публичный", payload=get_payload("Публичный"))
-    KEYBOARD_ACCESS_MENU_BACK.add_button(label="Приглашения", payload=get_payload("Приглашения"))
-    KEYBOARD_ACCESS_MENU_BACK.add_button(label="Закрытый", payload=get_payload("Закрытый"))
-    KEYBOARD_ACCESS_MENU_BACK.add_line()
-    KEYBOARD_ACCESS_MENU_BACK.add_button(label="Назад", payload=get_payload("Назад"))
-    KEYBOARD_ACCESS_MENU_BACK.add_button(label="Главное меню", payload=get_payload("Главное меню"))
     
     # SUBMIT_BACK KEYBOARD
     KEYBOARD_SUBMIT_BACK = VkKeyboard()
@@ -120,6 +111,7 @@ class KeyBoards:
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Название школы", payload=get_payload("Название школы"))
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
+    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Описание класса", payload=get_payload("Описание класса"))
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Лимит участников", payload=get_payload("Лимит участников"))
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Опасная зона", payload=get_payload("Опасная зона"), color="negative")
@@ -182,3 +174,20 @@ class KeyBoards:
                                          color="primary")
 
         return keyboard_edit_weekday.get_keyboard()
+
+    # CUSTOMIZED ACCESS_MENU_BACK KEYBOARD
+    @staticmethod
+    def get_access_menu_back_keyboard(public_color="secondary", invite_color="secondary",
+                                      close_color="secondary") -> VkKeyboard:
+        keyboard_access_menu_back = VkKeyboard()
+        keyboard_access_menu_back.add_button(label="Публичный", payload=KeyBoards.get_payload("Публичный"),
+                                             color=public_color)
+        keyboard_access_menu_back.add_button(label="Приглашения", payload=KeyBoards.get_payload("Приглашения"),
+                                             color=invite_color)
+        keyboard_access_menu_back.add_button(label="Закрытый", payload=KeyBoards.get_payload("Закрытый"),
+                                             color=close_color)
+        keyboard_access_menu_back.add_line()
+        keyboard_access_menu_back.add_button(label="Назад", payload=KeyBoards.get_payload("Назад"))
+        keyboard_access_menu_back.add_button(label="Главное меню", payload=KeyBoards.get_payload("Главное меню"))
+
+        return keyboard_access_menu_back.get_keyboard()
