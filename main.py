@@ -158,6 +158,9 @@ class DiaryVkBot(CallbackPayloadHandlers):
             case ("edit_standard" | "edit_current" | "edit_next"):
                 self.p_edit_week_handler(user_id, payload, current_dialog_state)
 
+            case "enter_members_settings":
+                self.p_enter_members_settings(user_id, payload, current_dialog_state)
+
 
 if __name__ == "__main__":
     with connect(

@@ -285,7 +285,14 @@ class StateHandlers(SupportingFunctions):
                     ind += 1
                 members_text += "\n"
 
-            self.send_message(user_id, members_text, self.get_keyboard("my_class_menu"))
+            keyboard = VkKeyboard(inline=True)
+            keyboard.add_callback_button("Настройки",
+                                         payload={
+                                             "text": "enter_members_settings",
+                                             "classroom_id": classroom_id
+                                         })
+
+            self.send_message(user_id, members_text, keyboard.get_keyboard())
 
         elif payload["text"] in ["Расписание эталонное", "Расписание текущее", "Расписание будущее"]:
             payload_meanings_dict = {
@@ -1005,3 +1012,16 @@ class CallbackPayloadHandlers(StateHandlers):
                 self.send_message(user_id, "Это расписание не того класса, в котором ты находишься!")
         else:
             self.send_message(user_id, "Ты должен находиться в меню класса, расписание которого собираешься изменить!")
+
+    def p_enter_members_settings(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
+        """Handling payload with text: enter_member_settings"""
+        if current_dialog_state == States.S_IN_CLASS_MYCLASSES.value:
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+
+            if classroom_id == payload["classroom_id"]:
+                self.s_in_class_my_classes_handler(user_id, payload)
+            else:
+                self.send_message(user_id, "Это настройки участников не того класса, в котором ты находишься!")
+        else:
+            self.send_message(user_id, "Ты должен находиться в меню класса, в настройки участников которого собираешься"
+                                       " войти!")
