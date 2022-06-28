@@ -107,7 +107,7 @@ class KeyBoards:
     KEYBOARD_MAIN_CLASSROOM_SETTINGS = VkKeyboard()
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Тип класса", payload=get_payload("Тип класса"))
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Название класса", payload=get_payload("Тип класса"))
+    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Название класса", payload=get_payload("Название класса"))
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Название школы", payload=get_payload("Название школы"))
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
