@@ -52,20 +52,14 @@ class SupportingFunctions:
         elif keyboard_type == "menu":
             return KeyBoards.KEYBOARD_MENU.get_keyboard()
 
-        elif keyboard_type == "cancel_back":
-            return KeyBoards.KEYBOARD_CANCEL_BACK.get_keyboard()
-
         elif keyboard_type == "back_menu":
             return KeyBoards.KEYBOARD_BACK_MENU.get_keyboard()
 
         elif keyboard_type == "just_menu":
             return KeyBoards.KEYBOARD_JUST_MENU.get_keyboard()
 
-        elif keyboard_type == "cancel":
-            return KeyBoards.KEYBOARD_CANCEL.get_keyboard()
-
-        elif keyboard_type == "access_cancel_back":
-            return KeyBoards.KEYBOARD_ACCESS_CANCEL_BACK.get_keyboard()
+        elif keyboard_type == "access_menu_back":
+            return KeyBoards.KEYBOARD_ACCESS_MENU_BACK.get_keyboard()
 
         elif keyboard_type == "submit_back":
             return KeyBoards.KEYBOARD_SUBMIT_BACK.get_keyboard()

@@ -34,17 +34,17 @@ class States(Enum):
         match current_state:
             case States.S_ENTER_CLASS_NAME_CLASSCREATE:
                 return States.S_ENTER_SCHOOL_NAME_CLASSCREATE, \
-                       "cancel_back", \
+                       "back_menu", \
                        ["Название школы будущего класса (макс. 32 символа):"]
 
             case States.S_ENTER_SCHOOL_NAME_CLASSCREATE:
                 return States.S_ENTER_ACCESS_CLASSCREATE, \
-                       "access_cancel_back", \
+                       "access_menu_back", \
                        ["Тип будущего класса?"]
 
             case States.S_ENTER_ACCESS_CLASSCREATE:
                 return States.S_ENTER_DESCRIPTION_CLASSCREATE, \
-                       "cancel_back", \
+                       "back_menu", \
                        ["Краткое описание класса (макс. 200 символов):"]
 
             case States.S_ENTER_DESCRIPTION_CLASSCREATE:

@@ -26,28 +26,21 @@ class KeyBoards:
     KEYBOARD_MENU.add_line()
     KEYBOARD_MENU.add_button(label="Обращение в тех. поддержку", payload=get_payload("Обращение в тех. поддержку"))
 
-    # CANCEL_BACK KEYBOARD
-    KEYBOARD_CANCEL_BACK = VkKeyboard()
-    KEYBOARD_CANCEL_BACK.add_button(label="Отменить", payload=get_payload("Отменить"))
-    KEYBOARD_CANCEL_BACK.add_button(label="На шаг назад", payload=get_payload("На шаг назад"))
-
-    # CANCEL KEYBOARD
-    KEYBOARD_CANCEL = VkKeyboard()
-    KEYBOARD_CANCEL.add_button(label="Отменить", payload=get_payload("Отменить"))
-
-    # YES_NO_CANCEL_BACK KEYBOARD
-    KEYBOARD_ACCESS_CANCEL_BACK = VkKeyboard()
-    KEYBOARD_ACCESS_CANCEL_BACK.add_button(label="Открытый", payload=get_payload("Открытый"))
-    KEYBOARD_ACCESS_CANCEL_BACK.add_button(label="Приглашения", payload=get_payload("Приглашения"))
-    KEYBOARD_ACCESS_CANCEL_BACK.add_button(label="Закрытый", payload=get_payload("Закрытый"))
-    KEYBOARD_ACCESS_CANCEL_BACK.add_line()
-    KEYBOARD_ACCESS_CANCEL_BACK.add_button(label="Отменить", payload=get_payload("Отменить"))
-    KEYBOARD_ACCESS_CANCEL_BACK.add_button(label="На шаг назад", payload=get_payload("На шаг назад"))
+    # ACCESS_MENU_BACK KEYBOARD
+    KEYBOARD_ACCESS_MENU_BACK = VkKeyboard()
+    KEYBOARD_ACCESS_MENU_BACK.add_button(label="Публичный", payload=get_payload("Публичный"))
+    KEYBOARD_ACCESS_MENU_BACK.add_button(label="Приглашения", payload=get_payload("Приглашения"))
+    KEYBOARD_ACCESS_MENU_BACK.add_button(label="Закрытый", payload=get_payload("Закрытый"))
+    KEYBOARD_ACCESS_MENU_BACK.add_line()
+    KEYBOARD_ACCESS_MENU_BACK.add_button(label="Назад", payload=get_payload("Назад"))
+    KEYBOARD_ACCESS_MENU_BACK.add_button(label="Главное меню", payload=get_payload("Главное меню"))
     
     # SUBMIT_BACK KEYBOARD
     KEYBOARD_SUBMIT_BACK = VkKeyboard()
     KEYBOARD_SUBMIT_BACK.add_button(label="Отклонить", payload=get_payload("Отклонить"))
     KEYBOARD_SUBMIT_BACK.add_button(label="Принять", payload=get_payload("Принять"))
+    KEYBOARD_SUBMIT_BACK.add_line()
+    KEYBOARD_SUBMIT_BACK.add_button(label="Главное меню", payload=get_payload("Главное меню"))
 
     # MY_CLASS_MENU KEYBOARD
     KEYBOARD_MY_CLASS_MENU = VkKeyboard()
