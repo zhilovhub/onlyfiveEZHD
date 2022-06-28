@@ -122,11 +122,11 @@ class StateHandlers(SupportingFunctions):
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 self.classroom_db.update_classroom_name(classroom_id, message)
 
-                next_state, keyboard_type, messages = States.get_next_state_config(
+                next_state, keyboard_type, trans_message = States.get_next_state_config(
                     States.S_ENTER_CLASS_NAME_CLASSCREATE)
-                self.send_message(user_id, f"Название класса: {message}", self.get_keyboard("empty"))
+                trans_message = f"Название класса: {message}\n\n" + trans_message
 
-                self.state_transition(user_id, next_state, keyboard_type, messages)
+                self.state_transition(user_id, next_state, keyboard_type, trans_message)
 
         elif payload["text"] == "Главное меню":
             self.cancel_creating_classroom(user_id)
@@ -141,11 +141,11 @@ class StateHandlers(SupportingFunctions):
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 self.classroom_db.update_school_name(classroom_id, message)
 
-                next_state, keyboard_type, messages = States.get_next_state_config(
+                next_state, keyboard_type, trans_message = States.get_next_state_config(
                     States.S_ENTER_SCHOOL_NAME_CLASSCREATE)
-                self.send_message(user_id, f"Название школы будущего класса: {message}", self.get_keyboard("empty"))
+                trans_message = f"Название школы будущего класса: {message}\n\n" + trans_message
 
-                self.state_transition(user_id, next_state, keyboard_type, messages)
+                self.state_transition(user_id, next_state, keyboard_type, trans_message)
 
         elif payload["text"] == "Главное меню":
             self.cancel_creating_classroom(user_id)
@@ -165,15 +165,16 @@ class StateHandlers(SupportingFunctions):
             self.cancel_creating_classroom(user_id)
 
         elif payload["text"] == "Назад":
-            next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_CLASS_NAME_CLASSCREATE)
-            self.state_transition(user_id, next_state, keyboard_type, messages)
+            next_state, keyboard_type, trans_message = \
+                States.get_next_state_config(States.S_ENTER_CLASS_NAME_CLASSCREATE)
+            self.state_transition(user_id, next_state, keyboard_type, trans_message)
 
         elif payload["text"] in ["Публичный", "Приглашения", "Закрытый"]:
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             self.classroom_db.update_classroom_access(classroom_id, payload["text"])
 
-            next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
-            self.state_transition(user_id, next_state, keyboard_type, messages)
+            next_state, keyboard_type, trans_message = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
+            self.state_transition(user_id, next_state, keyboard_type, trans_message)
 
     def s_enter_description_class_create_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_DESCRIPTION_CLASSCREATE"""
@@ -187,24 +188,24 @@ class StateHandlers(SupportingFunctions):
                 classroom_name, school_name, access, description = \
                     self.classroom_db.get_information_of_classroom(classroom_id)
 
-                next_state, keyboard_type, messages = States.get_next_state_config(
+                next_state, keyboard_type, trans_message = States.get_next_state_config(
                     States.S_ENTER_DESCRIPTION_CLASSCREATE)
-                self.send_message(user_id, f"Первоначальные настройки класса:\n"
-                                           f"id: {classroom_id}\n"
-                                           f"Название класса: {classroom_name}\n"
-                                           f"Название школы: {school_name}\n"
-                                           f"Тип класса: {access}\n"
-                                           f"Описание класса: {description}",
-                                  self.get_keyboard("empty"))
+                trans_message = f"Первоначальные настройки класса:\n" \
+                                f"id: {classroom_id}\n" \
+                                f"Название класса: {classroom_name}\n" \
+                                f"Название школы: {school_name}\n" \
+                                f"Тип класса: {access}\n" \
+                                f"Описание класса: {description}\n\n" + trans_message
 
-                self.state_transition(user_id, next_state, keyboard_type, messages)
+                self.state_transition(user_id, next_state, keyboard_type, trans_message)
 
         elif payload["text"] == "Главное меню":
             self.cancel_creating_classroom(user_id)
 
         elif payload["text"] == "Назад":
-            next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_SCHOOL_NAME_CLASSCREATE)
-            self.state_transition(user_id, next_state, keyboard_type, messages)
+            next_state, keyboard_type, trans_message = \
+                States.get_next_state_config(States.S_ENTER_SCHOOL_NAME_CLASSCREATE)
+            self.state_transition(user_id, next_state, keyboard_type, trans_message)
 
     def s_submit_class_create_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_SUBMIT_CLASSCREATE"""
@@ -217,14 +218,13 @@ class StateHandlers(SupportingFunctions):
             self.classroom_db.update_classroom_created(classroom_id, True)
             self.diary_homework_db.insert_classroom_id(classroom_id)
 
-            next_state, keyboard_type, messages = States.get_next_state_config(States.S_SUBMIT_CLASSCREATE)
-            self.send_message(user_id, "Поздравляю! Класс создан", self.get_keyboard("menu"))
+            next_state, keyboard_type, trans_message = States.get_next_state_config(States.S_SUBMIT_CLASSCREATE)
 
-            self.state_transition(user_id, next_state, keyboard_type, messages)
+            self.state_transition(user_id, next_state, keyboard_type, trans_message)
 
         elif payload["text"] == "Отклонить":
-            next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
-            self.state_transition(user_id, next_state, keyboard_type, messages)
+            next_state, keyboard_type, trans_message = States.get_next_state_config(States.S_ENTER_ACCESS_CLASSCREATE)
+            self.state_transition(user_id, next_state, keyboard_type, trans_message)
 
         elif payload["text"] == "Главное меню":
             self.cancel_creating_classroom(user_id)
@@ -235,8 +235,9 @@ class StateHandlers(SupportingFunctions):
             self.cancel_entering_technical_support_message(user_id)
 
         elif message == "Отправить":
-            next_state, keyboard_type, messages = States.get_next_state_config(States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE)
-            self.state_transition(user_id, next_state, keyboard_type, messages)
+            next_state, keyboard_type, trans_message = \
+                States.get_next_state_config(States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE)
+            self.state_transition(user_id, next_state, keyboard_type, trans_message)
 
         else:
             user_message = self.technical_support_db.get_message(user_id) + "\n"
@@ -742,15 +743,10 @@ class StateHandlers(SupportingFunctions):
             self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
-    def state_transition(self, user_id: int, next_state, keyboard_type: str, messages: list) -> None:
+    def state_transition(self, user_id: int, next_state, keyboard_type: str, message: str) -> None:
         """Changes states"""
         self.user_db.set_user_dialog_state(user_id, next_state.value)
-
-        if messages:
-            for message in messages[:-1]:
-                self.send_message(user_id, message, self.get_keyboard("empty"))
-
-            self.send_message(user_id, messages[-1], self.get_keyboard(keyboard_type))
+        self.send_message(user_id, message, self.get_keyboard(keyboard_type))
 
     def cancel_creating_classroom(self, user_id: int) -> None:
         """Set state to States.S_NOTHING"""
