@@ -363,7 +363,9 @@ class StateHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_ACCESS_MAIN_CLASSROOM_SETTINGS.value)
 
         elif payload["text"] == "Название класса":
-            pass
+            self.send_message(user_id, "Впиши новое название класса (длина не более 12 символов):",
+                              self.get_keyboard("back_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_CLASSROOM_NAME_MAIN_CLASSROOM_SETTINGS.value)
 
         elif payload["text"] == "Название школы":
             pass
@@ -782,6 +784,30 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def s_classroom_name_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
+        """Handling States.S_CLASSROOM_NAME_MAIN_CLASSROOM_SETTINGS"""
+        if payload is None:
+            if len(message) > 12:
+                self.send_message(user_id, "Длина названия превышает 12 символов. Введите другое название:",
+                                  self.get_keyboard("back_menu"))
+            else:
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                self.classroom_db.update_classroom_name(classroom_id, message)
+
+                self.send_message(user_id, f"Новое название класса: {message}",
+                                  self.get_keyboard("main_classroom_settings"))
+                self.user_db.set_user_dialog_state(user_id, States.S_MAIN_CLASSROOM_SETTINGS.value)
+
+        elif payload["text"] == "Назад":
+            self.send_message(user_id, "Назад к основным настройкам...", self.get_keyboard("main_classroom_settings"))
+            self.user_db.set_user_dialog_state(user_id, States.S_MAIN_CLASSROOM_SETTINGS.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def state_transition(self, user_id: int, next_state, keyboard_type: str, message: str) -> None:
