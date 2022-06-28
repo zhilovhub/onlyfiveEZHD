@@ -119,6 +119,7 @@ class KeyBoards:
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
 
+    # MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS KEYBOARD
     KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS = VkKeyboard()
     KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.add_button("Покинуть класс", payload=get_payload("Покинуть класс"))
     KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.add_button("Удалить класс", payload=get_payload("Удалить класс"),
@@ -127,6 +128,7 @@ class KeyBoards:
     KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
 
+    # MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS KEYBOARD
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS = VkKeyboard()
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS.add_button("Да", payload=get_payload("Да"),
                                                                           color="negative")
@@ -136,6 +138,7 @@ class KeyBoards:
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS.add_button("Главное меню",
                                                                           payload=get_payload("Главное меню"))
 
+    # MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS KEYBOARD
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS = VkKeyboard()
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.add_button("Удалить", payload=get_payload("Удалить"),
                                                                           color="negative")
@@ -145,6 +148,10 @@ class KeyBoards:
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.add_line()
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.add_button("Главное меню",
                                                                           payload=get_payload("Главное меню"))
+    # MEMBERS_SETTINGS KEYBOARD
+    KEYBOARD_MEMBERS_SETTINGS = VkKeyboard()
+    KEYBOARD_MEMBERS_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
+    KEYBOARD_MEMBERS_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
 
     # CUSTOMIZED EDIT_WEEKDAY KEYBOARD
     @staticmethod

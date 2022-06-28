@@ -115,6 +115,9 @@ class SupportingFunctions:
         elif keyboard_type == "main_dangerous_zone_delete_two_classroom_settings":
             return KeyBoards.KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.get_keyboard()
 
+        elif keyboard_type == "members_settings":
+            return KeyBoards.KEYBOARD_MEMBERS_SETTINGS.get_keyboard()
+
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""
         is_member = self.vk_session.method(
