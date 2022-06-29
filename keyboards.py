@@ -150,6 +150,14 @@ class KeyBoards:
                                                                           payload=get_payload("Главное меню"))
     # MEMBERS_SETTINGS KEYBOARD
     KEYBOARD_MEMBERS_SETTINGS = VkKeyboard()
+    KEYBOARD_MEMBERS_SETTINGS.add_button("Добавить роли", payload=get_payload("Добавить роли"))
+    KEYBOARD_MEMBERS_SETTINGS.add_button("Редактировать роли", payload=get_payload("Редактировать роли"))
+    KEYBOARD_MEMBERS_SETTINGS.add_line()
+    KEYBOARD_MEMBERS_SETTINGS.add_button("Удалить роли", payload=get_payload("Удалить роли"))
+    KEYBOARD_MEMBERS_SETTINGS.add_line()
+    KEYBOARD_MEMBERS_SETTINGS.add_button("Пригл. ссылка", payload=get_payload("Пригл. ссылка"))
+    KEYBOARD_MEMBERS_SETTINGS.add_button("Удалить участника", payload=get_payload("Удалить участника"))
+    KEYBOARD_MEMBERS_SETTINGS.add_line()
     KEYBOARD_MEMBERS_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_MEMBERS_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
 
