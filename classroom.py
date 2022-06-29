@@ -92,18 +92,17 @@ class ClassroomCommands(DataBase):
         except Error as e:
             print(e)
 
-    def insert_new_user_in_classroom(self, user_id: int, classroom_id: int, role="member") -> None:
+    def insert_new_user_in_classroom(self, user_id: int, classroom_id: int, role: int) -> None:
         """Add user to the classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.insert_new_classroom_user_query.format(user_id, classroom_id, role))
             self.connection.commit()
 
-    def insert_new_classroom(self, user_id: int) -> int:
+    def insert_new_classroom(self) -> int:
         """Insert new classroom and student-owner"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.insert_classroom_query)
             classroom_id = cursor.lastrowid
-            self.insert_new_user_in_classroom(user_id, cursor.lastrowid, "Админ")
 
         return classroom_id
 
@@ -195,7 +194,7 @@ class ClassroomQueries:
     get_list_of_classroom_ids = """SELECT classroom_id FROM Classroom"""
 
     insert_classroom_query = """INSERT INTO Classroom (members_limit, created) VALUES(40, FALSE)"""
-    insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, "{}")"""
+    insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, {})"""
     insert_new_customizer_query = """INSERT INTO UserCustomize VALUES({}, null)"""
 
     update_classroom_name_query = """UPDATE Classroom SET classroom_name="{}" WHERE classroom_id={}"""

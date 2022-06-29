@@ -33,7 +33,10 @@ class StateHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_FIND_CLASS.value)
 
         elif payload["text"] == "Создать класс":
-            classroom_id = self.classroom_db.insert_new_classroom(user_id)
+            classroom_id = self.classroom_db.insert_new_classroom()
+            role_id = self.role_db.insert_new_role(classroom_id, "Админ", is_admin=True)
+            self.classroom_db.insert_new_user_in_classroom(user_id, classroom_id, role_id)
+
             self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
             self.send_message(user_id, "Напишите название будущего класса (макс. 12 символов):",
                               self.get_keyboard("just_menu"))
@@ -46,39 +49,40 @@ class StateHandlers(SupportingFunctions):
             if not user_classrooms_dictionary:
                 self.send_message(user_id, "Пока что ты не состоишь ни в одном классе!", self.get_keyboard("menu"))
 
-            elements = []
-            for classroom_id, role in user_classrooms_dictionary.items():
-                button = {
-                    "action": {
-                        "type": "callback",
-                        "label": "Войти",
-                        "payload": {
-                            "text": "enter_the_classroom",
-                            "classroom_id": classroom_id
+            else:
+                elements = []
+                for classroom_id, role in user_classrooms_dictionary.items():
+                    button = {
+                        "action": {
+                            "type": "callback",
+                            "label": "Войти",
+                            "payload": {
+                                "text": "enter_the_classroom",
+                                "classroom_id": classroom_id
+                            }
                         }
                     }
-                }
 
-                members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
-                classroom_name, school_name, access, description = \
-                    self.classroom_db.get_information_of_classroom(classroom_id)
-                members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
+                    members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
+                    classroom_name, school_name, access, description = \
+                        self.classroom_db.get_information_of_classroom(classroom_id)
+                    members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
 
-                elements.append(
-                    {
-                        "title": classroom_name + "\n" + school_name,
-                        "description": f"#{classroom_id}\n"
-                                       f"Тип класса: {access}\n"
-                                       f"Вы: {role}\n"
-                                       f"Участники: {len(members_dictionary)}/{members_limit}",
-                        "buttons": [button]
-                    }
-                )
+                    elements.append(
+                        {
+                            "title": classroom_name + "\n" + school_name,
+                            "description": f"#{classroom_id}\n"
+                                           f"Тип класса: {access}\n"
+                                           f"Вы: {role}\n"
+                                           f"Участники: {len(members_dictionary)}/{members_limit}",
+                            "buttons": [button]
+                        }
+                    )
 
-            self.send_message(user_id, message="Список твоих классов:", template=dumps({
-                "type": "carousel",
-                "elements": elements
-            }))
+                self.send_message(user_id, message="Список твоих классов:", template=dumps({
+                    "type": "carousel",
+                    "elements": elements
+                }))
 
         elif payload["text"] == "Создать беседу класса":
             self.send_message(user_id, "Создаю беседу класса...",

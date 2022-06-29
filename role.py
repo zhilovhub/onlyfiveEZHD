@@ -10,11 +10,13 @@ class RoleCommands(DataBase):
             cursor.execute(RoleQueries.create_table_roles_query)
             cursor.execute(RoleQueries.create_table_student_query)
 
-    def insert_new_role(self, classroom_id: int, role_name: str, is_admin: bool) -> None:
+    def insert_new_role(self, classroom_id: int, role_name: str, is_admin=False) -> int:
         """Inserts new role into Role"""
         with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.insert_new_role_query.format(classroom_id, role_name, is_admin))
             self.connection.commit()
+
+            return cursor.lastrowid
 
 
 class RoleQueries:
