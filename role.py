@@ -32,7 +32,11 @@ class RoleQueries:
         kick_members BOOLEAN DEFAULT 0,
         invite_members BOOLEAN DEFAULT 1,
         notify BOOLEAN DEFAULT 1,
-        change_main_settings BOOLEAN DEFAULT 1,
+        change_classroom_name BOOLEAN DEFAULT 1,
+        change_school_name BOOLEAN DEFAULT 1,
+        change_classroom_access BOOLEAN DEFAULT 1,
+        change_description BOOLEAN DEFAULT 1,
+        change_members_limit BOOLEAN DEFAULT 1,
         is_admin BOOLEAN,
         
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE
