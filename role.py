@@ -10,6 +10,22 @@ class RoleCommands(DataBase):
             cursor.execute(RoleQueries.create_table_roles_query)
             cursor.execute(RoleQueries.create_table_student_query)
 
+    def get_role_name(self, role_id: int) -> str:
+        """Returns role name"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(RoleQueries.get_role_name_query.format(role_id))
+            role_name = cursor.fetchone()[0]
+
+            return role_name
+
+    def get_all_role_names_from_classroom(self, classroom_id: int) -> list:
+        """Return's all role names from classroom"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(RoleQueries.get_all_role_names_from_classroom_query.format(classroom_id))
+            role_names = [row[0] for row in cursor.fetchall()]
+
+            return role_names
+
     def insert_new_role(self, classroom_id: int, role_name: str, is_default_member=False, is_admin=False) -> int:
         """Inserts new role into Role"""
         with self.connection.cursor() as cursor:
@@ -57,6 +73,9 @@ class RoleQueries:
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE,
         FOREIGN KEY (role_id) REFERENCES Role (role_id) ON DELETE CASCADE
     )"""
+
+    get_role_name_query = """SELECT role_name FROM Role WHERE role_id={}"""
+    get_all_role_names_from_classroom_query = """SELECT role_name FROM Role WHERE classroom_id={}"""
 
     insert_new_role_query = """INSERT INTO Role 
     (classroom_id, role_name, kick_members, is_default_member, is_admin) VALUES(
