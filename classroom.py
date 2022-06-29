@@ -38,13 +38,13 @@ class ClassroomCommands(DataBase):
 
             return members_limit
 
-    def get_user_classrooms_with_role(self, user_id: int) -> dict:
-        """Returns user's classrooms_id and his role"""
+    def get_user_classrooms_with_role_id(self, user_id: int) -> dict:
+        """Returns user's classrooms_id and his role_id"""
         with self.connection.cursor() as cursor:
             classrooms_dictionary = {}
-            cursor.execute(ClassroomQueries.get_user_classrooms_with_role.format(user_id))
-            for (classroom_id, role) in cursor:
-                classrooms_dictionary[classroom_id] = role
+            cursor.execute(ClassroomQueries.get_user_classrooms_with_role_id.format(user_id))
+            for (classroom_id, role_id) in cursor:
+                classrooms_dictionary[classroom_id] = role_id
 
             return classrooms_dictionary
 
@@ -53,8 +53,8 @@ class ClassroomCommands(DataBase):
         with self.connection.cursor() as cursor:
             users_dictionary = {}
             cursor.execute(ClassroomQueries.get_list_of_classroom_users_query.format(classroom_id))
-            for (user_id, user_role) in cursor:
-                users_dictionary[user_id] = user_role
+            for (user_id, user_role_id) in cursor:
+                users_dictionary[user_id] = user_role_id
 
             return users_dictionary
 
@@ -92,10 +92,10 @@ class ClassroomCommands(DataBase):
         except Error as e:
             print(e)
 
-    def insert_new_user_in_classroom(self, user_id: int, classroom_id: int, role: int) -> None:
+    def insert_new_user_in_classroom(self, user_id: int, classroom_id: int, role_id: int) -> None:
         """Add user to the classroom"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.insert_new_classroom_user_query.format(user_id, classroom_id, role))
+            cursor.execute(ClassroomQueries.insert_new_classroom_user_query.format(user_id, classroom_id, role_id))
             self.connection.commit()
 
     def insert_new_classroom(self) -> int:
@@ -142,10 +142,10 @@ class ClassroomCommands(DataBase):
             cursor.execute(ClassroomQueries.update_classroom_created_query.format(created, classroom_id))
             self.connection.commit()
 
-    def update_role_of_user(self, user_id: int, user_role: str) -> None:
-        """Set role to the user"""
+    def update_role_id_of_user(self, user_id: int, user_role_id: int) -> None:
+        """Set role_id to the user"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_user_role_query.format(user_role, user_id))
+            cursor.execute(ClassroomQueries.update_user_role_id_query.format(user_role_id, user_id))
             self.connection.commit()
 
     def update_user_customize_classroom(self, user_id: int, classroom_id) -> None:
@@ -186,11 +186,11 @@ class ClassroomQueries:
         access,
         description
     FROM Classroom WHERE classroom_id={}"""
-    get_user_classrooms_with_role = """SELECT classroom_id, role FROM Student WHERE user_id={}"""
+    get_user_classrooms_with_role_id = """SELECT classroom_id, role_id FROM Student WHERE user_id={}"""
     get_classroom_name_query = """SELECT classroom_name FROM Classroom WHERE classroom_id={}"""
     get_classroom_access_query = """SELECT access FROM Classroom WHERE classroom_id={}"""
     get_classroom_members_limit_query = """SELECT members_limit FROM Classroom WHERE classroom_id={}"""
-    get_list_of_classroom_users_query = """SELECT user_id, role FROM Student WHERE classroom_id={}"""
+    get_list_of_classroom_users_query = """SELECT user_id, role_id FROM Student WHERE classroom_id={}"""
     get_list_of_classroom_ids = """SELECT classroom_id FROM Classroom"""
 
     insert_classroom_query = """INSERT INTO Classroom (members_limit, created) VALUES(40, FALSE)"""
@@ -202,7 +202,7 @@ class ClassroomQueries:
     update_classroom_access_query = """UPDATE Classroom SET access="{}" WHERE classroom_id={}"""
     update_classroom_description_query = """UPDATE Classroom SET description="{}" WHERE classroom_id={}"""
     update_classroom_members_limit_query = """UPDATE Classroom SET members_limit={} WHERE classroom_id={}"""
-    update_user_role_query = """UPDATE Student SET role={} WHERE user_id={}"""
+    update_user_role_id_query = """UPDATE Student SET role_id={} WHERE user_id={}"""
     update_user_customize_query = """UPDATE UserCustomize SET classroom_id={} WHERE user_id={}"""
     update_classroom_created_query = """UPDATE Classroom SET created={} WHERE classroom_id={}"""
 
