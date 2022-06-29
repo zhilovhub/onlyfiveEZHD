@@ -6,11 +6,11 @@ class DiaryVkBot(CallbackPayloadHandlers):
 
     def __init__(self, token: str, group_id: int, user_db: UserDataCommands,
                  classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
-                 diary_homework_db: DiaryHomeworkCommands) -> None:
+                 diary_homework_db: DiaryHomeworkCommands, role_db: RolesCommands) -> None:
         """Initialization"""
         super().__init__(token=token, group_id=group_id, user_db=user_db,
                          classroom_db=classroom_db, technical_support_db=technical_support_db,
-                         diary_homework_db=diary_homework_db)
+                         diary_homework_db=diary_homework_db, role_db=role_db)
 
     def listen(self) -> None:
         """Listening events"""
@@ -186,12 +186,14 @@ if __name__ == "__main__":
     classroom_db = ClassroomCommands(connection)
     technical_support_db = TechnicalSupportCommands(connection)
     diary_homework_db = DiaryHomeworkCommands(connection)
+    role_db = RolesCommands(connection)
 
     my_bot = DiaryVkBot(token=TOKEN, group_id=GROUP_ID,
                         user_db=user_db,
                         classroom_db=classroom_db,
                         technical_support_db=technical_support_db,
-                        diary_homework_db=diary_homework_db
+                        diary_homework_db=diary_homework_db,
+                        role_db=role_db
                         )
 
     my_bot.listen()
