@@ -368,12 +368,13 @@ class StateHandlers(SupportingFunctions):
                                            "класса и кикания участников\n\nРекомедуется начать настройки ролей с "
                                            "редактирования привилегий участников, ведь эту роль по умолчанию"
                                            " будут иметь все новенькие в классе\n\n"
-                                           f"Текущие роли:\n{role_names_text}\n\nВпишите название новой роли, она "
+                                           f"Текущие роли:\n{role_names_text}\n\nВпишите название новой роли (макс. "
+                                           f"20 символов), она "
                                            f"возьмёт привилегии роли участника (привилегии новой роли можно "
-                                           f"отредактировать)", self.get_keyboard("back_menu"))
+                                           f"отредактировать):", self.get_keyboard("back_menu"))
                 self.user_db.set_user_dialog_state(user_id, States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS.value)
             else:
-                self.send_message(user_id, "Вы этом классе уже максимальное кол-во ролей - 8!",
+                self.send_message(user_id, f"Вы этом классе уже максимальное кол-во ролей - 8!\n\n{role_names_text}",
                                   self.get_keyboard("members_settings"))
 
         elif payload["text"] == "Назад":
@@ -385,10 +386,28 @@ class StateHandlers(SupportingFunctions):
             self.classroom_db.update_user_customize_classroom(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
-    def s_add_role_enter_name_members_settings_handler(self, user_id: int, payload: dict) -> None:
+    def s_add_role_enter_name_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
         """Handling States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS"""
         if payload is None:
-            pass
+            if len(message) <= 20:
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                old_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+
+                if message not in old_role_names:
+                    self.role_db.insert_new_role(classroom_id, message)
+                    role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+                    role_names_text = "\n".join(
+                        [f"{ind}. {role_name}" for ind, role_name in enumerate(role_names, start=1)])
+
+                    self.send_message(user_id, f"Новая роль добавлена!\n\n{role_names_text}",
+                                      self.get_keyboard("members_settings"))
+                    self.user_db.set_user_dialog_state(user_id, States.S_MEMBERS_SETTINGS.value)
+                else:
+                    self.send_message(user_id, "Роль с таким названием уже существует в этом классе.\nВведите другое "
+                                               "название:", self.get_keyboard("back_menu"))
+            else:
+                self.send_message(user_id, "Длина названия больше 20 символов. Введите другое название:",
+                                  self.get_keyboard("back_menu"))
 
         elif payload["text"] == "Назад":
             self.send_message(user_id, "Возвращаемся в настройки участников...", self.get_keyboard("members_settings"))
