@@ -36,6 +36,7 @@ class StateHandlers(SupportingFunctions):
             classroom_id = self.classroom_db.insert_new_classroom()
             role_id = self.role_db.insert_new_role(classroom_id, "Админ", is_admin=True)
             self.classroom_db.insert_new_user_in_classroom(user_id, classroom_id, role_id)
+            self.diary_homework_db.insert_classroom_id(classroom_id)
 
             self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
             self.send_message(user_id, "Напишите название будущего класса (макс. 12 символов):",
@@ -226,7 +227,6 @@ class StateHandlers(SupportingFunctions):
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             self.classroom_db.update_user_customize_classroom(user_id, "null")
             self.classroom_db.update_classroom_created(classroom_id, True)
-            self.diary_homework_db.insert_classroom_id(classroom_id)
 
             next_state, keyboard_type, trans_message = States.get_next_state_config(States.S_SUBMIT_CLASSCREATE)
 
