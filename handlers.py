@@ -4,7 +4,7 @@ from classroom import ClassroomCommands
 from users import UserDataCommands
 from technical_support import TechnicalSupportCommands
 from diary_homework import DiaryHomeworkCommands
-from roles import RolesCommands
+from role import RoleCommands
 from states import States
 
 
@@ -13,7 +13,7 @@ class StateHandlers(SupportingFunctions):
 
     def __init__(self, token: str, group_id: int, user_db: UserDataCommands,
                  classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
-                 diary_homework_db: DiaryHomeworkCommands, role_db: RolesCommands) -> None:
+                 diary_homework_db: DiaryHomeworkCommands, role_db: RoleCommands) -> None:
         """Initialization"""
         super().__init__(token=token, group_id=group_id)
         self.user_db = user_db
@@ -1010,7 +1010,7 @@ class CallbackPayloadHandlers(StateHandlers):
 
     def __init__(self, token: str, group_id: int, user_db: UserDataCommands,
                  classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
-                 diary_homework_db: DiaryHomeworkCommands, role_db: RolesCommands) -> None:
+                 diary_homework_db: DiaryHomeworkCommands, role_db: RoleCommands) -> None:
         """Initialization"""
         super().__init__(token=token, group_id=group_id, user_db=user_db,
                          classroom_db=classroom_db, technical_support_db=technical_support_db,

@@ -6,7 +6,7 @@ class DiaryVkBot(CallbackPayloadHandlers):
 
     def __init__(self, token: str, group_id: int, user_db: UserDataCommands,
                  classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
-                 diary_homework_db: DiaryHomeworkCommands, role_db: RolesCommands) -> None:
+                 diary_homework_db: DiaryHomeworkCommands, role_db: RoleCommands) -> None:
         """Initialization"""
         super().__init__(token=token, group_id=group_id, user_db=user_db,
                          classroom_db=classroom_db, technical_support_db=technical_support_db,
@@ -186,7 +186,7 @@ if __name__ == "__main__":
     classroom_db = ClassroomCommands(connection)
     technical_support_db = TechnicalSupportCommands(connection)
     diary_homework_db = DiaryHomeworkCommands(connection)
-    role_db = RolesCommands(connection)
+    role_db = RoleCommands(connection)
 
     my_bot = DiaryVkBot(token=TOKEN, group_id=GROUP_ID,
                         user_db=user_db,
