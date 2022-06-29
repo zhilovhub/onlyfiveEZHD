@@ -9,7 +9,6 @@ class ClassroomCommands(DataBase):
         try:
             with self.connection.cursor() as cursor:
                 cursor.execute(ClassroomQueries.create_table_classroom_query)
-                cursor.execute(ClassroomQueries.create_table_student_query)
                 cursor.execute(ClassroomQueries.create_table_user_customize_query)
 
         except Error as e:
@@ -172,14 +171,6 @@ class ClassroomQueries:
             description TEXT,
             members_limit INT,
             created BOOLEAN
-        )"""
-
-    create_table_student_query = """CREATE TABLE IF NOT EXISTS Student(
-            user_id INT,
-            classroom_id INT,
-            role VARCHAR(255),
-            FOREIGN KEY (user_id) REFERENCES User (user_id),
-            FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE
         )"""
 
     create_table_user_customize_query = """CREATE TABLE IF NOT EXISTS UserCustomize(
