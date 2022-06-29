@@ -35,6 +35,7 @@ class StateHandlers(SupportingFunctions):
         elif payload["text"] == "Создать класс":
             classroom_id = self.classroom_db.insert_new_classroom()
             role_id = self.role_db.insert_new_role(classroom_id, "Админ", is_admin=True)
+            self.role_db.insert_new_role(classroom_id, "Участник", is_default_member=True)
             self.classroom_db.insert_new_user_in_classroom(user_id, classroom_id, role_id)
             self.diary_homework_db.insert_classroom_id(classroom_id)
 

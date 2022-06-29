@@ -10,10 +10,16 @@ class RoleCommands(DataBase):
             cursor.execute(RoleQueries.create_table_roles_query)
             cursor.execute(RoleQueries.create_table_student_query)
 
-    def insert_new_role(self, classroom_id: int, role_name: str, is_admin=False) -> int:
+    def insert_new_role(self, classroom_id: int, role_name: str, is_default_member=False, is_admin=False) -> int:
         """Inserts new role into Role"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.insert_new_role_query.format(classroom_id, role_name, is_admin))
+            if is_admin:
+                kick_members = True
+            else:
+                kick_members = False
+
+            cursor.execute(RoleQueries.insert_new_role_query.format(classroom_id, role_name, kick_members,
+                                                                    is_default_member, is_admin))
             self.connection.commit()
 
             return cursor.lastrowid
@@ -37,6 +43,7 @@ class RoleQueries:
         change_classroom_access BOOLEAN DEFAULT 1,
         change_description BOOLEAN DEFAULT 1,
         change_members_limit BOOLEAN DEFAULT 1,
+        is_default_member BOOLEAN,
         is_admin BOOLEAN,
         
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE
@@ -51,8 +58,9 @@ class RoleQueries:
         FOREIGN KEY (role_id) REFERENCES Role (role_id) ON DELETE CASCADE
     )"""
 
-    insert_new_role_query = """INSERT INTO Role (classroom_id, role_name, is_admin) VALUES(
-        {}, '{}', {}
+    insert_new_role_query = """INSERT INTO Role 
+    (classroom_id, role_name, kick_members, is_default_member, is_admin) VALUES(
+        {}, '{}', {}, {}, {}
     )"""
 
 
