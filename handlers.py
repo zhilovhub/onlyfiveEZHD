@@ -44,7 +44,7 @@ class StateHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
 
         elif payload["text"] == "Мои классы":
-            user_classrooms_dictionary = self.classroom_db.get_user_classrooms_with_role(user_id)
+            user_classrooms_dictionary = self.classroom_db.get_user_classrooms_with_role_id(user_id)
 
             if not user_classrooms_dictionary:
                 self.send_message(user_id, "Пока что ты не состоишь ни в одном классе!", self.get_keyboard("menu"))
