@@ -34,6 +34,7 @@ class States(Enum):
     S_LIMIT_MAIN_CLASSROOM_SETTINGS = 22
 
     S_MEMBERS_SETTINGS = 23
+    S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS = 24
 
     @staticmethod
     def get_next_state_config(current_state: Enum) -> tuple:

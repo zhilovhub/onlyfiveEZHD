@@ -275,18 +275,19 @@ class StateHandlers(SupportingFunctions):
             members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
             roles_dictionary = {}
 
-            for member_id, role in members_dictionary.items():
+            for member_id, role_id in members_dictionary.items():
                 first_name, last_name = self.user_db.get_user_first_and_last_name(member_id)
+                role_name = self.role_db.get_role_name(role_id)
 
-                if role in roles_dictionary:
-                    roles_dictionary[role].append(f"[id{member_id}|{first_name} {last_name}]")
+                if role_id in roles_dictionary:
+                    roles_dictionary[role_name].append(f"[id{member_id}|{first_name} {last_name}]")
                 else:
-                    roles_dictionary[role] = [f"[id{member_id}|{first_name} {last_name}]"]
+                    roles_dictionary[role_name] = [f"[id{member_id}|{first_name} {last_name}]"]
 
             members_text = ""
             ind = 1
-            for role, members in roles_dictionary.items():
-                members_text += f"{role}\n"
+            for role_name, members in roles_dictionary.items():
+                members_text += f"{role_name}\n"
                 for member in members:
                     members_text += f"{ind}. {member}\n"
                     ind += 1
@@ -353,9 +354,43 @@ class StateHandlers(SupportingFunctions):
         if payload is None:
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("members_settings"))
 
+        elif payload["text"] == "Добавить роли":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+            role_names_text = "\n".join([f"{ind}. {role_name}" for ind, role_name in enumerate(role_names, start=1)])
+
+            if len(role_names) < 8:
+                self.send_message(user_id, "Добавление ролей\n\nВ классе "
+                                           "может быть максимум 8 ролей, но всегда есть минимум 2 (админ, участник)"
+                                           ". Роль админа может иметь единственный участник класса, эта роль имеет все "
+                                           "привилегии\n\nРоль участника получают те, кто только-только вошли в класс. "
+                                           " По умолчанию роль также имеет все привилегии класса, кроме удаления класса"
+                                           " и кикания участников\n\nРекомедуется начать настройки ролей с "
+                                           "редактирования привилегий участников, ведь эту роль по умолчанию"
+                                           " будут иметь все новенькие в классе\n\n"
+                                           "Текущие роли:\n" + role_names_text, self.get_keyboard("back_menu"))
+                self.user_db.set_user_dialog_state(user_id, States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS.value)
+            else:
+                self.send_message(user_id, "Вы этом классе уже максимальное кол-во ролей - 8!",
+                                  self.get_keyboard("members_settings"))
+
         elif payload["text"] == "Назад":
             self.send_message(user_id, "Возвращаемся в меню класса...", self.get_keyboard("my_class_menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def s_add_role_enter_name_members_settings_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS"""
+        if payload is None:
+            pass
+
+        elif payload["text"] == "Назад":
+            self.send_message(user_id, "Возвращаемся в настройки участников...", self.get_keyboard("members_settings"))
+            self.user_db.set_user_dialog_state(user_id, States.S_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
