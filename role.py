@@ -24,6 +24,15 @@ class RoleQueries:
         role_id INT PRIMARY KEY AUTO_INCREMENT,
         classroom_id INT,
         role_name TEXT,
+        change_standard_week BOOLEAN DEFAULT 1,
+        change_current_week BOOLEAN DEFAULT 1,
+        change_next_week BOOLEAN DEFAULT 1,
+        change_current_homework BOOLEAN DEFAULT 1,
+        change_next_homework BOOLEAN DEFAULT 1,
+        kick_members BOOLEAN DEFAULT 0,
+        invite_members BOOLEAN DEFAULT 1,
+        notify BOOLEAN DEFAULT 1,
+        change_main_settings BOOLEAN DEFAULT 1,
         is_admin BOOLEAN,
         
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE
