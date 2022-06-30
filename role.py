@@ -17,6 +17,22 @@ class RoleCommands(DataBase):
             role_name = cursor.fetchone()[0]
 
             return role_name
+        
+    def get_default_role_name(self, classroom_id: int) -> str:
+        """Returns default role's name"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(RoleQueries.get_default_role_name_query.format(classroom_id))
+            default_role_name = cursor.fetchone()[0]
+
+            return default_role_name
+
+    def get_admin_role_name(self, classroom_id: int) -> str:
+        """Returns admin role's name"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(RoleQueries.get_admin_role_name_query.format(classroom_id))
+            admin_role_name = cursor.fetchone()[0]
+
+            return admin_role_name
 
     def get_all_role_names_from_classroom(self, classroom_id: int) -> list:
         """Returns all role names from classroom"""
@@ -46,7 +62,7 @@ class RoleCommands(DataBase):
                 cursor.execute(RoleQueries.insert_new_default_role_query.format(classroom_id, role_name, kick_members,
                                                                                 is_default_member, is_admin))
             else:
-                cursor.execute(RoleQueries.get_default_role_id.format(classroom_id))
+                cursor.execute(RoleQueries.get_default_role_id_query.format(classroom_id))
                 default_role_id = cursor.fetchone()[0]
                 cursor.execute(RoleQueries.get_all_role_properties_query.format(default_role_id))
                 default_role_properties = cursor.fetchone()[3:-2]
@@ -91,8 +107,10 @@ class RoleQueries:
         FOREIGN KEY (role_id) REFERENCES Role (role_id) ON DELETE CASCADE
     )"""
 
+    get_default_role_name_query = """SELECT role_name FROM Role WHERE classroom_id={} AND is_default_member=1"""
+    get_admin_role_name_query = """SELECT role_name FROM Role WHERE classroom_id={} AND is_admin=1"""
     get_role_name_query = """SELECT role_name FROM Role WHERE role_id={}"""
-    get_default_role_id = """SELECT role_id FROM Role WHERE classroom_id={} AND is_default_member=1"""
+    get_default_role_id_query = """SELECT role_id FROM Role WHERE classroom_id={} AND is_default_member=1"""
     get_all_role_names_from_classroom_query = """SELECT role_name FROM Role WHERE classroom_id={}"""
     get_all_role_properties_query = """SELECT * FROM Role WHERE role_id={}"""
 

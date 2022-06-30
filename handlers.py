@@ -356,7 +356,18 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Добавить роли":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = self.role_db.get_default_role_name(classroom_id)
+
+            role_names = []
+            for role_name in self.role_db.get_all_role_names_from_classroom(classroom_id):
+                if role_name == admin_role_name:
+                    role_names.append(f"{role_name} (Админ)")
+                elif role_name == default_role_name:
+                    role_names.append(f"{role_name} (Дефолт)")
+                else:
+                    role_names.append(role_name)
+
             role_names_text = "\n".join([f"{ind}. {role_name}" for ind, role_name in enumerate(role_names, start=1)])
 
             if len(role_names) < 8:
@@ -394,7 +405,7 @@ class StateHandlers(SupportingFunctions):
                 old_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
 
                 if message not in old_role_names:
-                    self.role_db.insert_new_role(classroom_id, message)
+                    self.role_db.insert_new_role(classroom_id, message.strip())
                     role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
                     role_names_text = "\n".join(
                         [f"{ind}. {role_name}" for ind, role_name in enumerate(role_names, start=1)])
