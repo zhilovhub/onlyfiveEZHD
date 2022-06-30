@@ -281,7 +281,7 @@ class StateHandlers(SupportingFunctions):
                 first_name, last_name = self.user_db.get_user_first_and_last_name(member_id)
                 role_name = self.role_db.get_role_name(role_id)
 
-                if role_id in roles_dictionary:
+                if role_name in roles_dictionary:
                     roles_dictionary[role_name].append(f"[id{member_id}|{first_name} {last_name}]")
                 else:
                     roles_dictionary[role_name] = [f"[id{member_id}|{first_name} {last_name}]"]
