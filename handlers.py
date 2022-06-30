@@ -39,7 +39,7 @@ class StateHandlers(SupportingFunctions):
             self.classroom_db.insert_new_user_in_classroom(user_id, classroom_id, role_id)
             self.diary_homework_db.insert_classroom_id(classroom_id)
 
-            self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
+            self.classroom_db.update_user_customize_classroom_id(user_id, classroom_id)
             self.send_message(user_id, "Напишите название будущего класса (макс. 12 символов):",
                               self.get_keyboard("just_menu"))
 
@@ -104,7 +104,7 @@ class StateHandlers(SupportingFunctions):
             classroom_id = payload["classroom_id"]
             classroom_name, school_name, access, description = \
                 self.classroom_db.get_information_of_classroom(classroom_id)
-            self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
+            self.classroom_db.update_user_customize_classroom_id(user_id, classroom_id)
 
             members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
             members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
@@ -228,7 +228,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Принять":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.classroom_db.update_classroom_created(classroom_id, True)
 
             next_state, keyboard_type, trans_message = States.get_next_state_config(States.S_SUBMIT_CLASSCREATE)
@@ -264,7 +264,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
         elif payload["text"] == "Настройки":
@@ -338,6 +338,17 @@ class StateHandlers(SupportingFunctions):
         if payload is None:
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("members_settings"))
 
+        elif payload["text"] == "Назначить роли":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = self.role_db.get_default_role_name(classroom_id)
+            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+            role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
+
+            self.send_message(user_id, f"{role_names_text}\n\nВпишите номер роли, назначать которой хотите:",
+                              self.get_keyboard("back_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS.value)
+
         elif payload["text"] == "Удалить участника":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
@@ -394,7 +405,43 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def s_choose_role_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
+        """Handling States.S_CHOOSE_ROLE_MEMBERS_SETTINGS"""
+        if payload is None:
+            ask_message = "Впишите номер роли, назначать которой хотите:"
+
+            if message.isdigit():
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                role_index = int(message)
+                all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+
+                if 0 < role_index <= len(all_role_names):
+                    admin_role_id = self.role_db.get_admin_role_id(classroom_id)
+                    admin_role_name = self.role_db.get_admin_role_name(classroom_id)
+                    default_role_name = self.role_db.get_default_role_name(classroom_id)
+                    role_id = self.role_db.get_role_id_by_name(classroom_id, all_role_names[role_index - 1])
+
+                    if role_id == admin_role_id:
+                        pass
+                    else:
+                        pass
+                else:
+                    self.send_message(user_id, "Номер роли не может быть отрицательным числом или быть больше текущего"
+                                               f" количества ролей\n\n{ask_message}", self.get_keyboard("back_menu"))
+            else:
+                self.send_message(user_id, f"Введено не число\n\n{ask_message}",
+                                  self.get_keyboard("back_menu"))
+
+        elif payload["text"] == "Назад":
+            self.send_message(user_id, "Возвращаемся в настройки участников...", self.get_keyboard("members_settings"))
+            self.user_db.set_user_dialog_state(user_id, States.S_MEMBERS_SETTINGS.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_delete_member_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
@@ -447,7 +494,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_add_role_enter_name_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
@@ -479,7 +526,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_delete_role_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
@@ -522,7 +569,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
@@ -540,7 +587,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_main_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
@@ -599,7 +646,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_main_dangerous_zone_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
@@ -621,7 +668,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_main_dangerous_zone_delete_one_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
@@ -643,7 +690,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_main_dangerous_zone_delete_two_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
@@ -658,7 +705,7 @@ class StateHandlers(SupportingFunctions):
             self.classroom_db.delete_classroom(classroom_id)
 
             self.send_message(user_id, f"Класс с именем {classroom_name} удалён!", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
         elif payload["text"] == "Не удалять":
@@ -668,7 +715,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_edit_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
@@ -722,7 +769,7 @@ class StateHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
         elif payload["text"] == "Назад":
@@ -825,7 +872,7 @@ class StateHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
         elif payload["text"] == "Отменить":
@@ -1000,7 +1047,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_classroom_name_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
@@ -1023,7 +1070,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_school_name_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
@@ -1046,7 +1093,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_description_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
@@ -1069,7 +1116,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_limit_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
@@ -1106,7 +1153,7 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def state_transition(self, user_id: int, next_state, keyboard_type: str, message: str) -> None:

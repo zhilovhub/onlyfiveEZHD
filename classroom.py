@@ -9,7 +9,6 @@ class ClassroomCommands(DataBase):
         try:
             with self.connection.cursor() as cursor:
                 cursor.execute(ClassroomQueries.create_table_classroom_query)
-                cursor.execute(ClassroomQueries.create_table_user_customize_query)
 
         except Error as e:
             print(e)
@@ -161,10 +160,10 @@ class ClassroomCommands(DataBase):
             cursor.execute(ClassroomQueries.update_user_role_id_query.format(user_role_id, user_id))
             self.connection.commit()
 
-    def update_user_customize_classroom(self, user_id: int, classroom_id) -> None:
+    def update_user_customize_classroom_id(self, user_id: int, classroom_id) -> None:
         """Update classroom_id that user is customizing"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_user_customize_query.format(classroom_id, user_id))
+            cursor.execute(ClassroomQueries.update_user_customize_classroom_id_query.format(classroom_id, user_id))
             self.connection.commit()
 
     def delete_classroom(self, classroom_id: int) -> None:
@@ -191,13 +190,6 @@ class ClassroomQueries:
             created BOOLEAN
         )"""
 
-    create_table_user_customize_query = """CREATE TABLE IF NOT EXISTS UserCustomize(
-            user_id INT UNIQUE,
-            classroom_id INT,
-            FOREIGN KEY (user_id) REFERENCES User (user_id),
-            FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE SET NULL
-        )"""
-
     get_customizing_classroom_id_query = """SELECT classroom_id FROM UserCustomize WHERE user_id={}"""
     get_information_for_creating_query = """SELECT 
         classroom_name, 
@@ -214,7 +206,7 @@ class ClassroomQueries:
 
     insert_classroom_query = """INSERT INTO Classroom (members_limit, created) VALUES(40, FALSE)"""
     insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, {})"""
-    insert_new_customizer_query = """INSERT INTO UserCustomize VALUES({}, null)"""
+    insert_new_customizer_query = """INSERT INTO UserCustomize VALUES({}, null, null)"""
 
     update_classroom_name_query = """UPDATE Classroom SET classroom_name="{}" WHERE classroom_id={}"""
     update_school_name_query = """UPDATE Classroom SET school_name="{}" WHERE classroom_id={}"""
@@ -222,7 +214,7 @@ class ClassroomQueries:
     update_classroom_description_query = """UPDATE Classroom SET description="{}" WHERE classroom_id={}"""
     update_classroom_members_limit_query = """UPDATE Classroom SET members_limit={} WHERE classroom_id={}"""
     update_user_role_id_query = """UPDATE Student SET role_id={} WHERE user_id={}"""
-    update_user_customize_query = """UPDATE UserCustomize SET classroom_id={} WHERE user_id={}"""
+    update_user_customize_classroom_id_query = """UPDATE UserCustomize SET classroom_id={} WHERE user_id={}"""
     update_classroom_created_query = """UPDATE Classroom SET created={} WHERE classroom_id={}"""
 
     delete_user_from_classroom_query = """DELETE FROM Student WHERE user_id={} AND classroom_id={}"""

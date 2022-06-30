@@ -8,6 +8,7 @@ class RoleCommands(DataBase):
 
         with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.create_table_roles_query)
+            cursor.execute(RoleQueries.create_table_user_customize_query)
             cursor.execute(RoleQueries.create_table_student_query)
 
     def get_role_name(self, role_id: int) -> str:
@@ -103,6 +104,12 @@ class RoleCommands(DataBase):
             cursor.execute(RoleQueries.update_all_roles_query.format(new_role_id, old_role_id))
             self.connection.commit()
 
+    def update_user_customize_role_id(self, user_id: int, role_id) -> None:
+        """Update role_id that user is customizing"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(RoleQueries.update_user_customize_role_id_query.format(role_id, user_id))
+            self.connection.commit()
+
     def delete_role(self, role_id: int) -> None:
         """Deletes role"""
         with self.connection.cursor() as cursor:
@@ -132,6 +139,15 @@ class RoleQueries:
         is_admin BOOLEAN DEFAULT 0,
         
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE
+    )"""
+
+    create_table_user_customize_query = """CREATE TABLE IF NOT EXISTS UserCustomize(
+        user_id INT UNIQUE,
+        classroom_id INT,
+        role_id INT,
+        FOREIGN KEY (user_id) REFERENCES User (user_id),
+        FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE SET NULL,
+        FOREIGN KEY (role_id) REFERENCES Role (role_id) ON DELETE SET NULL
     )"""
 
     create_table_student_query = """CREATE TABLE IF NOT EXISTS Student(
@@ -165,6 +181,7 @@ class RoleQueries:
     )"""
 
     update_all_roles_query = """UPDATE Student SET role_id={} WHERE role_id={}"""
+    update_user_customize_role_id_query = """UPDATE UserCustomize SET role_id={} WHERE user_id={}"""
 
     delete_role_query = """DELETE FROM Role WHERE role_id={}"""
 

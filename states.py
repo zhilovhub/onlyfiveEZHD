@@ -37,6 +37,7 @@ class States(Enum):
     S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS = 24
     S_DELETE_ROLE_MEMBERS_SETTINGS = 25
     S_DELETE_MEMBER_MEMBERS_SETTINGS = 26
+    S_CHOOSE_ROLE_MEMBERS_SETTINGS = 27
 
     @staticmethod
     def get_next_state_config(current_state: Enum) -> tuple:
