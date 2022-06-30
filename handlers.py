@@ -53,7 +53,7 @@ class StateHandlers(SupportingFunctions):
 
             else:
                 elements = []
-                for classroom_id, role in user_classrooms_dictionary.items():
+                for classroom_id, role_id in user_classrooms_dictionary.items():
                     button = {
                         "action": {
                             "type": "callback",
@@ -68,6 +68,7 @@ class StateHandlers(SupportingFunctions):
                     members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
                     classroom_name, school_name, access, description = \
                         self.classroom_db.get_information_of_classroom(classroom_id)
+                    role_name = self.role_db.get_role_name(role_id)
                     members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
 
                     elements.append(
@@ -75,7 +76,7 @@ class StateHandlers(SupportingFunctions):
                             "title": classroom_name + "\n" + school_name,
                             "description": f"#{classroom_id}\n"
                                            f"Тип класса: {access}\n"
-                                           f"Вы: {role}\n"
+                                           f"Вы: {role_name}\n"
                                            f"Участники: {len(members_dictionary)}/{members_limit}",
                             "buttons": [button]
                         }
@@ -110,16 +111,17 @@ class StateHandlers(SupportingFunctions):
 
             for key, value in members_dictionary.items():
                 if key == user_id:
-                    role = value
+                    role_id = value
                     break
             else:
-                role = None
+                role_id = None
+            role_name = self.role_db.get_role_name(role_id)
 
             self.send_message(user_id, f"Ты в классе {classroom_name}\n\n#{classroom_id}\n"
                                        f"Школа: {school_name}\n"
                                        f"Описание: {description}\n"
                                        f"Тип класса: {access}\n"
-                                       f"Вы: {role}\n"
+                                       f"Вы: {role_name}\n"
                                        f"Участники: {len(members_dictionary)}/{members_limit}",
                               self.get_keyboard("my_class_menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
