@@ -413,26 +413,41 @@ class StateHandlers(SupportingFunctions):
         if payload is None:
             ask_message = "Впишите номер роли, назначать которой хотите:"
 
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = self.role_db.get_default_role_name(classroom_id)
+            all_role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
+
             if message.isdigit():
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 role_index = int(message)
-                all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
 
                 if 0 < role_index <= len(all_role_names):
+                    role_name = all_role_names[role_index - 1]
                     admin_role_id = self.role_db.get_admin_role_id(classroom_id)
-                    admin_role_name = self.role_db.get_admin_role_name(classroom_id)
-                    default_role_name = self.role_db.get_default_role_name(classroom_id)
-                    role_id = self.role_db.get_role_id_by_name(classroom_id, all_role_names[role_index - 1])
+                    role_id = self.role_db.get_role_id_by_name(classroom_id, role_name)
 
                     if role_id == admin_role_id:
-                        pass
+                        self.send_message(user_id, "Вы уверены, что хотите назначить кого-то ролью админа? После "
+                                                   "назначения вы перестанете быть админом и возьмёте дефолтную роль",
+                                          self.get_keyboard("main_dangerous_zone_delete_one_classroom_settings"))
+                        self.user_db.set_user_dialog_state(
+                            user_id, States.S_CHOOSE_ADMIN_ROLE_CONFIRMATION_MEMBERS_SETTINGS.value)
                     else:
-                        pass
+                        roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+                        members_text = self.get_members_text(roles_dictionary)
+
+                        self.send_message(user_id, f"{members_text}\n\nВпишите номер участника, которому хотите "
+                                                   f"назначить роль - {role_name}", self.get_keyboard("back_menu"))
+                        self.user_db.set_user_dialog_state(user_id,
+                                                           States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS.value)
+                    self.role_db.update_user_customize_role_id(user_id, role_id)
                 else:
-                    self.send_message(user_id, "Номер роли не может быть отрицательным числом или быть больше текущего"
-                                               f" количества ролей\n\n{ask_message}", self.get_keyboard("back_menu"))
+                    self.send_message(user_id, f"{all_role_names_text}\n\nНомер роли не может быть отрицательным числом"
+                                               f" или быть больше текущего количества ролей\n\n{ask_message}",
+                                      self.get_keyboard("back_menu"))
             else:
-                self.send_message(user_id, f"Введено не число\n\n{ask_message}",
+                self.send_message(user_id, f"{all_role_names_text}\n\nВведено не число\n\n{ask_message}",
                                   self.get_keyboard("back_menu"))
 
         elif payload["text"] == "Назад":
@@ -442,6 +457,58 @@ class StateHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
             self.classroom_db.update_user_customize_classroom_id(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def s_choose_admin_role_confirmation_members_settings_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_CHOOSE_ADMIN_ROLE_CONFIRMATION_MEMBERS_SETTINGS"""
+        if payload is None:
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻",
+                              self.get_keyboard("main_dangerous_zone_delete_one_classroom_settings"))
+
+        elif payload["text"] == "Нет":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = self.role_db.get_default_role_name(classroom_id)
+            all_role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
+
+            self.send_message(user_id, f"{all_role_names_text}\n\nВпишите номер роли, назначать которой хотите:",
+                              self.get_keyboard("back_menu"))
+            self.role_db.update_user_customize_role_id(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS.value)
+
+        elif payload["text"] == "Да":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
+            roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+            members_text = self.get_members_text(roles_dictionary)
+
+            self.send_message(user_id, f"{members_text}\n\nВпишите номер участника, которому хотите "
+                                       f"назначить роль - {admin_role_name}", self.get_keyboard("back_menu"))
+            self.user_db.set_user_dialog_state(user_id,
+                                               States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS.value)
+
+    def s_choose_member_change_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
+        """Handling States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS"""
+        if payload is None:
+            self.send_message(user_id, "nan")
+
+        elif payload["text"] == "Назад":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = self.role_db.get_default_role_name(classroom_id)
+            all_role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
+
+            self.send_message(user_id, f"{all_role_names_text}\n\nВпишите номер роли, назначать которой хотите:",
+                              self.get_keyboard("back_menu"))
+            self.role_db.update_user_customize_role_id(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
+            self.role_db.update_user_customize_role_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_delete_member_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
@@ -467,7 +534,8 @@ class StateHandlers(SupportingFunctions):
                                     new_roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
                                     new_members_text = self.get_members_text(new_roles_dictionary)
 
-                                    self.send_message(user_id, f"{new_members_text}\n\nУчастник удалён!\n\n{ask_message}",
+                                    self.send_message(user_id,
+                                                      f"{new_members_text}\n\nУчастник удалён!\n\n{ask_message}",
                                                       self.get_keyboard("back_menu"))
                                 elif member_id == user_id:
                                     self.send_message(user_id, f"Ты пытаешься выгнать самого себя\n\n{ask_message}",

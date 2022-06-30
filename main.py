@@ -165,6 +165,12 @@ class DiaryVkBot(CallbackPayloadHandlers):
             case States.S_CHOOSE_ROLE_MEMBERS_SETTINGS.value:
                 self.s_choose_role_members_settings_handler(user_id, message, payload)
 
+            case States.S_CHOOSE_ADMIN_ROLE_CONFIRMATION_MEMBERS_SETTINGS.value:
+                self.s_choose_admin_role_confirmation_members_settings_handler(user_id, payload)
+
+            case States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS.value:
+                self.s_choose_member_change_role_members_settings_handler(user_id, message, payload)
+
     def filter_callback_button_payload(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Filtering payload types"""
         match payload["text"]:
