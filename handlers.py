@@ -491,7 +491,63 @@ class StateHandlers(SupportingFunctions):
     def s_choose_member_change_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
-            self.send_message(user_id, "nan")
+            new_role_id = self.role_db.get_customizing_role_id(user_id)
+            role_name = self.role_db.get_role_name(new_role_id)
+            ask_message = f"Впишите номер участника, которому хотите назначить роль - {role_name}"
+
+            if message.isdigit():
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
+                member_index = int(message) - 1
+
+                if 0 <= member_index < len(members_dictionary):
+                    roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+                    members_text = self.get_members_text(roles_dictionary)
+
+                    ind = 0
+                    for role_id, member_ids in roles_dictionary.items():
+                        for member_id in member_ids:
+                            if ind == member_index:
+                                admin_role_id = self.role_db.get_admin_role_id(classroom_id)
+
+                                if member_id != user_id and role_id != new_role_id:
+                                    self.role_db.update_student_role(member_id, new_role_id)
+
+                                    if admin_role_id == new_role_id:
+                                        default_role_id = self.role_db.get_default_role_id(classroom_id)
+                                        self.role_db.update_student_role(user_id, default_role_id)
+
+                                    new_roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+                                    new_members_text = self.get_members_text(new_roles_dictionary)
+
+                                    if admin_role_id == new_role_id:
+                                        self.send_message(user_id,
+                                                          f"{new_members_text}\n\nНовая роль участнику назначена!\n\nВы"
+                                                          f" больше не админ", self.get_keyboard("members_settings"))
+                                        self.role_db.update_user_customize_role_id(user_id, "null")
+                                        self.user_db.set_user_dialog_state(user_id, States.S_MEMBERS_SETTINGS.value)
+                                    else:
+                                        self.send_message(user_id,
+                                                          f"{new_members_text}\n\nНовая роль участнику назначена!"
+                                                          f"\n\n{ask_message}", self.get_keyboard("back_menu"))
+                                elif member_id == user_id:
+                                    self.send_message(user_id, f"{members_text}Ты не можешь переназначить самому себе "
+                                                               f"роль\n\n{ask_message}", self.get_keyboard("back_menu"))
+                                elif role_id == new_role_id:
+                                    self.send_message(user_id, f"{members_text}\n\nУ этого участника уже эта роль!"
+                                                               f"\n\n{ask_message}", self.get_keyboard("back_menu"))
+                                break
+                            ind += 1
+                        else:
+                            continue
+                        break
+
+                else:
+                    self.send_message(user_id, f"Число не может быть неположительным или быть больше количества "
+                                               f"участников\n\n{ask_message}", self.get_keyboard("back_menu"))
+            else:
+                self.send_message(user_id, f"Введено не число\n\n{ask_message}",
+                                  self.get_keyboard("back_menu"))
 
         elif payload["text"] == "Назад":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
