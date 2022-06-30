@@ -48,7 +48,7 @@ class ClassroomCommands(DataBase):
 
             return classrooms_dictionary
 
-    def get_list_of_classroom_users(self, classroom_id: int) -> dict:
+    def get_dict_of_classroom_users(self, classroom_id: int) -> dict:
         """Get dict with classroom's members"""
         with self.connection.cursor() as cursor:
             users_dictionary = {}
@@ -57,6 +57,19 @@ class ClassroomCommands(DataBase):
                 users_dictionary[user_id] = user_role_id
 
             return users_dictionary
+
+    def get_dict_of_classroom_roles(self, classroom_id: int) -> dict:
+        """Returns dict with classroom's roles"""
+        members_dictionary = self.get_dict_of_classroom_users(classroom_id)
+
+        roles_dictionary = {}
+        for member_id, role_id in members_dictionary.items():
+            if role_id in roles_dictionary:
+                roles_dictionary[role_id].append(member_id)
+            else:
+                roles_dictionary[role_id] = [member_id]
+
+        return roles_dictionary
 
     def get_customizing_classroom_id(self, user_id: int) -> int:
         """Select classroomd_id that user_id is customizing"""
@@ -221,12 +234,12 @@ if __name__ == "__main__":
     db = ClassroomCommands(connection)
     flag = input("Тестовый режим: ")
 
-    if flag == "new":
-        for i in range(1, 55):
-            if randint(0, 1):
-                db.insert_new_user_in_classroom(i, 12, choice([32, 33, 33, 34, 35, 36, 37]))
-    elif flag == "del":
-        for i in range(1, 55):
-            with connection.cursor() as cursor:
-                cursor.execute(ClassroomQueries.delete_user_from_classroom_query.format(i))
-                connection.commit()
+    # if flag == "new":
+    #     for i in range(1, 55):
+    #         if randint(0, 1):
+    #             db.insert_new_user_in_classroom(i, 12, choice([32, 33, 33, 34, 35, 36, 37]))
+    # elif flag == "del":
+    #     for i in range(1, 55):
+    #         with connection.cursor() as cursor:
+    #             cursor.execute(ClassroomQueries.delete_user_from_classroom_query.format(i))
+    #             connection.commit()

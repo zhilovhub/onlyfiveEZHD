@@ -65,7 +65,7 @@ class StateHandlers(SupportingFunctions):
                         }
                     }
 
-                    members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
+                    members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
                     classroom_name, school_name, access, description = \
                         self.classroom_db.get_information_of_classroom(classroom_id)
                     role_name = self.role_db.get_role_name(role_id)
@@ -106,7 +106,7 @@ class StateHandlers(SupportingFunctions):
                 self.classroom_db.get_information_of_classroom(classroom_id)
             self.classroom_db.update_user_customize_classroom(user_id, classroom_id)
 
-            members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
+            members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
             members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
 
             for key, value in members_dictionary.items():
@@ -274,26 +274,8 @@ class StateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Участники":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
-            roles_dictionary = {}
-
-            for member_id, role_id in members_dictionary.items():
-                first_name, last_name = self.user_db.get_user_first_and_last_name(member_id)
-                role_name = self.role_db.get_role_name(role_id)
-
-                if role_name in roles_dictionary:
-                    roles_dictionary[role_name].append(f"[id{member_id}|{first_name} {last_name}]")
-                else:
-                    roles_dictionary[role_name] = [f"[id{member_id}|{first_name} {last_name}]"]
-
-            members_text = ""
-            ind = 1
-            for role_name, members in roles_dictionary.items():
-                members_text += f"{role_name}\n"
-                for member in members:
-                    members_text += f"{ind}. {member}\n"
-                    ind += 1
-                members_text += "\n"
+            roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+            members_text = self.get_members_text(roles_dictionary)
 
             keyboard = VkKeyboard(inline=True)
             keyboard.add_callback_button("Настройки",
@@ -899,7 +881,7 @@ class StateHandlers(SupportingFunctions):
 
                     classroom_name, school_name, access, description = \
                         self.classroom_db.get_information_of_classroom(classroom_id)
-                    members_dictionary = self.classroom_db.get_list_of_classroom_users(classroom_id)
+                    members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
                     members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
 
                     for member_user_id in members_dictionary.keys():
@@ -1038,7 +1020,7 @@ class StateHandlers(SupportingFunctions):
                 new_members_limit = int(message.strip())
 
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                members_count = len(self.classroom_db.get_list_of_classroom_users(classroom_id))
+                members_count = len(self.classroom_db.get_dict_of_classroom_users(classroom_id))
                 old_members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
 
                 if new_members_limit == old_members_limit:
@@ -1081,6 +1063,21 @@ class StateHandlers(SupportingFunctions):
         """Cancel creating technical support message and set state to States.S_NOTHING"""
         self.send_message(user_id, "Отправка обращения в тех. поддержку отменена", self.get_keyboard("menu"))
         self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def get_members_text(self, roles_dictionary: dict) -> str:
+        members_text = ""
+        ind = 1
+        for role_id, member_ids in roles_dictionary.items():
+            role_name = self.role_db.get_role_name(role_id)
+            members_text += f"{role_name}\n"
+
+            for member_id in member_ids:
+                first_name, last_name = self.user_db.get_user_first_and_last_name(member_id)
+                members_text += f"{ind}. [id{member_id}|{first_name} {last_name}]\n"
+                ind += 1
+            members_text += "\n"
+
+        return members_text
 
     @staticmethod
     def get_all_role_names_text(all_role_names: list, admin_role_name: str, default_role_name: str) -> str:
