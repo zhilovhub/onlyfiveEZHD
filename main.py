@@ -1,7 +1,7 @@
 from handlers import *
 
 
-class DiaryVkBot(CallbackPayloadHandlers):
+class DiaryVkBot(Handlers):
     """Listens events and filtering States/CallbackPayloads"""
 
     def __init__(self, token: str, group_id: int, user_db: UserDataCommands,
