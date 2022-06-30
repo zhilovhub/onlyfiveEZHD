@@ -224,7 +224,7 @@ if __name__ == "__main__":
     # if flag == "new":
     #     for i in range(1, 55):
     #         if randint(0, 1):
-    #             db.insert_new_user_in_classroom(i, 1, choice(["Помощник", "Участник", "Крутые", "Наказанные", "..."]))
+    #             db.insert_new_user_in_classroom(i, 12, choice([28, 29, 31]))
     # elif flag == "del":
     #     for i in range(1, 55):
     #         with connection.cursor() as cursor:
