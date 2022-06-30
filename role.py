@@ -17,6 +17,22 @@ class RoleCommands(DataBase):
             role_name = cursor.fetchone()[0]
 
             return role_name
+
+    def get_default_role_id(self, classroom_id: int) -> int:
+        """Returns default role's id"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(RoleQueries.get_default_role_id_query.format(classroom_id))
+            role_id = cursor.fetchone()[0]
+
+            return role_id
+
+    def get_role_id_by_name(self, classroom_id: int, role_name: str) -> int:
+        """Returns role's id by name"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(RoleQueries.get_role_id_by_name_query.format(classroom_id, role_name))
+            role_id = cursor.fetchone()[0]
+
+            return role_id
         
     def get_default_role_name(self, classroom_id: int) -> str:
         """Returns default role's name"""
@@ -73,6 +89,18 @@ class RoleCommands(DataBase):
 
             return cursor.lastrowid
 
+    def update_all_roles(self, old_role_id: int, new_role_id: int) -> None:
+        """Updates students' role with new role_id"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(RoleQueries.update_all_roles_query.format(new_role_id, old_role_id))
+            self.connection.commit()
+
+    def delete_role(self, role_id: int) -> None:
+        """Deletes role"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(RoleQueries.delete_role_query.format(role_id))
+            self.connection.commit()
+
 
 class RoleQueries:
     create_table_roles_query = """CREATE TABLE IF NOT EXISTS Role(
@@ -104,13 +132,14 @@ class RoleQueries:
         role_id INT,
         FOREIGN KEY (user_id) REFERENCES User (user_id),
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE,
-        FOREIGN KEY (role_id) REFERENCES Role (role_id) ON DELETE CASCADE
+        FOREIGN KEY (role_id) REFERENCES Role (role_id)
     )"""
 
     get_default_role_name_query = """SELECT role_name FROM Role WHERE classroom_id={} AND is_default_member=1"""
     get_admin_role_name_query = """SELECT role_name FROM Role WHERE classroom_id={} AND is_admin=1"""
     get_role_name_query = """SELECT role_name FROM Role WHERE role_id={}"""
     get_default_role_id_query = """SELECT role_id FROM Role WHERE classroom_id={} AND is_default_member=1"""
+    get_role_id_by_name_query = """SELECT role_id FROM Role WHERE classroom_id={} AND role_name='{}'"""
     get_all_role_names_from_classroom_query = """SELECT role_name FROM Role WHERE classroom_id={}"""
     get_all_role_properties_query = """SELECT * FROM Role WHERE role_id={}"""
 
@@ -125,6 +154,10 @@ class RoleQueries:
     change_classroom_access, change_description, change_members_limit) VALUES(
         {}, '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
     )"""
+
+    update_all_roles_query = """UPDATE Student SET role_id={} WHERE role_id={}"""
+
+    delete_role_query = """DELETE FROM Role WHERE role_id={}"""
 
 
 if __name__ == '__main__':

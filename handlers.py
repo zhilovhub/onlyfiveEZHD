@@ -354,23 +354,30 @@ class StateHandlers(SupportingFunctions):
         if payload is None:
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("members_settings"))
 
+        elif payload["text"] == "Удалить роли":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = self.role_db.get_default_role_name(classroom_id)
+            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+            role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
+
+            if len(all_role_names) > 2:
+                self.send_message(user_id, f"Все участники с ролью, которые вы удалите, возьмут дефолтную роль\n"
+                                           f"Введите номер роли, которую хотите удалить:\n\n{role_names_text}",
+                                  self.get_keyboard("back_menu"))
+                self.user_db.set_user_dialog_state(user_id, States.S_DELETE_ROLE_MEMBERS_SETTINGS.value)
+            else:
+                self.send_message(user_id, f"В классе нет ролей, которые можно было бы удалить!\n\n{role_names_text}",
+                                  self.get_keyboard("members_settings"))
+
         elif payload["text"] == "Добавить роли":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             admin_role_name = self.role_db.get_admin_role_name(classroom_id)
             default_role_name = self.role_db.get_default_role_name(classroom_id)
+            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+            role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
 
-            role_names = []
-            for role_name in self.role_db.get_all_role_names_from_classroom(classroom_id):
-                if role_name == admin_role_name:
-                    role_names.append(f"{role_name} (Админ)")
-                elif role_name == default_role_name:
-                    role_names.append(f"{role_name} (Дефолт)")
-                else:
-                    role_names.append(role_name)
-
-            role_names_text = "\n".join([f"{ind}. {role_name}" for ind, role_name in enumerate(role_names, start=1)])
-
-            if len(role_names) < 8:
+            if len(all_role_names) < 8:
                 self.send_message(user_id, "Добавление ролей\n\nВ классе "
                                            "может быть максимум 8 ролей, но всегда есть минимум 2 (админ, участник)"
                                            ". Роль админа может иметь единственный участник класса, эта роль имеет все "
@@ -418,6 +425,49 @@ class StateHandlers(SupportingFunctions):
                                                "название:", self.get_keyboard("back_menu"))
             else:
                 self.send_message(user_id, "Длина названия больше 20 символов. Введите другое название:",
+                                  self.get_keyboard("back_menu"))
+
+        elif payload["text"] == "Назад":
+            self.send_message(user_id, "Возвращаемся в настройки участников...", self.get_keyboard("members_settings"))
+            self.user_db.set_user_dialog_state(user_id, States.S_MEMBERS_SETTINGS.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def s_delete_role_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
+        """Handling States.S_DELETE_ROLE_MEMBERS_SETTINGS"""
+        if payload is None:
+            ask_message = "Введите номер роли, удалить которую хотите:"
+
+            if message.isdigit():
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                role_index = int(message)
+                all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+
+                if 0 < role_index <= len(all_role_names):
+                    admin_role_name = self.role_db.get_admin_role_name(classroom_id)
+                    default_role_name = self.role_db.get_default_role_name(classroom_id)
+                    role_name = all_role_names[role_index - 1]
+
+                    if role_name != admin_role_name and role_name != default_role_name:
+                        default_role_id = self.role_db.get_default_role_id(classroom_id)
+                        role_id = self.role_db.get_role_id_by_name(classroom_id, role_name)
+
+                        self.role_db.update_all_roles(role_id, default_role_id)
+                        self.role_db.delete_role(role_id)
+
+                        self.send_message(user_id, "Роль удалена!", self.get_keyboard("members_settings"))
+                        self.user_db.set_user_dialog_state(user_id, States.S_MEMBERS_SETTINGS.value)
+                    else:
+                        self.send_message(user_id, f"Нельзя удалить роль админа или дефолтную роль\n\n{ask_message}",
+                                          self.get_keyboard("back_menu"))
+                else:
+                    self.send_message(user_id, "Номер роли не может быть отрицательным числом или быть больше текущего"
+                                               f" количества ролей\n\n{ask_message}", self.get_keyboard("back_menu"))
+            else:
+                self.send_message(user_id, f"Введено не число\n\n{ask_message}",
                                   self.get_keyboard("back_menu"))
 
         elif payload["text"] == "Назад":
@@ -1029,6 +1079,21 @@ class StateHandlers(SupportingFunctions):
         """Cancel creating technical support message and set state to States.S_NOTHING"""
         self.send_message(user_id, "Отправка обращения в тех. поддержку отменена", self.get_keyboard("menu"))
         self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    @staticmethod
+    def get_all_role_names_text(all_role_names: list, admin_role_name: str, default_role_name: str) -> str:
+        """Returns text of all role names"""
+        role_names = []
+        for role_name in all_role_names:
+            if role_name == admin_role_name:
+                role_names.append(f"{role_name} (Админ)")
+            elif role_name == default_role_name:
+                role_names.append(f"{role_name} (Дефолт)")
+            else:
+                role_names.append(role_name)
+
+        role_names_text = "\n".join([f"{ind}. {role_name}" for ind, role_name in enumerate(role_names, start=1)])
+        return role_names_text
 
     @staticmethod
     def get_weekday_diary_text(formatted_days: tuple, weekday: str) -> str:
