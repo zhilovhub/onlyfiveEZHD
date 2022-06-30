@@ -106,6 +106,12 @@ class RoleCommands(DataBase):
 
             return cursor.lastrowid
 
+    def update_student_role(self, user_id: int, new_role_id: int) -> None:
+        """Updates student's role with new role_id"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(RoleQueries.update_student_role_query.format(new_role_id, user_id))
+            self.connection.commit()
+
     def update_all_roles(self, old_role_id: int, new_role_id: int) -> None:
         """Updates students' role with new role_id"""
         with self.connection.cursor() as cursor:
@@ -189,6 +195,7 @@ class RoleQueries:
         {}, '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
     )"""
 
+    update_student_role_query = """UPDATE Student SET role_id={} WHERE user_id={}"""
     update_all_roles_query = """UPDATE Student SET role_id={} WHERE role_id={}"""
     update_user_customize_role_id_query = """UPDATE UserCustomize SET role_id={} WHERE user_id={}"""
 
