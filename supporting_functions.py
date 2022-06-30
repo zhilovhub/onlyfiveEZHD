@@ -1,10 +1,4 @@
-from config import *
-
-from classroom import ClassroomCommands
-from users import UserDataCommands
-from technical_support import TechnicalSupportCommands
-from diary_homework import DiaryHomeworkCommands
-from role import RoleCommands
+from databases import *
 
 from keyboards import KeyBoards
 
