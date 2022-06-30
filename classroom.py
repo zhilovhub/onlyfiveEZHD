@@ -173,6 +173,12 @@ class ClassroomCommands(DataBase):
             cursor.execute(ClassroomQueries.delete_classroom_query.format(classroom_id))
             self.connection.commit()
 
+    def delete_student(self, classroom_id: int, user_id: int) -> None:
+        """Deletes user from classroom"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.delete_user_from_classroom_query.format(user_id, classroom_id))
+            self.connection.commit()
+
 
 class ClassroomQueries:
     create_table_classroom_query = """CREATE TABLE IF NOT EXISTS Classroom(
@@ -219,7 +225,7 @@ class ClassroomQueries:
     update_user_customize_query = """UPDATE UserCustomize SET classroom_id={} WHERE user_id={}"""
     update_classroom_created_query = """UPDATE Classroom SET created={} WHERE classroom_id={}"""
 
-    delete_user_from_classroom_query = """DELETE FROM Student WHERE user_id={}"""
+    delete_user_from_classroom_query = """DELETE FROM Student WHERE user_id={} AND classroom_id={}"""
     delete_classroom_query = """DELETE FROM classroom WHERE classroom_id={}"""
 
 

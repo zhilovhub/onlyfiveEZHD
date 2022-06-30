@@ -338,6 +338,15 @@ class StateHandlers(SupportingFunctions):
         if payload is None:
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("members_settings"))
 
+        elif payload["text"] == "Удалить участника":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+            members_text = self.get_members_text(roles_dictionary)
+
+            self.send_message(user_id, f"{members_text}\n\nВпиши номер участника, которого ты хочешь удалить:",
+                              self.get_keyboard("back_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_DELETE_MEMBER_MEMBERS_SETTINGS.value)
+
         elif payload["text"] == "Удалить роли":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             admin_role_name = self.role_db.get_admin_role_name(classroom_id)
@@ -382,6 +391,59 @@ class StateHandlers(SupportingFunctions):
         elif payload["text"] == "Назад":
             self.send_message(user_id, "Возвращаемся в меню класса...", self.get_keyboard("my_class_menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def s_delete_member_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
+        """Handling States.S_DELETE_MEMBER_MEMBERS_SETTINGS"""
+        if payload is None:
+            ask_message = "Впиши номер участника, удалить которого хотите:"
+
+            if message.isdigit():
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
+                member_index = int(message) - 1
+
+                if 0 <= member_index < len(members_dictionary):
+                    roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+                    admin_role_id = self.role_db.get_admin_role_id(classroom_id)
+
+                    ind = 0
+                    for role_id, member_ids in roles_dictionary.items():
+                        for member_id in member_ids:
+                            if ind == member_index:
+                                if role_id != admin_role_id and member_id != user_id:
+                                    self.classroom_db.delete_student(classroom_id, member_id)
+                                    new_roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+                                    new_members_text = self.get_members_text(new_roles_dictionary)
+
+                                    self.send_message(user_id, f"{new_members_text}\n\nУчастник удалён!\n\n{ask_message}",
+                                                      self.get_keyboard("back_menu"))
+                                elif member_id == user_id:
+                                    self.send_message(user_id, f"Ты пытаешься выгнать самого себя\n\n{ask_message}",
+                                                      self.get_keyboard("back_menu"))
+                                elif role_id == admin_role_id:
+                                    self.send_message(user_id, f"Нельзя выгнать админа\n\n{ask_message}",
+                                                      self.get_keyboard("back_menu"))
+                                break
+                            ind += 1
+                        else:
+                            continue
+                        break
+
+                else:
+                    self.send_message(user_id, f"Число не может быть неположительным или быть больше количества "
+                                               f"участников\n\n{ask_message}", self.get_keyboard("back_menu"))
+            else:
+                self.send_message(user_id, f"Введено не число\n\n{ask_message}",
+                                  self.get_keyboard("back_menu"))
+
+        elif payload["text"] == "Назад":
+            self.send_message(user_id, "Возвращаемся в настройки участников...", self.get_keyboard("members_settings"))
+            self.user_db.set_user_dialog_state(user_id, States.S_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))

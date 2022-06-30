@@ -159,6 +159,9 @@ class DiaryVkBot(CallbackPayloadHandlers):
             case States.S_DELETE_ROLE_MEMBERS_SETTINGS.value:
                 self.s_delete_role_members_settings_handler(user_id, message, payload)
 
+            case States.S_DELETE_MEMBER_MEMBERS_SETTINGS.value:
+                self.s_delete_member_members_settings_handler(user_id, message, payload)
+
     def filter_callback_button_payload(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Filtering payload types"""
         match payload["text"]:
