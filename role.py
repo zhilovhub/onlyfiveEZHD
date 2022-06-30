@@ -19,6 +19,14 @@ class RoleCommands(DataBase):
 
             return role_name
 
+    def get_customizing_role_id(self, user_id: int) -> int:
+        """Select role_id that user_id is customizing"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(RoleQueries.get_customizing_role_id_query.format(user_id))
+            role_id = cursor.fetchone()[0]
+
+            return role_id
+
     def get_default_role_id(self, classroom_id: int) -> int:
         """Returns default role's id"""
         with self.connection.cursor() as cursor:
@@ -159,6 +167,7 @@ class RoleQueries:
         FOREIGN KEY (role_id) REFERENCES Role (role_id)
     )"""
 
+    get_customizing_role_id_query = """SELECT role_id FROM UserCustomize WHERE user_id={}"""
     get_default_role_name_query = """SELECT role_name FROM Role WHERE classroom_id={} AND is_default_member=1"""
     get_admin_role_name_query = """SELECT role_name FROM Role WHERE classroom_id={} AND is_admin=1"""
     get_role_name_query = """SELECT role_name FROM Role WHERE role_id={}"""
