@@ -437,10 +437,19 @@ class MembersSettingsHandlers(SupportingFunctions):
         if payload is None:
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("role_settings_menu"))
 
+        elif payload["text"] == "Участники":
+            role_id = self.role_db.get_customizing_role_id(user_id)
+            members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
+            color_values = self.get_edit_role_keyboard_color_values(members_role_properties_dictionary)
+
+            self.send_message(user_id, "Что участник с этой ролью может делать с другими учатниками:",
+                              KeyBoards.get_members_privilege_keyboard(*color_values))
+            self.user_db.set_user_dialog_state(user_id, States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS.value)
+
         elif payload["text"] == "Дневник":
             role_id = self.role_db.get_customizing_role_id(user_id)
             diary_role_properties_dictionary = self.role_db.get_diary_role_properties_dict(role_id)
-            color_values = self.get_diary_keyboard_color_values(diary_role_properties_dictionary)
+            color_values = self.get_edit_role_keyboard_color_values(diary_role_properties_dictionary)
 
             self.send_message(user_id, "Что участник с этой ролью может делать с дневником:",
                               KeyBoards.get_diary_privilege_keyboard(*color_values))
@@ -507,7 +516,7 @@ class MembersSettingsHandlers(SupportingFunctions):
         if payload is None:
             role_id = self.role_db.get_customizing_role_id(user_id)
             diary_role_properties_dictionary = self.role_db.get_diary_role_properties_dict(role_id)
-            color_values = self.get_diary_keyboard_color_values(diary_role_properties_dictionary)
+            color_values = self.get_edit_role_keyboard_color_values(diary_role_properties_dictionary)
 
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻",
                               KeyBoards.get_diary_privilege_keyboard(*color_values))
@@ -532,7 +541,7 @@ class MembersSettingsHandlers(SupportingFunctions):
 
             role_properties_dict = self.role_db.get_role_properties_dict(role_id)
             role_properties_text = self.get_role_properties_text(role_properties_dict)
-            color_values = self.get_diary_keyboard_color_values(diary_role_properties_dictionary)
+            color_values = self.get_edit_role_keyboard_color_values(diary_role_properties_dictionary)
 
             self.send_message(user_id, role_properties_text, KeyBoards.get_diary_privilege_keyboard(*color_values))
 
@@ -550,14 +559,59 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.role_db.update_user_customize_role_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
+    def s_members_privilege_edit_role_members_settings(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS"""
+        if payload is None:
+            role_id = self.role_db.get_customizing_role_id(user_id)
+            members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
+            color_values = self.get_edit_role_keyboard_color_values(members_role_properties_dictionary)
+
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻",
+                              KeyBoards.get_members_privilege_keyboard(*color_values))
+
+        elif payload["text"] in ["Кикание участников", "Приглашение в класс", "Уведомление участников"]:
+            payload_meaning_dictionary = {
+                "Кикание участников": "kick_members",
+                "Приглашение в класс": "invite_members",
+                "Уведомление участников": "notify"
+            }
+            privilege_type = payload_meaning_dictionary[payload["text"]]
+
+            role_id = self.role_db.get_customizing_role_id(user_id)
+            members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
+            new_value = False if members_role_properties_dictionary[privilege_type] else True
+
+            self.role_db.update_role_privilege(role_id, new_value, privilege_type)
+            members_role_properties_dictionary[privilege_type] = new_value
+
+            role_properties_dict = self.role_db.get_role_properties_dict(role_id)
+            role_properties_text = self.get_role_properties_text(role_properties_dict)
+            color_values = self.get_edit_role_keyboard_color_values(members_role_properties_dictionary)
+
+            self.send_message(user_id, role_properties_text, KeyBoards.get_members_privilege_keyboard(*color_values))
+
+        elif payload["text"] == "Назад":
+            role_id = self.role_db.get_customizing_role_id(user_id)
+            role_properties_dict = self.role_db.get_role_properties_dict(role_id)
+            role_properties_text = self.get_role_properties_text(role_properties_dict)
+
+            self.send_message(user_id, role_properties_text, self.get_keyboard("role_settings_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
+            self.role_db.update_user_customize_role_id(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
     @staticmethod
-    def get_diary_keyboard_color_values(diary_role_properties_dictionary: dict) -> map:
-        """Returns diary_keyboard_colors"""
+    def get_edit_role_keyboard_color_values(role_properties_dictionary: dict) -> map:
+        """Returns keyboard_colors"""
         value_meaning_dict = {
             1: "positive",
             0: "negative"
         }
-        return map(lambda value: value_meaning_dict[value], diary_role_properties_dictionary.values())
+        return map(lambda value: value_meaning_dict[value], role_properties_dictionary.values())
 
     @staticmethod
     def get_role_properties_text(role_properties_dict: dict) -> str:

@@ -102,6 +102,20 @@ class RoleCommands(DataBase):
 
             return {name: value for name, value in zip(property_names, property_values)}
 
+    def get_members_role_properties_dict(self, role_id: int) -> dict:
+        """Returns role's members properties"""
+        with self.connection.cursor() as cursor:
+            property_names = [
+                "kick_members",
+                "invite_members",
+                "notify"
+            ]
+
+            cursor.execute(RoleQueries.get_members_role_properties_query.format(role_id))
+            property_values = cursor.fetchone()
+
+            return {name: value for name, value in zip(property_names, property_values)}
+
     def insert_new_role(self, classroom_id: int, role_name: str, is_default_member=False, is_admin=False) -> int:
         """Inserts new role into Role"""
         with self.connection.cursor() as cursor:
@@ -213,12 +227,19 @@ class RoleQueries:
     get_role_id_by_name_query = """SELECT role_id FROM Role WHERE classroom_id={} AND role_name='{}'"""
     get_all_role_names_from_classroom_query = """SELECT role_name FROM Role WHERE classroom_id={}"""
     get_all_role_properties_query = """SELECT * FROM Role WHERE role_id={}"""
+
     get_diary_role_properties_query = """SELECT 
         change_current_homework, 
         change_next_homework, 
         change_standard_week,
         change_current_week,
         change_next_week
+    FROM Role WHERE role_id={}"""
+
+    get_members_role_properties_query = """SELECT
+        kick_members,
+        invite_members,
+        notify
     FROM Role WHERE role_id={}"""
 
     insert_new_default_role_query = """INSERT INTO Role 

@@ -25,7 +25,7 @@ class KeyBoards:
     KEYBOARD_MENU.add_button(label="Настройка беседы класса", payload=get_payload("Настройка беседы класса"))
     KEYBOARD_MENU.add_line()
     KEYBOARD_MENU.add_button(label="Обращение в тех. поддержку", payload=get_payload("Обращение в тех. поддержку"))
-    
+
     # SUBMIT_BACK KEYBOARD
     KEYBOARD_SUBMIT_BACK = VkKeyboard()
     KEYBOARD_SUBMIT_BACK.add_button(label="Отклонить", payload=get_payload("Отклонить"))
@@ -162,6 +162,25 @@ class KeyBoards:
     KEYBOARD_MEMBERS_SETTINGS.add_line()
     KEYBOARD_MEMBERS_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_MEMBERS_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
+
+    # CUSTOMIZED MEMBERS_PRIVILEGE KEYBOARD
+    @staticmethod
+    def get_members_privilege_keyboard(*colors) -> VkKeyboard:
+        keyboard_members_privilege = VkKeyboard()
+        keyboard_members_privilege.add_button("Кикание участников", payload=KeyBoards.get_payload("Кикание участников"),
+                                              color=colors[0])
+        keyboard_members_privilege.add_line()
+        keyboard_members_privilege.add_button("Приглашение в класс",
+                                              payload=KeyBoards.get_payload("Приглашение в класс"), color=colors[1])
+        keyboard_members_privilege.add_line()
+        keyboard_members_privilege.add_button("Уведомление участников",
+                                              payload=KeyBoards.get_payload("Уведомление участников"), color=colors[2])
+        keyboard_members_privilege.add_line()
+
+        keyboard_members_privilege.add_button("Назад", payload=KeyBoards.get_payload("Назад"))
+        keyboard_members_privilege.add_button("Главное меню", payload=KeyBoards.get_payload("Главное меню"))
+
+        return keyboard_members_privilege.get_keyboard()
 
     # CUSTOMIZED DIARY_PRIVILEGE KEYBOARD
     @staticmethod
