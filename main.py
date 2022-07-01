@@ -177,6 +177,9 @@ class DiaryVkBot(Handlers):
             case States.S_EDIT_ROLE_MEMBERS_SETTINGS.value:
                 self.s_edit_role_members_settings_handler(user_id, payload)
 
+            case States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS.value:
+                self.s_enter_name_edit_role_members_settings_handler(user_id, message, payload)
+
     def filter_callback_button_payload(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Filtering payload types"""
         match payload["text"]:

@@ -435,6 +435,10 @@ class MembersSettingsHandlers(SupportingFunctions):
         if payload is None:
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("role_settings_menu"))
 
+        elif payload["text"] == "Сменить имя":
+            self.send_message(user_id, "Введите новое имя роли (макс. 20 символов):", self.get_keyboard("back_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS.value)
+
         elif payload["text"] == "Назад":
             ask_message = "Впишите номер роли, редактировать которую хотите:"
 
@@ -447,6 +451,21 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.send_message(user_id, f"{all_role_names_text}\n\n{ask_message}", self.get_keyboard("back_menu"))
             self.role_db.update_user_customize_role_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
+            self.role_db.update_user_customize_role_id(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def s_enter_name_edit_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
+        """Handling States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS"""
+        if payload is None:
+            pass
+
+        elif payload["text"] == "Назад":
+            self.send_message(user_id, "Настройки роли", self.get_keyboard("role_settings_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
