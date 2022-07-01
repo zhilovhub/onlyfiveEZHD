@@ -463,10 +463,28 @@ class MembersSettingsHandlers(SupportingFunctions):
     def s_enter_name_edit_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
-            pass
+            if len(message) <= 20:
+                role_id = self.role_db.get_customizing_role_id(user_id)
+                self.role_db.update_role_name(role_id, message)
+
+                role_properties_dict = self.role_db.get_role_properties_dict(role_id)
+                role_properties_text = self.get_role_properties_text(role_properties_dict)
+
+                self.send_message(user_id, f"{role_properties_text}\n\nНазвание роли изменено!",
+                                  self.get_keyboard("role_settings_menu"))
+                self.user_db.set_user_dialog_state(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS.value)
+            else:
+                self.send_message(user_id,
+                                  "Длина нового названия превышает 20 символов\n\n"
+                                  "Введите другое новое имя роли (макс. 20 символов):",
+                                  self.get_keyboard("back_menu"))
 
         elif payload["text"] == "Назад":
-            self.send_message(user_id, "Настройки роли", self.get_keyboard("role_settings_menu"))
+            role_id = self.role_db.get_customizing_role_id(user_id)
+            role_properties_dict = self.role_db.get_role_properties_dict(role_id)
+            role_properties_text = self.get_role_properties_text(role_properties_dict)
+
+            self.send_message(user_id, role_properties_text, self.get_keyboard("role_settings_menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
