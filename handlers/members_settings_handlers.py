@@ -410,8 +410,10 @@ class MembersSettingsHandlers(SupportingFunctions):
                     role_id = self.role_db.get_role_id_by_name(classroom_id, role_name)
                     self.role_db.update_user_customize_role_id(user_id, role_id)
 
-                    self.send_message(user_id, f"Меню настроек роли - {role_name}",
-                                      self.get_keyboard("role_settings_menu"))
+                    role_properties_dict = self.role_db.get_role_properties_dict(role_id)
+                    role_properties_text = self.get_role_properties_text(role_properties_dict)
+
+                    self.send_message(user_id, role_properties_text, self.get_keyboard("role_settings_menu"))
                     self.user_db.set_user_dialog_state(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS.value)
                 else:
                     self.send_message(user_id, f"{all_role_names_text}\n\nНомер роли не может быть отрицательным числом"
@@ -472,3 +474,40 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.role_db.update_user_customize_role_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    @staticmethod
+    def get_role_properties_text(role_properties_dict: dict) -> str:
+        value_meaning_dict = {
+            1: "✅",
+            0: "❌"
+        }
+
+        is_admin = role_properties_dict.pop("is_admin")
+        is_default_member = role_properties_dict.pop("is_default_member")
+        role_name = role_properties_dict.pop("role_name")
+
+        if is_admin:
+            role_name += "(Админ)"
+        elif is_default_member:
+            role_name += "(Дефолт)"
+
+        role_properties_text = "Роль: {}\n\n" \
+                               "Дневник:\n" \
+                               "Редактирование эталонного расписания {}\n" \
+                               "Редактирование текущего расписания {}\n" \
+                               "Редактирование будущего расписания {}\n" \
+                               "Редактирование текущего дз {}\n" \
+                               "Редактирование будущего дз {}\n\n" \
+                               "Участники:\n" \
+                               "Кикание участников {}\n" \
+                               "Приглашение в класс {}\n" \
+                               "Уведомление участников {}\n\n" \
+                               "Класс:\n" \
+                               "Изменение названия класса {}\n" \
+                               "Изменение названия школы {}\n" \
+                               "Изменение типа класса {}\n" \
+                               "Изменение описания класса {}\n" \
+                               "Изменение лимита участников {}"
+
+        return role_properties_text.format(role_name,
+                                           *map(lambda value: value_meaning_dict[value], role_properties_dict.values()))
