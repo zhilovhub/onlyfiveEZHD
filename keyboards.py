@@ -163,6 +163,21 @@ class KeyBoards:
     KEYBOARD_MEMBERS_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_MEMBERS_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
 
+    # CUSTOMIZED ROLE_SETTINGS_MENU KEYBOARD
+    @staticmethod
+    def get_role_settings_menu_keyboard() -> VkKeyboard:
+        keyboard_role_settings_menu = VkKeyboard()
+        keyboard_role_settings_menu.add_button("Сменить имя", payload=KeyBoards.get_payload("Сменить имя"))
+        keyboard_role_settings_menu.add_line()
+        keyboard_role_settings_menu.add_button("Дневник", payload=KeyBoards.get_payload("Дневник"))
+        keyboard_role_settings_menu.add_button("Участники", payload=KeyBoards.get_payload("Участники"))
+        keyboard_role_settings_menu.add_button("Класс", payload=KeyBoards.get_payload("Класс"))
+        keyboard_role_settings_menu.add_line()
+        keyboard_role_settings_menu.add_button("Назад", payload=KeyBoards.get_payload("Назад"))
+        keyboard_role_settings_menu.add_button("Главное меню", payload=KeyBoards.get_payload("Главное меню"))
+
+        return keyboard_role_settings_menu.get_keyboard()
+
     # CUSTOMIZED EDIT_WEEKDAY KEYBOARD
     @staticmethod
     def get_edit_weekday_keyboard(add_button_color="secondary", redact_button_color="secondary") -> VkKeyboard:

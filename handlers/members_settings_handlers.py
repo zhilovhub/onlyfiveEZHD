@@ -404,7 +404,8 @@ class MembersSettingsHandlers(SupportingFunctions):
                     role_id = self.role_db.get_role_id_by_name(classroom_id, role_name)
                     self.role_db.update_user_customize_role_id(user_id, role_id)
 
-                    self.send_message(user_id, f"Меню настроек роли - {role_name}")
+                    self.send_message(user_id, f"Меню настроек роли - {role_name}",
+                                      self.get_keyboard("role_settings_menu"))
                 else:
                     self.send_message(user_id, f"{all_role_names_text}\n\nНомер роли не может быть отрицательным числом"
                                                f" или быть больше текущего количества ролей\n\n{ask_message}",

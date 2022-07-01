@@ -131,6 +131,9 @@ class SupportingFunctions:
         elif keyboard_type == "members_settings":
             return KeyBoards.KEYBOARD_MEMBERS_SETTINGS.get_keyboard()
 
+        elif keyboard_type == "role_settings_menu":
+            return KeyBoards.get_role_settings_menu_keyboard()
+
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""
         is_member = self.vk_session.method(
