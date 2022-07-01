@@ -163,6 +163,28 @@ class KeyBoards:
     KEYBOARD_MEMBERS_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_MEMBERS_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
 
+    # CUSTOMIZED DIARY_PRIVILEGE KEYBOARD
+    @staticmethod
+    def get_diary_privilege_keyboard(*colors) -> VkKeyboard:
+        keyboard_diary_privilege = VkKeyboard()
+        keyboard_diary_privilege.add_button("Текущее дз", payload=KeyBoards.get_payload("Текущее дз"), color=colors[0])
+        keyboard_diary_privilege.add_button("Будущее дз", payload=KeyBoards.get_payload("Будущее дз"), color=colors[1])
+        keyboard_diary_privilege.add_line()
+        keyboard_diary_privilege.add_button("Эталонное расписание",
+                                            payload=KeyBoards.get_payload("Эталонное расписание"), color=colors[2])
+        keyboard_diary_privilege.add_line()
+        keyboard_diary_privilege.add_button("Текущее расписание",
+                                            payload=KeyBoards.get_payload("Текущее расписание"), color=colors[3])
+        keyboard_diary_privilege.add_line()
+        keyboard_diary_privilege.add_button("Будущее расписание", payload=KeyBoards.get_payload("Будущее расписание"),
+                                            color=colors[4])
+        keyboard_diary_privilege.add_line()
+
+        keyboard_diary_privilege.add_button("Назад", payload=KeyBoards.get_payload("Назад"))
+        keyboard_diary_privilege.add_button("Главное меню", payload=KeyBoards.get_payload("Главное меню"))
+
+        return keyboard_diary_privilege.get_keyboard()
+
     # CUSTOMIZED ROLE_SETTINGS_MENU KEYBOARD
     @staticmethod
     def get_role_settings_menu_keyboard() -> VkKeyboard:

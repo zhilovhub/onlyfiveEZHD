@@ -86,6 +86,22 @@ class RoleCommands(DataBase):
 
             return {name: value for name, value in zip(property_names, property_values)}
 
+    def get_diary_role_properties_dict(self, role_id: int) -> dict:
+        """Returns role's diary properties"""
+        with self.connection.cursor() as cursor:
+            property_names = [
+                "change_current_homework",
+                "change_next_homework",
+                "change_standard_week",
+                "change_current_week",
+                "change_next_week"
+            ]
+
+            cursor.execute(RoleQueries.get_diary_role_properties_query.format(role_id))
+            property_values = cursor.fetchone()
+
+            return {name: value for name, value in zip(property_names, property_values)}
+
     def insert_new_role(self, classroom_id: int, role_name: str, is_default_member=False, is_admin=False) -> int:
         """Inserts new role into Role"""
         with self.connection.cursor() as cursor:
@@ -128,87 +144,15 @@ class RoleCommands(DataBase):
             self.connection.commit()
 
     def update_role_name(self, role_id: int, new_name: str) -> None:
-        """Updates roles' name"""
+        """Updates role's name"""
         with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.update_role_name_query.format(new_name, role_id))
             self.connection.commit()
 
-    def update_change_standard_week(self, role_id: int, new_value: bool) -> None:
-        """Updates roles' change_standard_week"""
+    def update_role_privilege(self, role_id: int, new_value: bool, privilege_type: str) -> None:
+        """Updates role's privilege_type"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_change_standard_week_query.format(new_value, role_id))
-            self.connection.commit()
-
-    def update_change_current_week(self, role_id: int, new_value: bool) -> None:
-        """Updates roles' change_current_week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_change_current_week_query.format(new_value, role_id))
-            self.connection.commit()
-
-    def update_change_next_week(self, role_id: int, new_value: bool) -> None:
-        """Updates roles' change_next_week"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_change_next_week_query.format(new_value, role_id))
-            self.connection.commit()
-
-    def update_change_current_homework(self, role_id: int, new_value: bool) -> None:
-        """Updates roles' change_current_homework"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_change_current_homework_query.format(new_value, role_id))
-            self.connection.commit()
-
-    def update_change_next_homework(self, role_id: int, new_value: bool) -> None:
-        """Updates roles' change_next_homework"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_change_next_homework_query.format(new_value, role_id))
-            self.connection.commit()
-
-    def update_kick_members(self, role_id: int, new_value: bool) -> None:
-        """Updates roles' kick_members"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_kick_members_query.format(new_value, role_id))
-            self.connection.commit()
-
-    def update_invite_members(self, role_id: int, new_value: bool) -> None:
-        """Updates roles' invite_members"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_invite_members_query.format(new_value, role_id))
-            self.connection.commit()
-
-    def update_notify(self, role_id: int, new_value: bool) -> None:
-        """Updates roles' notify"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_notify_query.format(new_value, role_id))
-            self.connection.commit()
-
-    def update_change_classroom_name(self, role_id: int, new_value: bool) -> None:
-        """Updates roles' change_classroom_name"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_change_classroom_name_query.format(new_value, role_id))
-            self.connection.commit()
-
-    def update_change_school_name(self, role_id: int, new_value: bool) -> None:
-        """Updates roles' change_school_name"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_change_school_name_query.format(new_value, role_id))
-            self.connection.commit()
-
-    def update_change_classroom_access(self, role_id: int, new_value: bool) -> None:
-        """Updates roles' change_classroom_access"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_change_classroom_access_query.format(new_value, role_id))
-            self.connection.commit()
-
-    def update_change_description(self, role_id: int, new_value: bool) -> None:
-        """Updates roles' change_description"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_change_description_query.format(new_value, role_id))
-            self.connection.commit()
-
-    def update_change_members_limit(self, role_id: int, new_value: bool) -> None:
-        """Updates roles' change_members_limit"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_change_members_limit_query.format(new_value, role_id))
+            cursor.execute(RoleQueries.update_role_privilege_query.format(privilege_type, new_value, role_id))
             self.connection.commit()
 
     def delete_role(self, role_id: int) -> None:
@@ -269,6 +213,13 @@ class RoleQueries:
     get_role_id_by_name_query = """SELECT role_id FROM Role WHERE classroom_id={} AND role_name='{}'"""
     get_all_role_names_from_classroom_query = """SELECT role_name FROM Role WHERE classroom_id={}"""
     get_all_role_properties_query = """SELECT * FROM Role WHERE role_id={}"""
+    get_diary_role_properties_query = """SELECT 
+        change_current_homework, 
+        change_next_homework, 
+        change_standard_week,
+        change_current_week,
+        change_next_week
+    FROM Role WHERE role_id={}"""
 
     insert_new_default_role_query = """INSERT INTO Role 
     (classroom_id, role_name, kick_members, is_default_member, is_admin) VALUES(
@@ -287,19 +238,7 @@ class RoleQueries:
     update_user_customize_role_id_query = """UPDATE UserCustomize SET role_id={} WHERE user_id={}"""
 
     update_role_name_query = """UPDATE Role SET role_name='{}' WHERE role_id={}"""
-    update_change_standard_week_query = """UPDATE Role SET change_standard_week={} WHERE role_id={}"""
-    update_change_current_week_query = """UPDATE Role SET change_current_week={} WHERE role_id={}"""
-    update_change_next_week_query = """UPDATE Role SET change_next_week={} WHERE role_id={}"""
-    update_change_current_homework_query = """UPDATE Role SET change_current_homework={} WHERE role_id={}"""
-    update_change_next_homework_query = """UPDATE Role SET change_next_homework={} WHERE role_id={}"""
-    update_kick_members_query = """UPDATE Role SET kick_members={} WHERE role_id={}"""
-    update_invite_members_query = """UPDATE Role SET invite_members={} WHERE role_id={}"""
-    update_notify_query = """UPDATE Role SET notify={} WHERE role_id={}"""
-    update_change_classroom_name_query = """UPDATE Role SET change_classroom_name={} WHERE role_id={}"""
-    update_change_school_name_query = """UPDATE Role SET change_school_name={} WHERE role_id={}"""
-    update_change_classroom_access_query = """UPDATE Role SET change_classroom_access={} WHERE role_id={}"""
-    update_change_description_query = """UPDATE Role SET change_description={} WHERE role_id={}"""
-    update_change_members_limit_query = """UPDATE Role SET change_members_limit={} WHERE role_id={}"""
+    update_role_privilege_query = """UPDATE Role SET {}={} WHERE role_id={}"""
 
     delete_role_query = """DELETE FROM Role WHERE role_id={}"""
 

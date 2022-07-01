@@ -437,6 +437,15 @@ class MembersSettingsHandlers(SupportingFunctions):
         if payload is None:
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("role_settings_menu"))
 
+        elif payload["text"] == "Дневник":
+            role_id = self.role_db.get_customizing_role_id(user_id)
+            diary_role_properties_dictionary = self.role_db.get_diary_role_properties_dict(role_id)
+            color_values = self.get_diary_keyboard_color_values(diary_role_properties_dictionary)
+
+            self.send_message(user_id, "Что участник с этой ролью может делать с дневником:",
+                              KeyBoards.get_diary_privilege_keyboard(*color_values))
+            self.user_db.set_user_dialog_state(user_id, States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS.value)
+
         elif payload["text"] == "Сменить имя":
             self.send_message(user_id, "Введите новое имя роли (макс. 20 символов):", self.get_keyboard("back_menu"))
             self.user_db.set_user_dialog_state(user_id, States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS.value)
@@ -493,8 +502,66 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.role_db.update_user_customize_role_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
+    def s_diary_privilege_edit_role_members_settings_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS"""
+        if payload is None:
+            role_id = self.role_db.get_customizing_role_id(user_id)
+            diary_role_properties_dictionary = self.role_db.get_diary_role_properties_dict(role_id)
+            color_values = self.get_diary_keyboard_color_values(diary_role_properties_dictionary)
+
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻",
+                              KeyBoards.get_diary_privilege_keyboard(*color_values))
+
+        elif payload["text"] in ["Текущее дз", "Будущее дз",
+                                 "Эталонное расписание", "Текущее расписание", "Будущее расписание"]:
+            payload_meaning_dictionary = {
+                "Текущее дз": "change_current_homework",
+                "Будущее дз": "change_next_homework",
+                "Эталонное расписание": "change_standard_week",
+                "Текущее расписание": "change_current_week",
+                "Будущее расписание": "change_next_week",
+            }
+            privilege_type = payload_meaning_dictionary[payload["text"]]
+
+            role_id = self.role_db.get_customizing_role_id(user_id)
+            diary_role_properties_dictionary = self.role_db.get_diary_role_properties_dict(role_id)
+            new_value = False if diary_role_properties_dictionary[privilege_type] else True
+
+            self.role_db.update_role_privilege(role_id, new_value, privilege_type)
+            diary_role_properties_dictionary[privilege_type] = new_value
+
+            role_properties_dict = self.role_db.get_role_properties_dict(role_id)
+            role_properties_text = self.get_role_properties_text(role_properties_dict)
+            color_values = self.get_diary_keyboard_color_values(diary_role_properties_dictionary)
+
+            self.send_message(user_id, role_properties_text, KeyBoards.get_diary_privilege_keyboard(*color_values))
+
+        elif payload["text"] == "Назад":
+            role_id = self.role_db.get_customizing_role_id(user_id)
+            role_properties_dict = self.role_db.get_role_properties_dict(role_id)
+            role_properties_text = self.get_role_properties_text(role_properties_dict)
+
+            self.send_message(user_id, role_properties_text, self.get_keyboard("role_settings_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
+            self.role_db.update_user_customize_role_id(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    @staticmethod
+    def get_diary_keyboard_color_values(diary_role_properties_dictionary: dict) -> map:
+        """Returns diary_keyboard_colors"""
+        value_meaning_dict = {
+            1: "positive",
+            0: "negative"
+        }
+        return map(lambda value: value_meaning_dict[value], diary_role_properties_dictionary.values())
+
     @staticmethod
     def get_role_properties_text(role_properties_dict: dict) -> str:
+        """Returns role_properties_text"""
         value_meaning_dict = {
             1: "✅",
             0: "❌"
