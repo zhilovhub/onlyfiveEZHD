@@ -385,10 +385,33 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.role_db.update_user_customize_role_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
-    def s_choose_role_edit_role_members_settings_handler(self, user_id: int, payload: dict) -> None:
+    def s_choose_role_edit_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_EDIT_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
-            self.send_message(user_id, "sd")
+            ask_message = "Впишите номер роли, редактировать которую хотите:"
+
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = self.role_db.get_default_role_name(classroom_id)
+            all_role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
+
+            if message.isdigit():
+                role_index = int(message)
+
+                if 0 < role_index <= len(all_role_names):
+                    role_name = all_role_names[role_index - 1]
+                    role_id = self.role_db.get_role_id_by_name(classroom_id, role_name)
+                    self.role_db.update_user_customize_role_id(user_id, role_id)
+
+                    self.send_message(user_id, f"Меню настроек роли - {role_name}")
+                else:
+                    self.send_message(user_id, f"{all_role_names_text}\n\nНомер роли не может быть отрицательным числом"
+                                               f" или быть больше текущего количества ролей\n\n{ask_message}",
+                                      self.get_keyboard("back_menu"))
+            else:
+                self.send_message(user_id, f"{all_role_names_text}\n\nВведено не число\n\n{ask_message}",
+                                  self.get_keyboard("back_menu"))
 
         elif payload["text"] == "Назад":
             self.send_message(user_id, "Возвращаемся в настройки участников...", self.get_keyboard("members_settings"))
