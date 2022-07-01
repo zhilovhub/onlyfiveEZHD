@@ -75,13 +75,16 @@ class RoleCommands(DataBase):
 
             return role_names
 
-    def get_all_role_properties(self, role_id: int) -> tuple:
+    def get_role_properties_dict(self, role_id: int) -> dict:
         """Returns all role's properties"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_all_role_properties_query.format(role_id))
-            role_properties = cursor.fetchone()[3:]
+            cursor.execute(RoleQueries.show_columns_query)
+            property_names = [row[0] for row in cursor.fetchall()][2:]
 
-            return role_properties
+            cursor.execute(RoleQueries.get_all_role_properties_query.format(role_id))
+            property_values = cursor.fetchone()[2:]
+
+            return {name: value for name, value in zip(property_names, property_values)}
 
     def insert_new_role(self, classroom_id: int, role_name: str, is_default_member=False, is_admin=False) -> int:
         """Inserts new role into Role"""
@@ -201,6 +204,9 @@ class RoleQueries:
 
     delete_role_query = """DELETE FROM Role WHERE role_id={}"""
 
+    # extra queries
+    show_columns_query = """SHOW columns FROM Role"""
+
 
 if __name__ == '__main__':
     connection = connect(
@@ -211,4 +217,4 @@ if __name__ == '__main__':
     )
 
     roles_db = RoleCommands(connection)
-    print(roles_db.get_all_role_properties(7))
+    print(roles_db.get_role_properties_dict(28))
