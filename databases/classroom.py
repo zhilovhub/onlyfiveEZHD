@@ -202,7 +202,7 @@ class ClassroomQueries:
     get_classroom_access_query = """SELECT access FROM Classroom WHERE classroom_id={}"""
     get_classroom_members_limit_query = """SELECT members_limit FROM Classroom WHERE classroom_id={}"""
     get_list_of_classroom_users_query = """SELECT user_id, role_id FROM Student WHERE classroom_id={}"""
-    get_list_of_classroom_ids = """SELECT classroom_id FROM Classroom"""
+    get_list_of_classroom_ids = """SELECT classroom_id FROM Classroom WHERE created=1"""
 
     insert_classroom_query = """INSERT INTO Classroom (members_limit, created) VALUES(40, FALSE)"""
     insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, {})"""

@@ -240,7 +240,7 @@ class RoleQueries:
         role_id INT,
         FOREIGN KEY (user_id) REFERENCES User (user_id),
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE,
-        FOREIGN KEY (role_id) REFERENCES Role (role_id)
+        FOREIGN KEY (role_id) REFERENCES Role (role_id) ON DELETE SET NULL
     )"""
 
     get_customizing_role_id_query = """SELECT role_id FROM UserCustomize WHERE user_id={}"""

@@ -30,9 +30,6 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
 
         elif payload["text"] == "Создать класс":
             classroom_id = self.classroom_db.insert_new_classroom()
-            role_id = self.role_db.insert_new_role(classroom_id, "Админ", is_admin=True)
-            self.role_db.insert_new_role(classroom_id, "Участник", is_default_member=True)
-            self.classroom_db.insert_new_user_in_classroom(user_id, classroom_id, role_id)
             self.diary_homework_db.insert_classroom_id(classroom_id)
 
             self.classroom_db.update_user_customize_classroom_id(user_id, classroom_id)
@@ -141,7 +138,7 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
         else:
             self.send_message(user_id, "Ты должен находиться в меню класса, расписание которого собираешься изменить!")
 
-    def p_enter_members_settings(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
+    def p_enter_members_settings_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Handling payload with text: enter_member_settings"""
         if current_dialog_state == States.S_IN_CLASS_MYCLASSES.value:
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -153,3 +150,11 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
         else:
             self.send_message(user_id, "Ты должен находиться в меню класса, в настройки участников которого собираешься"
                                        " войти!")
+
+    def p_look_at_the_classroom_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
+        """Handling payload with text: look_at_the_classroom"""
+        if current_dialog_state in (States.S_FIND_CLASS.value, States.S_NOTHING.value):
+            self.s_nothing_handler(user_id, payload)
+
+        else:
+            self.send_message(user_id, "Закончи текущее действие или выйди в главное меню")
