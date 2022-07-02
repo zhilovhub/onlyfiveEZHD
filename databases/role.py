@@ -50,6 +50,14 @@ class RoleCommands(DataBase):
             role_id = cursor.fetchone()[0]
 
             return role_id
+
+    def get_role_id_by_user_id(self, user_id: int, classroom_id: id) -> int:
+        """Returns role's id by user_id"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(RoleQueries.get_role_id_by_user_id_query.format(user_id, classroom_id))
+            role_id = cursor.fetchone()[0]
+
+            return role_id
         
     def get_default_role_name(self, classroom_id: int) -> str:
         """Returns default role's name"""
@@ -250,6 +258,7 @@ class RoleQueries:
     get_default_role_id_query = """SELECT role_id FROM Role WHERE classroom_id={} AND is_default_member=1"""
     get_admin_role_id_query = """SELECT role_id FROM Role WHERE classroom_id={} AND is_admin=1"""
     get_role_id_by_name_query = """SELECT role_id FROM Role WHERE classroom_id={} AND role_name='{}'"""
+    get_role_id_by_user_id_query = """SELECT role_id FROM Student WHERE user_id={} AND classroom_id={}"""
     get_all_role_names_from_classroom_query = """SELECT role_name FROM Role WHERE classroom_id={}"""
     get_all_role_properties_query = """SELECT * FROM Role WHERE role_id={}"""
 
