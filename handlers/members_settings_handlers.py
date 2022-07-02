@@ -548,11 +548,10 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.role_db.update_role_privilege(role_id, new_value, privilege_type)
             diary_role_properties_dictionary[privilege_type] = new_value
 
-            role_properties_dict = self.role_db.get_role_properties_dict(role_id)
-            role_properties_text = self.get_role_properties_text(role_properties_dict)
+            diary_role_properties_text = self.get_role_properties_text(diary_role_properties_dictionary, "diary")
             color_values = self.get_edit_role_keyboard_color_values(diary_role_properties_dictionary)
 
-            self.send_message(user_id, role_properties_text, KeyBoards.get_diary_privilege_keyboard(color_values))
+            self.send_message(user_id, diary_role_properties_text, KeyBoards.get_diary_privilege_keyboard(color_values))
 
         elif payload["text"] == "Назад":
             role_id = self.role_db.get_customizing_role_id(user_id)
@@ -671,7 +670,7 @@ class MembersSettingsHandlers(SupportingFunctions):
         return list(map(lambda value: value_meaning_dict[value], role_properties_dictionary.values()))
 
     @staticmethod
-    def get_role_properties_text(role_properties_dict: dict) -> str:
+    def get_role_properties_text(role_properties_dict: dict, role_properties_type=None) -> str:
         """Returns role_properties_text"""
         value_meaning_dict = {
             1: "✅",
@@ -687,23 +686,39 @@ class MembersSettingsHandlers(SupportingFunctions):
         elif is_default_member:
             role_name += "(Дефолт)"
 
-        role_properties_text = "Роль: {}\n\n" \
-                               "Дневник:\n" \
-                               "Редактирование эталонного расписания {}\n" \
-                               "Редактирование текущего расписания {}\n" \
-                               "Редактирование будущего расписания {}\n" \
-                               "Редактирование текущего дз {}\n" \
-                               "Редактирование будущего дз {}\n\n" \
-                               "Участники:\n" \
-                               "Кикание участников {}\n" \
-                               "Приглашение в класс {}\n" \
-                               "Уведомление участников {}\n\n" \
-                               "Класс:\n" \
-                               "Изменение названия класса {}\n" \
-                               "Изменение названия школы {}\n" \
-                               "Изменение типа класса {}\n" \
-                               "Изменение описания класса {}\n" \
-                               "Изменение лимита участников {}"
+        diary_role_properties_text = "Дневник:\n" \
+                                     "Редактирование эталонного расписания {}\n" \
+                                     "Редактирование текущего расписания {}\n" \
+                                     "Редактирование будущего расписания {}\n" \
+                                     "Редактирование текущего дз {}\n" \
+                                     "Редактирование будущего дз {}\n\n"
+
+        members_role_properties_text = "Участники:\n" \
+                                       "Кикание участников {}\n" \
+                                       "Приглашение в класс {}\n" \
+                                       "Уведомление участников {}\n\n"
+
+        classroom_role_properties_text = "Класс:\n" \
+                                         "Изменение названия класса {}\n" \
+                                         "Изменение названия школы {}\n" \
+                                         "Изменение типа класса {}\n" \
+                                         "Изменение описания класса {}\n" \
+                                         "Изменение лимита участников {}"
+
+        if role_properties_type == "diary":
+            role_properties_text = f"Роль: {role_name}\n\n" \
+                                   f"{diary_role_properties_text}"
+        elif role_properties_type == "members":
+            role_properties_text = f"Роль: {role_name}\n\n" \
+                                   f"{members_role_properties_text}"
+        elif role_properties_type == "classroom":
+            role_properties_text = f"Роль: {role_name}\n\n" \
+                                   f"{classroom_role_properties_text}"
+        else:
+            role_properties_text = f"Роль: {role_name}\n\n" \
+                                   f"{diary_role_properties_text}" \
+                                   f"{members_role_properties_text}" \
+                                   f"{classroom_role_properties_text}"
 
         return role_properties_text.format(role_name,
                                            *map(lambda value: value_meaning_dict[value], role_properties_dict.values()))
