@@ -75,21 +75,34 @@ class FindClassHandlers(SupportingFunctions):
             "Закрытый": "look_classroom_close"
         }
 
-        if payload is None:
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            access = self.classroom_db.get_classroom_access(classroom_id)
+        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+        access = self.classroom_db.get_classroom_access(classroom_id)
+        keyboard_type = access_keyboard_dict[access]
 
+        if payload is None:
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻",
-                              self.get_keyboard(access_keyboard_dict[access]))
+                              self.get_keyboard(keyboard_type))
 
         elif payload["text"] == "Участники":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            access = self.classroom_db.get_classroom_access(classroom_id)
             roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
             members_text = self.get_members_text(roles_dictionary)
 
             self.send_message(user_id, f"Список участников:\n\n{members_text}",
-                              self.get_keyboard(access_keyboard_dict[access]))
+                              self.get_keyboard(keyboard_type))
+
+        elif payload["text"] == "Войти":
+            limit_members = self.classroom_db.get_classroom_members_limit(classroom_id)
+            members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
+
+            if len(members_dictionary) < limit_members:
+                default_role_id = self.role_db.get_default_role_id(classroom_id)
+                self.classroom_db.insert_new_user_in_classroom(user_id, classroom_id, default_role_id)
+
+                self.send_message(user_id, "Ты вступил!", self.get_keyboard("my_class_menu"))
+                self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
+            else:
+                self.send_message(user_id, "В классе уже максимальное количество людей!",
+                                  self.get_keyboard(keyboard_type))
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
