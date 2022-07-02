@@ -94,6 +94,27 @@ class ClassroomSettingsHandlers(SupportingFunctions):
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻",
                               self.get_keyboard("main_dangerous_zone_classroom_settings"))
 
+        elif payload["text"] == "Покинуть класс":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            admin_role_id = self.role_db.get_admin_role_id(classroom_id)
+            role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
+
+            if admin_role_id == role_id:
+                self.send_message(user_id, "Ты не можешь покинуть класс будучи админом!",
+                                  self.get_keyboard("main_dangerous_zone_classroom_settings"))
+            else:
+                access_keyboard_dict = {
+                    "Публичный": "look_classroom_public",
+                    "Заявки": "look_classroom_invite",
+                    "Закрытый": "look_classroom_close"
+                }
+                access = self.classroom_db.get_classroom_access(classroom_id)
+                keyboard_type = access_keyboard_dict[access]
+
+                self.classroom_db.delete_student(classroom_id, user_id)
+                self.send_message(user_id, "Ты покинул класс!", self.get_keyboard(keyboard_type))
+                self.user_db.set_user_dialog_state(user_id, States.S_LOOK_CLASSROOM.value)
+
         elif payload["text"] == "Удалить класс":
             self.send_message(user_id, "Ты уверен, что хочешь удалить класс?",
                               self.get_keyboard("main_dangerous_zone_delete_one_classroom_settings"))
