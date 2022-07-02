@@ -68,7 +68,7 @@ class ClassCreateHandlers(SupportingFunctions):
                 States.get_next_state_config(States.S_ENTER_CLASS_NAME_CLASSCREATE)
             self.state_transition(user_id, next_state, keyboard_type, trans_message)
 
-        elif payload["text"] in ["Публичный", "Приглашения", "Закрытый"]:
+        elif payload["text"] in ["Публичный", "Заявки", "Закрытый"]:
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             self.classroom_db.update_classroom_access(classroom_id, payload["text"])
 
