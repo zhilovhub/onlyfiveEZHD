@@ -683,9 +683,9 @@ class MembersSettingsHandlers(SupportingFunctions):
         role_name = role_properties_dict.pop("role_name")
 
         if is_admin:
-            role_name += "(Админ)"
+            role_name += " (Админ)"
         elif is_default_member:
-            role_name += "(Дефолт)"
+            role_name += " (Дефолт)"
 
         diary_role_properties_text = "Дневник:\n" \
                                      "Редактирование текущего дз {}\n" \
