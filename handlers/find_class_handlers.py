@@ -29,9 +29,6 @@ class FindClassHandlers(SupportingFunctions):
 
                 if classroom_id in existing_classroom_ids:
                     keyboard = VkKeyboard(inline=True)
-                    keyboard.add_callback_button("Посмотреть", payload={
-                        "text": "look_at_the_classroom", "classroom_id": classroom_id
-                    })
 
                     classroom_name, school_name, access, description = \
                         self.classroom_db.get_information_of_classroom(classroom_id)
@@ -40,9 +37,15 @@ class FindClassHandlers(SupportingFunctions):
 
                     for member_user_id in members_dictionary.keys():
                         if user_id == member_user_id:
+                            keyboard.add_callback_button("Войти", payload={
+                                "text": "enter_the_classroom", "classroom_id": classroom_id
+                            })
                             user_in_classroom_text = "Вы состоите в этом классе ✅"
                             break
                     else:
+                        keyboard.add_callback_button("Посмотреть", payload={
+                            "text": "look_at_the_classroom", "classroom_id": classroom_id
+                        })
                         user_in_classroom_text = "Вы не состоите в этом классе ❌"
 
                     self.send_message(user_id, f"#{classroom_id}\n"

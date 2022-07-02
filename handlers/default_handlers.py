@@ -124,7 +124,7 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
 
     def p_enter_the_classroom_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Handling payload with text: enter_the_classroom"""
-        if current_dialog_state == States.S_NOTHING.value:
+        if current_dialog_state == States.S_NOTHING.value or current_dialog_state == States.S_FIND_CLASS.value:
             self.s_nothing_handler(user_id, payload)
         else:
             self.send_message(user_id, "Закончи текущее действие или выйди в главное меню")
