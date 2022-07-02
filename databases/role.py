@@ -116,6 +116,22 @@ class RoleCommands(DataBase):
 
             return {name: value for name, value in zip(property_names, property_values)}
 
+    def get_classroom_role_properties_dict(self, role_id: int) -> dict:
+        """Returns role's classroom properties"""
+        with self.connection.cursor() as cursor:
+            property_names = [
+                "change_classroom_name",
+                "change_school_name",
+                "change_classroom_access",
+                "change_description",
+                "change_members_limit"
+            ]
+
+            cursor.execute(RoleQueries.get_classroom_role_properties_query.format(role_id))
+            property_values = cursor.fetchone()
+
+            return {name: value for name, value in zip(property_names, property_values)}
+
     def insert_new_role(self, classroom_id: int, role_name: str, is_default_member=False, is_admin=False) -> int:
         """Inserts new role into Role"""
         with self.connection.cursor() as cursor:
@@ -241,6 +257,14 @@ class RoleQueries:
         invite_members,
         notify
     FROM Role WHERE role_id={}"""
+
+    get_classroom_role_properties_query = """SELECT
+            change_classroom_name,
+            change_school_name,
+            change_classroom_access,
+            change_description,
+            change_members_limit
+        FROM Role WHERE role_id={}"""
 
     insert_new_default_role_query = """INSERT INTO Role 
     (classroom_id, role_name, kick_members, is_default_member, is_admin) VALUES(
