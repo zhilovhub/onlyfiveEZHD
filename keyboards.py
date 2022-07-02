@@ -163,9 +163,32 @@ class KeyBoards:
     KEYBOARD_MEMBERS_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_MEMBERS_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
 
+    # CUSTOMIZED CLASSROOM_PRIVILEGE KEYBOARD
+    @staticmethod
+    def get_classroom_privilege_keyboard(colors) -> VkKeyboard:
+        keyboard_classroom_privilege = VkKeyboard()
+        keyboard_classroom_privilege.add_button("Название класса", payload=KeyBoards.get_payload("Название класса"),
+                                              color=colors[0])
+        keyboard_classroom_privilege.add_line()
+        keyboard_classroom_privilege.add_button("Название школы", payload=KeyBoards.get_payload("Название школы"),
+                                                color=colors[1])
+        keyboard_classroom_privilege.add_line()
+        keyboard_classroom_privilege.add_button("Тип класса", payload=KeyBoards.get_payload("Тип класса"),
+                                                color=colors[2])
+        keyboard_classroom_privilege.add_line()
+        keyboard_classroom_privilege.add_button("Описание класса", payload=KeyBoards.get_payload("Описание класса"),
+                                                color=colors[3])
+        keyboard_classroom_privilege.add_button("Лимит участников", payload=KeyBoards.get_payload("Лимит участников"),
+                                                color=colors[4])
+        keyboard_classroom_privilege.add_line()
+        keyboard_classroom_privilege.add_button("Назад", payload=KeyBoards.get_payload("Назад"))
+        keyboard_classroom_privilege.add_button("Главное меню", payload=KeyBoards.get_payload("Главное меню"))
+
+        return keyboard_classroom_privilege.get_keyboard()
+
     # CUSTOMIZED MEMBERS_PRIVILEGE KEYBOARD
     @staticmethod
-    def get_members_privilege_keyboard(*colors) -> VkKeyboard:
+    def get_members_privilege_keyboard(colors) -> VkKeyboard:
         keyboard_members_privilege = VkKeyboard()
         keyboard_members_privilege.add_button("Кикание участников", payload=KeyBoards.get_payload("Кикание участников"),
                                               color=colors[0])
@@ -184,7 +207,7 @@ class KeyBoards:
 
     # CUSTOMIZED DIARY_PRIVILEGE KEYBOARD
     @staticmethod
-    def get_diary_privilege_keyboard(*colors) -> VkKeyboard:
+    def get_diary_privilege_keyboard(colors) -> VkKeyboard:
         keyboard_diary_privilege = VkKeyboard()
         keyboard_diary_privilege.add_button("Текущее дз", payload=KeyBoards.get_payload("Текущее дз"), color=colors[0])
         keyboard_diary_privilege.add_button("Будущее дз", payload=KeyBoards.get_payload("Будущее дз"), color=colors[1])
