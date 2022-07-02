@@ -667,7 +667,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             1: "positive",
             0: "negative"
         }
-        return list(map(lambda value: value_meaning_dict[value], role_properties_dictionary.values()))
+        return list(map(lambda value: value_meaning_dict[value], list(role_properties_dictionary.values())[:-3]))
 
     @staticmethod
     def get_role_properties_text(role_properties_dict: dict, role_properties_type=None) -> str:
@@ -676,6 +676,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             1: "✅",
             0: "❌"
         }
+        role_properties_dict = role_properties_dict.copy()
 
         is_admin = role_properties_dict.pop("is_admin")
         is_default_member = role_properties_dict.pop("is_default_member")
@@ -687,11 +688,11 @@ class MembersSettingsHandlers(SupportingFunctions):
             role_name += "(Дефолт)"
 
         diary_role_properties_text = "Дневник:\n" \
+                                     "Редактирование текущего дз {}\n" \
+                                     "Редактирование будущего дз {}\n" \
                                      "Редактирование эталонного расписания {}\n" \
                                      "Редактирование текущего расписания {}\n" \
-                                     "Редактирование будущего расписания {}\n" \
-                                     "Редактирование текущего дз {}\n" \
-                                     "Редактирование будущего дз {}\n\n"
+                                     "Редактирование будущего расписания {}\n\n" \
 
         members_role_properties_text = "Участники:\n" \
                                        "Кикание участников {}\n" \
@@ -706,16 +707,16 @@ class MembersSettingsHandlers(SupportingFunctions):
                                          "Изменение лимита участников {}"
 
         if role_properties_type == "diary":
-            role_properties_text = f"Роль: {role_name}\n\n" \
+            role_properties_text = "Роль: {}\n\n" \
                                    f"{diary_role_properties_text}"
         elif role_properties_type == "members":
-            role_properties_text = f"Роль: {role_name}\n\n" \
+            role_properties_text = "Роль: {}\n\n" \
                                    f"{members_role_properties_text}"
         elif role_properties_type == "classroom":
-            role_properties_text = f"Роль: {role_name}\n\n" \
+            role_properties_text = "Роль: {}\n\n" \
                                    f"{classroom_role_properties_text}"
         else:
-            role_properties_text = f"Роль: {role_name}\n\n" \
+            role_properties_text = "Роль: {}\n\n" \
                                    f"{diary_role_properties_text}" \
                                    f"{members_role_properties_text}" \
                                    f"{classroom_role_properties_text}"

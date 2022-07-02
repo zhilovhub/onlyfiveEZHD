@@ -94,7 +94,10 @@ class RoleCommands(DataBase):
                 "change_next_homework",
                 "change_standard_week",
                 "change_current_week",
-                "change_next_week"
+                "change_next_week",
+                "role_name",
+                "is_default_member",
+                "is_admin"
             ]
 
             cursor.execute(RoleQueries.get_diary_role_properties_query.format(role_id))
@@ -108,7 +111,10 @@ class RoleCommands(DataBase):
             property_names = [
                 "kick_members",
                 "invite_members",
-                "notify"
+                "notify",
+                "role_name",
+                "is_default_member",
+                "is_admin"
             ]
 
             cursor.execute(RoleQueries.get_members_role_properties_query.format(role_id))
@@ -124,7 +130,10 @@ class RoleCommands(DataBase):
                 "change_school_name",
                 "change_classroom_access",
                 "change_description",
-                "change_members_limit"
+                "change_members_limit",
+                "role_name",
+                "is_default_member",
+                "is_admin"
             ]
 
             cursor.execute(RoleQueries.get_classroom_role_properties_query.format(role_id))
@@ -249,22 +258,31 @@ class RoleQueries:
         change_next_homework, 
         change_standard_week,
         change_current_week,
-        change_next_week
+        change_next_week,
+        role_name,
+        is_default_member,
+        is_admin
     FROM Role WHERE role_id={}"""
 
     get_members_role_properties_query = """SELECT
         kick_members,
         invite_members,
-        notify
+        notify,
+        role_name,
+        is_default_member,
+        is_admin
     FROM Role WHERE role_id={}"""
 
     get_classroom_role_properties_query = """SELECT
-            change_classroom_name,
-            change_school_name,
-            change_classroom_access,
-            change_description,
-            change_members_limit
-        FROM Role WHERE role_id={}"""
+        change_classroom_name,
+        change_school_name,
+        change_classroom_access,
+        change_description,
+        change_members_limit,
+        role_name,
+        is_default_member,
+        is_admin
+    FROM Role WHERE role_id={}"""
 
     insert_new_default_role_query = """INSERT INTO Role 
     (classroom_id, role_name, kick_members, is_default_member, is_admin) VALUES(
