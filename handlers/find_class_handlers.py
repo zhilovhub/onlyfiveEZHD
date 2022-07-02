@@ -69,17 +69,26 @@ class FindClassHandlers(SupportingFunctions):
 
     def s_look_classroom_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_LOOK_CLASSROOM"""
-        if payload is None:
-            access_keyboard_dict = {
-                "Публичный": "look_classroom_public",
-                "Заявки": "look_classroom_invite",
-                "Закрытый": "look_classroom_close"
-            }
+        access_keyboard_dict = {
+            "Публичный": "look_classroom_public",
+            "Заявки": "look_classroom_invite",
+            "Закрытый": "look_classroom_close"
+        }
 
+        if payload is None:
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             access = self.classroom_db.get_classroom_access(classroom_id)
 
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻",
+                              self.get_keyboard(access_keyboard_dict[access]))
+
+        elif payload["text"] == "Участники":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            access = self.classroom_db.get_classroom_access(classroom_id)
+            roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+            members_text = self.get_members_text(roles_dictionary)
+
+            self.send_message(user_id, f"Список участников:\n\n{members_text}",
                               self.get_keyboard(access_keyboard_dict[access]))
 
         elif payload["text"] == "Главное меню":
