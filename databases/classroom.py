@@ -90,10 +90,18 @@ class ClassroomCommands(DataBase):
     def get_list_of_classroom_ids(self) -> list:
         """Returns list of all classroom ids"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.get_list_of_classroom_ids)
+            cursor.execute(ClassroomQueries.get_list_of_classroom_ids_query)
             classroom_ids = [row[0] for row in cursor.fetchall()]
 
             return classroom_ids
+
+    def get_request_information(self, user_id: int, classroom_id: int) -> tuple:
+        """Returns information about request"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.get_request_information_query.format(user_id, classroom_id))
+            request_information = cursor.fetchone()
+
+            return request_information
 
     def insert_new_customizer(self, user_id: int) -> None:
         """Insert customizer into UserCustomize"""
@@ -227,7 +235,8 @@ class ClassroomQueries:
     get_classroom_access_query = """SELECT access FROM Classroom WHERE classroom_id={}"""
     get_classroom_members_limit_query = """SELECT members_limit FROM Classroom WHERE classroom_id={}"""
     get_list_of_classroom_users_query = """SELECT user_id, role_id FROM Student WHERE classroom_id={}"""
-    get_list_of_classroom_ids = """SELECT classroom_id FROM Classroom WHERE created=1"""
+    get_list_of_classroom_ids_query = """SELECT classroom_id FROM Classroom WHERE created=1"""
+    get_request_information_query = """SELECT * FROM Request WHERE user_id={} AND classroom_id={}"""
 
     insert_classroom_query = """INSERT INTO Classroom (members_limit, created) VALUES(40, FALSE)"""
     insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, {})"""
