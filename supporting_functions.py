@@ -98,6 +98,9 @@ class SupportingFunctions:
         elif keyboard_type == "my_class_menu":
             return KeyBoards.KEYBOARD_MY_CLASS_MENU.get_keyboard()
 
+        elif keyboard_type == "my_class_menu2":
+            return KeyBoards.KEYBOARD_MY_CLASS_MENU2.get_keyboard()
+
         elif keyboard_type == "edit_standard_week":
             return KeyBoards.KEYBOARD_EDIT_STANDARD_WEEK.get_keyboard()
 

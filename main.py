@@ -100,6 +100,9 @@ class DiaryVkBot(Handlers):
             case States.S_IN_CLASS_MYCLASSES.value:
                 self.s_in_class_my_classes_handler(user_id, payload)
 
+            case States.S_IN_CLASS_MYCLASSES2.value:
+                self.s_in_class_my_classes2_handler(user_id, payload)
+
             case States.S_EDIT_WEEK_MYCLASSES.value:
                 self.s_edit_week_my_classes_handler(user_id, payload)
 

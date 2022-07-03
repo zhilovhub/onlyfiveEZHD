@@ -49,6 +49,15 @@ class KeyBoards:
     KEYBOARD_MY_CLASS_MENU.add_line()
     KEYBOARD_MY_CLASS_MENU.add_button(label="Главное меню", payload=get_payload("Главное меню"))
 
+    # MY_CLASS_MENU2 KEYBOARD
+    KEYBOARD_MY_CLASS_MENU2 = VkKeyboard()
+    KEYBOARD_MY_CLASS_MENU2.add_button(label="Заявки", payload=get_payload("Заявки"))
+    KEYBOARD_MY_CLASS_MENU2.add_button(label="События", payload=get_payload("События"))
+    KEYBOARD_MY_CLASS_MENU2.add_button(label="Уведомить", payload=get_payload("Уведомить"))
+    KEYBOARD_MY_CLASS_MENU2.add_line()
+    KEYBOARD_MY_CLASS_MENU2.add_button(label="⏪Назад", payload=get_payload("Назад"))
+    KEYBOARD_MY_CLASS_MENU2.add_button(label="Главное меню", payload=get_payload("Главное меню"))
+
     # EDIT_STANDARD_WEEK KEYBOARD
     KEYBOARD_EDIT_STANDARD_WEEK = VkKeyboard()
     KEYBOARD_EDIT_STANDARD_WEEK.add_button("ПН", payload=get_payload("ПН", weektype="standard"))

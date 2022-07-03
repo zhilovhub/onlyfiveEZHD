@@ -21,6 +21,10 @@ class MyClassesHandlers(SupportingFunctions):
             self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
+        elif payload["text"] == "Ещё":
+            self.send_message(user_id, "Другое меню класса", self.get_keyboard("my_class_menu2"))
+            self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES2.value)
+
         elif payload["text"] == "Настройки":
             self.send_message(user_id, "Настройки класса\n\nКоличество настроек зависит от твоей роли в этом классе!",
                               self.get_keyboard("classroom_settings"))
@@ -86,6 +90,20 @@ class MyClassesHandlers(SupportingFunctions):
                                        "Здесь можно создавать и настраивать роли, удалять и приглашать участников!",
                               self.get_keyboard("members_settings"))
             self.user_db.set_user_dialog_state(user_id, States.S_MEMBERS_SETTINGS.value)
+
+    def s_in_class_my_classes2_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_IN_CLASS_MYCLASSES2"""
+        if payload is None:
+            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("my_class_menu2"))
+
+        elif payload["text"] == "Назад":
+            self.send_message(user_id, "Назад...", self.get_keyboard("my_class_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_edit_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_WEEK_MYCLASSES"""
