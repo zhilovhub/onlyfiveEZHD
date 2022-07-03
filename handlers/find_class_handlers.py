@@ -103,8 +103,12 @@ class FindClassHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_REQUEST_CLASSROOM.value)
 
         elif payload["text"] == "Редактировать заявку":
-            self.send_message(user_id,  "Напиши что-нибудь новое в заявке (макс. 50 символов)",
+            request_information = self.classroom_db.get_request_information(user_id, classroom_id)
+
+            self.send_message(user_id,  f"Твоя заявка:\n\n{request_information[3]}\n{request_information[2]}\n\n"
+                                        "Напиши что-нибудь новое в заявке (макс. 50 символов)",
                               self.get_keyboard("back_menu_delete_request"))
+            self.user_db.set_user_dialog_state(user_id, States.S_EDIT_REQUEST_CLASSROOM.value)
 
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
@@ -117,8 +121,6 @@ class FindClassHandlers(SupportingFunctions):
 
         if payload is None:
             if len(message) <= 50:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-
                 self.classroom_db.insert_new_request(user_id, classroom_id, message)
                 keyboard_type = self.get_keyboard_type(user_id, classroom_id)
 
@@ -133,7 +135,51 @@ class FindClassHandlers(SupportingFunctions):
 
             classroom_name, school_name, access, description = \
                 self.classroom_db.get_information_of_classroom(classroom_id)
-            self.classroom_db.update_user_customize_classroom_id(user_id, classroom_id)
+
+            members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
+            members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
+
+            self.send_message(user_id, f"Ты осматриваешь класс {classroom_name}\n\n#{classroom_id}\n"
+                                       f"Школа: {school_name}\n"
+                                       f"Описание: {description}\n"
+                                       f"Тип класса: {access}\n"
+                                       f"Участники: {len(members_dictionary)}/{members_limit}",
+                              self.get_keyboard(keyboard_type))
+            self.user_db.set_user_dialog_state(user_id, States.S_LOOK_CLASSROOM.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def s_edit_request_classroom_handler(self, user_id: int, message: str, payload: dict) -> None:
+        """Handling States.S_EDIT_REQUEST_CLASSROOM"""
+        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+
+        if payload is None:
+            if len(message) <= 50:
+
+                self.classroom_db.update_request(user_id, classroom_id, message)
+                keyboard_type = self.get_keyboard_type(user_id, classroom_id)
+
+                self.send_message(user_id, "Заявка обновлена!", self.get_keyboard(keyboard_type))
+                self.user_db.set_user_dialog_state(user_id, States.S_LOOK_CLASSROOM.value)
+            else:
+                self.send_message(user_id, "Длина текста превышает 50 символов! Напиши что-нибудь другое",
+                                  self.get_keyboard("back_menu_delete_request"))
+
+        elif payload["text"] == "Удалить заявку":
+            self.classroom_db.delete_request(user_id, classroom_id)
+            keyboard_type = self.get_keyboard_type(user_id, classroom_id)
+
+            self.send_message(user_id, "Заявка удалена!", self.get_keyboard(keyboard_type))
+            self.user_db.set_user_dialog_state(user_id, States.S_LOOK_CLASSROOM.value)
+
+        elif payload["text"] == "Назад":
+            keyboard_type = self.get_keyboard_type(user_id, classroom_id)
+
+            classroom_name, school_name, access, description = \
+                self.classroom_db.get_information_of_classroom(classroom_id)
 
             members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
             members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)

@@ -174,7 +174,8 @@ class KeyBoards:
 
     # BACK_MENU_DELETE_REQUEST
     KEYBOARD_BACK_MENU_DELETE_REQUEST = VkKeyboard()
-    KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Удалить заявку", payload=get_payload("Удалить заявку"))
+    KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Удалить заявку", payload=get_payload("Удалить заявку"),
+                                                 color="negative")
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_line()
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Главное меню", payload=get_payload("Главное меню"))

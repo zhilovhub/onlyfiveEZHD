@@ -183,6 +183,13 @@ class ClassroomCommands(DataBase):
             cursor.execute(ClassroomQueries.update_user_customize_classroom_id_query.format(classroom_id, user_id))
             self.connection.commit()
 
+    def update_request(self, user_id: int, classroom_id: int, new_request_text: str) -> None:
+        """Updates request"""
+        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.update_request_query.format(new_request_text, current_datetime,
+                                                                        user_id, classroom_id))
+
     def delete_classroom(self, classroom_id: int) -> None:
         """Delete classroom and its owner from Student"""
         with self.connection.cursor() as cursor:
@@ -251,6 +258,9 @@ class ClassroomQueries:
     update_user_role_id_query = """UPDATE Student SET role_id={} WHERE user_id={}"""
     update_user_customize_classroom_id_query = """UPDATE UserCustomize SET classroom_id={} WHERE user_id={}"""
     update_classroom_created_query = """UPDATE Classroom SET created={} WHERE classroom_id={}"""
+    update_request_query = """UPDATE 
+        Request SET request_text='{}', datetime='{}' 
+    WHERE user_id={} AND classroom_id={}"""
 
     delete_user_from_classroom_query = """DELETE FROM Student WHERE user_id={} AND classroom_id={}"""
     delete_classroom_query = """DELETE FROM classroom WHERE classroom_id={}"""

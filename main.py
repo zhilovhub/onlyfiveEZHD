@@ -125,6 +125,9 @@ class DiaryVkBot(Handlers):
             case States.S_REQUEST_CLASSROOM.value:
                 self.s_request_classroom_handler(user_id, message, payload)
 
+            case States.S_EDIT_REQUEST_CLASSROOM.value:
+                self.s_edit_request_classroom_handler(user_id, message, payload)
+
             # CLASSROOMSETTINGS
             case States.S_CLASSROOM_SETTINGS.value:
                 self.s_classroom_settings_handler(user_id, payload)
