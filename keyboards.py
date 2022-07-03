@@ -172,6 +172,13 @@ class KeyBoards:
     KEYBOARD_MEMBERS_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_MEMBERS_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
 
+    # BACK_MENU_DELETE_REQUEST
+    KEYBOARD_BACK_MENU_DELETE_REQUEST = VkKeyboard()
+    KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Удалить заявку", payload=get_payload("Удалить заявку"))
+    KEYBOARD_BACK_MENU_DELETE_REQUEST.add_line()
+    KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Назад", payload=get_payload("Назад"))
+    KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Главное меню", payload=get_payload("Главное меню"))
+
     # CUSTOMIZED CLASSROOM_PRIVILEGE KEYBOARD
     @staticmethod
     def get_classroom_privilege_keyboard(colors) -> VkKeyboard:
@@ -246,6 +253,10 @@ class KeyBoards:
             keyboard_look_classroom_menu.add_line()
         elif classroom_type == "invite":
             keyboard_look_classroom_menu.add_button("Подать заявку", payload=KeyBoards.get_payload("Подать заявку"))
+            keyboard_look_classroom_menu.add_line()
+        elif classroom_type == "look_request":
+            keyboard_look_classroom_menu.add_button("Редактировать заявку",
+                                                    payload=KeyBoards.get_payload("Редактировать заявку"))
             keyboard_look_classroom_menu.add_line()
 
         keyboard_look_classroom_menu.add_button("Участники", payload=KeyBoards.get_payload("Участники"))

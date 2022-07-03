@@ -69,15 +69,8 @@ class FindClassHandlers(SupportingFunctions):
 
     def s_look_classroom_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_LOOK_CLASSROOM"""
-        access_keyboard_dict = {
-            "Публичный": "look_classroom_public",
-            "Заявки": "look_classroom_invite",
-            "Закрытый": "look_classroom_close"
-        }
-
         classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-        access = self.classroom_db.get_classroom_access(classroom_id)
-        keyboard_type = access_keyboard_dict[access]
+        keyboard_type = self.get_keyboard_type(user_id, classroom_id)
 
         if payload is None:
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻",
@@ -104,7 +97,72 @@ class FindClassHandlers(SupportingFunctions):
                 self.send_message(user_id, "В классе уже максимальное количество людей!",
                                   self.get_keyboard(keyboard_type))
 
+        elif payload["text"] == "Подать заявку":
+            self.send_message(user_id, "Напишите что-нибудь в заявке (макс. 50 символов)",
+                              self.get_keyboard("back_menu"))
+            self.user_db.set_user_dialog_state(user_id, States.S_REQUEST_CLASSROOM.value)
+
+        elif payload["text"] == "Редактировать заявку":
+            self.send_message(user_id,  "Напиши что-нибудь новое в заявке (макс. 50 символов)",
+                              self.get_keyboard("back_menu_delete_request"))
+
         elif payload["text"] == "Главное меню":
             self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
             self.classroom_db.update_user_customize_classroom_id(user_id, "null")
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def s_request_classroom_handler(self, user_id: int, message: str, payload: dict) -> None:
+        """Handling States.S_REQUEST_CLASSROOM"""
+        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+
+        if payload is None:
+            if len(message) <= 50:
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+
+                self.classroom_db.insert_new_request(user_id, classroom_id, message)
+                keyboard_type = self.get_keyboard_type(user_id, classroom_id)
+
+                self.send_message(user_id, "Заявка отправлена!", self.get_keyboard(keyboard_type))
+                self.user_db.set_user_dialog_state(user_id, States.S_LOOK_CLASSROOM.value)
+            else:
+                self.send_message(user_id, "Длина текста превышает 50 символов! Напиши что-нибудь другое",
+                                  self.get_keyboard("back_menu"))
+
+        elif payload["text"] == "Назад":
+            keyboard_type = self.get_keyboard_type(user_id, classroom_id)
+
+            classroom_name, school_name, access, description = \
+                self.classroom_db.get_information_of_classroom(classroom_id)
+            self.classroom_db.update_user_customize_classroom_id(user_id, classroom_id)
+
+            members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
+            members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
+
+            self.send_message(user_id, f"Ты осматриваешь класс {classroom_name}\n\n#{classroom_id}\n"
+                                       f"Школа: {school_name}\n"
+                                       f"Описание: {description}\n"
+                                       f"Тип класса: {access}\n"
+                                       f"Участники: {len(members_dictionary)}/{members_limit}",
+                              self.get_keyboard(keyboard_type))
+            self.user_db.set_user_dialog_state(user_id, States.S_LOOK_CLASSROOM.value)
+
+        elif payload["text"] == "Главное меню":
+            self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
+            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
+            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+
+    def get_keyboard_type(self, user_id: int, classroom_id: int) -> str:
+        """Returns keyboard's type"""
+        request_information = self.classroom_db.get_request_information(user_id, classroom_id)
+
+        if request_information:
+            return "look_classroom_request"
+        else:
+            access_keyboard_dict = {
+                "Публичный": "look_classroom_public",
+                "Заявки": "look_classroom_invite",
+                "Закрытый": "look_classroom_close"
+            }
+
+            access = self.classroom_db.get_classroom_access(classroom_id)
+            return access_keyboard_dict[access]

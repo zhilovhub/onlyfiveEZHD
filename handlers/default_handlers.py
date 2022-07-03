@@ -121,18 +121,24 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
                 self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
 
             elif payload["text"] == "look_at_the_classroom":
-                access_keyboard_dict = {
-                    "Публичный": "look_classroom_public",
-                    "Заявки": "look_classroom_invite",
-                    "Закрытый": "look_classroom_close"
-                }
+                request_information = self.classroom_db.get_request_information(user_id, classroom_id)
+
+                if request_information:
+                    keyboard_type = "look_classroom_request"
+                else:
+                    access_keyboard_dict = {
+                        "Публичный": "look_classroom_public",
+                        "Заявки": "look_classroom_invite",
+                        "Закрытый": "look_classroom_close"
+                    }
+                    keyboard_type = access_keyboard_dict[access]
 
                 self.send_message(user_id, f"Ты осматриваешь класс {classroom_name}\n\n#{classroom_id}\n"
                                            f"Школа: {school_name}\n"
                                            f"Описание: {description}\n"
                                            f"Тип класса: {access}\n"
                                            f"Участники: {len(members_dictionary)}/{members_limit}",
-                                  self.get_keyboard(access_keyboard_dict[access]))
+                                  self.get_keyboard(keyboard_type))
                 self.user_db.set_user_dialog_state(user_id, States.S_LOOK_CLASSROOM.value)
 
     def p_enter_the_classroom_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
