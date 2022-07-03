@@ -45,7 +45,7 @@ class KeyBoards:
     KEYBOARD_MY_CLASS_MENU.add_line()
     KEYBOARD_MY_CLASS_MENU.add_button(label="Участники", payload=get_payload("Участники"))
     KEYBOARD_MY_CLASS_MENU.add_button(label="Настройки", payload=get_payload("Настройки"))
-    KEYBOARD_MY_CLASS_MENU.add_button(label="Доп. инфа", payload=get_payload("Доп. инфа"))
+    KEYBOARD_MY_CLASS_MENU.add_button(label="⚙Ещё", payload=get_payload("Ещё"))
     KEYBOARD_MY_CLASS_MENU.add_line()
     KEYBOARD_MY_CLASS_MENU.add_button(label="Главное меню", payload=get_payload("Главное меню"))
 
