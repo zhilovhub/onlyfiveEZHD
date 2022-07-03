@@ -9,6 +9,7 @@ class ClassroomCommands(DataBase):
         try:
             with self.connection.cursor() as cursor:
                 cursor.execute(ClassroomQueries.create_table_classroom_query)
+                cursor.execute(ClassroomQueries.create_table_request_query)
 
         except Error as e:
             print(e)
@@ -118,6 +119,14 @@ class ClassroomCommands(DataBase):
 
         return classroom_id
 
+    def insert_new_request(self, user_id: int, classroom_id: int, request_text: str) -> None:
+        """Inserts new request"""
+        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.insert_request_query.format(user_id, classroom_id, request_text,
+                                                                        current_datetime))
+            self.connection.commit()
+
     def update_classroom_name(self, classroom_id: int, new_classroom_name: str) -> None:
         """Set name to the classroom"""
         with self.connection.cursor() as cursor:
@@ -178,6 +187,12 @@ class ClassroomCommands(DataBase):
             cursor.execute(ClassroomQueries.delete_user_from_classroom_query.format(user_id, classroom_id))
             self.connection.commit()
 
+    def delete_request(self, user_id: int, classroom_id: int) -> None:
+        """Deletes request from Request"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.delete_request_query.format(user_id, classroom_id))
+            self.connection.commit()
+
 
 class ClassroomQueries:
     create_table_classroom_query = """CREATE TABLE IF NOT EXISTS Classroom(
@@ -189,6 +204,16 @@ class ClassroomQueries:
             members_limit INT,
             created BOOLEAN
         )"""
+
+    create_table_request_query = """CREATE TABLE IF NOT EXISTS Request(
+        user_id INT,
+        classroom_id INT,
+        request_text TEXT,
+        datetime DATETIME,
+        
+        FOREIGN KEY (user_id) REFERENCES User (user_id),
+        FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE
+    )"""
 
     get_customizing_classroom_id_query = """SELECT classroom_id FROM UserCustomize WHERE user_id={}"""
     get_information_for_creating_query = """SELECT 
@@ -207,6 +232,7 @@ class ClassroomQueries:
     insert_classroom_query = """INSERT INTO Classroom (members_limit, created) VALUES(40, FALSE)"""
     insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, {})"""
     insert_new_customizer_query = """INSERT INTO UserCustomize VALUES({}, null, null)"""
+    insert_request_query = """INSERT INTO Request VALUES({}, {}, '{}', '{}')"""
 
     update_classroom_name_query = """UPDATE Classroom SET classroom_name="{}" WHERE classroom_id={}"""
     update_school_name_query = """UPDATE Classroom SET school_name="{}" WHERE classroom_id={}"""
@@ -219,6 +245,7 @@ class ClassroomQueries:
 
     delete_user_from_classroom_query = """DELETE FROM Student WHERE user_id={} AND classroom_id={}"""
     delete_classroom_query = """DELETE FROM classroom WHERE classroom_id={}"""
+    delete_request_query = """DELETE FROM Request WHERE user_id={} AND classroom_id={}"""
 
 
 if __name__ == "__main__":
