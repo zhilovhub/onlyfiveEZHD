@@ -48,6 +48,7 @@ class KeyBoards:
     KEYBOARD_MY_CLASS_MENU.add_button(label="⏩Ещё", payload=get_payload("Ещё"))
     KEYBOARD_MY_CLASS_MENU.add_line()
     KEYBOARD_MY_CLASS_MENU.add_button(label="Главное меню", payload=get_payload("Главное меню"))
+    # ‼ - FOR NOTIFICATIONS
 
     # MY_CLASS_MENU2 KEYBOARD
     KEYBOARD_MY_CLASS_MENU2 = VkKeyboard()

@@ -98,9 +98,14 @@ class FindClassHandlers(SupportingFunctions):
                                   self.get_keyboard(keyboard_type))
 
         elif payload["text"] == "Подать заявку":
-            self.send_message(user_id, "Напишите что-нибудь в заявке (макс. 50 символов)",
-                              self.get_keyboard("back_menu"))
-            self.user_db.set_user_dialog_state(user_id, States.S_REQUEST_CLASSROOM.value)
+            request_information_list = self.classroom_db.get_list_of_request_information(classroom_id)
+
+            if len(request_information_list) < 10:
+                self.send_message(user_id, "Напишите что-нибудь в заявке (макс. 50 символов)",
+                                  self.get_keyboard("back_menu"))
+                self.user_db.set_user_dialog_state(user_id, States.S_REQUEST_CLASSROOM.value)
+            else:
+                self.send_message(user_id, "Почта админа уже переполнена!", self.get_keyboard(keyboard_type))
 
         elif payload["text"] == "Редактировать заявку":
             request_information = self.classroom_db.get_request_information(user_id, classroom_id)

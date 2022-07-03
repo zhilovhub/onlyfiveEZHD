@@ -103,6 +103,13 @@ class ClassroomCommands(DataBase):
 
             return request_information
 
+    def get_list_of_request_information(self, classroom_id: int) -> tuple:
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.get_list_of_request_information_query.format(classroom_id))
+            request_information_list = cursor.fetchall()
+
+            return request_information_list
+
     def insert_new_customizer(self, user_id: int) -> None:
         """Insert customizer into UserCustomize"""
         try:
@@ -244,6 +251,7 @@ class ClassroomQueries:
     get_list_of_classroom_users_query = """SELECT user_id, role_id FROM Student WHERE classroom_id={}"""
     get_list_of_classroom_ids_query = """SELECT classroom_id FROM Classroom WHERE created=1"""
     get_request_information_query = """SELECT * FROM Request WHERE user_id={} AND classroom_id={}"""
+    get_list_of_request_information_query = """SELECT * FROM Request WHERE classroom_id={}"""
 
     insert_classroom_query = """INSERT INTO Classroom (members_limit, created) VALUES(40, FALSE)"""
     insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, {})"""
