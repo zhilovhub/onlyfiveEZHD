@@ -99,11 +99,11 @@ class SupportingFunctions:
 
             case States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES:
                 self.send_message(user_id, message,
-                                  KeyBoards.get_edit_weekday_keyboard(**kwargs))
+                                  KeyBoards.get_edit_weekday_keyboard(add_button_color="positive"))
 
             case States.S_EDIT_LESSON_WEEKDAY_MYCLASSES:
                 self.send_message(user_id, message,
-                                  KeyBoards.get_edit_weekday_keyboard(**kwargs))
+                                  KeyBoards.get_edit_weekday_keyboard(redact_button_color="positive"))
 
             # FINDCLASS
             case States.S_FIND_CLASS:

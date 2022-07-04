@@ -135,7 +135,7 @@ class KeyBoards:
 
     # CUSTOMIZED EDIT_WEEK KEYBOARD
     @staticmethod
-    def get_edit_week_keyboard(is_standard_week: bool):
+    def get_edit_week_keyboard(week_type: str):
         keyboard_edit_week = VkKeyboard()
         keyboard_edit_week.add_button("ПН", payload=KeyBoards.get_payload("ПН"))
         keyboard_edit_week.add_button("ВТ", payload=KeyBoards.get_payload("ВТ"))
@@ -146,7 +146,7 @@ class KeyBoards:
         keyboard_edit_week.add_button("СБ", payload=KeyBoards.get_payload("СБ"))
         keyboard_edit_week.add_button("ВС", payload=KeyBoards.get_payload("ВС"))
         keyboard_edit_week.add_line()
-        if not is_standard_week:
+        if week_type in ("current", "next"):
             keyboard_edit_week.add_button("Скопировать с эталонного",
                                           payload=KeyBoards.get_payload("Скопировать с эталонного"))
             keyboard_edit_week.add_line()
