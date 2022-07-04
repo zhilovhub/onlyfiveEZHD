@@ -64,8 +64,7 @@ class FindClassHandlers(SupportingFunctions):
                 self.state_transition(user_id, States.S_FIND_CLASS, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_look_classroom_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_LOOK_CLASSROOM"""
@@ -116,9 +115,7 @@ class FindClassHandlers(SupportingFunctions):
             self.state_transition(user_id, States.S_EDIT_REQUEST_CLASSROOM, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_request_classroom_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_REQUEST_CLASSROOM"""
@@ -150,9 +147,7 @@ class FindClassHandlers(SupportingFunctions):
             self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_edit_request_classroom_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_EDIT_REQUEST_CLASSROOM"""
@@ -190,9 +185,7 @@ class FindClassHandlers(SupportingFunctions):
             self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def get_keyboard_kwargs(self, user_id: int, classroom_id: int) -> str:
         """Returns keyboard's kwargs"""

@@ -16,9 +16,7 @@ class MyClassesHandlers(SupportingFunctions):
             self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("my_class_menu"))
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
         elif payload["text"] == "Ещё":
             self.send_message(user_id, "Другое меню класса", self.get_keyboard("my_class_menu2"))
@@ -100,9 +98,7 @@ class MyClassesHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню...", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_edit_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_WEEK_MYCLASSES"""
@@ -153,10 +149,8 @@ class MyClassesHandlers(SupportingFunctions):
                               self.get_keyboard(f"edit_{week_type}_week"))
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
         elif payload["text"] == "Назад":
             self.send_message(user_id, "Возвращаемся в меню класса", self.get_keyboard("my_class_menu"))
@@ -256,10 +250,8 @@ class MyClassesHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_EDIT_WEEK_MYCLASSES.value)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
         elif payload["text"] == "Отменить":
             week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)

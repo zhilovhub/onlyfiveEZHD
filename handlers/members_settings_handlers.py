@@ -92,9 +92,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_add_role_enter_name_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
         """Handling States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS"""
@@ -124,9 +122,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_delete_role_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
         """Handling States.S_DELETE_ROLE_MEMBERS_SETTINGS"""
@@ -167,9 +163,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_delete_member_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_DELETE_MEMBER_MEMBERS_SETTINGS"""
@@ -221,9 +215,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_choose_role_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
         """Handling States.S_CHOOSE_ROLE_MEMBERS_SETTINGS"""
@@ -272,9 +264,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_choose_admin_role_confirmation_members_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_CHOOSE_ADMIN_ROLE_CONFIRMATION_MEMBERS_SETTINGS"""
@@ -306,10 +296,7 @@ class MembersSettingsHandlers(SupportingFunctions):
                                                States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.role_db.update_user_customize_role_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_choose_member_change_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS"""
@@ -385,10 +372,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.role_db.update_user_customize_role_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_choose_role_edit_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS"""
@@ -427,9 +411,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_edit_role_members_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_ROLE_MEMBERS_SETTINGS"""
@@ -481,10 +463,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.role_db.update_user_customize_role_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_enter_name_edit_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS"""
@@ -514,10 +493,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.role_db.update_user_customize_role_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_diary_privilege_edit_role_members_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS"""
@@ -561,10 +537,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.role_db.update_user_customize_role_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_members_privilege_edit_role_members_settings(self, user_id: int, payload: dict) -> None:
         """Handling States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS"""
@@ -606,10 +579,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.role_db.update_user_customize_role_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     def s_classroom_privilege_edit_role_members_settings(self, user_id: int, payload: dict) -> None:
         """Handling States.S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS"""
@@ -654,10 +624,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS.value)
 
         elif payload["text"] == "Главное меню":
-            self.send_message(user_id, "Возвращение в главное меню", self.get_keyboard("menu"))
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-            self.role_db.update_user_customize_role_id(user_id, "null")
-            self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
+            self.trans_to_main_menu(user_id)
 
     @staticmethod
     def get_edit_role_keyboard_color_values(role_properties_dictionary: dict) -> list:

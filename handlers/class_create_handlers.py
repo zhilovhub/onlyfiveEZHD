@@ -126,6 +126,4 @@ class ClassCreateHandlers(SupportingFunctions):
         """Set state to States.S_NOTHING"""
         classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
         self.classroom_db.delete_classroom(classroom_id)
-
-        trans_message = "Возвращение в главное меню"
-        self.state_transition(user_id, States.S_NOTHING, trans_message)
+        self.trans_to_main_menu(user_id)

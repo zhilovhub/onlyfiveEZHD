@@ -223,6 +223,13 @@ class SupportingFunctions:
 
         self.user_db.set_user_dialog_state(user_id, next_state.value)
 
+    def trans_to_main_menu(self, user_id: int) -> None:
+        """Change user's state into S_NOTHING"""
+        trans_message = "Возвращение в главное меню"
+        self.classroom_db.update_user_customize_classroom_id(user_id, "null")
+        self.role_db.update_user_customize_role_id(user_id, "null")
+        self.state_transition(user_id, States.S_NOTHING, trans_message)
+
     @staticmethod
     def get_keyboard(keyboard_type: str) -> VkKeyboard:
         """Get the keyboard"""
