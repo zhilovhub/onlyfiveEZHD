@@ -247,7 +247,7 @@ class KeyBoards:
 
     # CUSTOMIZED LOOK_CLASSROOM KEYBOARD
     @staticmethod
-    def get_look_classroom_keyboard(classroom_type="close") -> VkKeyboard:
+    def get_look_classroom_keyboard(classroom_type) -> VkKeyboard:
         keyboard_look_classroom_menu = VkKeyboard()
 
         if classroom_type == "public":
