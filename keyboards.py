@@ -42,37 +42,6 @@ class KeyBoards:
     KEYBOARD_MY_CLASS_MENU2.add_button(label="⏪Назад", payload=get_payload("Назад"))
     KEYBOARD_MY_CLASS_MENU2.add_button(label="Главное меню", payload=get_payload("Главное меню"))
 
-    # EDIT_STANDARD_WEEK KEYBOARD
-    KEYBOARD_EDIT_STANDARD_WEEK = VkKeyboard()
-    KEYBOARD_EDIT_STANDARD_WEEK.add_button("ПН", payload=get_payload("ПН", weektype="standard"))
-    KEYBOARD_EDIT_STANDARD_WEEK.add_button("ВТ", payload=get_payload("ВТ", weektype="standard"))
-    KEYBOARD_EDIT_STANDARD_WEEK.add_button("СР", payload=get_payload("СР", weektype="standard"))
-    KEYBOARD_EDIT_STANDARD_WEEK.add_button("ЧТ", payload=get_payload("ЧТ", weektype="standard"))
-    KEYBOARD_EDIT_STANDARD_WEEK.add_button("ПТ", payload=get_payload("ПТ", weektype="standard"))
-    KEYBOARD_EDIT_STANDARD_WEEK.add_line()
-    KEYBOARD_EDIT_STANDARD_WEEK.add_button("СБ", payload=get_payload("СБ", weektype="standard"))
-    KEYBOARD_EDIT_STANDARD_WEEK.add_button("ВС", payload=get_payload("ВС", weektype="standard"))
-    KEYBOARD_EDIT_STANDARD_WEEK.add_line()
-    KEYBOARD_EDIT_STANDARD_WEEK.add_button("Назад", payload=get_payload("Назад"))
-    KEYBOARD_EDIT_STANDARD_WEEK.add_button("Главное меню", payload=get_payload("Главное меню"))
-
-    # EDIT_CURRENT_NEXT_WEEK KEYBOARD
-    KEYBOARD_EDIT_CURRENT_NEXT_WEEK = VkKeyboard()
-    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("ПН", payload=get_payload("ПН"))
-    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("ВТ", payload=get_payload("ВТ"))
-    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("СР", payload=get_payload("СР"))
-    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("ЧТ", payload=get_payload("ЧТ"))
-    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("ПТ", payload=get_payload("ПТ"))
-    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_line()
-    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("СБ", payload=get_payload("СБ"))
-    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("ВС", payload=get_payload("ВС"))
-    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_line()
-    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("Скопировать с эталонного",
-                                               payload=get_payload("Скопировать с эталонного"))
-    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_line()
-    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("Назад", payload=get_payload("Назад"))
-    KEYBOARD_EDIT_CURRENT_NEXT_WEEK.add_button("Главное меню", payload=get_payload("Главное меню"))
-
     # CANCEL_SEND KEYBOARD
     KEYBOARD_CANCEL_SEND = VkKeyboard()
     KEYBOARD_CANCEL_SEND.add_button(label="Отменить", payload=get_payload("Отменить"))
@@ -164,6 +133,28 @@ class KeyBoards:
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Главное меню", payload=get_payload("Главное меню"))
 
+    # CUSTOMIZED EDIT_WEEK KEYBOARD
+    @staticmethod
+    def get_edit_week_keyboard(is_standard_week: bool):
+        keyboard_edit_week = VkKeyboard()
+        keyboard_edit_week.add_button("ПН", payload=KeyBoards.get_payload("ПН"))
+        keyboard_edit_week.add_button("ВТ", payload=KeyBoards.get_payload("ВТ"))
+        keyboard_edit_week.add_button("СР", payload=KeyBoards.get_payload("СР"))
+        keyboard_edit_week.add_button("ЧТ", payload=KeyBoards.get_payload("ЧТ"))
+        keyboard_edit_week.add_button("ПТ", payload=KeyBoards.get_payload("ПТ"))
+        keyboard_edit_week.add_line()
+        keyboard_edit_week.add_button("СБ", payload=KeyBoards.get_payload("СБ"))
+        keyboard_edit_week.add_button("ВС", payload=KeyBoards.get_payload("ВС"))
+        keyboard_edit_week.add_line()
+        if not is_standard_week:
+            keyboard_edit_week.add_button("Скопировать с эталонного",
+                                          payload=KeyBoards.get_payload("Скопировать с эталонного"))
+            keyboard_edit_week.add_line()
+        keyboard_edit_week.add_button("Назад", payload=KeyBoards.get_payload("Назад"))
+        keyboard_edit_week.add_button("Главное меню", payload=KeyBoards.get_payload("Главное меню"))
+
+        return keyboard_edit_week.get_keyboard()
+
     # CUSTOMIZED MY_CLASS_MENU KEYBOARD
     @staticmethod
     def get_my_class_menu_keyboard(sign: bool):
@@ -171,10 +162,13 @@ class KeyBoards:
         keyboard_my_class_menu.add_button(label="Дз текущее", payload=KeyBoards.get_payload("Дз текущее"))
         keyboard_my_class_menu.add_button(label="Дз будущее", payload=KeyBoards.get_payload("Дз будущее"))
         keyboard_my_class_menu.add_line()
-        keyboard_my_class_menu.add_button(label="Расписание текущее", payload=KeyBoards.get_payload("Расписание текущее"))
-        keyboard_my_class_menu.add_button(label="Расписание будущее", payload=KeyBoards.get_payload("Расписание будущее"))
+        keyboard_my_class_menu.add_button(label="Расписание текущее",
+                                          payload=KeyBoards.get_payload("Расписание текущее"))
+        keyboard_my_class_menu.add_button(label="Расписание будущее",
+                                          payload=KeyBoards.get_payload("Расписание будущее"))
         keyboard_my_class_menu.add_line()
-        keyboard_my_class_menu.add_button(label="Расписание эталонное", payload=KeyBoards.get_payload("Расписание эталонное"))
+        keyboard_my_class_menu.add_button(label="Расписание эталонное",
+                                          payload=KeyBoards.get_payload("Расписание эталонное"))
         keyboard_my_class_menu.add_line()
         keyboard_my_class_menu.add_button(label="Участники", payload=KeyBoards.get_payload("Участники"))
         keyboard_my_class_menu.add_button(label="Настройки", payload=KeyBoards.get_payload("Настройки"))
@@ -186,7 +180,6 @@ class KeyBoards:
         keyboard_my_class_menu.add_button(label="Главное меню", payload=KeyBoards.get_payload("Главное меню"))
 
         return keyboard_my_class_menu.get_keyboard()
-
 
     # CUSTOMIZED CLASSROOM_PRIVILEGE KEYBOARD
     @staticmethod

@@ -391,7 +391,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.user_db.set_user_dialog_state(user_id, States.S_NOTHING.value)
 
     def s_choose_role_edit_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
-        """Handling States.S_EDIT_ROLE_MEMBERS_SETTINGS"""
+        """Handling States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
             ask_message = "Впишите номер роли, редактировать которую хотите:"
 
