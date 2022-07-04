@@ -96,7 +96,10 @@ class SupportingFunctions:
             return KeyBoards.KEYBOARD_CANCEL_SEND.get_keyboard()
 
         elif keyboard_type == "my_class_menu":
-            return KeyBoards.KEYBOARD_MY_CLASS_MENU.get_keyboard()
+            return KeyBoards.get_my_class_menu_keyboard(sign=False)
+
+        elif keyboard_type == "my_class_menu_sign":
+            return KeyBoards.get_my_class_menu_keyboard(sign=True)
 
         elif keyboard_type == "my_class_menu2":
             return KeyBoards.KEYBOARD_MY_CLASS_MENU2.get_keyboard()

@@ -33,23 +33,6 @@ class KeyBoards:
     KEYBOARD_SUBMIT_BACK.add_line()
     KEYBOARD_SUBMIT_BACK.add_button(label="Главное меню", payload=get_payload("Главное меню"))
 
-    # MY_CLASS_MENU KEYBOARD
-    KEYBOARD_MY_CLASS_MENU = VkKeyboard()
-    KEYBOARD_MY_CLASS_MENU.add_button(label="Дз текущее", payload=get_payload("Дз текущее"))
-    KEYBOARD_MY_CLASS_MENU.add_button(label="Дз будущее", payload=get_payload("Дз будущее"))
-    KEYBOARD_MY_CLASS_MENU.add_line()
-    KEYBOARD_MY_CLASS_MENU.add_button(label="Расписание текущее", payload=get_payload("Расписание текущее"))
-    KEYBOARD_MY_CLASS_MENU.add_button(label="Расписание будущее", payload=get_payload("Расписание будущее"))
-    KEYBOARD_MY_CLASS_MENU.add_line()
-    KEYBOARD_MY_CLASS_MENU.add_button(label="Расписание эталонное", payload=get_payload("Расписание эталонное"))
-    KEYBOARD_MY_CLASS_MENU.add_line()
-    KEYBOARD_MY_CLASS_MENU.add_button(label="Участники", payload=get_payload("Участники"))
-    KEYBOARD_MY_CLASS_MENU.add_button(label="Настройки", payload=get_payload("Настройки"))
-    KEYBOARD_MY_CLASS_MENU.add_button(label="⏩Ещё", payload=get_payload("Ещё"))
-    KEYBOARD_MY_CLASS_MENU.add_line()
-    KEYBOARD_MY_CLASS_MENU.add_button(label="Главное меню", payload=get_payload("Главное меню"))
-    # ‼ - FOR NOTIFICATIONS
-
     # MY_CLASS_MENU2 KEYBOARD
     KEYBOARD_MY_CLASS_MENU2 = VkKeyboard()
     KEYBOARD_MY_CLASS_MENU2.add_button(label="Заявки", payload=get_payload("Заявки"))
@@ -180,6 +163,30 @@ class KeyBoards:
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_line()
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Главное меню", payload=get_payload("Главное меню"))
+
+    # CUSTOMIZED MY_CLASS_MENU KEYBOARD
+    @staticmethod
+    def get_my_class_menu_keyboard(sign: bool):
+        keyboard_my_class_menu = VkKeyboard()
+        keyboard_my_class_menu.add_button(label="Дз текущее", payload=KeyBoards.get_payload("Дз текущее"))
+        keyboard_my_class_menu.add_button(label="Дз будущее", payload=KeyBoards.get_payload("Дз будущее"))
+        keyboard_my_class_menu.add_line()
+        keyboard_my_class_menu.add_button(label="Расписание текущее", payload=KeyBoards.get_payload("Расписание текущее"))
+        keyboard_my_class_menu.add_button(label="Расписание будущее", payload=KeyBoards.get_payload("Расписание будущее"))
+        keyboard_my_class_menu.add_line()
+        keyboard_my_class_menu.add_button(label="Расписание эталонное", payload=KeyBoards.get_payload("Расписание эталонное"))
+        keyboard_my_class_menu.add_line()
+        keyboard_my_class_menu.add_button(label="Участники", payload=KeyBoards.get_payload("Участники"))
+        keyboard_my_class_menu.add_button(label="Настройки", payload=KeyBoards.get_payload("Настройки"))
+        if sign:
+            keyboard_my_class_menu.add_button(label="⏩Ещё‼", payload=KeyBoards.get_payload("Ещё"))
+        else:
+            keyboard_my_class_menu.add_button(label="⏩Ещё", payload=KeyBoards.get_payload("Ещё"))
+        keyboard_my_class_menu.add_line()
+        keyboard_my_class_menu.add_button(label="Главное меню", payload=KeyBoards.get_payload("Главное меню"))
+
+        return keyboard_my_class_menu.get_keyboard()
+
 
     # CUSTOMIZED CLASSROOM_PRIVILEGE KEYBOARD
     @staticmethod
