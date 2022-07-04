@@ -21,28 +21,26 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
     def s_nothing_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_NOTHING"""
         if payload is None:
-            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("menu"))
+            self.state_transition(user_id, States.S_NOTHING, "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Найти класс":
-            self.send_message(user_id, "Отправьте ссылку-приглашение или id класса в "
-                                       "формате #id (например, #1223)", self.get_keyboard("just_menu"))
-            self.user_db.set_user_dialog_state(user_id, States.S_FIND_CLASS.value)
+            trans_message = "Отправьте ссылку-приглашение или id класса в формате #id (например, #1223)"
+            self.state_transition(user_id, States.S_FIND_CLASS, trans_message)
 
         elif payload["text"] == "Создать класс":
             classroom_id = self.classroom_db.insert_new_classroom()
             self.diary_homework_db.insert_classroom_id(classroom_id)
-
             self.classroom_db.update_user_customize_classroom_id(user_id, classroom_id)
-            self.send_message(user_id, "Напишите название будущего класса (макс. 12 символов):",
-                              self.get_keyboard("just_menu"))
 
-            self.user_db.set_user_dialog_state(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE.value)
+            trans_message = "Напишите название будущего класса (макс. 12 символов):"
+            self.state_transition(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE, trans_message)
 
         elif payload["text"] == "Мои классы":
             user_classrooms_dictionary = self.classroom_db.get_user_classrooms_with_role_id(user_id)
 
             if not user_classrooms_dictionary:
-                self.send_message(user_id, "Пока что ты не состоишь ни в одном классе!", self.get_keyboard("menu"))
+                trans_message = "Пока что ты не состоишь ни в одном классе!"
+                self.state_transition(user_id, States.S_NOTHING, trans_message)
 
             else:
                 elements = []
@@ -89,9 +87,8 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
                               self.get_keyboard("menu"))
 
         elif payload["text"] == "Обращение в тех. поддержку":
-            self.send_message(user_id, "Опишите свой вопрос...",
-                              self.get_keyboard("cancel_send"))
-            self.user_db.set_user_dialog_state(user_id, States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value)
+            trans_message = "Опишите свой вопрос..."
+            self.state_transition(user_id, States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE, trans_message)
 
         elif payload["text"] in ("enter_the_classroom", "look_at_the_classroom"):
             classroom_id = payload["classroom_id"]
@@ -111,35 +108,23 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
                     role_id = None
                 role_name = self.role_db.get_role_name(role_id)
 
-                self.send_message(user_id, f"Ты в классе {classroom_name}\n\n#{classroom_id}\n"
-                                           f"Школа: {school_name}\n"
-                                           f"Описание: {description}\n"
-                                           f"Тип класса: {access}\n"
-                                           f"Вы: {role_name}\n"
-                                           f"Участники: {len(members_dictionary)}/{members_limit}",
-                                  self.get_keyboard("my_class_menu"))
-                self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
+                trans_message = f"Ты в классе {classroom_name}\n\n#{classroom_id}\n" \
+                                f"Школа: {school_name}\n" \
+                                f"Описание: {description}\n" \
+                                f"Тип класса: {access}\n" \
+                                f"Вы: {role_name}\n" \
+                                f"Участники: {len(members_dictionary)}/{members_limit}"
+                self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message)
 
             elif payload["text"] == "look_at_the_classroom":
-                request_information = self.classroom_db.get_request_information(user_id, classroom_id)
+                keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)
 
-                if request_information:
-                    keyboard_type = "look_classroom_request"
-                else:
-                    access_keyboard_dict = {
-                        "Публичный": "look_classroom_public",
-                        "Заявки": "look_classroom_invite",
-                        "Закрытый": "look_classroom_close"
-                    }
-                    keyboard_type = access_keyboard_dict[access]
-
-                self.send_message(user_id, f"Ты осматриваешь класс {classroom_name}\n\n#{classroom_id}\n"
-                                           f"Школа: {school_name}\n"
-                                           f"Описание: {description}\n"
-                                           f"Тип класса: {access}\n"
-                                           f"Участники: {len(members_dictionary)}/{members_limit}",
-                                  self.get_keyboard(keyboard_type))
-                self.user_db.set_user_dialog_state(user_id, States.S_LOOK_CLASSROOM.value)
+                trans_message = f"Ты осматриваешь класс {classroom_name}\n\n#{classroom_id}\n" \
+                                f"Школа: {school_name}\n" \
+                                f"Описание: {description}\n" \
+                                f"Тип класса: {access}\n" \
+                                f"Участники: {len(members_dictionary)}/{members_limit}"
+                self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
 
     def p_enter_the_classroom_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Handling payload with text: enter_the_classroom"""
