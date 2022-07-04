@@ -236,9 +236,6 @@ class SupportingFunctions:
         if keyboard_type == "empty":
             return KeyBoards.KEYBOARD_EMPTY.get_empty_keyboard()
 
-        elif keyboard_type == "menu":
-            return KeyBoards.KEYBOARD_MENU.get_keyboard()
-
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""
         is_member = self.vk_session.method(

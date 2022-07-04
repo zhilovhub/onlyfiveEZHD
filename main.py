@@ -49,9 +49,9 @@ class DiaryVkBot(Handlers):
                         else:
                             self.user_db.set_user_is_ready(
                                 user_id)  # First condition is True but this is a first user's message
-                            self.send_message(user_id, "Добро пожаловать в наше сообщество!\n"
-                                                       "Что может наш бот? (Инструкция)",
-                                              self.get_keyboard("menu"))
+
+                            trans_message = "Добро пожаловать в наше сообщество!\nЧто может наш бот? (Инструкция)"
+                            self.state_transition(user_id, States.S_NOTHING, trans_message)
                     else:
                         self.send_message(user_id,  # User is not a member
                                           "Перед использованием бота подпишись на группу!",

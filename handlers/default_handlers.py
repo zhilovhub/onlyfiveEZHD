@@ -79,12 +79,12 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
                 }))
 
         elif payload["text"] == "Создать беседу класса":
-            self.send_message(user_id, "Создаю беседу класса...",
-                              self.get_keyboard("menu"))
+            trans_message = "Создаю беседу класса..."
+            self.state_transition(user_id, States.S_NOTHING, trans_message)
 
         elif payload["text"] == "Настройка беседы класса":
-            self.send_message(user_id, "Настройка беседы класса...",
-                              self.get_keyboard("menu"))
+            trans_message = "Настройка беседы класса..."
+            self.state_transition(user_id, States.S_NOTHING, trans_message)
 
         elif payload["text"] == "Обращение в тех. поддержку":
             trans_message = "Опишите свой вопрос..."
