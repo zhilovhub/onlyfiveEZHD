@@ -52,7 +52,7 @@ class SupportingFunctions:
         except VkApiError as e:
             print(e)
 
-    def state_transition(self, user_id: int, next_state, message: str, **kwargs) -> None:
+    def state_transition(self, user_id: int, next_state, message: str, *args, **kwargs) -> None:
         """Changes states"""
         match next_state:
             case States.S_NOTHING:
@@ -211,15 +211,15 @@ class SupportingFunctions:
 
             case States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
-                                  KeyBoards.get_diary_privilege_keyboard(**kwargs))
+                                  KeyBoards.get_diary_privilege_keyboard(args))
 
             case States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
-                                  KeyBoards.get_members_privilege_keyboard(**kwargs))
+                                  KeyBoards.get_members_privilege_keyboard(args))
 
             case States.S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
-                                  KeyBoards.get_classroom_privilege_keyboard(**kwargs))
+                                  KeyBoards.get_classroom_privilege_keyboard(args))
 
         self.user_db.set_user_dialog_state(user_id, next_state.value)
 
