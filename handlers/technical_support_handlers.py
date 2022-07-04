@@ -17,9 +17,8 @@ class TechnicalSupportHandlers(SupportingFunctions):
             self.cancel_entering_technical_support_message(user_id)
 
         elif message == "Отправить":
-            next_state, keyboard_type, trans_message = \
-                States.get_next_state_config(States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE)
-            self.state_transition(user_id, next_state, keyboard_type, trans_message)
+            trans_message = "Вопросы отправлены администраторам!"
+            self.state_transition(user_id, States.S_NOTHING, "menu", trans_message)
 
         else:
             user_message = self.technical_support_db.get_message(user_id) + "\n"

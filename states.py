@@ -50,37 +50,3 @@ class States(Enum):
     S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS = 33
     S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS = 34
     S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS = 35
-
-    @staticmethod
-    def get_next_state_config(current_state: Enum) -> tuple:
-        """Returns next state's configuration"""
-        match current_state:
-            case States.S_ENTER_CLASS_NAME_CLASSCREATE:
-                return States.S_ENTER_SCHOOL_NAME_CLASSCREATE, \
-                       "back_menu", \
-                       "Название школы будущего класса (макс. 32 символа):"
-
-            case States.S_ENTER_SCHOOL_NAME_CLASSCREATE:
-                return States.S_ENTER_ACCESS_CLASSCREATE, \
-                       "access_menu_back", \
-                       "Тип будущего класса?"
-
-            case States.S_ENTER_ACCESS_CLASSCREATE:
-                return States.S_ENTER_DESCRIPTION_CLASSCREATE, \
-                       "back_menu", \
-                       "Краткое описание класса (макс. 200 символов):"
-
-            case States.S_ENTER_DESCRIPTION_CLASSCREATE:
-                return States.S_SUBMIT_CLASSCREATE, \
-                       "submit_back", \
-                       "Создать класс?"
-
-            case States.S_SUBMIT_CLASSCREATE:
-                return States.S_NOTHING, \
-                       "menu", \
-                       "Поздравляю! Класс создан"
-
-            case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE:
-                return States.S_NOTHING, \
-                       "menu", \
-                       "Вопросы отправлены администраторам!"
