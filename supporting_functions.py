@@ -373,6 +373,22 @@ class SupportingFunctions:
 
         return members_text
 
+    def get_look_keyboard_kwargs(self, user_id: int, classroom_id: int) -> str:
+        """Returns look keyboard's kwargs"""
+        request_information = self.classroom_db.get_request_information(user_id, classroom_id)
+
+        if request_information:
+            return "look_request"
+        else:
+            access_keyboard_dict = {
+                "Публичный": "public",
+                "Заявки": "invite",
+                "Закрытый": "close"
+            }
+
+            access = self.classroom_db.get_classroom_access(classroom_id)
+            return access_keyboard_dict[access]
+
     @staticmethod
     def get_all_role_names_text(all_role_names: list, admin_role_name: str, default_role_name: str) -> str:
         """Returns text of all role names"""

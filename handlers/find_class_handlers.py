@@ -69,7 +69,7 @@ class FindClassHandlers(SupportingFunctions):
     def s_look_classroom_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_LOOK_CLASSROOM"""
         classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-        keyboard_kwarg = self.get_keyboard_kwargs(user_id, classroom_id)
+        keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)
 
         if payload is None:
             self.state_transition(user_id, States.S_LOOK_CLASSROOM, "Для навигации используй кнопки!👇🏻",
@@ -120,7 +120,7 @@ class FindClassHandlers(SupportingFunctions):
     def s_request_classroom_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_REQUEST_CLASSROOM"""
         classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-        keyboard_kwarg = self.get_keyboard_kwargs(user_id, classroom_id)
+        keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)
 
         if payload is None:
             if len(message) <= 50:
@@ -152,7 +152,7 @@ class FindClassHandlers(SupportingFunctions):
     def s_edit_request_classroom_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_EDIT_REQUEST_CLASSROOM"""
         classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-        keyboard_kwarg = self.get_keyboard_kwargs(user_id, classroom_id)
+        keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)
 
         if payload is None:
             if len(message) <= 50:
@@ -166,6 +166,7 @@ class FindClassHandlers(SupportingFunctions):
 
         elif payload["text"] == "Удалить заявку":
             self.classroom_db.delete_request(user_id, classroom_id)
+            keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)
 
             trans_message = "Заявка удалена!"
             self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
@@ -186,19 +187,3 @@ class FindClassHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
-
-    def get_keyboard_kwargs(self, user_id: int, classroom_id: int) -> str:
-        """Returns keyboard's kwargs"""
-        request_information = self.classroom_db.get_request_information(user_id, classroom_id)
-
-        if request_information:
-            return "look_request"
-        else:
-            access_keyboard_dict = {
-                "Публичный": "public",
-                "Заявки": "invite",
-                "Закрытый": "close"
-            }
-
-            access = self.classroom_db.get_classroom_access(classroom_id)
-            return access_keyboard_dict[access]
