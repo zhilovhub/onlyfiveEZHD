@@ -13,15 +13,15 @@ class ClassroomSettingsHandlers(SupportingFunctions):
     def s_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_CLASSROOM_SETTINGS"""
         if payload is None:
-            self.send_message(user_id, "Для навигации используй кнопки!👇🏻", self.get_keyboard("classroom_settings"))
+            self.state_transition(user_id, States.S_CLASSROOM_SETTINGS, "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Основные":
-            self.send_message(user_id, "Основные настройки класса", self.get_keyboard("main_classroom_settings"))
-            self.user_db.set_user_dialog_state(user_id, States.S_MAIN_CLASSROOM_SETTINGS.value)
+            trans_message = "Основные настройки класса"
+            self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, trans_message)
 
         elif payload["text"] == "Назад":
-            self.send_message(user_id, "Возвращаемся в меню класса...", self.get_keyboard("my_class_menu"))
-            self.user_db.set_user_dialog_state(user_id, States.S_IN_CLASS_MYCLASSES.value)
+            trans_message = "Возвращаемся в меню класса..."
+            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message)
 
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
