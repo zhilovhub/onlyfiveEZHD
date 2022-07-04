@@ -52,177 +52,172 @@ class SupportingFunctions:
         except VkApiError as e:
             print(e)
 
-    def state_transition(self, user_id: int, next_state, keyboard_type: str, message: str) -> None:
-        """Changes states"""
-        self.user_db.set_user_dialog_state(user_id, next_state.value)
-        self.send_message(user_id, message, self.get_keyboard(keyboard_type))
-
-    def state_transition_test(self, user_id: int, next_state, message: str, **kwargs) -> None:
+    def state_transition(self, user_id: int, next_state, message: str, **kwargs) -> None:
         """Changes states"""
         match next_state:
-            case States.S_NOTHING.value:
+            case States.S_NOTHING:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_MENU.get_keyboard())
 
             # CLASSCREATE
-            case States.S_ENTER_CLASS_NAME_CLASSCREATE.value:
+            case States.S_ENTER_CLASS_NAME_CLASSCREATE:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_JUST_MENU.get_keyboard())
 
-            case States.S_ENTER_SCHOOL_NAME_CLASSCREATE.value:
+            case States.S_ENTER_SCHOOL_NAME_CLASSCREATE:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
-            case States.S_ENTER_ACCESS_CLASSCREATE.value:
+            case States.S_ENTER_ACCESS_CLASSCREATE:
                 self.send_message(user_id, message,
                                   KeyBoards.get_access_menu_back_keyboard())
 
-            case States.S_ENTER_DESCRIPTION_CLASSCREATE.value:
+            case States.S_ENTER_DESCRIPTION_CLASSCREATE:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
-            case States.S_SUBMIT_CLASSCREATE.value:
+            case States.S_SUBMIT_CLASSCREATE:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_SUBMIT_BACK.get_keyboard())
 
             # MYCLASSES
-            case States.S_IN_CLASS_MYCLASSES.value:
+            case States.S_IN_CLASS_MYCLASSES:
                 self.send_message(user_id, message,
                                   KeyBoards.get_my_class_menu_keyboard(**kwargs))
 
-            case States.S_IN_CLASS_MYCLASSES2.value:
+            case States.S_IN_CLASS_MYCLASSES2:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_MY_CLASS_MENU2.get_keyboard())
 
-            case States.S_EDIT_WEEK_MYCLASSES.value:
+            case States.S_EDIT_WEEK_MYCLASSES:
                 self.send_message(user_id, message,
                                   KeyBoards.get_edit_week_keyboard(**kwargs))
 
-            case States.S_EDIT_WEEKDAY_MYCLASSES.value:
+            case States.S_EDIT_WEEKDAY_MYCLASSES:
                 self.send_message(user_id, message,
                                   KeyBoards.get_edit_weekday_keyboard())
 
-            case States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES.value:
+            case States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES:
                 self.send_message(user_id, message,
                                   KeyBoards.get_edit_weekday_keyboard(**kwargs))
 
-            case States.S_EDIT_LESSON_WEEKDAY_MYCLASSES.value:
+            case States.S_EDIT_LESSON_WEEKDAY_MYCLASSES:
                 self.send_message(user_id, message,
                                   KeyBoards.get_edit_weekday_keyboard(**kwargs))
 
             # FINDCLASS
-            case States.S_FIND_CLASS.value:
+            case States.S_FIND_CLASS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_JUST_MENU.get_keyboard())
 
-            case States.S_LOOK_CLASSROOM.value:
+            case States.S_LOOK_CLASSROOM:
                 self.send_message(user_id, message,
                                   KeyBoards.get_look_classroom_keyboard(**kwargs))
 
-            case States.S_REQUEST_CLASSROOM.value:
+            case States.S_REQUEST_CLASSROOM:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
-            case States.S_EDIT_REQUEST_CLASSROOM.value:
+            case States.S_EDIT_REQUEST_CLASSROOM:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU_DELETE_REQUEST.get_keyboard())
 
             # CLASSROOMSETTINGS
-            case States.S_CLASSROOM_SETTINGS.value:
+            case States.S_CLASSROOM_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_CLASSROOM_SETTINGS.get_keyboard())
 
-            case States.S_MAIN_CLASSROOM_SETTINGS.value:
+            case States.S_MAIN_CLASSROOM_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_MAIN_CLASSROOM_SETTINGS.get_keyboard())
 
-            case States.S_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.value:
+            case States.S_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.get_keyboard())
 
-            case States.S_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS.value:
+            case States.S_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS.get_keyboard())
 
-            case States.S_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.value:
+            case States.S_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.get_keyboard())
 
-            case States.S_ACCESS_MAIN_CLASSROOM_SETTINGS.value:
+            case States.S_ACCESS_MAIN_CLASSROOM_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.get_access_menu_back_keyboard(**kwargs))
 
-            case States.S_CLASSROOM_NAME_MAIN_CLASSROOM_SETTINGS.value:
+            case States.S_CLASSROOM_NAME_MAIN_CLASSROOM_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
-            case States.S_SCHOOL_NAME_MAIN_CLASSROOM_SETTINGS.value:
+            case States.S_SCHOOL_NAME_MAIN_CLASSROOM_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
-            case States.S_DESCRIPTION_MAIN_CLASSROOM_SETTINGS.value:
+            case States.S_DESCRIPTION_MAIN_CLASSROOM_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
-            case States.S_LIMIT_MAIN_CLASSROOM_SETTINGS.value:
+            case States.S_LIMIT_MAIN_CLASSROOM_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
             # TECHNICALSUPPORT
-            case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value:
+            case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_CANCEL_SEND.get_keyboard())
 
             # MEMBERSSETTINGS
-            case States.S_MEMBERS_SETTINGS.value:
+            case States.S_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_MEMBERS_SETTINGS.get_keyboard())
 
-            case States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS.value:
+            case States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
-            case States.S_DELETE_ROLE_MEMBERS_SETTINGS.value:
+            case States.S_DELETE_ROLE_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
-            case States.S_DELETE_MEMBER_MEMBERS_SETTINGS.value:
+            case States.S_DELETE_MEMBER_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
-            case States.S_CHOOSE_ROLE_MEMBERS_SETTINGS.value:
+            case States.S_CHOOSE_ROLE_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
-            case States.S_CHOOSE_ADMIN_ROLE_CONFIRMATION_MEMBERS_SETTINGS.value:
+            case States.S_CHOOSE_ADMIN_ROLE_CONFIRMATION_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS.get_keyboard())
 
-            case States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS.value:
+            case States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
-            case States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS.value:
+            case States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
-            case States.S_EDIT_ROLE_MEMBERS_SETTINGS.value:
+            case States.S_EDIT_ROLE_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.get_role_settings_menu_keyboard())
 
-            case States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS.value:
+            case States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
-            case States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS.value:
+            case States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.get_diary_privilege_keyboard(**kwargs))
 
-            case States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS.value:
+            case States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.get_members_privilege_keyboard(**kwargs))
 
-            case States.S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS.value:
+            case States.S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,
                                   KeyBoards.get_classroom_privilege_keyboard(**kwargs))
 
