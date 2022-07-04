@@ -53,9 +53,7 @@ class DiaryVkBot(Handlers):
                             trans_message = "Добро пожаловать в наше сообщество!\nЧто может наш бот? (Инструкция)"
                             self.state_transition(user_id, States.S_NOTHING, trans_message)
                     else:
-                        self.send_message(user_id,  # User is not a member
-                                          "Перед использованием бота подпишись на группу!",
-                                          self.get_keyboard("empty"))
+                        self.send_message(user_id, "Перед использованием бота подпишись на группу!")  # User not member
             elif event.type == VkBotEventType.MESSAGE_EVENT:
                 event_id = event.object["event_id"]
                 user_id = event.object["user_id"]
@@ -67,9 +65,7 @@ class DiaryVkBot(Handlers):
                     current_dialog_state = self.user_db.get_user_dialog_state(user_id)
                     self.filter_callback_button_payload(user_id, payload, current_dialog_state)
                 else:
-                    self.send_message(user_id,
-                                      "Перед использованием бота подпишись на группу!",
-                                      self.get_keyboard("empty"))
+                    self.send_message(user_id, "Перед использованием бота подпишись на группу!")
 
             else:
                 print(event)

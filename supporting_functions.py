@@ -230,12 +230,6 @@ class SupportingFunctions:
         self.role_db.update_user_customize_role_id(user_id, "null")
         self.state_transition(user_id, States.S_NOTHING, trans_message)
 
-    @staticmethod
-    def get_keyboard(keyboard_type: str) -> VkKeyboard:
-        """Get the keyboard"""
-        if keyboard_type == "empty":
-            return KeyBoards.KEYBOARD_EMPTY.get_empty_keyboard()
-
     def is_member(self, user_id: int) -> int:
         """Check is user member of the group"""
         is_member = self.vk_session.method(
