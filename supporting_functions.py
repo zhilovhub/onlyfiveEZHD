@@ -57,7 +57,7 @@ class SupportingFunctions:
         self.user_db.set_user_dialog_state(user_id, next_state.value)
         self.send_message(user_id, message, self.get_keyboard(keyboard_type))
 
-    def state_transition_test(self, user_id: int, next_state, message: str) -> None:
+    def state_transition_test(self, user_id: int, next_state, message: str, **kwargs) -> None:
         """Changes states"""
         match next_state:
             case States.S_NOTHING.value:
@@ -87,8 +87,8 @@ class SupportingFunctions:
 
             # MYCLASSES
             case States.S_IN_CLASS_MYCLASSES.value:
-               self.send_message(user_id, message,
-                                 KeyBoards.get_my_class_menu_keyboard(kwargs))
+                self.send_message(user_id, message,
+                                  KeyBoards.get_my_class_menu_keyboard(**kwargs))
 
             case States.S_IN_CLASS_MYCLASSES2.value:
                 self.send_message(user_id, message,
@@ -96,7 +96,7 @@ class SupportingFunctions:
 
             case States.S_EDIT_WEEK_MYCLASSES.value:
                 self.send_message(user_id, message,
-                                  KeyBoards.get_edit_week_keyboard(kwargs))
+                                  KeyBoards.get_edit_week_keyboard(**kwargs))
 
             case States.S_EDIT_WEEKDAY_MYCLASSES.value:
                 self.send_message(user_id, message,
@@ -104,11 +104,11 @@ class SupportingFunctions:
 
             case States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES.value:
                 self.send_message(user_id, message,
-                                  KeyBoards.get_edit_weekday_keyboard(kwargs))
+                                  KeyBoards.get_edit_weekday_keyboard(**kwargs))
 
             case States.S_EDIT_LESSON_WEEKDAY_MYCLASSES.value:
                 self.send_message(user_id, message,
-                                  KeyBoards.get_edit_weekday_keyboard(kwargs))
+                                  KeyBoards.get_edit_weekday_keyboard(**kwargs))
 
             # FINDCLASS
             case States.S_FIND_CLASS.value:
@@ -117,7 +117,7 @@ class SupportingFunctions:
 
             case States.S_LOOK_CLASSROOM.value:
                 self.send_message(user_id, message,
-                                  KeyBoards.get_look_classroom_keyboard(kwargs))
+                                  KeyBoards.get_look_classroom_keyboard(**kwargs))
 
             case States.S_REQUEST_CLASSROOM.value:
                 self.send_message(user_id, message,
@@ -150,7 +150,7 @@ class SupportingFunctions:
 
             case States.S_ACCESS_MAIN_CLASSROOM_SETTINGS.value:
                 self.send_message(user_id, message,
-                                  KeyBoards.get_access_menu_back_keyboard(kwargs))
+                                  KeyBoards.get_access_menu_back_keyboard(**kwargs))
 
             case States.S_CLASSROOM_NAME_MAIN_CLASSROOM_SETTINGS.value:
                 self.send_message(user_id, message,
@@ -216,15 +216,15 @@ class SupportingFunctions:
 
             case States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS.value:
                 self.send_message(user_id, message,
-                                  KeyBoards.get_diary_privilege_keyboard(kwargs))
+                                  KeyBoards.get_diary_privilege_keyboard(**kwargs))
 
             case States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS.value:
                 self.send_message(user_id, message,
-                                  KeyBoards.get_members_privilege_keyboard(kwargs))
+                                  KeyBoards.get_members_privilege_keyboard(**kwargs))
 
             case States.S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS.value:
                 self.send_message(user_id, message,
-                                  KeyBoards.get_classroom_privilege_keyboard(kwargs))
+                                  KeyBoards.get_classroom_privilege_keyboard(**kwargs))
 
         self.user_db.set_user_dialog_state(user_id, next_state.value)
 
