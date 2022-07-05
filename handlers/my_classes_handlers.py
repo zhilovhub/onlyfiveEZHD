@@ -88,15 +88,15 @@ class MyClassesHandlers(SupportingFunctions):
             self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "accept_request":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            classroom_id = payload["classroom_id"]
             members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
             members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
 
             request_user_id = payload["user_id"]
+            first_name, last_name = self.user_db.get_user_first_and_last_name(request_user_id)
 
             if request_user_id in members_dictionary.keys():
                 self.classroom_db.delete_request(request_user_id, classroom_id)
-                first_name, last_name = self.user_db.get_user_first_and_last_name(request_user_id)
 
                 self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки"},
                                                     info_message=f"[id{request_user_id}|{first_name} {last_name}] уже "
@@ -106,14 +106,30 @@ class MyClassesHandlers(SupportingFunctions):
                 self.classroom_db.insert_new_user_in_classroom(request_user_id, classroom_id, default_role_id)
                 self.classroom_db.delete_request(request_user_id, classroom_id)
 
-                first_name, last_name = self.user_db.get_user_first_and_last_name(request_user_id)
-
                 self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки"},
                                                     info_message=f"[id{request_user_id}|{first_name} {last_name}]"
                                                                  f" принят в класс")
             else:
                 self.send_message(user_id, f"В классе уже максимальное количество людей! ({len(members_dictionary)}"
                                            f"/{members_limit})")
+
+        elif payload["text"] == "cancel_request":
+            classroom_id = payload["classroom_id"]
+            members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
+
+            request_user_id = payload["user_id"]
+
+            self.classroom_db.delete_request(request_user_id, classroom_id)
+            first_name, last_name = self.user_db.get_user_first_and_last_name(request_user_id)
+
+            if request_user_id in members_dictionary.keys():
+                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки"},
+                                                    info_message=f"[id{request_user_id}|{first_name} {last_name}] уже "
+                                                                 f"в классе!")
+            else:
+                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки"},
+                                                    info_message=f"Заявка [id{request_user_id}|{first_name} "
+                                                                 f"{last_name}] отклонена")
 
     def s_in_class_my_classes2_handler(self, user_id: int, payload: dict, info_message="") -> None:
         """Handling States.S_IN_CLASS_MYCLASSES2"""
