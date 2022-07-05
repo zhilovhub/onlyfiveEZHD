@@ -544,10 +544,12 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.state_transition(user_id, States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
                                   "Для навигации используй кнопки!👇🏻", *color_values)
 
-        elif payload["text"] in ["Кикание участников", "Приглашение в класс", "Уведомление участников"]:
+        elif payload["text"] in ["Кикание участников", "Приглашение в класс",
+                                 "Принятие заявок", "Уведомление участников"]:
             payload_meaning_dictionary = {
                 "Кикание участников": "kick_members",
                 "Приглашение в класс": "invite_members",
+                "Принятие заявок": "accept_requests",
                 "Уведомление участников": "notify"
             }
             privilege_type = payload_meaning_dictionary[payload["text"]]
@@ -658,6 +660,7 @@ class MembersSettingsHandlers(SupportingFunctions):
         members_role_properties_text = "Участники:\n" \
                                        "Кикание участников {}\n" \
                                        "Приглашение в класс {}\n" \
+                                       "Принятие заявок {}\n" \
                                        "Уведомление участников {}\n\n"
 
         classroom_role_properties_text = "Класс:\n" \

@@ -214,8 +214,11 @@ class KeyBoards:
         keyboard_members_privilege.add_button("Приглашение в класс",
                                               payload=KeyBoards.get_payload("Приглашение в класс"), color=colors[1])
         keyboard_members_privilege.add_line()
+        keyboard_members_privilege.add_button("Принятие заявок", payload=KeyBoards.get_payload("Принятие заявок"),
+                                              color=colors[2])
+        keyboard_members_privilege.add_line()
         keyboard_members_privilege.add_button("Уведомление участников",
-                                              payload=KeyBoards.get_payload("Уведомление участников"), color=colors[2])
+                                              payload=KeyBoards.get_payload("Уведомление участников"), color=colors[3])
         keyboard_members_privilege.add_line()
 
         keyboard_members_privilege.add_button("Назад", payload=KeyBoards.get_payload("Назад"))
