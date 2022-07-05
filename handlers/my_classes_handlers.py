@@ -106,6 +106,8 @@ class MyClassesHandlers(SupportingFunctions):
                     request_text = request["request_text"]
                     request_datetime = request["datetime"]
 
+                    first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+
                     buttons = [
                         {
                             "action": {
@@ -133,8 +135,8 @@ class MyClassesHandlers(SupportingFunctions):
 
                     elements.append(
                         {
-                            "title": request_user_id,
-                            "description": f"{request_text}\n\n{request_datetime}",
+                            "title": f"{first_name} {last_name}",
+                            "description": f"{request_text}\n{request_datetime}",
                             "buttons": buttons
                         }
                     )
