@@ -103,10 +103,19 @@ class ClassroomCommands(DataBase):
 
             return request_information
 
-    def get_list_of_request_information(self, classroom_id: int) -> tuple:
+    def get_list_of_request_information(self, classroom_id: int) -> list:
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.get_list_of_request_information_query.format(classroom_id))
-            request_information_list = cursor.fetchall()
+
+            request_information_list = []
+            for user_id, request_text, request_datetime in cursor.fetchall():
+                request_information_list.append(
+                    {
+                        "user_id": user_id,
+                        "request_text": request_text,
+                        "datetime": request_datetime
+                    }
+                )
 
             return request_information_list
 
@@ -251,7 +260,9 @@ class ClassroomQueries:
     get_list_of_classroom_users_query = """SELECT user_id, role_id FROM Student WHERE classroom_id={}"""
     get_list_of_classroom_ids_query = """SELECT classroom_id FROM Classroom WHERE created=1"""
     get_request_information_query = """SELECT * FROM Request WHERE user_id={} AND classroom_id={}"""
-    get_list_of_request_information_query = """SELECT * FROM Request WHERE classroom_id={}"""
+    get_list_of_request_information_query = """SELECT 
+        user_id, request_text, datetime 
+    FROM Request WHERE classroom_id={}"""
 
     insert_classroom_query = """INSERT INTO Classroom (members_limit, created) VALUES(40, FALSE)"""
     insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, {})"""

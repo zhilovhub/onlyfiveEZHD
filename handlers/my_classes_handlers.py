@@ -92,6 +92,59 @@ class MyClassesHandlers(SupportingFunctions):
         if payload is None:
             self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Для навигации используй кнопки!👇🏻")
 
+        elif payload["text"] == "Заявки":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            request_list = self.classroom_db.get_list_of_request_information(classroom_id)
+
+            if not request_list:
+                trans_message = "Заявок в этот класс нет"
+                self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, trans_message)
+            else:
+                elements = []
+                for request in request_list:
+                    request_user_id = request["user_id"]
+                    request_text = request["request_text"]
+                    request_datetime = request["datetime"]
+
+                    buttons = [
+                        {
+                            "action": {
+                                "type": "callback",
+                                "label": "Принять",
+                                "payload": {
+                                    "text": "accept_request",
+                                    "user_id": request_user_id
+                                }
+                            },
+                            "color": "positive"
+                        },
+                        {
+                            "action": {
+                                "type": "callback",
+                                "label": "Отклонить",
+                                "payload": {
+                                    "text": "cancel_request",
+                                    "user_id": request_user_id
+                                }
+                            },
+                            "color": "negative"
+                        }
+                    ]
+
+                    elements.append(
+                        {
+                            "title": request_user_id,
+                            "description": f"{request_text}\n\n{request_datetime}",
+                            "buttons": buttons
+                        }
+                    )
+                
+                trans_message = "Заявки в этот класс"
+                self.send_message(user_id, trans_message, template=dumps({
+                    "type": "carousel",
+                    "elements": elements
+                }))
+
         elif payload["text"] == "Назад":
             trans_message = "Назад..."
             self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=False)
