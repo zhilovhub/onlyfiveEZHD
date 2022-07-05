@@ -21,7 +21,7 @@ class MyClassesHandlers(SupportingFunctions):
 
         elif payload["text"] == "Ещё":
             trans_message = "Другое меню класса"
-            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, trans_message)
+            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, trans_message, sign=self.get_sign(user_id))
 
         elif payload["text"] == "Настройки":
             trans_message = "Настройки класса\n\nКоличество настроек зависит от твоей роли в этом классе!"
@@ -134,7 +134,8 @@ class MyClassesHandlers(SupportingFunctions):
     def s_in_class_my_classes2_handler(self, user_id: int, payload: dict, info_message="") -> None:
         """Handling States.S_IN_CLASS_MYCLASSES2"""
         if payload is None:
-            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Для навигации используй кнопки!👇🏻")
+            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Для навигации используй кнопки!👇🏻",
+                                  sign=self.get_sign(user_id))
 
         elif payload["text"] == "Заявки":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -142,7 +143,7 @@ class MyClassesHandlers(SupportingFunctions):
 
             if not request_list:
                 trans_message = info_message + "\n\nЗаявок в этом классе нет"
-                self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, trans_message)
+                self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, trans_message, sign=self.get_sign(user_id))
             else:
                 elements = []
                 for request in request_list:

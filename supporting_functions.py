@@ -87,7 +87,7 @@ class SupportingFunctions:
 
             case States.S_IN_CLASS_MYCLASSES2:
                 self.send_message(user_id, message,
-                                  KeyBoards.KEYBOARD_MY_CLASS_MENU2.get_keyboard())
+                                  KeyBoards.get_my_class_menu2_keyboard(**kwargs))
 
             case States.S_EDIT_WEEK_MYCLASSES:
                 self.send_message(user_id, message,

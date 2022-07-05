@@ -33,15 +33,6 @@ class KeyBoards:
     KEYBOARD_SUBMIT_BACK.add_line()
     KEYBOARD_SUBMIT_BACK.add_button(label="Главное меню", payload=get_payload("Главное меню"))
 
-    # MY_CLASS_MENU2 KEYBOARD
-    KEYBOARD_MY_CLASS_MENU2 = VkKeyboard()
-    KEYBOARD_MY_CLASS_MENU2.add_button(label="Заявки", payload=get_payload("Заявки"))
-    KEYBOARD_MY_CLASS_MENU2.add_button(label="События", payload=get_payload("События"))
-    KEYBOARD_MY_CLASS_MENU2.add_button(label="Уведомить", payload=get_payload("Уведомить"))
-    KEYBOARD_MY_CLASS_MENU2.add_line()
-    KEYBOARD_MY_CLASS_MENU2.add_button(label="⏪Назад", payload=get_payload("Назад"))
-    KEYBOARD_MY_CLASS_MENU2.add_button(label="Главное меню", payload=get_payload("Главное меню"))
-
     # CANCEL_SEND KEYBOARD
     KEYBOARD_CANCEL_SEND = VkKeyboard()
     KEYBOARD_CANCEL_SEND.add_button(label="Отменить", payload=get_payload("Отменить"))
@@ -154,6 +145,22 @@ class KeyBoards:
         keyboard_edit_week.add_button("Главное меню", payload=KeyBoards.get_payload("Главное меню"))
 
         return keyboard_edit_week.get_keyboard()
+
+    # CUSTOMIZED MY_CLASS_MENU2 KEYBOARD
+    @staticmethod
+    def get_my_class_menu2_keyboard(sign: bool):
+        keyboard_my_class_menu2 = VkKeyboard()
+        if sign:
+            keyboard_my_class_menu2.add_button(label="Заявки‼", payload=KeyBoards.get_payload("Заявки"))
+        else:
+            keyboard_my_class_menu2.add_button(label="Заявки", payload=KeyBoards.get_payload("Заявки"))
+        keyboard_my_class_menu2.add_button(label="События", payload=KeyBoards.get_payload("События"))
+        keyboard_my_class_menu2.add_button(label="Уведомить", payload=KeyBoards.get_payload("Уведомить"))
+        keyboard_my_class_menu2.add_line()
+        keyboard_my_class_menu2.add_button(label="⏪Назад", payload=KeyBoards.get_payload("Назад"))
+        keyboard_my_class_menu2.add_button(label="Главное меню", payload=KeyBoards.get_payload("Главное меню"))
+
+        return keyboard_my_class_menu2.get_keyboard()
 
     # CUSTOMIZED MY_CLASS_MENU KEYBOARD
     @staticmethod
