@@ -125,7 +125,7 @@ class MyClassesHandlers(SupportingFunctions):
             request_list = self.classroom_db.get_list_of_request_information(classroom_id)
 
             if not request_list:
-                trans_message = "Заявок в этот класс нет"
+                trans_message = info_message + "\n\nЗаявок в этом классе нет"
                 self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, trans_message)
             else:
                 elements = []
