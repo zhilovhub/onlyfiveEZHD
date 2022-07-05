@@ -14,7 +14,7 @@ class MyClassesHandlers(SupportingFunctions):
         """Handling States.S_IN_CLASS_MYCLASSES"""
         if payload is None:
             self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, "Для навигации используй кнопки!👇🏻",
-                                  sign=False)
+                                  sign=self.get_sign(user_id))
 
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
@@ -196,7 +196,7 @@ class MyClassesHandlers(SupportingFunctions):
 
         elif payload["text"] == "Назад":
             trans_message = "Назад..."
-            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=False)
+            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
 
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
@@ -255,7 +255,7 @@ class MyClassesHandlers(SupportingFunctions):
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
 
             trans_message = "Возвращаемся в меню класса"
-            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=False)
+            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
 
     def s_edit_weekday_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_WEEKDAY_MYCLASSES"""

@@ -21,7 +21,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
 
         elif payload["text"] == "Назад":
             trans_message = "Возвращаемся в меню класса..."
-            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=False)
+            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
 
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)

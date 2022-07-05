@@ -92,7 +92,7 @@ class FindClassHandlers(SupportingFunctions):
                 self.classroom_db.insert_new_user_in_classroom(user_id, classroom_id, default_role_id)
 
                 trans_message = "Ты вступил!"
-                self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=False)
+                self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
             else:
                 trans_message = "В классе уже максимальное количество людей!"
                 self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)

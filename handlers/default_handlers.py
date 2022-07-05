@@ -114,7 +114,7 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
                                 f"Тип класса: {access}\n" \
                                 f"Вы: {role_name}\n" \
                                 f"Участники: {len(members_dictionary)}/{members_limit}"
-                self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=False)
+                self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
 
             elif payload["text"] == "look_at_the_classroom":
                 keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)

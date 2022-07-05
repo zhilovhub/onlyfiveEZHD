@@ -304,3 +304,10 @@ class SupportingFunctions:
 
         role_names_text = "\n".join([f"{ind}. {role_name}" for ind, role_name in enumerate(role_names, start=1)])
         return role_names_text
+
+    def get_sign(self, user_id: int) -> bool:
+        """Returns sign"""
+        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+        request_list = self.classroom_db.get_list_of_request_information(classroom_id)
+
+        return True if request_list else False
