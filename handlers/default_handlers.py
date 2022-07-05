@@ -165,3 +165,14 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
 
         else:
             self.send_message(user_id, "Закончи текущее действие или выйди в главное меню")
+
+    def p_accept_cancel_request_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
+        if current_dialog_state in (States.S_IN_CLASS_MYCLASSES.value, States.S_IN_CLASS_MYCLASSES2.value):
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+
+            if classroom_id == payload["classroom_id"]:
+                self.s_in_class_my_classes_handler(user_id, payload)
+            else:
+                self.send_message(user_id, "Это заявки не того класса, в котором ты находишься!")
+        else:
+            self.send_message(user_id, "Ты должен находиться в меню класса, заявки которого рассматриваешь!")

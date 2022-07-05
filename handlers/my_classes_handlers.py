@@ -87,7 +87,30 @@ class MyClassesHandlers(SupportingFunctions):
                             "Здесь можно создавать и настраивать роли, удалять и приглашать участников!"
             self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
 
-    def s_in_class_my_classes2_handler(self, user_id: int, payload: dict) -> None:
+        elif payload["text"] == "accept_request":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
+            members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
+
+            request_user_id = payload["user_id"]
+
+            if request_user_id in members_dictionary.keys():
+                self.send_message(user_id, "Этот пользователь уже в классе!")
+            elif len(members_dictionary) < members_limit:
+                default_role_id = self.role_db.get_default_role_id(classroom_id)
+                self.classroom_db.insert_new_user_in_classroom(request_user_id, classroom_id, default_role_id)
+                self.classroom_db.delete_request(request_user_id, classroom_id)
+
+                first_name, last_name = self.user_db.get_user_first_and_last_name(request_user_id)
+
+                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки"},
+                                                    info_message=f"[id{request_user_id}|{first_name} {last_name}]"
+                                                                 f" принят в класс")
+            else:
+                self.send_message(user_id, f"В классе уже максимальное количество людей! ({len(members_dictionary)}"
+                                           f"/{members_limit})")
+
+    def s_in_class_my_classes2_handler(self, user_id: int, payload: dict, info_message="") -> None:
         """Handling States.S_IN_CLASS_MYCLASSES2"""
         if payload is None:
             self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Для навигации используй кнопки!👇🏻")
@@ -103,6 +126,7 @@ class MyClassesHandlers(SupportingFunctions):
                 elements = []
                 for request in request_list:
                     request_user_id = request["user_id"]
+                    request_classroom_id = request["classroom_id"]
                     request_text = request["request_text"]
                     request_datetime = request["datetime"]
 
@@ -115,7 +139,8 @@ class MyClassesHandlers(SupportingFunctions):
                                 "label": "Принять",
                                 "payload": {
                                     "text": "accept_request",
-                                    "user_id": request_user_id
+                                    "user_id": request_user_id,
+                                    "classroom_id": request_classroom_id
                                 }
                             },
                             "color": "positive"
@@ -126,7 +151,8 @@ class MyClassesHandlers(SupportingFunctions):
                                 "label": "Отклонить",
                                 "payload": {
                                     "text": "cancel_request",
-                                    "user_id": request_user_id
+                                    "user_id": request_user_id,
+                                    "classroom_id": request_classroom_id
                                 }
                             },
                             "color": "negative"
@@ -141,7 +167,7 @@ class MyClassesHandlers(SupportingFunctions):
                         }
                     )
                 
-                trans_message = "Заявки в этот класс"
+                trans_message = info_message + "\n\nЗаявки в этот класс"
                 self.send_message(user_id, trans_message, template=dumps({
                     "type": "carousel",
                     "elements": elements

@@ -214,6 +214,9 @@ class DiaryVkBot(Handlers):
             case "look_at_the_classroom":
                 self.p_look_at_the_classroom_handler(user_id, payload, current_dialog_state)
 
+            case ("accept_request" | "cancel_request"):
+                self.p_accept_cancel_request_handler(user_id, payload, current_dialog_state)
+
 
 if __name__ == "__main__":
     with connect(
