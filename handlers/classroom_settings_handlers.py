@@ -91,8 +91,8 @@ class ClassroomSettingsHandlers(SupportingFunctions):
                 trans_message = "Ты не можешь покинуть класс будучи админом!"
                 self.state_transition(user_id, States.S_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS, trans_message)
             else:
-                keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)
                 self.classroom_db.delete_student(classroom_id, user_id)
+                keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)
 
                 trans_message = "Ты покинул класс!"
                 self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
