@@ -95,7 +95,12 @@ class MyClassesHandlers(SupportingFunctions):
             request_user_id = payload["user_id"]
 
             if request_user_id in members_dictionary.keys():
-                self.send_message(user_id, "Этот пользователь уже в классе!")
+                self.classroom_db.delete_request(request_user_id, classroom_id)
+                first_name, last_name = self.user_db.get_user_first_and_last_name(request_user_id)
+
+                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки"},
+                                                    info_message=f"[id{request_user_id}|{first_name} {last_name}] уже "
+                                                                 f"в классе!")
             elif len(members_dictionary) < members_limit:
                 default_role_id = self.role_db.get_default_role_id(classroom_id)
                 self.classroom_db.insert_new_user_in_classroom(request_user_id, classroom_id, default_role_id)
@@ -167,7 +172,7 @@ class MyClassesHandlers(SupportingFunctions):
                         }
                     )
                 
-                trans_message = info_message + "\n\nЗаявки в этот класс"
+                trans_message = info_message if info_message else "Заявки в этот класс"
                 self.send_message(user_id, trans_message, template=dumps({
                     "type": "carousel",
                     "elements": elements
