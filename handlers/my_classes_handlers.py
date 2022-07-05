@@ -106,7 +106,7 @@ class MyClassesHandlers(SupportingFunctions):
                     request_text = request["request_text"]
                     request_datetime = request["datetime"]
 
-                    first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+                    first_name, last_name = self.user_db.get_user_first_and_last_name(request_user_id)
 
                     buttons = [
                         {
