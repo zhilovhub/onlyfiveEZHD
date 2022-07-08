@@ -138,62 +138,67 @@ class MyClassesHandlers(SupportingFunctions):
                                   sign=self.get_sign(user_id))
 
         elif payload["text"] == "Заявки":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            request_list = self.classroom_db.get_list_of_request_information(classroom_id)
+            if payload["can"]:
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                request_list = self.classroom_db.get_list_of_request_information(classroom_id)
 
-            if not request_list:
-                trans_message = info_message + "\n\nЗаявок в этом классе нет"
-                self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, trans_message, sign=self.get_sign(user_id))
+                if not request_list:
+                    trans_message = info_message + "\n\nЗаявок в этом классе нет"
+                    self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, trans_message,
+                                          sign=self.get_sign(user_id))
+                else:
+                    elements = []
+                    for request in request_list:
+                        request_user_id = request["user_id"]
+                        request_classroom_id = request["classroom_id"]
+                        request_text = request["request_text"]
+                        request_datetime = request["datetime"]
+
+                        first_name, last_name = self.user_db.get_user_first_and_last_name(request_user_id)
+
+                        buttons = [
+                            {
+                                "action": {
+                                    "type": "callback",
+                                    "label": "Принять",
+                                    "payload": {
+                                        "text": "accept_request",
+                                        "user_id": request_user_id,
+                                        "classroom_id": request_classroom_id
+                                    }
+                                },
+                                "color": "positive"
+                            },
+                            {
+                                "action": {
+                                    "type": "callback",
+                                    "label": "Отклонить",
+                                    "payload": {
+                                        "text": "cancel_request",
+                                        "user_id": request_user_id,
+                                        "classroom_id": request_classroom_id
+                                    }
+                                },
+                                "color": "negative"
+                            }
+                        ]
+
+                        elements.append(
+                            {
+                                "title": f"{first_name} {last_name}",
+                                "description": f"{request_text}\n{request_datetime}",
+                                "buttons": buttons
+                            }
+                        )
+
+                    trans_message = info_message if info_message else "Заявки в этот класс"
+                    self.send_message(user_id, trans_message, template=dumps({
+                        "type": "carousel",
+                        "elements": elements
+                    }))
             else:
-                elements = []
-                for request in request_list:
-                    request_user_id = request["user_id"]
-                    request_classroom_id = request["classroom_id"]
-                    request_text = request["request_text"]
-                    request_datetime = request["datetime"]
-
-                    first_name, last_name = self.user_db.get_user_first_and_last_name(request_user_id)
-
-                    buttons = [
-                        {
-                            "action": {
-                                "type": "callback",
-                                "label": "Принять",
-                                "payload": {
-                                    "text": "accept_request",
-                                    "user_id": request_user_id,
-                                    "classroom_id": request_classroom_id
-                                }
-                            },
-                            "color": "positive"
-                        },
-                        {
-                            "action": {
-                                "type": "callback",
-                                "label": "Отклонить",
-                                "payload": {
-                                    "text": "cancel_request",
-                                    "user_id": request_user_id,
-                                    "classroom_id": request_classroom_id
-                                }
-                            },
-                            "color": "negative"
-                        }
-                    ]
-
-                    elements.append(
-                        {
-                            "title": f"{first_name} {last_name}",
-                            "description": f"{request_text}\n{request_datetime}",
-                            "buttons": buttons
-                        }
-                    )
-                
-                trans_message = info_message if info_message else "Заявки в этот класс"
-                self.send_message(user_id, trans_message, template=dumps({
-                    "type": "carousel",
-                    "elements": elements
-                }))
+                self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Ты не можешь принимать заявку из-за "
+                                                                             "своей роли", sign=False)
 
         elif payload["text"] == "Назад":
             trans_message = "Назад..."

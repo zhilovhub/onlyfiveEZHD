@@ -86,8 +86,14 @@ class SupportingFunctions:
                                   KeyBoards.get_my_class_menu_keyboard(**kwargs))
 
             case States.S_IN_CLASS_MYCLASSES2:
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
+                members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
+
+                accept_requests = members_role_properties_dictionary["accept_requests"]
+
                 self.send_message(user_id, message,
-                                  KeyBoards.get_my_class_menu2_keyboard(**kwargs))
+                                  KeyBoards.get_my_class_menu2_keyboard(**kwargs, accept_requests=accept_requests))
 
             case States.S_EDIT_WEEK_MYCLASSES:
                 self.send_message(user_id, message,

@@ -193,12 +193,17 @@ class KeyBoards:
 
     # CUSTOMIZED MY_CLASS_MENU2 KEYBOARD
     @staticmethod
-    def get_my_class_menu2_keyboard(sign: bool) -> VkKeyboard:
+    def get_my_class_menu2_keyboard(sign: bool, accept_requests: bool) -> VkKeyboard:
         keyboard_my_class_menu2 = VkKeyboard()
-        if sign:
-            keyboard_my_class_menu2.add_button(label="Заявки‼", payload=KeyBoards.get_payload("Заявки"))
+        if not accept_requests:
+            keyboard_my_class_menu2.add_button(label="Заявки❌", payload=KeyBoards.get_payload("Заявки",
+                                                                                              can=accept_requests))
+        elif sign:
+            keyboard_my_class_menu2.add_button(label="Заявки‼", payload=KeyBoards.get_payload("Заявки",
+                                                                                              can=accept_requests))
         else:
-            keyboard_my_class_menu2.add_button(label="Заявки", payload=KeyBoards.get_payload("Заявки"))
+            keyboard_my_class_menu2.add_button(label="Заявки", payload=KeyBoards.get_payload("Заявки",
+                                                                                             can=accept_requests))
         keyboard_my_class_menu2.add_button(label="События", payload=KeyBoards.get_payload("События"))
         keyboard_my_class_menu2.add_button(label="Уведомить", payload=KeyBoards.get_payload("Уведомить"))
         keyboard_my_class_menu2.add_line()
