@@ -116,7 +116,9 @@ class KeyBoards:
         keyboard_members_settings.add_button(invite_members_label, 
                                              payload=KeyBoards.get_payload("Пригл. ссылка",
                                                                            can=invite_members))
-        keyboard_members_settings.add_button(kick_members_label, 
+        if not is_admin:
+            keyboard_members_settings.add_line()
+        keyboard_members_settings.add_button(kick_members_label,
                                              payload=KeyBoards.get_payload("Удалить участника",
                                                                            can=kick_members))
         keyboard_members_settings.add_line()
