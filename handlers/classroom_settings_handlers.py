@@ -32,7 +32,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
             self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Тип класса":
-            if payload["can_change"]:
+            if payload["can"]:
                 keyboard_type_kwargs = {
                     "Публичный": {"public_color": "positive", "invite_color": "negative", "close_color": "negative"},
                     "Заявки": {"public_color": "negative", "invite_color": "positive", "close_color": "negative"},
@@ -50,7 +50,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
                                                                                  "за своей роли")
 
         elif payload["text"] == "Название класса":
-            if payload["can_change"]:
+            if payload["can"]:
                 trans_message = "Впиши новое название класса (длина не более 12 символов):"
                 self.state_transition(user_id, States.S_CLASSROOM_NAME_MAIN_CLASSROOM_SETTINGS, trans_message)
             else:
@@ -58,7 +58,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
                                                                                  " из-за своей роли")
 
         elif payload["text"] == "Название школы":
-            if payload["can_change"]:
+            if payload["can"]:
                 trans_message = "Впиши новое название школы (длина не более 32 символа):"
                 self.state_transition(user_id, States.S_SCHOOL_NAME_MAIN_CLASSROOM_SETTINGS, trans_message)
             else:
@@ -66,7 +66,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
                                                                                  " из-за своей роли")
 
         elif payload["text"] == "Описание класса":
-            if payload["can_change"]:
+            if payload["can"]:
                 trans_message = "Напиши новое описание класса (длина не более 200 символов):"
                 self.state_transition(user_id, States.S_DESCRIPTION_MAIN_CLASSROOM_SETTINGS, trans_message)
             else:
@@ -74,7 +74,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
                                                                                  " из-за своей роли")
 
         elif payload["text"] == "Лимит участников":
-            if payload["can_change"]:
+            if payload["can"]:
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
 

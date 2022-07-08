@@ -85,20 +85,6 @@ class KeyBoards:
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.add_line()
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.add_button("Главное меню",
                                                                           payload=get_payload("Главное меню"))
-    # MEMBERS_SETTINGS KEYBOARD
-    KEYBOARD_MEMBERS_SETTINGS = VkKeyboard()
-    KEYBOARD_MEMBERS_SETTINGS.add_button("Добавить роли", payload=get_payload("Добавить роли"))
-    KEYBOARD_MEMBERS_SETTINGS.add_button("Редактировать роли", payload=get_payload("Редактировать роли"))
-    KEYBOARD_MEMBERS_SETTINGS.add_line()
-    KEYBOARD_MEMBERS_SETTINGS.add_button("Удалить роли", payload=get_payload("Удалить роли"))
-    KEYBOARD_MEMBERS_SETTINGS.add_line()
-    KEYBOARD_MEMBERS_SETTINGS.add_button("Назначить роли", payload=get_payload("Назначить роли"))
-    KEYBOARD_MEMBERS_SETTINGS.add_line()
-    KEYBOARD_MEMBERS_SETTINGS.add_button("Пригл. ссылка", payload=get_payload("Пригл. ссылка"))
-    KEYBOARD_MEMBERS_SETTINGS.add_button("Удалить участника", payload=get_payload("Удалить участника"))
-    KEYBOARD_MEMBERS_SETTINGS.add_line()
-    KEYBOARD_MEMBERS_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
-    KEYBOARD_MEMBERS_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
 
     # BACK_MENU_DELETE_REQUEST
     KEYBOARD_BACK_MENU_DELETE_REQUEST = VkKeyboard()
@@ -107,6 +93,39 @@ class KeyBoards:
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_line()
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Главное меню", payload=get_payload("Главное меню"))
+
+    # CUSTOMIZED MEMBERS_SETTINGS KEYBOARD
+    @staticmethod
+    def get_members_settings_keyboard(is_admin: bool, kick_members: bool, invite_members: bool) -> VkKeyboard:
+        kick_members_label = "Удалить участника" if kick_members else "Удалить участника❌"
+        invite_members_label = "Пригл. ссылка" if invite_members else "Пригл. ссылка❌"
+
+        keyboard_members_settings = VkKeyboard()
+        if is_admin:
+            keyboard_members_settings.add_button("Добавить роли", 
+                                                 payload=KeyBoards.get_payload("Добавить роли"))
+            keyboard_members_settings.add_button("Редактировать роли", 
+                                                 payload=KeyBoards.get_payload("Редактировать роли"))
+            keyboard_members_settings.add_line()
+            keyboard_members_settings.add_button("Удалить роли", 
+                                                 payload=KeyBoards.get_payload("Удалить роли"))
+            keyboard_members_settings.add_line()
+            keyboard_members_settings.add_button("Назначить роли", 
+                                                 payload=KeyBoards.get_payload("Назначить роли"))
+            keyboard_members_settings.add_line()
+        keyboard_members_settings.add_button(invite_members_label, 
+                                             payload=KeyBoards.get_payload("Пригл. ссылка",
+                                                                           can=invite_members))
+        keyboard_members_settings.add_button(kick_members_label, 
+                                             payload=KeyBoards.get_payload("Удалить участника",
+                                                                           can=kick_members))
+        keyboard_members_settings.add_line()
+        keyboard_members_settings.add_button("Назад", 
+                                             payload=KeyBoards.get_payload("Назад"))
+        keyboard_members_settings.add_button("Главное меню", 
+                                             payload=KeyBoards.get_payload("Главное меню"))
+
+        return keyboard_members_settings.get_keyboard()
 
     # CUSTOMIZED MAIN_CLASSROOM_SETTINGS KEYBOARD
     @staticmethod
@@ -122,22 +141,22 @@ class KeyBoards:
         keyboard_main_classroom_settings = VkKeyboard()
         keyboard_main_classroom_settings.add_button(classroom_type_label,
                                                     payload=KeyBoards.get_payload("Тип класса",
-                                                                                  can_change=change_classroom_access))
+                                                                                  can=change_classroom_access))
         keyboard_main_classroom_settings.add_line()
         keyboard_main_classroom_settings.add_button(classroom_name_label,
                                                     payload=KeyBoards.get_payload("Название класса",
-                                                                                  can_change=change_classroom_name))
+                                                                                  can=change_classroom_name))
         keyboard_main_classroom_settings.add_line()
         keyboard_main_classroom_settings.add_button(school_name_label,
                                                     payload=KeyBoards.get_payload("Название школы",
-                                                                                  can_change=change_school_name))
+                                                                                  can=change_school_name))
         keyboard_main_classroom_settings.add_line()
         keyboard_main_classroom_settings.add_button(description_label,
                                                     payload=KeyBoards.get_payload("Описание класса",
-                                                                                  can_change=change_description))
+                                                                                  can=change_description))
         keyboard_main_classroom_settings.add_button(members_limit_label,
                                                     payload=KeyBoards.get_payload("Лимит участников",
-                                                                                  can_change=change_members_limit))
+                                                                                  can=change_members_limit))
         keyboard_main_classroom_settings.add_line()
         keyboard_main_classroom_settings.add_button("Опасная зона",
                                                     payload=KeyBoards.get_payload("Опасная зона"),

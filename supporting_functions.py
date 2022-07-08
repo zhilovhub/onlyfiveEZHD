@@ -130,14 +130,14 @@ class SupportingFunctions:
             case States.S_MAIN_CLASSROOM_SETTINGS:
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
-                classroom_role_properties = self.role_db.get_classroom_role_properties_dict(role_id)
+                classroom_role_properties_dictionary = self.role_db.get_classroom_role_properties_dict(role_id)
 
-                classroom_role_properties.pop("role_name", None)
-                classroom_role_properties.pop("is_default_member", None)
-                classroom_role_properties.pop("is_admin", None)
+                classroom_role_properties_dictionary.pop("role_name", None)
+                classroom_role_properties_dictionary.pop("is_default_member", None)
+                classroom_role_properties_dictionary.pop("is_admin", None)
 
                 self.send_message(user_id, message,
-                                  KeyBoards.get_main_classroom_settings(**classroom_role_properties))
+                                  KeyBoards.get_main_classroom_settings(**classroom_role_properties_dictionary))
 
             case States.S_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS:
                 self.send_message(user_id, message,
@@ -178,8 +178,18 @@ class SupportingFunctions:
 
             # MEMBERSSETTINGS
             case States.S_MEMBERS_SETTINGS:
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
+                admin_role_id = self.role_db.get_admin_role_id(classroom_id)
+                is_admin = role_id == admin_role_id
+
+                members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
+
+                kick_members = members_role_properties_dictionary["kick_members"]
+                invite_members = members_role_properties_dictionary["invite_members"]
+
                 self.send_message(user_id, message,
-                                  KeyBoards.KEYBOARD_MEMBERS_SETTINGS.get_keyboard())
+                                  KeyBoards.get_members_settings_keyboard(is_admin, kick_members, invite_members))
 
             case States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS:
                 self.send_message(user_id, message,

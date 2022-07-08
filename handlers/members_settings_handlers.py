@@ -36,12 +36,23 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.state_transition(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Удалить участника":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
-            members_text = self.get_members_text(roles_dictionary)
+            if payload["can"]:
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+                members_text = self.get_members_text(roles_dictionary)
 
-            trans_message = f"{members_text}\n\nВпиши номер участника, которого ты хочешь удалить:"
-            self.state_transition(user_id, States.S_DELETE_MEMBER_MEMBERS_SETTINGS, trans_message)
+                trans_message = f"{members_text}\n\nВпиши номер участника, которого ты хочешь удалить:"
+                self.state_transition(user_id, States.S_DELETE_MEMBER_MEMBERS_SETTINGS, trans_message)
+            else:
+                self.state_transition(user_id, States.S_MEMBERS_SETTINGS, "Ты не можешь кикать участников из-за "
+                                                                          "своей роли")
+
+        elif payload["text"] == "Пригл. ссылка":
+            if payload["can"]:
+                pass
+            else:
+                self.state_transition(user_id, States.S_MEMBERS_SETTINGS, "Ты не можешь приглашать участников из-за "
+                                                                          "своей роли")
 
         elif payload["text"] == "Удалить роли":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
