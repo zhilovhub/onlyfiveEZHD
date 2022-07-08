@@ -56,15 +56,6 @@ class KeyBoards:
     KEYBOARD_CLASSROOM_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_CLASSROOM_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
 
-    # MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS KEYBOARD
-    KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS = VkKeyboard()
-    KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.add_button("Покинуть класс", payload=get_payload("Покинуть класс"))
-    KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.add_button("Удалить класс", payload=get_payload("Удалить класс"),
-                                                               color="negative")
-    KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.add_line()
-    KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
-    KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
-
     # MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS KEYBOARD
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS = VkKeyboard()
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS.add_button("Да", payload=get_payload("Да"),
@@ -93,6 +84,24 @@ class KeyBoards:
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_line()
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Главное меню", payload=get_payload("Главное меню"))
+
+    # CUSTOMIZED MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS KEYBOARD
+    @staticmethod
+    def get_main_dangerous_zone_classroom_settings_keyboard(is_admin: bool) -> VkKeyboard:
+        keyboard_main_dangerous_zone_classroom_settings = VkKeyboard()
+        keyboard_main_dangerous_zone_classroom_settings.add_button("Покинуть класс",
+                                                                   payload=KeyBoards.get_payload("Покинуть класс"))
+        if is_admin:
+            keyboard_main_dangerous_zone_classroom_settings.add_button("Удалить класс",
+                                                                       payload=KeyBoards.get_payload("Удалить класс"),
+                                                                       color="negative")
+        keyboard_main_dangerous_zone_classroom_settings.add_line()
+        keyboard_main_dangerous_zone_classroom_settings.add_button("Назад",
+                                                                   payload=KeyBoards.get_payload("Назад"))
+        keyboard_main_dangerous_zone_classroom_settings.add_button("Главное меню",
+                                                                   payload=KeyBoards.get_payload("Главное меню"))
+        
+        return keyboard_main_dangerous_zone_classroom_settings.get_keyboard()
 
     # CUSTOMIZED MEMBERS_SETTINGS KEYBOARD
     @staticmethod
