@@ -32,38 +32,59 @@ class ClassroomSettingsHandlers(SupportingFunctions):
             self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Тип класса":
-            keyboard_type_kwargs = {
-                "Публичный": {"public_color": "positive", "invite_color": "negative", "close_color": "negative"},
-                "Заявки": {"public_color": "negative", "invite_color": "positive", "close_color": "negative"},
-                "Закрытый": {"public_color": "negative", "invite_color": "negative", "close_color": "positive"}
-            }
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            access = self.classroom_db.get_classroom_access(classroom_id)
-            keyboard_kwargs = keyboard_type_kwargs[access]
+            if payload["can_change"]:
+                keyboard_type_kwargs = {
+                    "Публичный": {"public_color": "positive", "invite_color": "negative", "close_color": "negative"},
+                    "Заявки": {"public_color": "negative", "invite_color": "positive", "close_color": "negative"},
+                    "Закрытый": {"public_color": "negative", "invite_color": "negative", "close_color": "positive"}
+                }
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                access = self.classroom_db.get_classroom_access(classroom_id)
+                keyboard_kwargs = keyboard_type_kwargs[access]
 
-            trans_message = "Выберете новый тип класса (зеленым покрашен текущий тип):"
-            self.state_transition(user_id, States.S_ACCESS_MAIN_CLASSROOM_SETTINGS, trans_message, **keyboard_kwargs)
+                trans_message = "Выберете новый тип класса (зеленым покрашен текущий тип):"
+                self.state_transition(user_id,
+                                      States.S_ACCESS_MAIN_CLASSROOM_SETTINGS, trans_message, **keyboard_kwargs)
+            else:
+                self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, "Ты не можешь изменять тип класса из-"
+                                                                                 "за своей роли")
 
         elif payload["text"] == "Название класса":
-            trans_message = "Впиши новое название класса (длина не более 12 символов):"
-            self.state_transition(user_id, States.S_CLASSROOM_NAME_MAIN_CLASSROOM_SETTINGS, trans_message)
+            if payload["can_change"]:
+                trans_message = "Впиши новое название класса (длина не более 12 символов):"
+                self.state_transition(user_id, States.S_CLASSROOM_NAME_MAIN_CLASSROOM_SETTINGS, trans_message)
+            else:
+                self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, "Ты не можешь изменять название класса"
+                                                                                 " из-за своей роли")
 
         elif payload["text"] == "Название школы":
-            trans_message = "Впиши новое название школы (длина не более 32 символа):"
-            self.state_transition(user_id, States.S_SCHOOL_NAME_MAIN_CLASSROOM_SETTINGS, trans_message)
+            if payload["can_change"]:
+                trans_message = "Впиши новое название школы (длина не более 32 символа):"
+                self.state_transition(user_id, States.S_SCHOOL_NAME_MAIN_CLASSROOM_SETTINGS, trans_message)
+            else:
+                self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, "Ты не можешь изменять название школы"
+                                                                                 " из-за своей роли")
 
         elif payload["text"] == "Описание класса":
-            trans_message = "Напиши новое описание класса (длина не более 200 символов):"
-            self.state_transition(user_id, States.S_DESCRIPTION_MAIN_CLASSROOM_SETTINGS, trans_message)
+            if payload["can_change"]:
+                trans_message = "Напиши новое описание класса (длина не более 200 символов):"
+                self.state_transition(user_id, States.S_DESCRIPTION_MAIN_CLASSROOM_SETTINGS, trans_message)
+            else:
+                self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, "Ты не можешь изменять описание класса"
+                                                                                 " из-за своей роли")
 
         elif payload["text"] == "Лимит участников":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
+            if payload["can_change"]:
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
 
-            trans_message = f"Текущий лимит участников: {members_limit}\n\n" \
-                            f"Впишите новое число максимального количества участников (не может быть меньше " \
-                            f"текущего количества участников и не может быть больше 40)"
-            self.state_transition(user_id, States.S_LIMIT_MAIN_CLASSROOM_SETTINGS, trans_message)
+                trans_message = f"Текущий лимит участников: {members_limit}\n\n" \
+                                f"Впишите новое число максимального количества участников (не может быть меньше " \
+                                f"текущего количества участников и не может быть больше 40)"
+                self.state_transition(user_id, States.S_LIMIT_MAIN_CLASSROOM_SETTINGS, trans_message)
+            else:
+                self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, "Ты не можешь изменять лимит"
+                                                                                 " участников из-за своей роли")
 
         elif payload["text"] == "Опасная зона":
             trans_message = "Место, где стоит быть поосторожнее"

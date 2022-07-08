@@ -121,18 +121,23 @@ class KeyBoards:
 
         keyboard_main_classroom_settings = VkKeyboard()
         keyboard_main_classroom_settings.add_button(classroom_type_label,
-                                                    payload=KeyBoards.get_payload("Тип класса"))
+                                                    payload=KeyBoards.get_payload("Тип класса",
+                                                                                  can_change=change_classroom_access))
         keyboard_main_classroom_settings.add_line()
         keyboard_main_classroom_settings.add_button(classroom_name_label,
-                                                    payload=KeyBoards.get_payload("Название класса"))
+                                                    payload=KeyBoards.get_payload("Название класса",
+                                                                                  can_change=change_classroom_name))
         keyboard_main_classroom_settings.add_line()
         keyboard_main_classroom_settings.add_button(school_name_label,
-                                                    payload=KeyBoards.get_payload("Название школы"))
+                                                    payload=KeyBoards.get_payload("Название школы",
+                                                                                  can_change=change_school_name))
         keyboard_main_classroom_settings.add_line()
         keyboard_main_classroom_settings.add_button(description_label,
-                                                    payload=KeyBoards.get_payload("Описание класса"))
+                                                    payload=KeyBoards.get_payload("Описание класса",
+                                                                                  can_change=change_description))
         keyboard_main_classroom_settings.add_button(members_limit_label,
-                                                    payload=KeyBoards.get_payload("Лимит участников"))
+                                                    payload=KeyBoards.get_payload("Лимит участников",
+                                                                                  can_change=change_members_limit))
         keyboard_main_classroom_settings.add_line()
         keyboard_main_classroom_settings.add_button("Опасная зона",
                                                     payload=KeyBoards.get_payload("Опасная зона"),
