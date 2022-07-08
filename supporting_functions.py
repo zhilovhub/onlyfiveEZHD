@@ -128,8 +128,16 @@ class SupportingFunctions:
                                   KeyBoards.KEYBOARD_CLASSROOM_SETTINGS.get_keyboard())
 
             case States.S_MAIN_CLASSROOM_SETTINGS:
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
+                classroom_role_properties = self.role_db.get_classroom_role_properties_dict(role_id)
+
+                classroom_role_properties.pop("role_name", None)
+                classroom_role_properties.pop("is_default_member", None)
+                classroom_role_properties.pop("is_admin", None)
+
                 self.send_message(user_id, message,
-                                  KeyBoards.KEYBOARD_MAIN_CLASSROOM_SETTINGS.get_keyboard())
+                                  KeyBoards.get_main_classroom_settings(**classroom_role_properties))
 
             case States.S_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS:
                 self.send_message(user_id, message,

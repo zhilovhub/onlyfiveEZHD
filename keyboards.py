@@ -56,22 +56,6 @@ class KeyBoards:
     KEYBOARD_CLASSROOM_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_CLASSROOM_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
 
-    # MAIN_CLASSROOM_SETTINGS KEYBOARD
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS = VkKeyboard()
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Тип класса", payload=get_payload("Тип класса"))
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Название класса", payload=get_payload("Название класса"))
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Название школы", payload=get_payload("Название школы"))
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Описание класса", payload=get_payload("Описание класса"))
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Лимит участников", payload=get_payload("Лимит участников"))
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Опасная зона", payload=get_payload("Опасная зона"), color="negative")
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_line()
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Назад", payload=get_payload("Назад"))
-    KEYBOARD_MAIN_CLASSROOM_SETTINGS.add_button("Главное меню", payload=get_payload("Главное меню"))
-
     # MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS KEYBOARD
     KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS = VkKeyboard()
     KEYBOARD_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS.add_button("Покинуть класс", payload=get_payload("Покинуть класс"))
@@ -124,9 +108,46 @@ class KeyBoards:
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Главное меню", payload=get_payload("Главное меню"))
 
+    # CUSTOMIZED MAIN_CLASSROOM_SETTINGS KEYBOARD
+    @staticmethod
+    def get_main_classroom_settings(change_classroom_access: bool, change_classroom_name: bool,
+                                    change_school_name: bool, change_description: bool, change_members_limit: bool
+                                    ) -> VkKeyboard:
+        classroom_type_label = "Тип класса" if change_classroom_access else "Тип класса❌"
+        classroom_name_label = "Название класса" if change_classroom_name else "Название класса❌"
+        school_name_label = "Название школы" if change_school_name else "Название школы❌"
+        description_label = "Описание класса" if change_description else "Описание класса❌"
+        members_limit_label = "Лимит участников" if change_members_limit else "Лимит участников❌"
+
+        keyboard_main_classroom_settings = VkKeyboard()
+        keyboard_main_classroom_settings.add_button(classroom_type_label,
+                                                    payload=KeyBoards.get_payload("Тип класса"))
+        keyboard_main_classroom_settings.add_line()
+        keyboard_main_classroom_settings.add_button(classroom_name_label,
+                                                    payload=KeyBoards.get_payload("Название класса"))
+        keyboard_main_classroom_settings.add_line()
+        keyboard_main_classroom_settings.add_button(school_name_label,
+                                                    payload=KeyBoards.get_payload("Название школы"))
+        keyboard_main_classroom_settings.add_line()
+        keyboard_main_classroom_settings.add_button(description_label,
+                                                    payload=KeyBoards.get_payload("Описание класса"))
+        keyboard_main_classroom_settings.add_button(members_limit_label,
+                                                    payload=KeyBoards.get_payload("Лимит участников"))
+        keyboard_main_classroom_settings.add_line()
+        keyboard_main_classroom_settings.add_button("Опасная зона",
+                                                    payload=KeyBoards.get_payload("Опасная зона"),
+                                                    color="negative")
+        keyboard_main_classroom_settings.add_line()
+        keyboard_main_classroom_settings.add_button("Назад",
+                                                    payload=KeyBoards.get_payload("Назад"))
+        keyboard_main_classroom_settings.add_button("Главное меню",
+                                                    payload=KeyBoards.get_payload("Главное меню"))
+
+        return keyboard_main_classroom_settings.get_keyboard()
+
     # CUSTOMIZED EDIT_WEEK KEYBOARD
     @staticmethod
-    def get_edit_week_keyboard(week_type: str):
+    def get_edit_week_keyboard(week_type: str) -> VkKeyboard:
         keyboard_edit_week = VkKeyboard()
         keyboard_edit_week.add_button("ПН", payload=KeyBoards.get_payload("ПН"))
         keyboard_edit_week.add_button("ВТ", payload=KeyBoards.get_payload("ВТ"))
@@ -148,7 +169,7 @@ class KeyBoards:
 
     # CUSTOMIZED MY_CLASS_MENU2 KEYBOARD
     @staticmethod
-    def get_my_class_menu2_keyboard(sign: bool):
+    def get_my_class_menu2_keyboard(sign: bool) -> VkKeyboard:
         keyboard_my_class_menu2 = VkKeyboard()
         if sign:
             keyboard_my_class_menu2.add_button(label="Заявки‼", payload=KeyBoards.get_payload("Заявки"))
@@ -164,7 +185,7 @@ class KeyBoards:
 
     # CUSTOMIZED MY_CLASS_MENU KEYBOARD
     @staticmethod
-    def get_my_class_menu_keyboard(sign: bool):
+    def get_my_class_menu_keyboard(sign: bool) -> VkKeyboard:
         keyboard_my_class_menu = VkKeyboard()
         keyboard_my_class_menu.add_button(label="Дз текущее", payload=KeyBoards.get_payload("Дз текущее"))
         keyboard_my_class_menu.add_button(label="Дз будущее", payload=KeyBoards.get_payload("Дз будущее"))
