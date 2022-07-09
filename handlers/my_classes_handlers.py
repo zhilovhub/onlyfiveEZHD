@@ -42,45 +42,60 @@ class MyClassesHandlers(SupportingFunctions):
             self.send_message(user_id, members_text, keyboard.get_keyboard())
 
         elif payload["text"] in ["Расписание эталонное", "Расписание текущее", "Расписание будущее"]:
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+
+            role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
+            diary_role_properties_dictionary = self.role_db.get_diary_role_properties_dict(role_id)
+            change_standard_week = diary_role_properties_dictionary["change_standard_week"]
+            change_current_week = diary_role_properties_dictionary["change_current_week"]
+            change_next_week = diary_role_properties_dictionary["change_next_week"]
+
             payload_meanings_dict = {
                 "Расписание эталонное": ("edit_standard", "standard", "Эталонное расписание\n\nМожно копировать в "
                                                                       "текущее и будущее расписание.\nБудет "
                                                                       "автоматически устанавливаться в будущее "
-                                                                      "расписание каждую неделю\n\n"),
-                "Расписание текущее": ("edit_current", "current", "Расписание на текущую неделю\n\n"),
-                "Расписание будущее": ("edit_next", "next", "Расписание на следующую неделю\n\n")
+                                                                      "расписание каждую неделю\n\n",
+                                         change_standard_week),
+                "Расписание текущее": ("edit_current", "current", "Расписание на текущую неделю\n\n",
+                                       change_current_week),
+                "Расписание будущее": ("edit_next", "next", "Расписание на следующую неделю\n\n",
+                                       change_next_week)
             }
             callback_payload_text = payload_meanings_dict[payload["text"]][0]
             week_type = payload_meanings_dict[payload["text"]][1]
             help_text = payload_meanings_dict[payload["text"]][2]
+            can = payload_meanings_dict[payload["text"]][3]
 
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, week_type)
             diary_text = self.get_week_diary_text(formatted_week_lessons)
 
             keyboard = VkKeyboard(inline=True)
-            keyboard.add_callback_button("Изменить",
+            keyboard.add_callback_button("Изменить" if can else "Изменить❌",
                                          payload={
                                              "text": callback_payload_text,
-                                             "classroom_id": classroom_id
+                                             "classroom_id": classroom_id,
+                                             "can": can
                                          })
 
             self.send_message(user_id, help_text + diary_text, keyboard.get_keyboard())
 
         elif payload["text"] in ("edit_standard", "edit_current", "edit_next"):
-            payload_meanings_dict = {
-                "edit_standard": ("standard", "эталонного"),
-                "edit_current": ("current", "текущего"),
-                "edit_next": ("next", "будущего")
-            }
-            week_type = payload_meanings_dict[payload["text"]][0]
-            week_type_russian = payload_meanings_dict[payload["text"]][1]
+            if payload["can"]:
+                payload_meanings_dict = {
+                    "edit_standard": ("standard", "эталонного"),
+                    "edit_current": ("current", "текущего"),
+                    "edit_next": ("next", "будущего")
+                }
+                week_type = payload_meanings_dict[payload["text"]][0]
+                week_type_russian = payload_meanings_dict[payload["text"]][1]
 
-            self.diary_homework_db.insert_row_into_temp_weekday_table(user_id, week_type)
+                self.diary_homework_db.insert_row_into_temp_weekday_table(user_id, week_type)
 
-            trans_message = f"Редактирование {week_type_russian} расписания\n\nИзменения " \
-                            f"увидят ВСЕ участники класса!"
-            self.state_transition(user_id, States.S_EDIT_WEEK_MYCLASSES, trans_message, week_type=week_type)
+                trans_message = f"Редактирование {week_type_russian} расписания\n\nИзменения " \
+                                f"увидят ВСЕ участники класса!"
+                self.state_transition(user_id, States.S_EDIT_WEEK_MYCLASSES, trans_message, week_type=week_type)
+            else:
+                self.send_message(user_id, "Ты не можешь менять расписание этого типа из-за своей роли")
 
         elif payload["text"] == "enter_members_settings":
             trans_message = "Настройки участников класса\n\n" \
