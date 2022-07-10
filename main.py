@@ -205,8 +205,8 @@ class DiaryVkBot(Handlers):
             case "enter_the_classroom":
                 self.p_enter_the_classroom_handler(user_id, payload, current_dialog_state)
 
-            case ("edit_standard" | "edit_current" | "edit_next"):
-                self.p_edit_week_handler(user_id, payload, current_dialog_state)
+            case ("edit_standard" | "edit_current" | "edit_next" | "edit_current_homework" | "edit_next_homework"):
+                self.p_edit_week_or_homework_handler(user_id, payload, current_dialog_state)
 
             case "enter_members_settings":
                 self.p_enter_members_settings_handler(user_id, payload, current_dialog_state)

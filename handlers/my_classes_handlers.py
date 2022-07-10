@@ -126,6 +126,12 @@ class MyClassesHandlers(SupportingFunctions):
             else:
                 self.send_message(user_id, "Ты не можешь менять расписание этого типа из-за своей роли")
 
+        elif payload["text"] in ("edit_current_homework", "edit_next_homework"):
+            if payload["can"]:
+                pass
+            else:
+                self.send_message(user_id, "Ты не можешь редактировать дз на выбранной недели из-за своей роли")
+
         elif payload["text"] == "enter_members_settings":
             trans_message = "Настройки участников класса\n\n" \
                             "Здесь можно создавать и настраивать роли, удалять и приглашать участников!"

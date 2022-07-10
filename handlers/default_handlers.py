@@ -132,9 +132,9 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
         else:
             self.send_message(user_id, "Закончи текущее действие или выйди в главное меню")
 
-    def p_edit_week_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
-        """Handling payloads with text: standard | current | next"""
-        if current_dialog_state == States.S_IN_CLASS_MYCLASSES.value:
+    def p_edit_week_or_homework_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
+        """Handling payload with text: edit_current_homework | edit_next_homework + all week types"""
+        if current_dialog_state in (States.S_IN_CLASS_MYCLASSES.value, States.S_IN_CLASS_MYCLASSES2.value):
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
 
             if classroom_id == payload["classroom_id"]:
