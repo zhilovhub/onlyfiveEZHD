@@ -19,10 +19,17 @@ class DiaryHomeworkCommands(DataBase):
         except Error as e:
             print(e)
 
-    def get_all_days_lessons_from_week(self, classroom_id: int, week: str) -> list:
+    def get_all_days_lessons_from_week(self, classroom_id: int, week_type: str, homework=False) -> list:
         """Returns everyday diary from week"""
+        week_type_dict = {
+            "standard": "diary_standard_week",
+            "current": "diary_current_week" if not homework else "homework_current_week",
+            "next": "diary_next_week" if not homework else "homework_next_week"
+        }
+        table_name = week_type_dict[week_type]
+
         with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_all_days_from_week_query.format(week, classroom_id))
+            cursor.execute(DiaryHomeworkQueries.get_all_days_from_week_query.format(table_name, classroom_id))
             all_lessons = cursor.fetchone()[1:]
 
             formatted_all_lessons = []
@@ -736,7 +743,7 @@ class DiaryHomeworkQueries:
         week_index INT
     )"""
 
-    get_all_days_from_week_query = """SELECT * FROM diary_{}_week WHERE classroom_id={}"""
+    get_all_days_from_week_query = """SELECT * FROM {} WHERE classroom_id={}"""
 
     get_weekday_lessons_from_temp_table_query = """SELECT * FROM temp_weekday_diary WHERE user_id={}"""
     get_week_type_from_temp_table_query = """SELECT week_type FROM temp_weekday_diary WHERE user_id={}"""
