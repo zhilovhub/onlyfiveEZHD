@@ -84,8 +84,26 @@ class KeyBoards:
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_line()
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Главное меню", payload=get_payload("Главное меню"))
+    
+    # EDIT_HOMEWORK KEYBOARD
+    @staticmethod
+    def get_edit_homework_keyboard() -> VkKeyboard:
+        keyboard_edit_homework = VkKeyboard()
+        keyboard_edit_homework.add_button("ПН", payload=KeyBoards.get_payload("ПН"))
+        keyboard_edit_homework.add_button("ВТ", payload=KeyBoards.get_payload("ВТ"))
+        keyboard_edit_homework.add_button("СР", payload=KeyBoards.get_payload("СР"))
+        keyboard_edit_homework.add_button("ЧТ", payload=KeyBoards.get_payload("ЧТ"))
+        keyboard_edit_homework.add_button("ПТ", payload=KeyBoards.get_payload("ПТ"))
+        keyboard_edit_homework.add_line()
+        keyboard_edit_homework.add_button("СБ", payload=KeyBoards.get_payload("СБ"))
+        keyboard_edit_homework.add_button("ВС", payload=KeyBoards.get_payload("ВС"))
+        keyboard_edit_homework.add_line()
+        keyboard_edit_homework.add_button("Назад", payload=KeyBoards.get_payload("Назад"))
+        keyboard_edit_homework.add_button("Главное меню", payload=KeyBoards.get_payload("Главное меню"))
 
-    # CUSTOMIZED MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS KEYBOARD
+        return keyboard_edit_homework.get_keyboard()
+
+    # MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS KEYBOARD
     @staticmethod
     def get_main_dangerous_zone_classroom_settings_keyboard(is_admin: bool) -> VkKeyboard:
         keyboard_main_dangerous_zone_classroom_settings = VkKeyboard()
@@ -103,7 +121,7 @@ class KeyBoards:
         
         return keyboard_main_dangerous_zone_classroom_settings.get_keyboard()
 
-    # CUSTOMIZED MEMBERS_SETTINGS KEYBOARD
+    # MEMBERS_SETTINGS KEYBOARD
     @staticmethod
     def get_members_settings_keyboard(is_admin: bool, kick_members: bool, invite_members: bool) -> VkKeyboard:
         kick_members_label = "Удалить участника" if kick_members else "Удалить участника❌"
@@ -138,7 +156,7 @@ class KeyBoards:
 
         return keyboard_members_settings.get_keyboard()
 
-    # CUSTOMIZED MAIN_CLASSROOM_SETTINGS KEYBOARD
+    # MAIN_CLASSROOM_SETTINGS KEYBOARD
     @staticmethod
     def get_main_classroom_settings(change_classroom_access: bool, change_classroom_name: bool,
                                     change_school_name: bool, change_description: bool, change_members_limit: bool
@@ -180,7 +198,7 @@ class KeyBoards:
 
         return keyboard_main_classroom_settings.get_keyboard()
 
-    # CUSTOMIZED EDIT_WEEK KEYBOARD
+    # EDIT_WEEK KEYBOARD
     @staticmethod
     def get_edit_week_keyboard(week_type: str) -> VkKeyboard:
         keyboard_edit_week = VkKeyboard()
@@ -202,7 +220,7 @@ class KeyBoards:
 
         return keyboard_edit_week.get_keyboard()
 
-    # CUSTOMIZED MY_CLASS_MENU2 KEYBOARD
+    # MY_CLASS_MENU2 KEYBOARD
     @staticmethod
     def get_my_class_menu2_keyboard(sign: bool, accept_requests: bool) -> VkKeyboard:
         keyboard_my_class_menu2 = VkKeyboard()
@@ -223,7 +241,7 @@ class KeyBoards:
 
         return keyboard_my_class_menu2.get_keyboard()
 
-    # CUSTOMIZED MY_CLASS_MENU KEYBOARD
+    # MY_CLASS_MENU KEYBOARD
     @staticmethod
     def get_my_class_menu_keyboard(sign: bool) -> VkKeyboard:
         keyboard_my_class_menu = VkKeyboard()
@@ -249,7 +267,7 @@ class KeyBoards:
 
         return keyboard_my_class_menu.get_keyboard()
 
-    # CUSTOMIZED CLASSROOM_PRIVILEGE KEYBOARD
+    # CLASSROOM_PRIVILEGE KEYBOARD
     @staticmethod
     def get_classroom_privilege_keyboard(colors) -> VkKeyboard:
         keyboard_classroom_privilege = VkKeyboard()
@@ -272,7 +290,7 @@ class KeyBoards:
 
         return keyboard_classroom_privilege.get_keyboard()
 
-    # CUSTOMIZED MEMBERS_PRIVILEGE KEYBOARD
+    # MEMBERS_PRIVILEGE KEYBOARD
     @staticmethod
     def get_members_privilege_keyboard(colors) -> VkKeyboard:
         keyboard_members_privilege = VkKeyboard()
@@ -294,7 +312,7 @@ class KeyBoards:
 
         return keyboard_members_privilege.get_keyboard()
 
-    # CUSTOMIZED DIARY_PRIVILEGE KEYBOARD
+    # DIARY_PRIVILEGE KEYBOARD
     @staticmethod
     def get_diary_privilege_keyboard(colors) -> VkKeyboard:
         keyboard_diary_privilege = VkKeyboard()
@@ -316,7 +334,7 @@ class KeyBoards:
 
         return keyboard_diary_privilege.get_keyboard()
 
-    # CUSTOMIZED LOOK_CLASSROOM KEYBOARD
+    # LOOK_CLASSROOM KEYBOARD
     @staticmethod
     def get_look_classroom_keyboard(classroom_type) -> VkKeyboard:
         keyboard_look_classroom_menu = VkKeyboard()
@@ -340,7 +358,7 @@ class KeyBoards:
 
         return keyboard_look_classroom_menu.get_keyboard()
 
-    # CUSTOMIZED ROLE_SETTINGS_MENU KEYBOARD
+    # ROLE_SETTINGS_MENU KEYBOARD
     @staticmethod
     def get_role_settings_menu_keyboard() -> VkKeyboard:
         keyboard_role_settings_menu = VkKeyboard()
@@ -355,7 +373,7 @@ class KeyBoards:
 
         return keyboard_role_settings_menu.get_keyboard()
 
-    # CUSTOMIZED EDIT_WEEKDAY KEYBOARD
+    # EDIT_WEEKDAY KEYBOARD
     @staticmethod
     def get_edit_weekday_keyboard(add_button_color="secondary", redact_button_color="secondary") -> VkKeyboard:
         keyboard_edit_weekday = VkKeyboard()
@@ -384,7 +402,7 @@ class KeyBoards:
 
         return keyboard_edit_weekday.get_keyboard()
 
-    # CUSTOMIZED ACCESS_MENU_BACK KEYBOARD
+    # ACCESS_MENU_BACK KEYBOARD
     @staticmethod
     def get_access_menu_back_keyboard(public_color="secondary", invite_color="secondary",
                                       close_color="secondary") -> VkKeyboard:

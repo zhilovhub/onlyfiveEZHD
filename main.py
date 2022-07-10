@@ -111,6 +111,9 @@ class DiaryVkBot(Handlers):
             case States.S_EDIT_LESSON_WEEKDAY_MYCLASSES.value:
                 self.s_edit_lesson_weekday_my_classes_handler(user_id, message, payload)
 
+            case States.S_EDIT_HOMEWORK_MYCLASSES.value:
+                self.s_edit_homework_my_classes_handler(user_id, payload)
+
             # FINDCLASS
             case States.S_FIND_CLASS.value:
                 self.s_find_class_handler(user_id, message, payload)

@@ -108,29 +108,26 @@ class MyClassesHandlers(SupportingFunctions):
 
             self.send_message(user_id, help_text + diary_text, keyboard.get_keyboard())
 
-        elif payload["text"] in ("edit_standard", "edit_current", "edit_next"):
+        elif payload["text"] in ("edit_standard", "edit_current", "edit_next",
+                                 "edit_current_homework", "edit_next_homework"):
             if payload["can"]:
                 payload_meanings_dict = {
-                    "edit_standard": ("standard", "эталонного"),
-                    "edit_current": ("current", "текущего"),
-                    "edit_next": ("next", "будущего")
+                    "edit_standard": ("standard", "эталонного расписания", States.S_EDIT_WEEK_MYCLASSES),
+                    "edit_current": ("current", "текущего расписания", States.S_EDIT_WEEK_MYCLASSES),
+                    "edit_next": ("next", "будущего расписания", States.S_EDIT_WEEK_MYCLASSES),
+                    "edit_current_homework": ("current", "дз будущей недели", States.S_EDIT_HOMEWORK_MYCLASSES),
+                    "edit_next_homework": ("next", "дз текущей недели", States.S_EDIT_HOMEWORK_MYCLASSES),
                 }
                 week_type = payload_meanings_dict[payload["text"]][0]
-                week_type_russian = payload_meanings_dict[payload["text"]][1]
+                russian_comments = payload_meanings_dict[payload["text"]][1]
+                next_state = payload_meanings_dict[payload["text"]][2]
 
                 self.diary_homework_db.insert_row_into_temp_weekday_table(user_id, week_type)
 
-                trans_message = f"Редактирование {week_type_russian} расписания\n\nИзменения " \
-                                f"увидят ВСЕ участники класса!"
-                self.state_transition(user_id, States.S_EDIT_WEEK_MYCLASSES, trans_message, week_type=week_type)
+                trans_message = f"Редактирование {russian_comments}\n\nИзменения увидят ВСЕ участники класса!"
+                self.state_transition(user_id, next_state, trans_message, week_type=week_type)
             else:
-                self.send_message(user_id, "Ты не можешь менять расписание этого типа из-за своей роли")
-
-        elif payload["text"] in ("edit_current_homework", "edit_next_homework"):
-            if payload["can"]:
-                pass
-            else:
-                self.send_message(user_id, "Ты не можешь редактировать дз на выбранной недели из-за своей роли")
+                self.send_message(user_id, "Ты не можешь редактировать это из-за своей роли")
 
         elif payload["text"] == "enter_members_settings":
             trans_message = "Настройки участников класса\n\n" \
@@ -491,6 +488,21 @@ class MyClassesHandlers(SupportingFunctions):
 
         elif payload["text"]:
             self.s_edit_weekday_my_classes_handler(user_id, payload)
+
+    def s_edit_homework_my_classes_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_EDIT_HOMEWORK_MYCLASSES"""
+        if payload is None:
+            self.state_transition(user_id, States.S_EDIT_HOMEWORK_MYCLASSES, "Для навигации используй кнопки!👇🏻")
+
+        elif payload["text"] == "Назад":
+            self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
+
+            trans_message = "Возвращение в меню класса"
+            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
+
+        elif payload["text"] == "Главное меню":
+            self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
+            self.trans_to_main_menu(user_id)
 
     @staticmethod
     def get_week_diary_text(formatted_week: list) -> str:

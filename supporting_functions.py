@@ -111,6 +111,9 @@ class SupportingFunctions:
                 self.send_message(user_id, message,
                                   KeyBoards.get_edit_weekday_keyboard(redact_button_color="positive"))
 
+            case States.S_EDIT_HOMEWORK_MYCLASSES:
+                self.send_message(user_id, message, KeyBoards.get_edit_homework_keyboard())
+
             # FINDCLASS
             case States.S_FIND_CLASS:
                 self.send_message(user_id, message,
