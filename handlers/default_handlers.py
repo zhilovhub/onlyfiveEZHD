@@ -29,7 +29,6 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
 
         elif payload["text"] == "Создать класс":
             classroom_id = self.classroom_db.insert_new_classroom()
-            self.diary_homework_db.insert_classroom_id(classroom_id)
             self.classroom_db.update_user_customize_classroom_id(user_id, classroom_id)
 
             trans_message = "Напишите название будущего класса (макс. 12 символов):"
