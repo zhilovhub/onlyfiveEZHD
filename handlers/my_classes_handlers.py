@@ -41,6 +41,35 @@ class MyClassesHandlers(SupportingFunctions):
 
             self.send_message(user_id, members_text, keyboard.get_keyboard())
 
+        elif payload["text"] in ["Дз текущее", "Дз будущее"]:
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+
+            role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
+            diary_role_properties_dictionary = self.role_db.get_diary_role_properties_dict(role_id)
+            change_current_homework = diary_role_properties_dictionary["change_current_homework"]
+            change_next_homework = diary_role_properties_dictionary["change_next_homework"]
+
+            payload_meanings_dict = {
+                "Дз текущее": ("edit_current_homework", "current", "Домашнее задание на текущую неделю",
+                               change_current_homework),
+                "Дз будущее": ("edit_next_homework", "next", "Домашнее задание на следующую неделю",
+                               change_next_homework)
+            }
+            callback_payload_text = payload_meanings_dict[payload["text"]][0]
+            week_type = payload_meanings_dict[payload["text"]][1]
+            help_text = payload_meanings_dict[payload["text"]][2]
+            can = payload_meanings_dict[payload["text"]][3]
+
+            keyboard = VkKeyboard(inline=True)
+            keyboard.add_callback_button("Изменить" if can else "Изменить❌",
+                                         payload={
+                                             "text": callback_payload_text,
+                                             "classroom_id": classroom_id,
+                                             "can": can
+                                         })
+
+            self.send_message(user_id, help_text, keyboard.get_keyboard())
+
         elif payload["text"] in ["Расписание эталонное", "Расписание текущее", "Расписание будущее"]:
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
 
