@@ -31,10 +31,17 @@ class DiaryHomeworkCommands(DataBase):
 
         return formatted_all_lessons
 
-    def get_weekday_lessons_from_week(self, classroom_id: int, week: str, weekday: str) -> tuple:
-        """Returns weekday diary from week"""
+    def get_weekday_lessons_from_week(self, classroom_id: int, week_type: str, weekday: str, homework=False) -> tuple:
+        """Returns weekday from week"""
+        week_type_dict = {
+            "standard": "diary_standard_week",
+            "current": "diary_current_week" if not homework else "homework_current_week",
+            "next": "diary_next_week" if not homework else "homework_next_week"
+        }
+        table_name = week_type_dict[week_type]
+
         with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, week).format(classroom_id))
+            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, table_name).format(classroom_id))
             lessons = cursor.fetchone()
 
         return lessons
@@ -188,7 +195,7 @@ class DiaryHomeworkCommands(DataBase):
 
 class DiaryHomeworkQueries:
     @staticmethod
-    def get_weekday_lessons_query(weekday: str, week: str) -> str:
+    def get_weekday_lessons_query(weekday: str, table_name: str) -> str:
         """Creates get_weekday query"""
         template = """SELECT 
                         weekday_lesson1,
@@ -203,8 +210,8 @@ class DiaryHomeworkQueries:
                         weekday_lesson10,
                         weekday_lesson11,
                         weekday_lesson12
-                      FROM diary_week_type_week WHERE classroom_id={}"""
-        return template.replace("weekday", weekday).replace("week_type", week)
+                      FROM table_name WHERE classroom_id={}"""
+        return template.replace("weekday", weekday).replace("table_name", table_name)
 
     @staticmethod
     def update_weekday_lessons_query(weekday: str, table_name: str) -> str:
