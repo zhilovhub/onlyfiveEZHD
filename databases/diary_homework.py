@@ -93,14 +93,10 @@ class DiaryHomeworkCommands(DataBase):
             cursor.execute(DiaryHomeworkQueries.insert_new_row_into_temp_weekday_diary_query.format(user_id, week_type))
             self.connection.commit()
 
-    def update_all_lessons_in_temp_weekday_table(self, user_id: int, weekday: str, lessons: list) -> None:
+    def update_all_lessons_in_temp_weekday_table(self, user_id: int, weekday: str, lessons: tuple) -> None:
         """Updates lessons in temp weekday table"""
-        query = DiaryHomeworkQueries.update_all_lessons_in_temp_table
-        for lesson in lessons:
-            query = query.replace("NULL", f"'{lesson}'", 1)
-
         with self.connection.cursor() as cursor:
-            cursor.execute(query.format(weekday, user_id))
+            cursor.execute(DiaryHomeworkQueries.update_all_lessons_in_temp_table, (weekday, *lessons, user_id))
             self.connection.commit()
 
     def update_weekday_in_week(self, classroom_id: int, lessons: tuple, week_type: str, weekday: str) -> None:
@@ -765,20 +761,20 @@ class DiaryHomeworkQueries:
     )"""
 
     update_all_lessons_in_temp_table = """UPDATE temp_weekday_diary SET
-        weekday='{}',
-        lesson1=NULL,
-        lesson2=NULL,
-        lesson3=NULL,
-        lesson4=NULL,
-        lesson5=NULL,
-        lesson6=NULL,
-        lesson7=NULL,
-        lesson8=NULL,
-        lesson9=NULL,
-        lesson10=NULL,
-        lesson11=NULL,
-        lesson12=NULL
-    WHERE user_id={}
+        weekday=%s,
+        lesson1=%s,
+        lesson2=%s,
+        lesson3=%s,
+        lesson4=%s,
+        lesson5=%s,
+        lesson6=%s,
+        lesson7=%s,
+        lesson8=%s,
+        lesson9=%s,
+        lesson10=%s,
+        lesson11=%s,
+        lesson12=%s
+    WHERE user_id=%s
         """
 
     update_add_new_lesson_into_temp_weekday_diary_query = """UPDATE temp_weekday_diary SET lesson{}='{}'

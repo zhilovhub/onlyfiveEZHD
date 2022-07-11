@@ -286,9 +286,6 @@ class MyClassesHandlers(SupportingFunctions):
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_week(classroom_id, week_type,
                                                                                          english_weekday)
 
-            if None in formatted_day_lessons:
-                formatted_day_lessons = formatted_day_lessons[:formatted_day_lessons.index(None)]
-
             self.diary_homework_db.update_all_lessons_in_temp_weekday_table(user_id, english_weekday,
                                                                             formatted_day_lessons)
 
@@ -502,6 +499,37 @@ class MyClassesHandlers(SupportingFunctions):
         if payload is None:
             self.state_transition(user_id, States.S_EDIT_HOMEWORK_MYCLASSES, "Для навигации используй кнопки!👇🏻")
 
+        elif payload["text"] in ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]:
+            weekday_meanings_dict = {
+                "ПН": "monday",
+                "ВТ": "tuesday",
+                "СР": "wednesday",
+                "ЧТ": "thursday",
+                "ПТ": "friday",
+                "СБ": "saturday",
+                "ВС": "sunday"
+            }
+            english_weekday = weekday_meanings_dict[payload["text"]]
+
+            week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            formatted_day_lessons_diary = self.diary_homework_db.get_weekday_lessons_from_week(classroom_id,
+                                                                                               week_type,
+                                                                                               english_weekday)
+            if any(formatted_day_lessons_diary):
+                formatted_day_lessons_homework = self.diary_homework_db.get_weekday_lessons_from_week(classroom_id,
+                                                                                                      week_type,
+                                                                                                      english_weekday,
+                                                                                                      homework=True)
+                self.diary_homework_db.update_all_lessons_in_temp_weekday_table(user_id, english_weekday,
+                                                                                formatted_day_lessons_homework)
+                weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons_diary, english_weekday,
+                                                                 formatted_day_lessons_homework)
+                self.send_message(user_id, weekday_diary_text)
+            else:
+                trans_message = "Расписание на этот день пустое (сначала отредактируй расписание)"
+                self.state_transition(user_id, States.S_EDIT_HOMEWORK_MYCLASSES, trans_message)
+
         elif payload["text"] == "Назад":
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
 
@@ -517,7 +545,7 @@ class MyClassesHandlers(SupportingFunctions):
         """Returns text of week's diary"""
         week_diary = []
 
-        weekdays = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]
+        weekdays = ["ПОНЕДЕЛЬНИК", "ВТОРНИК", "СРЕДА", "ЧЕТВЕРГ", "ПЯТНИЦА", "СУББОТА", "ВОСКРЕСЕНЬЕ"]
 
         if formatted_week_lessons_homework is None:
             for weekday_name, weekday_diary_tuple in zip(weekdays, formatted_week_lessons_diary):
@@ -555,7 +583,7 @@ class MyClassesHandlers(SupportingFunctions):
         return "\n\n".join(week_diary)
 
     @staticmethod
-    def get_weekday_diary_text(formatted_days: tuple, weekday: str) -> str:
+    def get_weekday_diary_text(formatted_days_diary: tuple, weekday: str, formatted_days_homework=None) -> str:
         """Returns text of weekday's diary"""
         weekday_meanings_dict = {
             "monday": "Понедельник",
@@ -568,13 +596,23 @@ class MyClassesHandlers(SupportingFunctions):
         }
         weekday_russian = weekday_meanings_dict[weekday]
 
-        if not any(formatted_days):
-            weekday_diary = ["1. ПУСТО"]
+        if None in formatted_days_diary:
+            weekday_without_empty = formatted_days_diary[:formatted_days_diary.index(None)]
         else:
-            if None in formatted_days:
-                weekday_without_empty = formatted_days[:formatted_days.index(None)]
+            weekday_without_empty = formatted_days_diary
+
+        if formatted_days_homework is None:
+            if not any(formatted_days_diary):
+                weekday_diary = ["1. ПУСТО"]
             else:
-                weekday_without_empty = formatted_days
-            weekday_diary = [f"{i}. {weekday_without_empty[i - 1]}" for i in range(1, len(weekday_without_empty) + 1)]
+                weekday_diary = [f"{i}. {weekday_without_empty[i - 1]}"
+                                 for i in range(1, len(weekday_without_empty) + 1)]
+        else:
+            weekday_diary = []
+            for i in range(1, len(weekday_without_empty) + 1):
+                lesson_text = f"{i}. {weekday_without_empty[i - 1]}"
+                if formatted_days_homework[i - 1] is not None:
+                    lesson_text += f": {formatted_days_homework[i - 1]}"
+                weekday_diary.append(lesson_text)
 
         return weekday_russian + "\n" + "\n".join(weekday_diary)
