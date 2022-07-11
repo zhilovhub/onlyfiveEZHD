@@ -123,8 +123,8 @@ class MyClassesHandlers(SupportingFunctions):
                     "edit_standard": ("standard", "эталонного расписания", States.S_EDIT_WEEK_MYCLASSES),
                     "edit_current": ("current", "текущего расписания", States.S_EDIT_WEEK_MYCLASSES),
                     "edit_next": ("next", "будущего расписания", States.S_EDIT_WEEK_MYCLASSES),
-                    "edit_current_homework": ("current", "дз будущей недели", States.S_EDIT_HOMEWORK_MYCLASSES),
-                    "edit_next_homework": ("next", "дз текущей недели", States.S_EDIT_HOMEWORK_MYCLASSES),
+                    "edit_current_homework": ("current", "дз текущей недели", States.S_EDIT_HOMEWORK_MYCLASSES),
+                    "edit_next_homework": ("next", "дз будущей недели", States.S_EDIT_HOMEWORK_MYCLASSES),
                 }
                 week_type = payload_meanings_dict[payload["text"]][0]
                 russian_comments = payload_meanings_dict[payload["text"]][1]
