@@ -65,8 +65,8 @@ class MyClassesHandlers(SupportingFunctions):
             formatted_week_lessons_homework = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id,
                                                                                                     week_type,
                                                                                                     homework=True)
-            diary_homework_text = self.get_week_diary_homework_text(formatted_week_lessons_diary,
-                                                                    formatted_week_lessons_homework)
+            diary_homework_text = self.get_week_diary_text(formatted_week_lessons_diary,
+                                                           formatted_week_lessons_homework)
 
             keyboard = VkKeyboard(inline=True)
             keyboard.add_callback_button("Изменить" if can else "Изменить❌",
@@ -513,29 +513,44 @@ class MyClassesHandlers(SupportingFunctions):
             self.trans_to_main_menu(user_id)
 
     @staticmethod
-    def get_week_diary_homework_text(formatted_week_lessons_diary: list, formatted_week_lessons_homework: list) \
-            -> str:
-        """Returns text of week's homework"""
-
-
-    @staticmethod
-    def get_week_diary_text(formatted_week: list) -> str:
+    def get_week_diary_text(formatted_week_lessons_diary: list, formatted_week_lessons_homework=None) -> str:
         """Returns text of week's diary"""
         week_diary = []
 
         weekdays = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]
-        for weekday_name, weekday_tuple in zip(weekdays, formatted_week):
-            if not any(weekday_tuple):
-                week_diary.append(weekday_name + "\n" + "1. ПУСТО")
-            else:
-                if None in weekday_tuple:
-                    weekday_tuple_without_empty = weekday_tuple[:weekday_tuple.index(None)]
-                else:
-                    weekday_tuple_without_empty = weekday_tuple
 
-                day_lessons = [f"{i}. {weekday_tuple_without_empty[i - 1]}"
-                               for i in range(1, len(weekday_tuple_without_empty) + 1)]
-                week_diary.append(weekday_name + "\n" + "\n".join(day_lessons))
+        if formatted_week_lessons_homework is None:
+            for weekday_name, weekday_diary_tuple in zip(weekdays, formatted_week_lessons_diary):
+                if not any(weekday_diary_tuple):
+                    week_diary.append(weekday_name + "\n" + "1. ПУСТО")
+                else:
+                    if None in weekday_diary_tuple:
+                        weekday_diary_tuple_without_empty = weekday_diary_tuple[:weekday_diary_tuple.index(None)]
+                    else:
+                        weekday_diary_tuple_without_empty = weekday_diary_tuple
+
+                    day_lessons = [f"{i}. {weekday_diary_tuple_without_empty[i - 1]}"
+                                   for i in range(1, len(weekday_diary_tuple_without_empty) + 1)]
+                    week_diary.append(weekday_name + "\n" + "\n".join(day_lessons))
+        else:
+            for weekday_name, weekday_diary_tuple, weekday_homework_tuple in zip(weekdays, formatted_week_lessons_diary,
+                                                                                 formatted_week_lessons_homework):
+                if not any(weekday_diary_tuple):
+                    week_diary.append(weekday_name + "\n" + "1. ПУСТО")
+                else:
+                    if None in weekday_diary_tuple:
+                        weekday_diary_tuple_without_empty = weekday_diary_tuple[:weekday_diary_tuple.index(None)]
+                    else:
+                        weekday_diary_tuple_without_empty = weekday_diary_tuple
+
+                    day_lessons = []
+                    for i in range(1, len(weekday_diary_tuple_without_empty) + 1):
+                        lesson_text = f"{i}. {weekday_diary_tuple_without_empty[i - 1]}"
+                        if weekday_homework_tuple[i - 1] is not None:
+                            lesson_text += f": {weekday_homework_tuple[i - 1]}"
+                        day_lessons.append(lesson_text)
+
+                    week_diary.append(weekday_name + "\n" + "\n".join(day_lessons))
 
         return "\n\n".join(week_diary)
 
