@@ -50,15 +50,23 @@ class MyClassesHandlers(SupportingFunctions):
             change_next_homework = diary_role_properties_dictionary["change_next_homework"]
 
             payload_meanings_dict = {
-                "Дз текущее": ("edit_current_homework", "current", "Домашнее задание на текущую неделю",
+                "Дз текущее": ("edit_current_homework", "current", "Домашнее задание на текущую неделю\n\n",
                                change_current_homework),
-                "Дз будущее": ("edit_next_homework", "next", "Домашнее задание на следующую неделю",
+                "Дз будущее": ("edit_next_homework", "next", "Домашнее задание на следующую неделю\n\n",
                                change_next_homework)
             }
             callback_payload_text = payload_meanings_dict[payload["text"]][0]
             week_type = payload_meanings_dict[payload["text"]][1]
             help_text = payload_meanings_dict[payload["text"]][2]
             can = payload_meanings_dict[payload["text"]][3]
+
+            formatted_week_lessons_diary = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id,
+                                                                                                 week_type)
+            formatted_week_lessons_homework = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id,
+                                                                                                    week_type,
+                                                                                                    homework=True)
+            diary_homework_text = self.get_week_diary_homework_text(formatted_week_lessons_diary,
+                                                                    formatted_week_lessons_homework)
 
             keyboard = VkKeyboard(inline=True)
             keyboard.add_callback_button("Изменить" if can else "Изменить❌",
@@ -68,7 +76,7 @@ class MyClassesHandlers(SupportingFunctions):
                                              "can": can
                                          })
 
-            self.send_message(user_id, help_text, keyboard.get_keyboard())
+            self.send_message(user_id, help_text + diary_homework_text, keyboard.get_keyboard())
 
         elif payload["text"] in ["Расписание эталонное", "Расписание текущее", "Расписание будущее"]:
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -503,6 +511,12 @@ class MyClassesHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
             self.trans_to_main_menu(user_id)
+
+    @staticmethod
+    def get_week_diary_homework_text(formatted_week_lessons_diary: list, formatted_week_lessons_homework: list) \
+            -> str:
+        """Returns text of week's homework"""
+
 
     @staticmethod
     def get_week_diary_text(formatted_week: list) -> str:
