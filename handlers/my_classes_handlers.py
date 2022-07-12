@@ -575,10 +575,36 @@ class MyClassesHandlers(SupportingFunctions):
                     trans_message = f"Урока с таким номером нет\n\n{ask_message}"
                     self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
             elif ". " in message:
-                pass
+                lesson_index, homework_text = message.split(". ", 1)
+
+                max_lesson_index = formatted_day_lessons_diary.index(None) \
+                    if None in formatted_day_lessons_diary else 12
+
+                if lesson_index.isdigit():
+                    if 0 < int(lesson_index) <= max_lesson_index:
+                        if 0 < len(homework_text) <= 70:
+                            self.diary_homework_db.update_lesson_in_temp_table(user_id, homework_text, lesson_index)
+
+                            new_formatted_day_homework = \
+                                self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
+                            weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons_diary, weekday,
+                                                                             new_formatted_day_homework)
+
+                            trans_message = f"Дз обновлено!\n\n{weekday_diary_text}\n\n{ask_message}"
+                            self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
+                        else:
+                            trans_message = f"Текст дз не может быть пустым или быть длиннее " \
+                                            f"70 символов\n\n{ask_message}"
+                            self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
+                    else:
+                        trans_message = f"Урока с таким номером нет.\n\n{ask_message}"
+                        self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
+                else:
+                    trans_message = f"Неверный формат записи\n\n{ask_message}"
+                    self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
             else:
-                self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, "Неверный формат записи\n\n"
-                                                                                         f"{ask_message}")
+                trans_message = f"Неверный формат записи\n\n{ask_message}"
+                self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
 
         elif payload["text"] == "Очистить всё дз":
             self.diary_homework_db.update_delete_all_lessons_from_temp_table(user_id)
