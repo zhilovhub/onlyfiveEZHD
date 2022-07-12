@@ -89,6 +89,8 @@ class KeyBoards:
     @staticmethod
     def get_edit_homework_weekday_keyboard() -> VkKeyboard:
         keyboard_edit_homework_weekday = VkKeyboard()
+        keyboard_edit_homework_weekday.add_button("Очистить всё дз", payload=KeyBoards.get_payload("Очистить всё дз"))
+        keyboard_edit_homework_weekday.add_line()
         keyboard_edit_homework_weekday.add_button("Отменить", payload=KeyBoards.get_payload("Отменить"),
                                                   color="negative")
         keyboard_edit_homework_weekday.add_button("Сохранить", payload=KeyBoards.get_payload("Сохранить"),
