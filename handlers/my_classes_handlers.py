@@ -456,7 +456,7 @@ class MyClassesHandlers(SupportingFunctions):
                           "номер_урока. новое_название (например,\n7. Алгебра)"
 
             if ". " in message:
-                lesson_index, lesson_name = message.split(". ")
+                lesson_index, lesson_name = message.split(". ", 1)
 
                 formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
                 max_lesson_index = formatted_day_lessons.index(None) if None in formatted_day_lessons else 12
@@ -525,7 +525,10 @@ class MyClassesHandlers(SupportingFunctions):
                                                                                 formatted_day_lessons_homework)
                 weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons_diary, english_weekday,
                                                                  formatted_day_lessons_homework)
-                self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, weekday_diary_text)
+
+                help_text = "\n\nВпиши новое домашнее задание в формате: номер_урока. дз\n(Например,\n2. Упр 23, стр 6)"
+                self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES,
+                                      weekday_diary_text + help_text)
             else:
                 trans_message = "Расписание на этот день пустое (сначала отредактируй расписание)"
                 self.state_transition(user_id, States.S_EDIT_HOMEWORK_MYCLASSES, trans_message)
