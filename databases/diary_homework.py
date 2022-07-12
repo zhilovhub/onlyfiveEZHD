@@ -99,14 +99,20 @@ class DiaryHomeworkCommands(DataBase):
             cursor.execute(DiaryHomeworkQueries.update_all_lessons_in_temp_table, (weekday, *lessons, user_id))
             self.connection.commit()
 
-    def update_weekday_in_week(self, classroom_id: int, lessons: tuple, week_type: str, weekday: str) -> None:
+    def update_weekday_in_week(self, classroom_id: int, lessons: tuple, week_type: str, weekday: str,
+                               homework=False) -> None:
         """Updates week's weekday"""
-        query = DiaryHomeworkQueries.update_weekday_lessons_query(weekday, f"diary_{week_type}_week")
-        for lesson in lessons:
-            query = query.replace("NULL", f"'{lesson}'", 1) if lesson is not None else query
+        week_type_dict = {
+            "standard": "diary_standard_week",
+            "current": "diary_current_week" if not homework else "homework_current_week",
+            "next": "diary_next_week" if not homework else "homework_next_week"
+        }
+        table_name = week_type_dict[week_type]
+
+        query = DiaryHomeworkQueries.update_weekday_lessons_query(weekday, table_name)
 
         with self.connection.cursor() as cursor:
-            cursor.execute(query.format(classroom_id))
+            cursor.execute(query, (*lessons, classroom_id))
             self.connection.commit()
 
     def update_add_new_lesson_into_temp_table(self, user_id: int, lesson: str, new_lesson_index: int) -> None:
@@ -220,20 +226,20 @@ class DiaryHomeworkQueries:
     def update_weekday_lessons_query(weekday: str, table_name: str) -> str:
         """Creates update_weekday query"""
         template = """UPDATE table_name SET
-                        weekday_lesson1=NULL,
-                        weekday_lesson2=NULL,
-                        weekday_lesson3=NULL,
-                        weekday_lesson4=NULL,
-                        weekday_lesson5=NULL,
-                        weekday_lesson6=NULL,
-                        weekday_lesson7=NULL,
-                        weekday_lesson8=NULL,
-                        weekday_lesson9=NULL,
-                        weekday_lesson10=NULL,
-                        weekday_lesson11=NULL,
-                        weekday_lesson12=NULL
-                      WHERE classroom_id={}"""
-        return template.replace("weekday", weekday).replace("table_name", table_name)
+                        weekday_lesson1=%s,
+                        weekday_lesson2=%s,
+                        weekday_lesson3=%s,
+                        weekday_lesson4=%s,
+                        weekday_lesson5=%s,
+                        weekday_lesson6=%s,
+                        weekday_lesson7=%s,
+                        weekday_lesson8=%s,
+                        weekday_lesson9=%s,
+                        weekday_lesson10=%s,
+                        weekday_lesson11=%s,
+                        weekday_lesson12=%s
+                      WHERE classroom_id=%s"""
+        return template.replace("table_name", table_name).replace("weekday", weekday)
 
     create_table_homework_current_week_query = """CREATE TABLE IF NOT EXISTS homework_current_week(
         classroom_id INT,
