@@ -525,8 +525,8 @@ class MyClassesHandlers(SupportingFunctions):
                 weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons_diary, english_weekday,
                                                                  formatted_day_lessons_homework)
 
-                help_text = "\n\nВпиши новое домашнее задание в формате: номер_урока. дз\n(Например,\n2. Упр 23, стр 6)" \
-                            "\n\nЕсли нужно удалить дз с урока, то просто впиши одно число - номер урока"
+                help_text = "\n\nВпиши новое домашнее задание в формате: номер_урока. дз\n(Например,\n2. " \
+                            "Упр 23, стр 6)\n\nЕсли нужно удалить дз с урока, то просто впиши одно число - номер урока"
                 self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES,
                                       weekday_diary_text + help_text)
             else:
@@ -546,7 +546,39 @@ class MyClassesHandlers(SupportingFunctions):
     def s_edit_homework_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES"""
         if payload is None:
-            pass
+            ask_message = "\n\nВпиши новое домашнее задание в формате: номер_урока. дз\n(Например,\n2. Упр 23, стр 6)" \
+                          "\n\nЕсли нужно удалить дз с урока, то просто впиши одно число - номер урока"
+
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
+            week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
+            formatted_day_lessons_diary = self.diary_homework_db.get_weekday_lessons_from_week(classroom_id,
+                                                                                               week_type,
+                                                                                               weekday)
+            if message.isdigit():
+                lesson_index = int(message)
+
+                max_lessons_index = formatted_day_lessons_diary.index(None) \
+                    if None in formatted_day_lessons_diary else 12
+
+                if 0 < lesson_index <= max_lessons_index:
+                    self.diary_homework_db.update_lesson_in_temp_table(user_id, "", lesson_index)
+                    formatted_day_lessons_homework = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
+
+                    weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons_diary, weekday,
+                                                                     formatted_day_lessons_homework)
+                    self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, f"Дз с {lesson_index}-го "
+                                                                                             f"урока удалено!\n\n"
+                                                                                             f"{weekday_diary_text}\n\n"
+                                                                                             f"{ask_message}")
+                else:
+                    trans_message = f"Урока с таким номером нет\n\n{ask_message}"
+                    self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
+            elif ". " in message:
+                pass
+            else:
+                self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, "Неверный формат записи\n\n"
+                                                                                         f"{ask_message}")
 
         elif payload["text"] == "Сохранить":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
