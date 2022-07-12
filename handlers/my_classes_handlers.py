@@ -525,7 +525,8 @@ class MyClassesHandlers(SupportingFunctions):
                 weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons_diary, english_weekday,
                                                                  formatted_day_lessons_homework)
 
-                help_text = "\n\nВпиши новое домашнее задание в формате: номер_урока. дз\n(Например,\n2. Упр 23, стр 6)"
+                help_text = "\n\nВпиши новое домашнее задание в формате: номер_урока. дз\n(Например,\n2. Упр 23, стр 6)" \
+                            "\n\nЕсли нужно удалить дз с урока, то просто впиши одно число - номер урока"
                 self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES,
                                       weekday_diary_text + help_text)
             else:
