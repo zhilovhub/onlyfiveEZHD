@@ -525,7 +525,7 @@ class MyClassesHandlers(SupportingFunctions):
                                                                                 formatted_day_lessons_homework)
                 weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons_diary, english_weekday,
                                                                  formatted_day_lessons_homework)
-                self.send_message(user_id, weekday_diary_text)
+                self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, weekday_diary_text)
             else:
                 trans_message = "Расписание на этот день пустое (сначала отредактируй расписание)"
                 self.state_transition(user_id, States.S_EDIT_HOMEWORK_MYCLASSES, trans_message)
@@ -535,6 +535,33 @@ class MyClassesHandlers(SupportingFunctions):
 
             trans_message = "Возвращение в меню класса"
             self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
+
+        elif payload["text"] == "Главное меню":
+            self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
+            self.trans_to_main_menu(user_id)
+
+    def s_edit_homework_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
+        """Handling States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES"""
+        if payload is None:
+            pass
+
+        elif payload["text"] == "Отменить":
+            week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
+
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            formatted_week_lessons_diary = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id,
+                                                                                                 week_type)
+            formatted_week_lessons_homework = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id,
+                                                                                                    week_type,
+                                                                                                    homework=True)
+            diary_homework_text = self.get_week_diary_text(formatted_week_lessons_diary,
+                                                           formatted_week_lessons_homework)
+
+            self.diary_homework_db.update_delete_all_lessons_from_temp_table(user_id)
+            self.diary_homework_db.update_delete_weekday_from_temp_table(user_id)
+
+            trans_message = f"{diary_homework_text}\n\nВсе изменения отменены!"
+            self.state_transition(user_id, States.S_EDIT_HOMEWORK_MYCLASSES, trans_message)
 
         elif payload["text"] == "Главное меню":
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)

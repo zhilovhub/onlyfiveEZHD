@@ -114,6 +114,9 @@ class SupportingFunctions:
             case States.S_EDIT_HOMEWORK_MYCLASSES:
                 self.send_message(user_id, message, KeyBoards.get_edit_homework_keyboard())
 
+            case States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES:
+                self.send_message(user_id, message, KeyBoards.get_edit_homework_weekday_keyboard())
+
             # FINDCLASS
             case States.S_FIND_CLASS:
                 self.send_message(user_id, message,

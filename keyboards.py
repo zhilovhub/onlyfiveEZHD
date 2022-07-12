@@ -84,7 +84,21 @@ class KeyBoards:
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_line()
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Главное меню", payload=get_payload("Главное меню"))
-    
+
+    # EDIT_HOMEWORK_WEEKDAY KEYBOARD
+    @staticmethod
+    def get_edit_homework_weekday_keyboard() -> VkKeyboard:
+        keyboard_edit_homework_weekday = VkKeyboard()
+        keyboard_edit_homework_weekday.add_button("Отменить", payload=KeyBoards.get_payload("Отменить"),
+                                                  color="negative")
+        keyboard_edit_homework_weekday.add_button("Сохранить", payload=KeyBoards.get_payload("Сохранить"),
+                                                  color="positive")
+        keyboard_edit_homework_weekday.add_line()
+        keyboard_edit_homework_weekday.add_button("Главное меню", payload=KeyBoards.get_payload("Главное меню"),
+                                                  color="primary")
+
+        return keyboard_edit_homework_weekday.get_keyboard()
+
     # EDIT_HOMEWORK KEYBOARD
     @staticmethod
     def get_edit_homework_keyboard() -> VkKeyboard:
