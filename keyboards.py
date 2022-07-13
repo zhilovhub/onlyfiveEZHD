@@ -85,6 +85,15 @@ class KeyBoards:
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Назад", payload=get_payload("Назад"))
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add_button("Главное меню", payload=get_payload("Главное меню"))
 
+    # NOTIFICATION_SETTINGS KEYBOARD
+    @staticmethod
+    def get_notification_settings_keyboard() -> VkKeyboard:
+        notification_settings_keyboard = VkKeyboard()
+        notification_settings_keyboard.add_button("Назад", payload=KeyBoards.get_payload("Назад"))
+        notification_settings_keyboard.add_button("Главное меню", payload=KeyBoards.get_payload("Главное меню"))
+
+        return notification_settings_keyboard.get_keyboard()
+
     # EDIT_HOMEWORK_WEEKDAY KEYBOARD
     @staticmethod
     def get_edit_homework_weekday_keyboard() -> VkKeyboard:
