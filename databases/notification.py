@@ -13,13 +13,20 @@ class NotificationCommands(DataBase):
         except Error as e:
             print(e)
 
-    def get_notification_values(self, user_id: int, classroom_id: int) -> tuple:
+    def get_notification_values_dict(self, user_id: int, classroom_id: int) -> dict:
         """Returns notification's values"""
         with self.connection.cursor() as cursor:
-            cursor.execute(NotificationQueries.get_notification_values_query, (user_id, classroom_id))
-            notification_tuple = cursor.fetchone()[2:]
+            notification_types = [
+                "new_classmate",
+                "leave_classmate",
+                "requests"
+            ]
 
-            return notification_tuple
+            cursor.execute(NotificationQueries.get_notification_values_query, (user_id, classroom_id))
+            notification_dict = {notification_type: value
+                                 for notification_type, value in zip(notification_types, cursor.fetchone()[2:])}
+
+            return notification_dict
 
     def insert_new_notification(self, user_id: int, classroom_id: int) -> None:
         """Inserts new notification row"""
