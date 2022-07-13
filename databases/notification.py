@@ -13,6 +13,14 @@ class NotificationCommands(DataBase):
         except Error as e:
             print(e)
 
+    def update_notification_value(self, user_id: int, classroom_id: int, notification_type: str, new_value: bool
+                                  ) -> None:
+        """Updates notification's value"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(NotificationQueries.update_notification_value_query.format(notification_type),
+                           (new_value, user_id, classroom_id))
+            self.connection.commit()
+
 
 class NotificationQueries:
     create_table_notification_query = """CREATE TABLE IF NOT EXISTS notification(
@@ -25,3 +33,5 @@ class NotificationQueries:
         leave_classmate BOOLEAN DEFAULT 1,
         requests BOOLEAN DEFAULT 1
     )"""
+
+    update_notification_value_query = """UPDATE notification SET {}=%s WHERE user_id=%s AND classroom_id=%S"""
