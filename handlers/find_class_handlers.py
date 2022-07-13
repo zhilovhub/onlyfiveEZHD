@@ -91,6 +91,7 @@ class FindClassHandlers(SupportingFunctions):
             if len(members_dictionary) < limit_members:
                 default_role_id = self.role_db.get_default_role_id(classroom_id)
                 self.classroom_db.insert_new_user_in_classroom(user_id, classroom_id, default_role_id)
+                self.notify_new_classmate(user_id, classroom_id)
 
                 trans_message = "Ты вступил!"
                 self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))

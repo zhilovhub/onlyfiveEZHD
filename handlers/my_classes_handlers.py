@@ -154,7 +154,7 @@ class MyClassesHandlers(SupportingFunctions):
             if request_user_id in members_dictionary.keys():
                 self.classroom_db.delete_request(request_user_id, classroom_id)
 
-                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки"},
+                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
                                                     info_message=f"[id{request_user_id}|{first_name} {last_name}] уже "
                                                                  f"в классе!")
             elif len(members_dictionary) < members_limit:
@@ -162,9 +162,10 @@ class MyClassesHandlers(SupportingFunctions):
                 self.classroom_db.insert_new_user_in_classroom(request_user_id, classroom_id, default_role_id)
                 self.classroom_db.delete_request(request_user_id, classroom_id)
 
-                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки"},
+                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
                                                     info_message=f"[id{request_user_id}|{first_name} {last_name}]"
                                                                  f" принят в класс")
+                self.notify_new_classmate(request_user_id, classroom_id, without_user_id=user_id)
             else:
                 self.send_message(user_id, f"В классе уже максимальное количество людей! ({len(members_dictionary)}"
                                            f"/{members_limit})")
@@ -179,11 +180,11 @@ class MyClassesHandlers(SupportingFunctions):
             first_name, last_name = self.user_db.get_user_first_and_last_name(request_user_id)
 
             if request_user_id in members_dictionary.keys():
-                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки"},
+                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
                                                     info_message=f"[id{request_user_id}|{first_name} {last_name}] уже "
                                                                  f"в классе!")
             else:
-                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки"},
+                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
                                                     info_message=f"Заявка [id{request_user_id}|{first_name} "
                                                                  f"{last_name}] отклонена")
 

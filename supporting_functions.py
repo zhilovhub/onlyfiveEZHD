@@ -22,13 +22,13 @@ class SupportingFunctions:
         self.vk_session = VkApi(token=token)
         self.bot_long_poll = VkBotLongPoll(vk=self.vk_session, group_id=group_id)
 
-    def send_message(self, user_id: int, message=None, keyboard=None, template=None) -> None:
+    def send_message(self, user_id=None, message=None, keyboard=None, template=None, user_ids=None) -> None:
         """Send message to user"""
         try:
             self.vk_session.method(
                 "messages.send",
                 {
-                    "user_id": user_id,
+                    "user_id" if user_id else "user_ids": user_id if user_id else user_ids,
                     "message": message,
                     "keyboard": keyboard,
                     "template": template,
@@ -336,6 +336,19 @@ class SupportingFunctions:
 
             access = self.classroom_db.get_classroom_access(classroom_id)
             return access_keyboard_dict[access]
+
+    def notify_new_classmate(self, user_id: int, classroom_id: int, without_user_id=None) -> None:
+        """Notifies about new classmate"""
+        notified_users = self.notification_db.get_users_with_notification_type(classroom_id, "new_classmate")
+        if without_user_id in notified_users:
+            notified_users.remove(without_user_id)
+
+        if notified_users:
+            first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+            classroom_name = self.classroom_db.get_classroom_name(classroom_id)
+
+            self.send_message(user_ids=notified_users, message=f"[id{user_id}|{first_name} {last_name}] вступил в "
+                                                               f"{classroom_name}!")
 
     @staticmethod
     def get_all_role_names_text(all_role_names: list, admin_role_name: str, default_role_name: str) -> str:
