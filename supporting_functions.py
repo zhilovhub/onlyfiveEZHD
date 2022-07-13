@@ -9,13 +9,15 @@ class SupportingFunctions:
 
     def __init__(self, token: str, group_id: int, user_db: UserDataCommands,
                  classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
-                 diary_homework_db: DiaryHomeworkCommands, role_db: RoleCommands) -> None:
+                 diary_homework_db: DiaryHomeworkCommands, role_db: RoleCommands,
+                 notification_db: NotificationCommands) -> None:
         """Initialization"""
         self.user_db = user_db
         self.classroom_db = classroom_db
         self.technical_support_db = technical_support_db
         self.diary_homework_db = diary_homework_db
         self.role_db = role_db
+        self.notification_db = notification_db
 
         self.vk_session = VkApi(token=token)
         self.bot_long_poll = VkBotLongPoll(vk=self.vk_session, group_id=group_id)

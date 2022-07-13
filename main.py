@@ -6,11 +6,12 @@ class DiaryVkBot(Handlers):
 
     def __init__(self, token: str, group_id: int, user_db: UserDataCommands,
                  classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
-                 diary_homework_db: DiaryHomeworkCommands, role_db: RoleCommands) -> None:
+                 diary_homework_db: DiaryHomeworkCommands, role_db: RoleCommands,
+                 notification_db: NotificationCommands) -> None:
         """Initialization"""
         super().__init__(token=token, group_id=group_id, user_db=user_db,
                          classroom_db=classroom_db, technical_support_db=technical_support_db,
-                         diary_homework_db=diary_homework_db, role_db=role_db)
+                         diary_homework_db=diary_homework_db, role_db=role_db, notification_db=notification_db)
 
     def listen(self) -> None:
         """Listening events"""
@@ -248,13 +249,15 @@ if __name__ == "__main__":
     technical_support_db = TechnicalSupportCommands(connection)
     diary_homework_db = DiaryHomeworkCommands(connection)
     role_db = RoleCommands(connection)
+    notification_db = NotificationCommands(connection)
 
     my_bot = DiaryVkBot(token=TOKEN, group_id=GROUP_ID,
                         user_db=user_db,
                         classroom_db=classroom_db,
                         technical_support_db=technical_support_db,
                         diary_homework_db=diary_homework_db,
-                        role_db=role_db
+                        role_db=role_db,
+                        notification_db=notification_db
                         )
 
     my_bot.listen()
