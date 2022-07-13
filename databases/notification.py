@@ -31,7 +31,8 @@ class NotificationCommands(DataBase):
     def get_users_with_notification_type(self, classroom_id: int, notification_type: str) -> list:
         """Returns tuple of the users who has this notification_type True"""
         with self.connection.cursor() as cursor:
-            cursor.execute(NotificationQueries.get_users_with_notification_type.format(notification_type), classroom_id)
+            cursor.execute(NotificationQueries.get_users_with_notification_type.format(notification_type),
+                           (classroom_id,))
             users = [row[0] for row in cursor.fetchall()]
 
             return users
