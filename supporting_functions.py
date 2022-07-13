@@ -189,6 +189,9 @@ class SupportingFunctions:
                 self.send_message(user_id, message,
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
+            case States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS:
+                self.send_message(user_id, message, KeyBoards.get_notification_settings_keyboard())
+
             # TECHNICALSUPPORT
             case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE:
                 self.send_message(user_id, message,

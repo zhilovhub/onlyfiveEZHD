@@ -19,9 +19,26 @@ class ClassroomSettingsHandlers(SupportingFunctions):
             trans_message = "Основные настройки класса"
             self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, trans_message)
 
+        elif payload["text"] == "Уведомления":
+            trans_message = "Выбери, какие уведомления получать/не получать"
+            self.state_transition(user_id, States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS, trans_message)
+
         elif payload["text"] == "Назад":
             trans_message = "Возвращаемся в меню класса..."
             self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
+
+        elif payload["text"] == "Главное меню":
+            self.trans_to_main_menu(user_id)
+
+    def s_notification_settings_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS"""
+        if payload is None:
+            self.state_transition(user_id, States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS,
+                                  "Для навигации используй кнопки!👇🏻")
+
+        elif payload["text"] == "Назад":
+            trans_message = "Настройки класса\n\nКоличество настроек зависит от твоей роли в этом классе!"
+            self.state_transition(user_id, States.S_CLASSROOM_SETTINGS, trans_message)
 
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)

@@ -161,6 +161,9 @@ class DiaryVkBot(Handlers):
             case States.S_LIMIT_MAIN_CLASSROOM_SETTINGS.value:
                 self.s_limit_main_classroom_settings_handler(user_id, message, payload)
 
+            case States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS.value:
+                self.s_notification_settings_classroom_settings_handler(user_id, payload)
+
             # TECHNICALSUPPORT
             case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value:
                 self.s_enter_technical_support_message_handler(user_id, message)
