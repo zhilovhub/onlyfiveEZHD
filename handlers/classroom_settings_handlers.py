@@ -44,6 +44,25 @@ class ClassroomSettingsHandlers(SupportingFunctions):
             self.state_transition(user_id, States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS,
                                   "Для навигации используй кнопки!👇🏻", *notification_dict.values())
 
+        elif payload["text"] in ["Кто-то вступил", "Кто-то ушел", "Новая заявка"]:
+            payload_text_meaning_dict = {
+                "Кто-то вступил": "new_classmate",
+                "Кто-то ушел": "leave_classmate",
+                "Новая заявка": "requests"
+            }
+            notification_type = payload_text_meaning_dict[payload["text"]]
+
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            self.notification_db.update_notification_value(user_id, classroom_id, notification_type)
+            notification_dict = self.notification_db.get_notification_values_dict(user_id, classroom_id)
+
+            trans_message = "Сохранено!"
+            self.state_transition(user_id, States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS, f"{trans_message}\n\n"
+                                                                                              f"Выбери, какие "
+                                                                                              f"уведомления получать/не"
+                                                                                              f" получать",
+                                  *notification_dict.values())
+
         elif payload["text"] == "Назад":
             trans_message = "Настройки класса\n\nКоличество настроек зависит от твоей роли в этом классе!"
             self.state_transition(user_id, States.S_CLASSROOM_SETTINGS, trans_message)

@@ -34,10 +34,14 @@ class NotificationCommands(DataBase):
             cursor.execute(NotificationQueries.insert_new_notification_query, (user_id, classroom_id))
             self.connection.commit()
 
-    def update_notification_value(self, user_id: int, classroom_id: int, notification_type: str, new_value: bool
-                                  ) -> None:
+    def update_notification_value(self, user_id: int, classroom_id: int, notification_type: str) -> None:
         """Updates notification's value"""
         with self.connection.cursor() as cursor:
+            cursor.execute(NotificationQueries.get_notification_value_query.format(notification_type),
+                           (user_id, classroom_id))
+            old_value = cursor.fetchone()[0]
+            new_value = not old_value
+
             cursor.execute(NotificationQueries.update_notification_value_query.format(notification_type),
                            (new_value, user_id, classroom_id))
             self.connection.commit()
@@ -56,7 +60,8 @@ class NotificationQueries:
     )"""
 
     get_notification_values_query = """SELECT * FROM notification WHERE user_id=%s AND classroom_id=%s"""
+    get_notification_value_query = """SELECT {} FROM notification WHERE user_id=%s AND classroom_id=%s"""
 
     insert_new_notification_query = """INSERT INTO notification (user_id, classroom_id) VALUES(%s, %s)"""
 
-    update_notification_value_query = """UPDATE notification SET {}=%s WHERE user_id=%s AND classroom_id=%S"""
+    update_notification_value_query = """UPDATE notification SET {}=%s WHERE user_id=%s AND classroom_id=%s"""
