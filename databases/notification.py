@@ -28,6 +28,14 @@ class NotificationCommands(DataBase):
 
             return notification_dict
 
+    def get_users_with_notification_type(self, classroom_id: int, notification_type: str) -> list:
+        """Returns tuple of the users who has this notification_type True"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(NotificationQueries.get_users_with_notification_type.format(notification_type), classroom_id)
+            users = [row[0] for row in cursor.fetchall()]
+
+            return users
+
     def insert_new_notification(self, user_id: int, classroom_id: int) -> None:
         """Inserts new notification row"""
         with self.connection.cursor() as cursor:
@@ -61,6 +69,7 @@ class NotificationQueries:
 
     get_notification_values_query = """SELECT * FROM notification WHERE user_id=%s AND classroom_id=%s"""
     get_notification_value_query = """SELECT {} FROM notification WHERE user_id=%s AND classroom_id=%s"""
+    get_users_with_notification_type = """SELECT user_id FROM notification WHERE {}=1 AND classroom_id=%s"""
 
     insert_new_notification_query = """INSERT INTO notification (user_id, classroom_id) VALUES(%s, %s)"""
 
