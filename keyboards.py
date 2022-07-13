@@ -87,8 +87,15 @@ class KeyBoards:
 
     # NOTIFICATION_SETTINGS KEYBOARD
     @staticmethod
-    def get_notification_settings_keyboard() -> VkKeyboard:
+    def get_notification_settings_keyboard(colors) -> VkKeyboard:
         notification_settings_keyboard = VkKeyboard()
+        notification_settings_keyboard.add_button("Кто-то вступил", payload=KeyBoards.get_payload("Кто-то вступил"),
+                                                  color=colors[0])
+        notification_settings_keyboard.add_button("Кто-то ушел", payload=KeyBoards.get_payload("Кто-то ушел"),
+                                                  color=colors[1])
+        notification_settings_keyboard.add_line()
+        notification_settings_keyboard.add_button("Новая заявка", payload=KeyBoards.get_payload("Новая заявка"),
+                                                  color=colors[2])
         notification_settings_keyboard.add_button("Назад", payload=KeyBoards.get_payload("Назад"))
         notification_settings_keyboard.add_button("Главное меню", payload=KeyBoards.get_payload("Главное меню"))
 

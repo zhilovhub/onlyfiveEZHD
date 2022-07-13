@@ -13,6 +13,17 @@ class NotificationCommands(DataBase):
         except Error as e:
             print(e)
 
+    def get_notification_values(self, user_id: int, classroom_id: int) -> tuple:
+        """Returns notification's values"""
+        with self.connection.cursor() as cursor:
+            pass
+
+    def insert_new_notification(self, user_id: int, classroom_id: int) -> None:
+        """Inserts new notification row"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(NotificationQueries.insert_new_notification_query, (user_id, classroom_id))
+            self.connection.commit()
+
     def update_notification_value(self, user_id: int, classroom_id: int, notification_type: str, new_value: bool
                                   ) -> None:
         """Updates notification's value"""
@@ -33,5 +44,7 @@ class NotificationQueries:
         leave_classmate BOOLEAN DEFAULT 1,
         requests BOOLEAN DEFAULT 1
     )"""
+
+    insert_new_notification_query = """INSERT INTO notification (user_id, classroom_id) VALUES(%s, %s)"""
 
     update_notification_value_query = """UPDATE notification SET {}=%s WHERE user_id=%s AND classroom_id=%S"""
