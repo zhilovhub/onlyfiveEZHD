@@ -192,7 +192,13 @@ class SupportingFunctions:
                                   KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
 
             case States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS:
-                self.send_message(user_id, message, KeyBoards.get_notification_settings_keyboard())
+                value_meaning_dict = {
+                    1: "positive",
+                    0: "negative"
+                }
+                buttons_colors = list(map(lambda x: value_meaning_dict[x], args))
+
+                self.send_message(user_id, message, KeyBoards.get_notification_settings_keyboard(colors=buttons_colors))
 
             # TECHNICALSUPPORT
             case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE:

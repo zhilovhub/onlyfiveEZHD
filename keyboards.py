@@ -96,6 +96,7 @@ class KeyBoards:
         notification_settings_keyboard.add_line()
         notification_settings_keyboard.add_button("Новая заявка", payload=KeyBoards.get_payload("Новая заявка"),
                                                   color=colors[2])
+        notification_settings_keyboard.add_line()
         notification_settings_keyboard.add_button("Назад", payload=KeyBoards.get_payload("Назад"))
         notification_settings_keyboard.add_button("Главное меню", payload=KeyBoards.get_payload("Главное меню"))
 

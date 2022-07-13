@@ -21,8 +21,12 @@ class ClassroomSettingsHandlers(SupportingFunctions):
             self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, trans_message)
 
         elif payload["text"] == "Уведомления":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            notification_dict = self.notification_db.get_notification_values_dict(user_id, classroom_id)
+
             trans_message = "Выбери, какие уведомления получать/не получать"
-            self.state_transition(user_id, States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS, trans_message)
+            self.state_transition(user_id, States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS, trans_message,
+                                  *notification_dict.values())
 
         elif payload["text"] == "Назад":
             trans_message = "Возвращаемся в меню класса..."
@@ -34,8 +38,11 @@ class ClassroomSettingsHandlers(SupportingFunctions):
     def s_notification_settings_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS"""
         if payload is None:
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            notification_dict = self.notification_db.get_notification_values_dict(user_id, classroom_id)
+
             self.state_transition(user_id, States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS,
-                                  "Для навигации используй кнопки!👇🏻")
+                                  "Для навигации используй кнопки!👇🏻", *notification_dict.values())
 
         elif payload["text"] == "Назад":
             trans_message = "Настройки класса\n\nКоличество настроек зависит от твоей роли в этом классе!"
