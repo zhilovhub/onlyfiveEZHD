@@ -16,7 +16,10 @@ class NotificationCommands(DataBase):
     def get_notification_values(self, user_id: int, classroom_id: int) -> tuple:
         """Returns notification's values"""
         with self.connection.cursor() as cursor:
-            pass
+            cursor.execute(NotificationQueries.get_notification_values_query, (user_id, classroom_id))
+            notification_tuple = cursor.fetchone()[2:]
+
+            return notification_tuple
 
     def insert_new_notification(self, user_id: int, classroom_id: int) -> None:
         """Inserts new notification row"""
@@ -44,6 +47,8 @@ class NotificationQueries:
         leave_classmate BOOLEAN DEFAULT 1,
         requests BOOLEAN DEFAULT 1
     )"""
+
+    get_notification_values_query = """SELECT * FROM notification WHERE user_id=%s AND classroom_id=%s"""
 
     insert_new_notification_query = """INSERT INTO notification (user_id, classroom_id) VALUES(%s, %s)"""
 
