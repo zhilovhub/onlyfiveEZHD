@@ -264,7 +264,7 @@ class ClassroomQueries:
     get_list_of_request_information_query = """SELECT * FROM Request WHERE classroom_id={}"""
 
     insert_classroom_query = """INSERT INTO Classroom (members_limit, created) VALUES(40, FALSE)"""
-    insert_new_classroom_user_query = """INSERT INTO Student VALUES({}, {}, {})"""
+    insert_new_classroom_user_query = """INSERT INTO Student (user_id, classroom_id, role_id) VALUES({}, {}, {})"""
     insert_new_customizer_query = """INSERT INTO UserCustomize VALUES({}, null, null)"""
     insert_request_query = """INSERT INTO Request VALUES({}, {}, '{}', '{}')"""
 

@@ -245,6 +245,7 @@ class RoleQueries:
     )"""
 
     create_table_student_query = """CREATE TABLE IF NOT EXISTS Student(
+        student_id INT NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
         user_id INT,
         classroom_id INT,
         role_id INT,
