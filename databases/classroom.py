@@ -130,11 +130,15 @@ class ClassroomCommands(DataBase):
         except Error as e:
             print(e)
 
-    def insert_new_user_in_classroom(self, user_id: int, classroom_id: int, role_id: int) -> None:
+    def insert_new_user_in_classroom(self, user_id: int, classroom_id: int, role_id: int) -> int:
         """Add user to the classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.insert_new_classroom_user_query.format(user_id, classroom_id, role_id))
+            cursor.execute(ClassroomQueries.get_last_primary_id)
+            student_id = cursor.fetchone()[0]
             self.connection.commit()
+
+            return student_id
 
     def insert_new_classroom(self) -> int:
         """Insert new classroom and student-owner"""
@@ -262,6 +266,7 @@ class ClassroomQueries:
     get_list_of_classroom_ids_query = """SELECT classroom_id FROM Classroom WHERE created=1"""
     get_request_information_query = """SELECT * FROM Request WHERE user_id={} AND classroom_id={}"""
     get_list_of_request_information_query = """SELECT * FROM Request WHERE classroom_id={}"""
+    get_last_primary_id = """SELECT MAX(student_id) FROM Student"""
 
     insert_classroom_query = """INSERT INTO Classroom (members_limit, created) VALUES(40, FALSE)"""
     insert_new_classroom_user_query = """INSERT INTO Student (user_id, classroom_id, role_id) VALUES({}, {}, {})"""

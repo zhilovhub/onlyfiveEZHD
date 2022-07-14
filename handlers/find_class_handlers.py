@@ -90,8 +90,8 @@ class FindClassHandlers(SupportingFunctions):
 
             if len(members_dictionary) < limit_members:
                 default_role_id = self.role_db.get_default_role_id(classroom_id)
-                self.classroom_db.insert_new_user_in_classroom(user_id, classroom_id, default_role_id)
-                self.notify_new_classmate(user_id, classroom_id)
+                self.insert_new_student(user_id, classroom_id, default_role_id)
+                self.notify_new_classmate(user_id, classroom_id, without_user_ids=[user_id])
 
                 trans_message = "Ты вступил!"
                 self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
@@ -127,6 +127,7 @@ class FindClassHandlers(SupportingFunctions):
         if payload is None:
             if len(message) <= 50:
                 self.classroom_db.insert_new_request(user_id, classroom_id, message)
+                self.notify_request(user_id, classroom_id)
 
                 trans_message = "Заявка отправлена!"
                 self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)

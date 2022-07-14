@@ -28,9 +28,9 @@ class SupportingFunctions:
             self.vk_session.method(
                 "messages.send",
                 {
-                    "user_id" if user_id else "user_ids": user_id if user_id else user_ids,
+                    "user_id" if user_id else "user_ids": user_id if user_id else ",".join(map(str, user_ids)),
                     "message": message,
-                    "keyboard": keyboard,
+                    "keyboard": keyboard if user_id else None,
                     "template": template,
                     "random_id": randint(0, 2147483648)
                 }
@@ -337,17 +337,49 @@ class SupportingFunctions:
             access = self.classroom_db.get_classroom_access(classroom_id)
             return access_keyboard_dict[access]
 
-    def notify_new_classmate(self, user_id: int, classroom_id: int, without_user_id=None) -> None:
+    def insert_new_student(self, user_id: int, classroom_id: int, role_id: int) -> None:
+        """Inserts new student"""
+        student_id = self.classroom_db.insert_new_user_in_classroom(user_id, classroom_id, role_id)
+        self.notification_db.insert_new_notification(student_id, user_id, classroom_id)
+
+    def notify_new_classmate(self, user_id: int, classroom_id: int, without_user_ids=None) -> None:
         """Notifies about new classmate"""
         notified_users = self.notification_db.get_users_with_notification_type(classroom_id, "new_classmate")
-        if without_user_id in notified_users:
-            notified_users.remove(without_user_id)
+        if without_user_ids:
+            for without_user_id in without_user_ids:
+                if without_user_id in notified_users:
+                    notified_users.remove(without_user_id)
 
         if notified_users:
             first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
             classroom_name = self.classroom_db.get_classroom_name(classroom_id)
 
             self.send_message(user_ids=notified_users, message=f"[id{user_id}|{first_name} {last_name}] вступил в "
+                                                               f"{classroom_name}!")
+
+    def notify_request(self, user_id: int, classroom_id: int) -> None:
+        """Notifies about request"""
+        notified_users = self.notification_db.get_users_with_notification_type(classroom_id, "requests")
+        if notified_users:
+            first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+            classroom_name = self.classroom_db.get_classroom_name(classroom_id)
+
+            self.send_message(user_ids=notified_users, message=f"[id{user_id}|{first_name} {last_name}] хочет вступить "
+                                                               f"в {classroom_name}!")
+
+    def notify_leave_classmate(self, user_id: int, classroom_id: int, without_user_ids=None) -> None:
+        """Notifies about left classmate"""
+        notified_users = self.notification_db.get_users_with_notification_type(classroom_id, "leave_classmate")
+        if without_user_ids:
+            for without_user_id in without_user_ids:
+                if without_user_id in notified_users:
+                    notified_users.remove(without_user_id)
+
+        if notified_users:
+            first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+            classroom_name = self.classroom_db.get_classroom_name(classroom_id)
+
+            self.send_message(user_ids=notified_users, message=f"[id{user_id}|{first_name} {last_name}] покинул "
                                                                f"{classroom_name}!")
 
     @staticmethod

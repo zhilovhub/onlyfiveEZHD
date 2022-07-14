@@ -159,13 +159,13 @@ class MyClassesHandlers(SupportingFunctions):
                                                                  f"в классе!")
             elif len(members_dictionary) < members_limit:
                 default_role_id = self.role_db.get_default_role_id(classroom_id)
-                self.classroom_db.insert_new_user_in_classroom(request_user_id, classroom_id, default_role_id)
+                self.insert_new_student(request_user_id, classroom_id, default_role_id)
                 self.classroom_db.delete_request(request_user_id, classroom_id)
 
                 self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
                                                     info_message=f"[id{request_user_id}|{first_name} {last_name}]"
                                                                  f" принят в класс")
-                self.notify_new_classmate(request_user_id, classroom_id, without_user_id=user_id)
+                self.notify_new_classmate(request_user_id, classroom_id, without_user_ids=[user_id, request_user_id])
             else:
                 self.send_message(user_id, f"В классе уже максимальное количество людей! ({len(members_dictionary)}"
                                            f"/{members_limit})")
