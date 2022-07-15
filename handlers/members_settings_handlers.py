@@ -196,6 +196,8 @@ class MembersSettingsHandlers(SupportingFunctions):
                                     self.classroom_db.delete_student(classroom_id, member_id)
                                     new_roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
                                     new_members_text = self.get_members_text(new_roles_dictionary)
+                                    self.notify_leave_classmate(member_id, classroom_id, kicked=True,
+                                                                without_user_ids=[user_id])
 
                                     trans_message = f"{new_members_text}\n\nУчастник удалён!\n\n{ask_message}"
                                 elif member_id == user_id:

@@ -367,7 +367,7 @@ class SupportingFunctions:
             self.send_message(user_ids=notified_users, message=f"[id{user_id}|{first_name} {last_name}] хочет вступить "
                                                                f"в {classroom_name}!")
 
-    def notify_leave_classmate(self, user_id: int, classroom_id: int, without_user_ids=None) -> None:
+    def notify_leave_classmate(self, user_id: int, classroom_id: int, kicked: bool, without_user_ids=None) -> None:
         """Notifies about left classmate"""
         notified_users = self.notification_db.get_users_with_notification_type(classroom_id, "leave_classmate")
         if without_user_ids:
@@ -379,8 +379,12 @@ class SupportingFunctions:
             first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
             classroom_name = self.classroom_db.get_classroom_name(classroom_id)
 
-            self.send_message(user_ids=notified_users, message=f"[id{user_id}|{first_name} {last_name}] покинул "
-                                                               f"{classroom_name}!")
+            if kicked:
+                self.send_message(user_ids=notified_users, message=f"[id{user_id}|{first_name} {last_name}] исключён из"
+                                                                   f" {classroom_name}!")
+            else:
+                self.send_message(user_ids=notified_users, message=f"[id{user_id}|{first_name} {last_name}] покинул "
+                                                                   f"{classroom_name}!")
 
     @staticmethod
     def get_all_role_names_text(all_role_names: list, admin_role_name: str, default_role_name: str) -> str:
