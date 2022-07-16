@@ -257,6 +257,9 @@ class MyClassesHandlers(SupportingFunctions):
                 self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Ты не можешь принимать заявку из-за "
                                                                              "своей роли", sign=False)
 
+        elif payload["text"] == "События":
+            self.send_message(user_id, "Пока никаких событий в этом классе не запланировано")
+
         elif payload["text"] == "Назад":
             trans_message = "Назад..."
             self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
