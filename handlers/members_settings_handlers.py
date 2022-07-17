@@ -11,7 +11,7 @@ class MembersSettingsHandlers(SupportingFunctions):
                          technical_support_db=technical_support_db, diary_homework_db=diary_homework_db,
                          role_db=role_db, notification_db=notification_db)
 
-    def s_members_settings_handler(self, user_id: int, payload: dict) -> None:
+    async def s_members_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_MEMBERS_SETTINGS"""
         if payload is None:
             self.state_transition(user_id, States.S_MEMBERS_SETTINGS, "Для навигации используй кнопки!👇🏻")
@@ -102,7 +102,7 @@ class MembersSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_add_role_enter_name_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
+    async def s_add_role_enter_name_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
         """Handling States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS"""
         if payload is None:
             if len(message) <= 20:
@@ -131,7 +131,7 @@ class MembersSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_delete_role_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
+    async def s_delete_role_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
         """Handling States.S_DELETE_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
             ask_message = "Введите номер роли, удалить которую хотите:"
@@ -173,7 +173,7 @@ class MembersSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_delete_member_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
+    async def s_delete_member_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_DELETE_MEMBER_MEMBERS_SETTINGS"""
         if payload is None:
             ask_message = "Впиши номер участника, удалить которого хотите:"
@@ -226,7 +226,7 @@ class MembersSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_choose_role_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
+    async def s_choose_role_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
         """Handling States.S_CHOOSE_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
             ask_message = "Впишите номер роли, назначать которой хотите:"
@@ -274,7 +274,7 @@ class MembersSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_choose_admin_role_confirmation_members_settings_handler(self, user_id: int, payload: dict) -> None:
+    async def s_choose_admin_role_confirmation_members_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_CHOOSE_ADMIN_ROLE_CONFIRMATION_MEMBERS_SETTINGS"""
         if payload is None:
             self.state_transition(user_id, States.S_CHOOSE_ADMIN_ROLE_CONFIRMATION_MEMBERS_SETTINGS,
@@ -305,7 +305,8 @@ class MembersSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_choose_member_change_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
+    async def s_choose_member_change_role_members_settings_handler(self, user_id: int, message: str, payload: dict
+                                                                   ) -> None:
         """Handling States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
             new_role_id = self.role_db.get_customizing_role_id(user_id)
@@ -387,7 +388,7 @@ class MembersSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_choose_role_edit_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
+    async def s_choose_role_edit_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
             ask_message = "Впишите номер роли, редактировать которую хотите:"
@@ -425,7 +426,7 @@ class MembersSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_edit_role_members_settings_handler(self, user_id: int, payload: dict) -> None:
+    async def s_edit_role_members_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
             self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, "Для навигации используй кнопки!👇🏻")
@@ -477,7 +478,7 @@ class MembersSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_enter_name_edit_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
+    async def s_enter_name_edit_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
             if len(message) <= 20:
@@ -504,7 +505,7 @@ class MembersSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_diary_privilege_edit_role_members_settings_handler(self, user_id: int, payload: dict) -> None:
+    async def s_diary_privilege_edit_role_members_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
             role_id = self.role_db.get_customizing_role_id(user_id)
@@ -548,7 +549,7 @@ class MembersSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_members_privilege_edit_role_members_settings(self, user_id: int, payload: dict) -> None:
+    async def s_members_privilege_edit_role_members_settings(self, user_id: int, payload: dict) -> None:
         """Handling States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
             role_id = self.role_db.get_customizing_role_id(user_id)
@@ -592,7 +593,7 @@ class MembersSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_classroom_privilege_edit_role_members_settings(self, user_id: int, payload: dict) -> None:
+    async def s_classroom_privilege_edit_role_members_settings(self, user_id: int, payload: dict) -> None:
         """Handling States.S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
             role_id = self.role_db.get_customizing_role_id(user_id)

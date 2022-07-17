@@ -11,7 +11,7 @@ class TechnicalSupportHandlers(SupportingFunctions):
                          technical_support_db=technical_support_db, diary_homework_db=diary_homework_db,
                          role_db=role_db, notification_db=notification_db)
 
-    def s_enter_technical_support_message_handler(self, user_id: int, message: str) -> None:
+    async def s_enter_technical_support_message_handler(self, user_id: int, message: str) -> None:
         """Handling States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE"""
         if message == "Отменить":
             self.cancel_entering_technical_support_message(user_id)

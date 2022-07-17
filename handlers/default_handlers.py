@@ -19,7 +19,7 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
                          technical_support_db=technical_support_db, diary_homework_db=diary_homework_db,
                          role_db=role_db, notification_db=notification_db)
 
-    def s_nothing_handler(self, user_id: int, payload: dict) -> None:
+    async def s_nothing_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_NOTHING"""
         if payload is None:
             self.state_transition(user_id, States.S_NOTHING, "Для навигации используй кнопки!👇🏻")
@@ -126,52 +126,52 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
                                 f"Участники: {len(members_dictionary)}/{members_limit}"
                 self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
 
-    def p_enter_the_classroom_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
+    async def p_enter_the_classroom_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Handling payload with text: enter_the_classroom"""
         if current_dialog_state == States.S_NOTHING.value or current_dialog_state == States.S_FIND_CLASS.value:
-            self.s_nothing_handler(user_id, payload)
+            await self.s_nothing_handler(user_id, payload)
         else:
             self.send_message(user_id, "Закончи текущее действие или выйди в главное меню")
 
-    def p_edit_week_or_homework_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
+    async def p_edit_week_or_homework_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Handling payload with text: edit_current_homework | edit_next_homework + all week types"""
         if current_dialog_state in (States.S_IN_CLASS_MYCLASSES.value, States.S_IN_CLASS_MYCLASSES2.value):
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
 
             if classroom_id == payload["classroom_id"]:
-                self.s_in_class_my_classes_handler(user_id, payload)
+                await self.s_in_class_my_classes_handler(user_id, payload)
             else:
                 self.send_message(user_id, "Это расписание не того класса, в котором ты находишься!")
         else:
             self.send_message(user_id, "Ты должен находиться в меню класса, расписание которого собираешься изменить!")
 
-    def p_enter_members_settings_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
+    async def p_enter_members_settings_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Handling payload with text: enter_member_settings"""
         if current_dialog_state == States.S_IN_CLASS_MYCLASSES.value:
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
 
             if classroom_id == payload["classroom_id"]:
-                self.s_in_class_my_classes_handler(user_id, payload)
+                await self.s_in_class_my_classes_handler(user_id, payload)
             else:
                 self.send_message(user_id, "Это настройки участников не того класса, в котором ты находишься!")
         else:
             self.send_message(user_id, "Ты должен находиться в меню класса, в настройки участников которого собираешься"
                                        " войти!")
 
-    def p_look_at_the_classroom_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
+    async def p_look_at_the_classroom_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Handling payload with text: look_at_the_classroom"""
         if current_dialog_state in (States.S_FIND_CLASS.value, States.S_NOTHING.value):
-            self.s_nothing_handler(user_id, payload)
+            await self.s_nothing_handler(user_id, payload)
 
         else:
             self.send_message(user_id, "Закончи текущее действие или выйди в главное меню")
 
-    def p_accept_cancel_request_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
+    async def p_accept_cancel_request_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         if current_dialog_state in (States.S_IN_CLASS_MYCLASSES.value, States.S_IN_CLASS_MYCLASSES2.value):
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
 
             if classroom_id == payload["classroom_id"]:
-                self.s_in_class_my_classes_handler(user_id, payload)
+                await self.s_in_class_my_classes_handler(user_id, payload)
             else:
                 self.send_message(user_id, "Это заявки не того класса, в котором ты находишься!")
         else:

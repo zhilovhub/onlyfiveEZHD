@@ -11,7 +11,7 @@ class MyClassesHandlers(SupportingFunctions):
                          technical_support_db=technical_support_db, diary_homework_db=diary_homework_db,
                          role_db=role_db, notification_db=notification_db)
 
-    def s_in_class_my_classes_handler(self, user_id: int, payload: dict) -> None:
+    async def s_in_class_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_IN_CLASS_MYCLASSES"""
         if payload is None:
             self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, "Для навигации используй кнопки!👇🏻",
@@ -154,17 +154,17 @@ class MyClassesHandlers(SupportingFunctions):
             if request_user_id in members_dictionary.keys():
                 self.classroom_db.delete_request(request_user_id, classroom_id)
 
-                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
-                                                    info_message=f"[id{request_user_id}|{first_name} {last_name}] уже "
-                                                                 f"в классе!")
+                await self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
+                                                          info_message=f"[id{request_user_id}|{first_name} {last_name}]"
+                                                                       f" уже в классе!")
             elif len(members_dictionary) < members_limit:
                 default_role_id = self.role_db.get_default_role_id(classroom_id)
                 self.insert_new_student(request_user_id, classroom_id, default_role_id)
                 self.classroom_db.delete_request(request_user_id, classroom_id)
 
-                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
-                                                    info_message=f"[id{request_user_id}|{first_name} {last_name}]"
-                                                                 f" принят в класс")
+                await self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
+                                                          info_message=f"[id{request_user_id}|{first_name} {last_name}]"
+                                                                       f" принят в класс")
                 self.notify_new_classmate(request_user_id, classroom_id, without_user_ids=[user_id, request_user_id])
             else:
                 self.send_message(user_id, f"В классе уже максимальное количество людей! ({len(members_dictionary)}"
@@ -180,15 +180,15 @@ class MyClassesHandlers(SupportingFunctions):
             first_name, last_name = self.user_db.get_user_first_and_last_name(request_user_id)
 
             if request_user_id in members_dictionary.keys():
-                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
-                                                    info_message=f"[id{request_user_id}|{first_name} {last_name}] уже "
-                                                                 f"в классе!")
+                await self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
+                                                          info_message=f"[id{request_user_id}|{first_name} {last_name}]"
+                                                                       f" уже в классе!")
             else:
-                self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
-                                                    info_message=f"Заявка [id{request_user_id}|{first_name} "
-                                                                 f"{last_name}] отклонена")
+                await self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
+                                                          info_message=f"Заявка [id{request_user_id}|{first_name} "
+                                                                       f"{last_name}] отклонена")
 
-    def s_in_class_my_classes2_handler(self, user_id: int, payload: dict, info_message="") -> None:
+    async def s_in_class_my_classes2_handler(self, user_id: int, payload: dict, info_message="") -> None:
         """Handling States.S_IN_CLASS_MYCLASSES2"""
         if payload is None:
             self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Для навигации используй кнопки!👇🏻",
@@ -267,7 +267,7 @@ class MyClassesHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_edit_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
+    async def s_edit_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_WEEK_MYCLASSES"""
         if payload is None:
             week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
@@ -320,7 +320,7 @@ class MyClassesHandlers(SupportingFunctions):
             trans_message = "Возвращаемся в меню класса"
             self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
 
-    def s_edit_weekday_my_classes_handler(self, user_id: int, payload: dict) -> None:
+    async def s_edit_weekday_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_WEEKDAY_MYCLASSES"""
         if payload is None:
             self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, "Для навигации используй кнопки!👇🏻")
@@ -423,7 +423,7 @@ class MyClassesHandlers(SupportingFunctions):
             trans_message = f"{diary_text}\n\nВсе изменения отменены!"
             self.state_transition(user_id, States.S_EDIT_WEEK_MYCLASSES, trans_message, week_type=week_type)
 
-    def s_add_new_lesson_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
+    async def s_add_new_lesson_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES"""
         if payload is None:
             if len(message) > 70:
@@ -451,9 +451,9 @@ class MyClassesHandlers(SupportingFunctions):
             self.state_transition(user_id, States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES, trans_message)
 
         elif payload["text"]:
-            self.s_edit_weekday_my_classes_handler(user_id, payload)
+            await self.s_edit_weekday_my_classes_handler(user_id, payload)
 
-    def s_edit_lesson_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
+    async def s_edit_lesson_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_EDIT_LESSON_WEEKDAY_MYCLASSES"""
         if payload is None:
             ask_message = "Впишите номер урока и его новое название в следующем формате: " \
@@ -496,9 +496,9 @@ class MyClassesHandlers(SupportingFunctions):
             self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
 
         elif payload["text"]:
-            self.s_edit_weekday_my_classes_handler(user_id, payload)
+            await self.s_edit_weekday_my_classes_handler(user_id, payload)
 
-    def s_edit_homework_my_classes_handler(self, user_id: int, payload: dict) -> None:
+    async def s_edit_homework_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_HOMEWORK_MYCLASSES"""
         if payload is None:
             self.state_transition(user_id, States.S_EDIT_HOMEWORK_MYCLASSES, "Для навигации используй кнопки!👇🏻")
@@ -548,7 +548,7 @@ class MyClassesHandlers(SupportingFunctions):
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
             self.trans_to_main_menu(user_id)
 
-    def s_edit_homework_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
+    async def s_edit_homework_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES"""
         ask_message = "\n\nВпиши новое домашнее задание в формате: номер_урока. дз\n(Например,\n2. Упр 23, стр 6)" \
                       "\n\nЕсли нужно удалить дз с урока, то просто впиши одно число - номер урока"

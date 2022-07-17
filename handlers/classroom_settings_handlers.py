@@ -11,7 +11,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
                          technical_support_db=technical_support_db, diary_homework_db=diary_homework_db,
                          role_db=role_db, notification_db=notification_db)
 
-    def s_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
+    async def s_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_CLASSROOM_SETTINGS"""
         if payload is None:
             self.state_transition(user_id, States.S_CLASSROOM_SETTINGS, "Для навигации используй кнопки!👇🏻")
@@ -35,7 +35,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_notification_settings_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
+    async def s_notification_settings_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS"""
         if payload is None:
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -70,7 +70,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_main_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
+    async def s_main_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_MAIN_CLASSROOM_SETTINGS"""
         if payload is None:
             self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, "Для навигации используй кнопки!👇🏻")
@@ -141,7 +141,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_main_dangerous_zone_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
+    async def s_main_dangerous_zone_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS"""
         if payload is None:
             self.state_transition(user_id, States.S_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS,
@@ -174,7 +174,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_main_dangerous_zone_delete_one_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
+    async def s_main_dangerous_zone_delete_one_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS"""
         if payload is None:
             self.state_transition(user_id, States.S_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS,
@@ -191,7 +191,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_main_dangerous_zone_delete_two_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
+    async def s_main_dangerous_zone_delete_two_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS"""
         if payload is None:
             self.state_transition(user_id, States.S_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS,
@@ -213,7 +213,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_access_main_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
+    async def s_access_main_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_ACCESS_MAIN_CLASSROOM_SETTINGS"""
         if payload is None:
             keyboard_type_kwargs = {
@@ -242,7 +242,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_classroom_name_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
+    async def s_classroom_name_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_CLASSROOM_NAME_MAIN_CLASSROOM_SETTINGS"""
         if payload is None:
             if len(message) > 12:
@@ -262,7 +262,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_school_name_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
+    async def s_school_name_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_SCHOOL_NAME_MAIN_CLASSROOM_SETTINGS"""
         if payload is None:
             if len(message) > 32:
@@ -282,7 +282,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_description_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
+    async def s_description_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_DESCRIPTION_MAIN_CLASSROOM_SETTINGS"""
         if payload is None:
             if len(message) > 200:
@@ -302,7 +302,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_limit_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
+    async def s_limit_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_LIMIT_MAIN_CLASSROOM_SETTINGS"""
         if payload is None:
             ask_message = f"Впишите новое число максимального количества участников (не может быть меньше " \

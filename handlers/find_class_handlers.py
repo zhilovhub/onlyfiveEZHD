@@ -11,7 +11,7 @@ class FindClassHandlers(SupportingFunctions):
                          technical_support_db=technical_support_db, diary_homework_db=diary_homework_db,
                          role_db=role_db, notification_db=notification_db)
 
-    def s_find_class_handler(self, user_id: int, message: str, payload: dict) -> None:
+    async def s_find_class_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_FIND_CLASS"""
         if payload is None:
             classroom_id = None
@@ -67,7 +67,7 @@ class FindClassHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_look_classroom_handler(self, user_id: int, payload: dict) -> None:
+    async def s_look_classroom_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_LOOK_CLASSROOM"""
         classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
         keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)
@@ -119,7 +119,7 @@ class FindClassHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_request_classroom_handler(self, user_id: int, message: str, payload: dict) -> None:
+    async def s_request_classroom_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_REQUEST_CLASSROOM"""
         classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
         keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)
@@ -152,7 +152,7 @@ class FindClassHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.trans_to_main_menu(user_id)
 
-    def s_edit_request_classroom_handler(self, user_id: int, message: str, payload: dict) -> None:
+    async def s_edit_request_classroom_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_EDIT_REQUEST_CLASSROOM"""
         classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
         keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)
