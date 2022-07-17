@@ -20,9 +20,9 @@ class KeyBoards:
     KEYBOARD_MENU.add_button(label="Найти класс", payload=get_payload("Найти класс"))
     KEYBOARD_MENU.add_button(label="Создать класс", payload=get_payload("Создать класс"))
     KEYBOARD_MENU.add_button(label="Мои классы", payload=get_payload("Мои классы"))
-    KEYBOARD_MENU.add_line()
-    KEYBOARD_MENU.add_button(label="Создать беседу класса", payload=get_payload("Создать беседу класса"))
-    KEYBOARD_MENU.add_button(label="Настройка беседы класса", payload=get_payload("Настройка беседы класса"))
+    # KEYBOARD_MENU.add_line()
+    # KEYBOARD_MENU.add_button(label="Создать беседу класса", payload=get_payload("Создать беседу класса"))
+    # KEYBOARD_MENU.add_button(label="Настройка беседы класса", payload=get_payload("Настройка беседы класса"))
     KEYBOARD_MENU.add_line()
     KEYBOARD_MENU.add_button(label="Обращение в тех. поддержку", payload=get_payload("Обращение в тех. поддержку"))
 

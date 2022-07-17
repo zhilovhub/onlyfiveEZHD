@@ -78,14 +78,6 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
                     "elements": elements
                 }))
 
-        elif payload["text"] == "Создать беседу класса":
-            trans_message = "Создаю беседу класса..."
-            await self.state_transition(user_id, States.S_NOTHING, trans_message)
-
-        elif payload["text"] == "Настройка беседы класса":
-            trans_message = "Настройка беседы класса..."
-            await self.state_transition(user_id, States.S_NOTHING, trans_message)
-
         elif payload["text"] == "Обращение в тех. поддержку":
             trans_message = "Опишите свой вопрос..."
             await self.state_transition(user_id, States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE, trans_message)
