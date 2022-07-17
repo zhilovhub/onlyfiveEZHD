@@ -2,19 +2,19 @@ from supporting_functions import *
 
 
 class MembersSettingsHandlers(SupportingFunctions):
-    def __init__(self, token: str, group_id: int, user_db: UserDataCommands,
+    def __init__(self, bot: Bot, user_db: UserDataCommands,
                  classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
                  diary_homework_db: DiaryHomeworkCommands, role_db: RoleCommands,
                  notification_db: NotificationCommands) -> None:
         """Initialization"""
-        super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db,
+        super().__init__(bot=bot, user_db=user_db, classroom_db=classroom_db,
                          technical_support_db=technical_support_db, diary_homework_db=diary_homework_db,
                          role_db=role_db, notification_db=notification_db)
 
     async def s_members_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_MEMBERS_SETTINGS"""
         if payload is None:
-            self.state_transition(user_id, States.S_MEMBERS_SETTINGS, "Для навигации используй кнопки!👇🏻")
+            await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Редактировать роли":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -24,7 +24,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
 
             trans_message = f"{role_names_text}\n\nВведите номер роли для редактрования:"
-            self.state_transition(user_id, States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
+            await self.state_transition(user_id, States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Назначить роли":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -34,7 +34,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
 
             trans_message = f"{role_names_text}\n\nВпишите номер роли, назначать которой хотите:"
-            self.state_transition(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS, trans_message)
+            await self.state_transition(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Удалить участника":
             if payload["can"]:
@@ -43,17 +43,18 @@ class MembersSettingsHandlers(SupportingFunctions):
                 members_text = self.get_members_text(roles_dictionary)
 
                 trans_message = f"{members_text}\n\nВпиши номер участника, которого ты хочешь удалить:"
-                self.state_transition(user_id, States.S_DELETE_MEMBER_MEMBERS_SETTINGS, trans_message)
+                await self.state_transition(user_id, States.S_DELETE_MEMBER_MEMBERS_SETTINGS, trans_message)
             else:
-                self.state_transition(user_id, States.S_MEMBERS_SETTINGS, "Ты не можешь кикать участников из-за "
-                                                                          "своей роли")
+                await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, "Ты не можешь кикать участников из-за "
+                                                                                "своей роли")
 
         elif payload["text"] == "Пригл. ссылка":
             if payload["can"]:
                 pass
             else:
-                self.state_transition(user_id, States.S_MEMBERS_SETTINGS, "Ты не можешь приглашать участников из-за "
-                                                                          "своей роли")
+                await self.state_transition(user_id, States.S_MEMBERS_SETTINGS,
+                                            "Ты не можешь приглашать участников из-за "
+                                            "своей роли")
 
         elif payload["text"] == "Удалить роли":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -65,10 +66,10 @@ class MembersSettingsHandlers(SupportingFunctions):
             if len(all_role_names) > 2:
                 trans_message = f"Все участники с ролью, которые вы удалите, возьмут дефолтную роль\n" \
                                 f"Введите номер роли, которую хотите удалить:\n\n{role_names_text}"
-                self.state_transition(user_id, States.S_DELETE_ROLE_MEMBERS_SETTINGS, trans_message)
+                await self.state_transition(user_id, States.S_DELETE_ROLE_MEMBERS_SETTINGS, trans_message)
             else:
                 trans_message = f"В классе нет ролей, которые можно было бы удалить!\n\n{role_names_text}"
-                self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
+                await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Добавить роли":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -90,19 +91,20 @@ class MembersSettingsHandlers(SupportingFunctions):
                                 f"20 символов), она " \
                                 f"возьмёт привилегии роли участника (привилегии новой роли можно " \
                                 f"отредактировать):"
-                self.state_transition(user_id, States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS, trans_message)
+                await self.state_transition(user_id, States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS, trans_message)
             else:
                 trans_message = f"Вы этом классе уже максимальное кол-во ролей - 8!\n\n{role_names_text}"
-                self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
+                await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Назад":
             trans_message = "Возвращаемся в меню класса..."
-            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
+            await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message,
+                                        sign=self.get_sign(user_id))
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
-    async def s_add_role_enter_name_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
+    async def s_add_role_enter_name_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS"""
         if payload is None:
             if len(message) <= 20:
@@ -116,22 +118,22 @@ class MembersSettingsHandlers(SupportingFunctions):
                         [f"{ind}. {role_name}" for ind, role_name in enumerate(role_names, start=1)])
 
                     trans_message = f"Новая роль добавлена!\n\n{role_names_text}"
-                    self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
+                    await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
                 else:
                     trans_message = "Роль с таким названием уже существует в этом классе.\nВведите другое название:"
-                    self.state_transition(user_id, States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS, trans_message)
+                    await self.state_transition(user_id, States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS, trans_message)
             else:
                 trans_message = "Длина названия больше 20 символов. Введите другое название:"
-                self.state_transition(user_id, States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS, trans_message)
+                await self.state_transition(user_id, States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Назад":
             trans_message = "Возвращаемся в настройки участников..."
-            self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
+            await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
-    async def s_delete_role_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
+    async def s_delete_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_DELETE_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
             ask_message = "Введите номер роли, удалить которую хотите:"
@@ -154,24 +156,24 @@ class MembersSettingsHandlers(SupportingFunctions):
                         self.role_db.delete_role(role_id)
 
                         trans_message = "Роль удалена!"
-                        self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
+                        await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
                     else:
                         trans_message = f"Нельзя удалить роль админа или дефолтную роль\n\n{ask_message}"
-                        self.state_transition(user_id, States.S_DELETE_ROLE_MEMBERS_SETTINGS, trans_message)
+                        await self.state_transition(user_id, States.S_DELETE_ROLE_MEMBERS_SETTINGS, trans_message)
                 else:
                     trans_message = "Номер роли не может быть отрицательным числом или быть больше текущего" \
                                     f" количества ролей\n\n{ask_message}"
-                    self.state_transition(user_id, States.S_DELETE_ROLE_MEMBERS_SETTINGS, trans_message)
+                    await self.state_transition(user_id, States.S_DELETE_ROLE_MEMBERS_SETTINGS, trans_message)
             else:
                 trans_message = f"Введено не число\n\n{ask_message}"
-                self.state_transition(user_id, States.S_DELETE_ROLE_MEMBERS_SETTINGS, trans_message)
+                await self.state_transition(user_id, States.S_DELETE_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Назад":
             trans_message = "Возвращаемся в настройки участников..."
-            self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
+            await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     async def s_delete_member_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_DELETE_MEMBER_MEMBERS_SETTINGS"""
@@ -196,8 +198,8 @@ class MembersSettingsHandlers(SupportingFunctions):
                                     self.classroom_db.delete_student(classroom_id, member_id)
                                     new_roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
                                     new_members_text = self.get_members_text(new_roles_dictionary)
-                                    self.notify_leave_classmate(member_id, classroom_id, kicked=True,
-                                                                without_user_ids=[user_id])
+                                    await self.notify_leave_classmate(member_id, classroom_id, kicked=True,
+                                                                      without_user_ids=[user_id])
 
                                     trans_message = f"{new_members_text}\n\nУчастник удалён!\n\n{ask_message}"
                                 elif member_id == user_id:
@@ -208,25 +210,25 @@ class MembersSettingsHandlers(SupportingFunctions):
                             ind += 1
                         else:
                             continue
-                        self.state_transition(user_id, States.S_DELETE_MEMBER_MEMBERS_SETTINGS, trans_message)
+                        await self.state_transition(user_id, States.S_DELETE_MEMBER_MEMBERS_SETTINGS, trans_message)
                         break
 
                 else:
                     trans_message = f"Число не может быть неположительным или быть больше количества " \
                                     f"участников\n\n{ask_message}"
-                    self.state_transition(user_id, States.S_DELETE_MEMBER_MEMBERS_SETTINGS, trans_message)
+                    await self.state_transition(user_id, States.S_DELETE_MEMBER_MEMBERS_SETTINGS, trans_message)
             else:
                 trans_message = f"Введено не число\n\n{ask_message}"
-                self.state_transition(user_id, States.S_DELETE_MEMBER_MEMBERS_SETTINGS, trans_message)
+                await self.state_transition(user_id, States.S_DELETE_MEMBER_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Назад":
             trans_message = "Возвращаемся в настройки участников..."
-            self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
+            await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
-    async def s_choose_role_members_settings_handler(self, user_id: int, message: str,  payload: dict) -> None:
+    async def s_choose_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_CHOOSE_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
             ask_message = "Впишите номер роли, назначать которой хотите:"
@@ -248,37 +250,37 @@ class MembersSettingsHandlers(SupportingFunctions):
                     if role_id == admin_role_id:
                         trans_message = "Вы уверены, что хотите назначить кого-то ролью админа? После " \
                                         "назначения вы перестанете быть админом и возьмёте дефолтную роль"
-                        self.state_transition(user_id, States.S_CHOOSE_ADMIN_ROLE_CONFIRMATION_MEMBERS_SETTINGS,
-                                              trans_message)
+                        await self.state_transition(user_id, States.S_CHOOSE_ADMIN_ROLE_CONFIRMATION_MEMBERS_SETTINGS,
+                                                    trans_message)
                     else:
                         roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
                         members_text = self.get_members_text(roles_dictionary)
 
                         trans_message = f"{members_text}\n\nВпишите номер участника, которому хотите " \
                                         f"назначить роль - {role_name}"
-                        self.state_transition(user_id, States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS,
-                                              trans_message)
+                        await self.state_transition(user_id, States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS,
+                                                    trans_message)
                     self.role_db.update_user_customize_role_id(user_id, role_id)
                 else:
                     trans_message = f"{all_role_names_text}\n\nНомер роли не может быть отрицательным числом" \
                                     f" или быть больше текущего количества ролей\n\n{ask_message}"
-                    self.state_transition(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS, trans_message)
+                    await self.state_transition(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS, trans_message)
             else:
                 trans_message = f"{all_role_names_text}\n\nВведено не число\n\n{ask_message}"
-                self.state_transition(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS, trans_message)
+                await self.state_transition(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Назад":
             trans_message = "Возвращаемся в настройки участников..."
-            self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
+            await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     async def s_choose_admin_role_confirmation_members_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_CHOOSE_ADMIN_ROLE_CONFIRMATION_MEMBERS_SETTINGS"""
         if payload is None:
-            self.state_transition(user_id, States.S_CHOOSE_ADMIN_ROLE_CONFIRMATION_MEMBERS_SETTINGS,
-                                  "Для навигации используй кнопки!👇🏻")
+            await self.state_transition(user_id, States.S_CHOOSE_ADMIN_ROLE_CONFIRMATION_MEMBERS_SETTINGS,
+                                        "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Нет":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -290,7 +292,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.role_db.update_user_customize_role_id(user_id, "null")
 
             trans_message = f"{all_role_names_text}\n\nВпишите номер роли, назначать которой хотите:"
-            self.state_transition(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS, trans_message)
+            await self.state_transition(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Да":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -300,10 +302,10 @@ class MembersSettingsHandlers(SupportingFunctions):
 
             trans_message = f"{members_text}\n\nВпишите номер участника, которому хотите " \
                             f"назначить роль - {admin_role_name}"
-            self.state_transition(user_id, States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS, trans_message)
+            await self.state_transition(user_id, States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     async def s_choose_member_change_role_members_settings_handler(self, user_id: int, message: str, payload: dict
                                                                    ) -> None:
@@ -343,23 +345,25 @@ class MembersSettingsHandlers(SupportingFunctions):
 
                                         trans_message = f"{new_members_text}\n\nНовая роль участнику назначена!\n\nВы" \
                                                         f" больше не админ"
-                                        self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
+                                        await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
                                     else:
                                         trans_message = f"{new_members_text}\n\nНовая роль участнику назначена!" \
                                                         f"\n\n{ask_message}"
-                                        self.state_transition(user_id,
-                                                              States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS,
-                                                              trans_message)
+                                        await self.state_transition(user_id,
+                                                                    States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS,
+                                                                    trans_message)
                                 elif member_id == user_id:
                                     trans_message = f"{members_text}Ты не можешь переназначить самому себе " \
                                                     f"роль\n\n{ask_message}"
-                                    self.state_transition(user_id, States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS,
-                                                          trans_message)
+                                    await self.state_transition(user_id,
+                                                                States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS,
+                                                                trans_message)
                                 elif role_id == new_role_id:
                                     trans_message = f"{members_text}\n\nУ этого участника уже эта роль!\n\n" \
                                                     f"{ask_message}"
-                                    self.state_transition(user_id, States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS,
-                                                          trans_message)
+                                    await self.state_transition(user_id,
+                                                                States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS,
+                                                                trans_message)
                                 break
                             ind += 1
                         else:
@@ -369,10 +373,11 @@ class MembersSettingsHandlers(SupportingFunctions):
                 else:
                     trans_message = f"Число не может быть неположительным или быть больше количества " \
                                     f"участников\n\n{ask_message}"
-                    self.state_transition(user_id, States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS, trans_message)
+                    await self.state_transition(user_id, States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS,
+                                                trans_message)
             else:
                 trans_message = f"Введено не число\n\n{ask_message}"
-                self.state_transition(user_id, States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS, trans_message)
+                await self.state_transition(user_id, States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Назад":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -383,10 +388,10 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.role_db.update_user_customize_role_id(user_id, "null")
 
             trans_message = f"{all_role_names_text}\n\nВпишите номер роли, назначать которой хотите:"
-            self.state_transition(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS, trans_message)
+            await self.state_transition(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     async def s_choose_role_edit_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS"""
@@ -410,26 +415,27 @@ class MembersSettingsHandlers(SupportingFunctions):
                     role_properties_dict = self.role_db.get_role_properties_dict(role_id)
                     role_properties_text = self.get_role_properties_text(role_properties_dict)
 
-                    self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, role_properties_text)
+                    await self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, role_properties_text)
                 else:
                     trans_message = f"{all_role_names_text}\n\nНомер роли не может быть отрицательным числом" \
                                     f" или быть больше текущего количества ролей\n\n{ask_message}"
-                    self.state_transition(user_id, States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
+                    await self.state_transition(user_id, States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
             else:
                 trans_message = f"{all_role_names_text}\n\nВведено не число\n\n{ask_message}"
-                self.state_transition(user_id, States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
+                await self.state_transition(user_id, States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Назад":
             trans_message = "Возвращаемся в настройки участников..."
-            self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
+            await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     async def s_edit_role_members_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
-            self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, "Для навигации используй кнопки!👇🏻")
+            await self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS,
+                                        "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Класс":
             role_id = self.role_db.get_customizing_role_id(user_id)
@@ -437,8 +443,8 @@ class MembersSettingsHandlers(SupportingFunctions):
             color_values = self.get_edit_role_keyboard_color_values(classroom_role_properties_dictionary)
 
             trans_message = "Что участник с этой ролью может делать с классом:"
-            self.state_transition(user_id, States.S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message,
-                                  *color_values)
+            await self.state_transition(user_id, States.S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message,
+                                        *color_values)
 
         elif payload["text"] == "Участники":
             role_id = self.role_db.get_customizing_role_id(user_id)
@@ -446,8 +452,8 @@ class MembersSettingsHandlers(SupportingFunctions):
             color_values = self.get_edit_role_keyboard_color_values(members_role_properties_dictionary)
 
             trans_message = "Что участник с этой ролью может делать с другими учатниками:"
-            self.state_transition(user_id, States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message,
-                                  *color_values)
+            await self.state_transition(user_id, States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message,
+                                        *color_values)
 
         elif payload["text"] == "Дневник":
             role_id = self.role_db.get_customizing_role_id(user_id)
@@ -455,12 +461,12 @@ class MembersSettingsHandlers(SupportingFunctions):
             color_values = self.get_edit_role_keyboard_color_values(diary_role_properties_dictionary)
 
             trans_message = "Что участник с этой ролью может делать с дневником:"
-            self.state_transition(user_id, States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message,
-                                  *color_values)
+            await self.state_transition(user_id, States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message,
+                                        *color_values)
 
         elif payload["text"] == "Сменить имя":
             trans_message = "Введите новое имя роли (макс. 20 символов):"
-            self.state_transition(user_id, States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
+            await self.state_transition(user_id, States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Назад":
             ask_message = "Впишите номер роли, редактировать которую хотите:"
@@ -473,10 +479,10 @@ class MembersSettingsHandlers(SupportingFunctions):
             self.role_db.update_user_customize_role_id(user_id, "null")
 
             trans_message = f"{all_role_names_text}\n\n{ask_message}"
-            self.state_transition(user_id, States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
+            await self.state_transition(user_id, States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     async def s_enter_name_edit_role_members_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS"""
@@ -489,21 +495,21 @@ class MembersSettingsHandlers(SupportingFunctions):
                 role_properties_text = self.get_role_properties_text(role_properties_dict)
 
                 trans_message = f"{role_properties_text}\n\nНазвание роли изменено!"
-                self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
+                await self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
             else:
                 trans_message = "Длина нового названия превышает 20 символов\n\n" \
                                 "Введите другое новое имя роли (макс. 20 символов):"
-                self.state_transition(user_id, States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
+                await self.state_transition(user_id, States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Назад":
             role_id = self.role_db.get_customizing_role_id(user_id)
             role_properties_dict = self.role_db.get_role_properties_dict(role_id)
             role_properties_text = self.get_role_properties_text(role_properties_dict)
 
-            self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, role_properties_text)
+            await self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, role_properties_text)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     async def s_diary_privilege_edit_role_members_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS"""
@@ -512,8 +518,8 @@ class MembersSettingsHandlers(SupportingFunctions):
             diary_role_properties_dictionary = self.role_db.get_diary_role_properties_dict(role_id)
             color_values = self.get_edit_role_keyboard_color_values(diary_role_properties_dictionary)
 
-            self.state_transition(user_id, States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
-                                  "Для навигации используй кнопки!👇🏻", *color_values)
+            await self.state_transition(user_id, States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
+                                        "Для навигации используй кнопки!👇🏻", *color_values)
 
         elif payload["text"] in ["Текущее дз", "Будущее дз",
                                  "Эталонное расписание", "Текущее расписание", "Будущее расписание"]:
@@ -536,18 +542,18 @@ class MembersSettingsHandlers(SupportingFunctions):
             diary_role_properties_text = self.get_role_properties_text(diary_role_properties_dictionary, "diary")
             color_values = self.get_edit_role_keyboard_color_values(diary_role_properties_dictionary)
 
-            self.state_transition(user_id, States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
-                                  diary_role_properties_text, *color_values)
+            await self.state_transition(user_id, States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
+                                        diary_role_properties_text, *color_values)
 
         elif payload["text"] == "Назад":
             role_id = self.role_db.get_customizing_role_id(user_id)
             role_properties_dict = self.role_db.get_role_properties_dict(role_id)
             role_properties_text = self.get_role_properties_text(role_properties_dict)
 
-            self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, role_properties_text)
+            await self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, role_properties_text)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     async def s_members_privilege_edit_role_members_settings(self, user_id: int, payload: dict) -> None:
         """Handling States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS"""
@@ -556,8 +562,8 @@ class MembersSettingsHandlers(SupportingFunctions):
             members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
             color_values = self.get_edit_role_keyboard_color_values(members_role_properties_dictionary)
 
-            self.state_transition(user_id, States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
-                                  "Для навигации используй кнопки!👇🏻", *color_values)
+            await self.state_transition(user_id, States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
+                                        "Для навигации используй кнопки!👇🏻", *color_values)
 
         elif payload["text"] in ["Кикание участников", "Приглашение в класс",
                                  "Принятие заявок", "Уведомление участников"]:
@@ -580,18 +586,18 @@ class MembersSettingsHandlers(SupportingFunctions):
             role_properties_text = self.get_role_properties_text(role_properties_dict)
             color_values = self.get_edit_role_keyboard_color_values(members_role_properties_dictionary)
 
-            self.state_transition(user_id, States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
-                                  role_properties_text, *color_values)
+            await self.state_transition(user_id, States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
+                                        role_properties_text, *color_values)
 
         elif payload["text"] == "Назад":
             role_id = self.role_db.get_customizing_role_id(user_id)
             role_properties_dict = self.role_db.get_role_properties_dict(role_id)
             role_properties_text = self.get_role_properties_text(role_properties_dict)
 
-            self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, role_properties_text)
+            await self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, role_properties_text)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     async def s_classroom_privilege_edit_role_members_settings(self, user_id: int, payload: dict) -> None:
         """Handling States.S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS"""
@@ -600,8 +606,8 @@ class MembersSettingsHandlers(SupportingFunctions):
             classroom_role_properties_dictionary = self.role_db.get_classroom_role_properties_dict(role_id)
             color_values = self.get_edit_role_keyboard_color_values(classroom_role_properties_dictionary)
 
-            self.state_transition(user_id, States.S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
-                                  "Для навигации используй кнопки!👇🏻", *color_values)
+            await self.state_transition(user_id, States.S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
+                                        "Для навигации используй кнопки!👇🏻", *color_values)
 
         elif payload["text"] in ["Название класса", "Название школы", "Тип класса",
                                  "Описание класса", "Лимит участников"]:
@@ -625,18 +631,18 @@ class MembersSettingsHandlers(SupportingFunctions):
             role_properties_text = self.get_role_properties_text(role_properties_dict)
             color_values = self.get_edit_role_keyboard_color_values(classroom_role_properties_dictionary)
 
-            self.state_transition(user_id, States.S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
-                                  role_properties_text, *color_values)
+            await self.state_transition(user_id, States.S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
+                                        role_properties_text, *color_values)
 
         elif payload["text"] == "Назад":
             role_id = self.role_db.get_customizing_role_id(user_id)
             role_properties_dict = self.role_db.get_role_properties_dict(role_id)
             role_properties_text = self.get_role_properties_text(role_properties_dict)
 
-            self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, role_properties_text)
+            await self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, role_properties_text)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     @staticmethod
     def get_edit_role_keyboard_color_values(role_properties_dictionary: dict) -> list:

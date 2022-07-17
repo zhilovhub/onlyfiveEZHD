@@ -25,8 +25,9 @@ diary_homework_db = DiaryHomeworkCommands(connection)
 role_db = RoleCommands(connection)
 notification_db = NotificationCommands(connection)
 
-# All handlers
-handlers_class = Handlers(token=TOKEN, group_id=GROUP_ID,
+# All handlers + bot
+bot = Bot(TOKEN)
+handlers_class = Handlers(bot=bot,
                           user_db=user_db,
                           classroom_db=classroom_db,
                           technical_support_db=technical_support_db,
@@ -34,8 +35,6 @@ handlers_class = Handlers(token=TOKEN, group_id=GROUP_ID,
                           role_db=role_db,
                           notification_db=notification_db
                           )
-
-bot = Bot(TOKEN)
 
 
 @bot.on.message()
@@ -48,7 +47,7 @@ async def listen_messages(message: Message) -> None:
     attachments = message.attachments
     payload = message.get_payload_json()
 
-    user_information = handlers_class.get_user_info(user_id)  # User_id, first_name, nickname
+    user_information = await handlers_class.get_user_info(user_id)  # User_id, first_name, nickname
 
     user_db.insert_new_user(user_id,
                             user_information["screen_name"],
@@ -58,7 +57,7 @@ async def listen_messages(message: Message) -> None:
                             )  # Will add a new user if user writes his first message
     classroom_db.insert_new_customizer(user_id)
 
-    if handlers_class.is_member(user_id):  # Checking first condition
+    if await handlers_class.is_member(user_id):  # Checking first condition
 
         if user_db.check_user_is_ready(user_id):  # Checking second condition
 
@@ -68,17 +67,17 @@ async def listen_messages(message: Message) -> None:
                 current_dialog_state = user_db.get_user_dialog_state(user_id)
                 await filter_dialog_state(user_id, message_text, payload, current_dialog_state)
             elif attachments:
-                handlers_class.send_message(user_id, "Пиши текстом... Или используй кнопки для навигации!👇🏻")
+                await handlers_class.send_message(user_id, "Пиши текстом... Или используй кнопки для навигации!👇🏻")
             elif not message_text:
-                handlers_class.send_message(user_id, "Пустой текст😐")
+                await handlers_class.send_message(user_id, "Пустой текст😐")
         else:
             user_db.set_user_is_ready(
                 user_id)  # First condition is True but this is a first user's message
 
             trans_message = "Добро пожаловать в наше сообщество!\nЧто может наш бот? (Инструкция)"
-            handlers_class.state_transition(user_id, States.S_NOTHING, trans_message)
+            await handlers_class.state_transition(user_id, States.S_NOTHING, trans_message)
     else:
-        handlers_class.send_message(user_id, "Перед использованием бота подпишись на группу!")  # User not member
+        await handlers_class.send_message(user_id, "Перед использованием бота подпишись на группу!")  # User not member
 
 
 @bot.on.raw_event(GroupEventType.MESSAGE_EVENT, dataclass=GroupTypes.MessageEvent)
@@ -89,12 +88,12 @@ async def listen_message_events(event: GroupTypes.MessageEvent):
     peer_id = event.object.peer_id
     payload = event.object.payload
 
-    handlers_class.send_message_event_answer(event_id, user_id, peer_id, "")
-    if handlers_class.is_member(user_id):
+    await handlers_class.send_message_event_answer(event_id, user_id, peer_id, "")
+    if await handlers_class.is_member(user_id):
         current_dialog_state = user_db.get_user_dialog_state(user_id)
         await filter_callback_button_payload(user_id, payload, current_dialog_state)
     else:
-        handlers_class.send_message(user_id, "Перед использованием бота подпишись на группу!")
+        await handlers_class.send_message(user_id, "Перед использованием бота подпишись на группу!")
 
 
 async def filter_dialog_state(user_id: int, message: str, payload: dict, current_dialog_state: int) -> None:

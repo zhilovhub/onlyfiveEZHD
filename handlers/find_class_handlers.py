@@ -2,12 +2,12 @@ from supporting_functions import *
 
 
 class FindClassHandlers(SupportingFunctions):
-    def __init__(self, token: str, group_id: int, user_db: UserDataCommands,
+    def __init__(self, bot: Bot, user_db: UserDataCommands,
                  classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
                  diary_homework_db: DiaryHomeworkCommands, role_db: RoleCommands,
                  notification_db: NotificationCommands) -> None:
         """Initialization"""
-        super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db,
+        super().__init__(bot=bot, user_db=user_db, classroom_db=classroom_db,
                          technical_support_db=technical_support_db, diary_homework_db=diary_homework_db,
                          role_db=role_db, notification_db=notification_db)
 
@@ -48,24 +48,24 @@ class FindClassHandlers(SupportingFunctions):
                         })
                         user_in_classroom_text = "Вы не состоите в этом классе ❌"
 
-                    self.send_message(user_id, f"#{classroom_id}\n"
-                                               f"Класс: {classroom_name}\n"
-                                               f"Школа: {school_name}\n"
-                                               f"Описание: {description}\n"
-                                               f"Тип класса: {access}\n"
-                                               f"Участники: {len(members_dictionary)}/{members_limit}\n\n"
-                                               f"{user_in_classroom_text}", keyboard.get_keyboard())
+                    await self.send_message(user_id, f"#{classroom_id}\n"
+                                                     f"Класс: {classroom_name}\n"
+                                                     f"Школа: {school_name}\n"
+                                                     f"Описание: {description}\n"
+                                                     f"Тип класса: {access}\n"
+                                                     f"Участники: {len(members_dictionary)}/{members_limit}\n\n"
+                                                     f"{user_in_classroom_text}", keyboard.get_keyboard())
                 else:
                     trans_message = f"Класса с id {classroom_id} не существует!"
-                    self.state_transition(user_id, States.S_FIND_CLASS, trans_message)
+                    await self.state_transition(user_id, States.S_FIND_CLASS, trans_message)
 
             else:
                 trans_message = "Неверный формат записи\n\nОтправьте ссылку-приглашение или id класса в " \
                                 "формате #id (например, #1223)"
-                self.state_transition(user_id, States.S_FIND_CLASS, trans_message)
+                await self.state_transition(user_id, States.S_FIND_CLASS, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     async def s_look_classroom_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_LOOK_CLASSROOM"""
@@ -73,16 +73,16 @@ class FindClassHandlers(SupportingFunctions):
         keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)
 
         if payload is None:
-            self.state_transition(user_id, States.S_LOOK_CLASSROOM, "Для навигации используй кнопки!👇🏻",
-                                  classroom_type=keyboard_kwarg)
+            await self.state_transition(user_id, States.S_LOOK_CLASSROOM, "Для навигации используй кнопки!👇🏻",
+                                        classroom_type=keyboard_kwarg)
 
         elif payload["text"] == "Участники":
             roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
             members_text = self.get_members_text(roles_dictionary)
 
             trans_message = f"Список участников:\n\n{members_text}"
-            self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message,
-                                  classroom_type=keyboard_kwarg)
+            await self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message,
+                                        classroom_type=keyboard_kwarg)
 
         elif payload["text"] == "Войти":
             limit_members = self.classroom_db.get_classroom_members_limit(classroom_id)
@@ -91,33 +91,36 @@ class FindClassHandlers(SupportingFunctions):
             if len(members_dictionary) < limit_members:
                 default_role_id = self.role_db.get_default_role_id(classroom_id)
                 self.insert_new_student(user_id, classroom_id, default_role_id)
-                self.notify_new_classmate(user_id, classroom_id, without_user_ids=[user_id])
+                await self.notify_new_classmate(user_id, classroom_id, without_user_ids=[user_id])
 
                 trans_message = "Ты вступил!"
-                self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
+                await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message,
+                                            sign=self.get_sign(user_id))
             else:
                 trans_message = "В классе уже максимальное количество людей!"
-                self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
+                await self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message,
+                                            classroom_type=keyboard_kwarg)
 
         elif payload["text"] == "Подать заявку":
             request_information_list = self.classroom_db.get_list_of_request_information(classroom_id)
 
             if len(request_information_list) < 10:
                 trans_message = "Напишите что-нибудь в заявке (макс. 50 символов)"
-                self.state_transition(user_id, States.S_REQUEST_CLASSROOM, trans_message)
+                await self.state_transition(user_id, States.S_REQUEST_CLASSROOM, trans_message)
             else:
                 trans_message = "Почта админа уже переполнена!"
-                self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
+                await self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message,
+                                            classroom_type=keyboard_kwarg)
 
         elif payload["text"] == "Редактировать заявку":
             request_information = self.classroom_db.get_request_information(user_id, classroom_id)
 
             trans_message = f"Твоя заявка:\n\n{request_information[3]}\n{request_information[2]}\n\n" \
                             "Напиши что-нибудь новое в заявке (макс. 50 символов)"
-            self.state_transition(user_id, States.S_EDIT_REQUEST_CLASSROOM, trans_message)
+            await self.state_transition(user_id, States.S_EDIT_REQUEST_CLASSROOM, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     async def s_request_classroom_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_REQUEST_CLASSROOM"""
@@ -127,13 +130,14 @@ class FindClassHandlers(SupportingFunctions):
         if payload is None:
             if len(message) <= 50:
                 self.classroom_db.insert_new_request(user_id, classroom_id, message)
-                self.notify_request(user_id, classroom_id)
+                await self.notify_request(user_id, classroom_id)
 
                 trans_message = "Заявка отправлена!"
-                self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
+                await self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message,
+                                            classroom_type=keyboard_kwarg)
             else:
                 trans_message = "Длина текста превышает 50 символов! Напиши что-нибудь другое"
-                self.state_transition(user_id, States.S_REQUEST_CLASSROOM, trans_message)
+                await self.state_transition(user_id, States.S_REQUEST_CLASSROOM, trans_message)
 
         elif payload["text"] == "Назад":
             classroom_name, school_name, access, description = \
@@ -147,10 +151,10 @@ class FindClassHandlers(SupportingFunctions):
                             f"Описание: {description}\n" \
                             f"Тип класса: {access}\n" \
                             f"Участники: {len(members_dictionary)}/{members_limit}"
-            self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
+            await self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     async def s_edit_request_classroom_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_EDIT_REQUEST_CLASSROOM"""
@@ -162,17 +166,18 @@ class FindClassHandlers(SupportingFunctions):
                 self.classroom_db.update_request(user_id, classroom_id, message)
 
                 trans_message = "Заявка обновлена!"
-                self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
+                await self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message,
+                                            classroom_type=keyboard_kwarg)
             else:
                 trans_message = "Длина текста превышает 50 символов! Напиши что-нибудь другое"
-                self.state_transition(user_id, States.S_EDIT_REQUEST_CLASSROOM, trans_message)
+                await self.state_transition(user_id, States.S_EDIT_REQUEST_CLASSROOM, trans_message)
 
         elif payload["text"] == "Удалить заявку":
             self.classroom_db.delete_request(user_id, classroom_id)
             keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)
 
             trans_message = "Заявка удалена!"
-            self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
+            await self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
 
         elif payload["text"] == "Назад":
             classroom_name, school_name, access, description = \
@@ -186,7 +191,7 @@ class FindClassHandlers(SupportingFunctions):
                             f"Описание: {description}\n" \
                             f"Тип класса: {access}\n" \
                             f"Участники: {len(members_dictionary)}/{members_limit}"
-            self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
+            await self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message, classroom_type=keyboard_kwarg)
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)

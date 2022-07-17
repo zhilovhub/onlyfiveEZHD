@@ -2,31 +2,32 @@ from supporting_functions import *
 
 
 class MyClassesHandlers(SupportingFunctions):
-    def __init__(self, token: str, group_id: int, user_db: UserDataCommands,
+    def __init__(self, bot: Bot, user_db: UserDataCommands,
                  classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
                  diary_homework_db: DiaryHomeworkCommands, role_db: RoleCommands,
                  notification_db: NotificationCommands) -> None:
         """Initialization"""
-        super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db,
+        super().__init__(bot=bot, user_db=user_db, classroom_db=classroom_db,
                          technical_support_db=technical_support_db, diary_homework_db=diary_homework_db,
                          role_db=role_db, notification_db=notification_db)
 
     async def s_in_class_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_IN_CLASS_MYCLASSES"""
         if payload is None:
-            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, "Для навигации используй кнопки!👇🏻",
-                                  sign=self.get_sign(user_id))
+            await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, "Для навигации используй кнопки!👇🏻",
+                                        sign=self.get_sign(user_id))
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
         elif payload["text"] == "Ещё":
             trans_message = "Другое меню класса"
-            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, trans_message, sign=self.get_sign(user_id))
+            await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, trans_message,
+                                        sign=self.get_sign(user_id))
 
         elif payload["text"] == "Настройки":
             trans_message = "Настройки класса\n\nКоличество настроек зависит от твоей роли в этом классе!"
-            self.state_transition(user_id, States.S_CLASSROOM_SETTINGS, trans_message)
+            await self.state_transition(user_id, States.S_CLASSROOM_SETTINGS, trans_message)
 
         elif payload["text"] == "Участники":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -40,7 +41,7 @@ class MyClassesHandlers(SupportingFunctions):
                                              "classroom_id": classroom_id
                                          })
 
-            self.send_message(user_id, members_text, keyboard.get_keyboard())
+            await self.send_message(user_id, members_text, keyboard.get_keyboard())
 
         elif payload["text"] in ["Дз текущее", "Дз будущее"]:
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -77,7 +78,7 @@ class MyClassesHandlers(SupportingFunctions):
                                              "can": can
                                          })
 
-            self.send_message(user_id, help_text + diary_homework_text, keyboard.get_keyboard())
+            await self.send_message(user_id, help_text + diary_homework_text, keyboard.get_keyboard())
 
         elif payload["text"] in ["Расписание эталонное", "Расписание текущее", "Расписание будущее"]:
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -115,7 +116,7 @@ class MyClassesHandlers(SupportingFunctions):
                                              "can": can
                                          })
 
-            self.send_message(user_id, help_text + diary_text, keyboard.get_keyboard())
+            await self.send_message(user_id, help_text + diary_text, keyboard.get_keyboard())
 
         elif payload["text"] in ("edit_standard", "edit_current", "edit_next",
                                  "edit_current_homework", "edit_next_homework"):
@@ -134,14 +135,14 @@ class MyClassesHandlers(SupportingFunctions):
                 self.diary_homework_db.insert_row_into_temp_weekday_table(user_id, week_type)
 
                 trans_message = f"Редактирование {russian_comments}\n\nИзменения увидят ВСЕ участники класса!"
-                self.state_transition(user_id, next_state, trans_message, week_type=week_type)
+                await self.state_transition(user_id, next_state, trans_message, week_type=week_type)
             else:
-                self.send_message(user_id, "Ты не можешь редактировать это из-за своей роли")
+                await self.send_message(user_id, "Ты не можешь редактировать это из-за своей роли")
 
         elif payload["text"] == "enter_members_settings":
             trans_message = "Настройки участников класса\n\n" \
                             "Здесь можно создавать и настраивать роли, удалять и приглашать участников!"
-            self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
+            await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "accept_request":
             classroom_id = payload["classroom_id"]
@@ -165,10 +166,12 @@ class MyClassesHandlers(SupportingFunctions):
                 await self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
                                                           info_message=f"[id{request_user_id}|{first_name} {last_name}]"
                                                                        f" принят в класс")
-                self.notify_new_classmate(request_user_id, classroom_id, without_user_ids=[user_id, request_user_id])
+                await self.notify_new_classmate(request_user_id, classroom_id,
+                                                without_user_ids=[user_id, request_user_id])
             else:
-                self.send_message(user_id, f"В классе уже максимальное количество людей! ({len(members_dictionary)}"
-                                           f"/{members_limit})")
+                await self.send_message(user_id,
+                                        f"В классе уже максимальное количество людей! ({len(members_dictionary)}"
+                                        f"/{members_limit})")
 
         elif payload["text"] == "cancel_request":
             classroom_id = payload["classroom_id"]
@@ -191,8 +194,8 @@ class MyClassesHandlers(SupportingFunctions):
     async def s_in_class_my_classes2_handler(self, user_id: int, payload: dict, info_message="") -> None:
         """Handling States.S_IN_CLASS_MYCLASSES2"""
         if payload is None:
-            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Для навигации используй кнопки!👇🏻",
-                                  sign=self.get_sign(user_id))
+            await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Для навигации используй кнопки!👇🏻",
+                                        sign=self.get_sign(user_id))
 
         elif payload["text"] == "Заявки":
             if payload["can"]:
@@ -201,8 +204,8 @@ class MyClassesHandlers(SupportingFunctions):
 
                 if not request_list:
                     trans_message = info_message + "\n\nЗаявок в этом классе нет"
-                    self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, trans_message,
-                                          sign=self.get_sign(user_id))
+                    await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, trans_message,
+                                                sign=self.get_sign(user_id))
                 else:
                     elements = []
                     for request in request_list:
@@ -249,30 +252,32 @@ class MyClassesHandlers(SupportingFunctions):
                         )
 
                     trans_message = info_message if info_message else "Заявки в этот класс"
-                    self.send_message(user_id, trans_message, template=dumps({
+                    await self.send_message(user_id, trans_message, template=dumps({
                         "type": "carousel",
                         "elements": elements
                     }))
             else:
-                self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Ты не можешь принимать заявку из-за "
-                                                                             "своей роли", sign=False)
+                await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2,
+                                            "Ты не можешь принимать заявку из-за "
+                                            "своей роли", sign=False)
 
         elif payload["text"] == "События":
-            self.send_message(user_id, "Пока никаких событий в этом классе не запланировано")
+            await self.send_message(user_id, "Пока никаких событий в этом классе не запланировано")
 
         elif payload["text"] == "Назад":
             trans_message = "Назад..."
-            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
+            await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message,
+                                        sign=self.get_sign(user_id))
 
         elif payload["text"] == "Главное меню":
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     async def s_edit_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_WEEK_MYCLASSES"""
         if payload is None:
             week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
-            self.state_transition(user_id, States.S_EDIT_WEEK_MYCLASSES, "Для навигации используй кнопки!👇🏻",
-                                  week_type=week_type)
+            await self.state_transition(user_id, States.S_EDIT_WEEK_MYCLASSES, "Для навигации используй кнопки!👇🏻",
+                                        week_type=week_type)
 
         elif payload["text"] in ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]:
             weekday_meanings_dict = {
@@ -295,7 +300,7 @@ class MyClassesHandlers(SupportingFunctions):
                                                                             formatted_day_lessons)
 
             weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, english_weekday)
-            self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, weekday_diary_text)
+            await self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, weekday_diary_text)
 
         elif payload["text"] == "Скопировать с эталонного":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -308,22 +313,23 @@ class MyClassesHandlers(SupportingFunctions):
             new_formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, week_type)
 
             week_diary_text = self.get_week_diary_text(new_formatted_week_lessons)
-            self.state_transition(user_id, States.S_EDIT_WEEK_MYCLASSES, week_diary_text, week_type=week_type)
+            await self.state_transition(user_id, States.S_EDIT_WEEK_MYCLASSES, week_diary_text, week_type=week_type)
 
         elif payload["text"] == "Главное меню":
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
         elif payload["text"] == "Назад":
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
 
             trans_message = "Возвращаемся в меню класса"
-            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
+            await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message,
+                                        sign=self.get_sign(user_id))
 
     async def s_edit_weekday_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_WEEKDAY_MYCLASSES"""
         if payload is None:
-            self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, "Для навигации используй кнопки!👇🏻")
+            await self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Добавить":
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
@@ -332,13 +338,13 @@ class MyClassesHandlers(SupportingFunctions):
 
             if all(formatted_day_lessons):
                 trans_message = f"Максимальное число (12) уроков уже записано!\n\n{weekday_diary_text}"
-                self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, trans_message)
+                await self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, trans_message)
             else:
                 new_lesson_index = formatted_day_lessons.index(None) + 1
 
                 trans_message = f"{weekday_diary_text}\n\nНапишите название {new_lesson_index}-го урока" \
                                 f" (макс 70 символов):"
-                self.state_transition(user_id, States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES, trans_message)
+                await self.state_transition(user_id, States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES, trans_message)
 
         elif payload["text"] == "Изменить":
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
@@ -347,11 +353,11 @@ class MyClassesHandlers(SupportingFunctions):
 
             if not any(formatted_day_lessons):
                 trans_message = f"Расписание пустое, нечего редактировать\n\n{weekday_diary_text}"
-                self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, trans_message)
+                await self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, trans_message)
             else:
                 trans_message = f"{weekday_diary_text}\n\nВпишите номер урока и его новое название в " \
                                 f"следующем формате: номер_урока. новое_название (например,\n7. Алгебра)"
-                self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
+                await self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
 
         elif payload["text"] == "Удалить урок":
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
@@ -371,7 +377,7 @@ class MyClassesHandlers(SupportingFunctions):
 
                 trans_message = f"Удалён {last_lesson_index}. {deleted_lesson}\n\n{weekday_diary_text}"
 
-            self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, trans_message)
+            await self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, trans_message)
 
         elif payload["text"] == "Удалить всё":
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
@@ -381,14 +387,14 @@ class MyClassesHandlers(SupportingFunctions):
                 weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
 
                 trans_message = f"Расписание на этот день и так пустое\n\n{weekday_diary_text}"
-                self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, trans_message)
+                await self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, trans_message)
             else:
                 self.diary_homework_db.update_delete_all_lessons_from_temp_table(user_id)
                 new_formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
                 weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday)
 
                 trans_message = f"Все уроки удалены!\n\n{weekday_diary_text}"
-                self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, trans_message)
+                await self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, trans_message)
 
         elif payload["text"] == "Сохранить":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -404,11 +410,11 @@ class MyClassesHandlers(SupportingFunctions):
             diary_text = self.get_week_diary_text(formatted_week_lessons)
 
             trans_message = f"{diary_text}\n\nВсе изменения сохранены!"
-            self.state_transition(user_id, States.S_EDIT_WEEK_MYCLASSES, trans_message, week_type=week_type)
+            await self.state_transition(user_id, States.S_EDIT_WEEK_MYCLASSES, trans_message, week_type=week_type)
 
         elif payload["text"] == "Главное меню":
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
         elif payload["text"] == "Отменить":
             week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
@@ -421,14 +427,14 @@ class MyClassesHandlers(SupportingFunctions):
             self.diary_homework_db.update_delete_weekday_from_temp_table(user_id)
 
             trans_message = f"{diary_text}\n\nВсе изменения отменены!"
-            self.state_transition(user_id, States.S_EDIT_WEEK_MYCLASSES, trans_message, week_type=week_type)
+            await self.state_transition(user_id, States.S_EDIT_WEEK_MYCLASSES, trans_message, week_type=week_type)
 
     async def s_add_new_lesson_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES"""
         if payload is None:
             if len(message) > 70:
                 trans_message = "Длина названия превышает 70 символов!"
-                self.state_transition(user_id, States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES, trans_message)
+                await self.state_transition(user_id, States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES, trans_message)
             else:
                 formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
                 new_lesson_index = formatted_day_lessons.index(None) + 1
@@ -441,14 +447,14 @@ class MyClassesHandlers(SupportingFunctions):
                 if new_lesson_index <= 11:
                     trans_message = f"Урок добавлен!\n\n{new_weekday_diary_text}\n\n" \
                                     f"Напишите название {new_lesson_index + 1}-го урока (макс 70 символов):"
-                    self.state_transition(user_id, States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES, trans_message)
+                    await self.state_transition(user_id, States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES, trans_message)
                 else:
                     trans_message = f"Урок добавлен!\n\n{new_weekday_diary_text}.\n\nДостигнут лимит!"
-                    self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, trans_message)
+                    await self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, trans_message)
 
         elif payload["text"] == "Добавить":
             trans_message = "Ты уже в режиме добавления уроков"
-            self.state_transition(user_id, States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES, trans_message)
+            await self.state_transition(user_id, States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES, trans_message)
 
         elif payload["text"]:
             await self.s_edit_weekday_my_classes_handler(user_id, payload)
@@ -476,24 +482,24 @@ class MyClassesHandlers(SupportingFunctions):
                             weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday)
 
                             trans_message = f"Название урока изменено!\n\n{weekday_diary_text}\n\n{ask_message}"
-                            self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
+                            await self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
                         else:
                             trans_message = f"Название урока не может быть пустым или быть длиннее " \
                                             f"70 символов\n\n{ask_message}"
-                            self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
+                            await self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
                     else:
                         trans_message = f"Урока с таким номером нет.\n\n{ask_message}"
-                        self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
+                        await self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
                 else:
                     trans_message = f"Неверный формат записи\n\n{ask_message}"
-                    self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
+                    await self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
             else:
                 trans_message = f"Неверный формат записи\n\n{ask_message}"
-                self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
+                await self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
 
         elif payload["text"] == "Изменить":
             trans_message = "Ты уже в режиме редактирования уроков"
-            self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
+            await self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
 
         elif payload["text"]:
             await self.s_edit_weekday_my_classes_handler(user_id, payload)
@@ -501,7 +507,8 @@ class MyClassesHandlers(SupportingFunctions):
     async def s_edit_homework_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_HOMEWORK_MYCLASSES"""
         if payload is None:
-            self.state_transition(user_id, States.S_EDIT_HOMEWORK_MYCLASSES, "Для навигации используй кнопки!👇🏻")
+            await self.state_transition(user_id, States.S_EDIT_HOMEWORK_MYCLASSES,
+                                        "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] in ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]:
             weekday_meanings_dict = {
@@ -532,21 +539,22 @@ class MyClassesHandlers(SupportingFunctions):
 
                 help_text = "\n\nВпиши новое домашнее задание в формате: номер_урока. дз\n(Например,\n2. " \
                             "Упр 23, стр 6)\n\nЕсли нужно удалить дз с урока, то просто впиши одно число - номер урока"
-                self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES,
-                                      weekday_diary_text + help_text)
+                await self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES,
+                                            weekday_diary_text + help_text)
             else:
                 trans_message = "Расписание на этот день пустое (сначала отредактируй расписание)"
-                self.state_transition(user_id, States.S_EDIT_HOMEWORK_MYCLASSES, trans_message)
+                await self.state_transition(user_id, States.S_EDIT_HOMEWORK_MYCLASSES, trans_message)
 
         elif payload["text"] == "Назад":
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
 
             trans_message = "Возвращение в меню класса"
-            self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message, sign=self.get_sign(user_id))
+            await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message,
+                                        sign=self.get_sign(user_id))
 
         elif payload["text"] == "Главное меню":
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     async def s_edit_homework_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES"""
@@ -572,13 +580,14 @@ class MyClassesHandlers(SupportingFunctions):
 
                     weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons_diary, weekday,
                                                                      formatted_day_lessons_homework)
-                    self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, f"Дз с {lesson_index}-го "
-                                                                                             f"урока удалено!\n\n"
-                                                                                             f"{weekday_diary_text}\n\n"
-                                                                                             f"{ask_message}")
+                    await self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES,
+                                                f"Дз с {lesson_index}-го "
+                                                f"урока удалено!\n\n"
+                                                f"{weekday_diary_text}\n\n"
+                                                f"{ask_message}")
                 else:
                     trans_message = f"Урока с таким номером нет\n\n{ask_message}"
-                    self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
+                    await self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
             elif ". " in message:
                 lesson_index, homework_text = message.split(". ", 1)
 
@@ -596,20 +605,22 @@ class MyClassesHandlers(SupportingFunctions):
                                                                              new_formatted_day_homework)
 
                             trans_message = f"Дз обновлено!\n\n{weekday_diary_text}\n\n{ask_message}"
-                            self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
+                            await self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES,
+                                                        trans_message)
                         else:
                             trans_message = f"Текст дз не может быть пустым или быть длиннее " \
                                             f"70 символов\n\n{ask_message}"
-                            self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
+                            await self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES,
+                                                        trans_message)
                     else:
                         trans_message = f"Урока с таким номером нет.\n\n{ask_message}"
-                        self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
+                        await self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
                 else:
                     trans_message = f"Неверный формат записи\n\n{ask_message}"
-                    self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
+                    await self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
             else:
                 trans_message = f"Неверный формат записи\n\n{ask_message}"
-                self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
+                await self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, trans_message)
 
         elif payload["text"] == "Очистить всё дз":
             self.diary_homework_db.update_delete_all_lessons_from_temp_table(user_id)
@@ -624,9 +635,10 @@ class MyClassesHandlers(SupportingFunctions):
 
             dairy_homework_text = self.get_weekday_diary_text(formatted_day_lessons_diary, weekday,
                                                               formatted_day_lessons_homework)
-            self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES, f"Всё дз с этого дня удалено!\n\n"
-                                                                                     f"{dairy_homework_text}\n\n"
-                                                                                     f"{ask_message}")
+            await self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES,
+                                        f"Всё дз с этого дня удалено!\n\n"
+                                        f"{dairy_homework_text}\n\n"
+                                        f"{ask_message}")
 
         elif payload["text"] == "Сохранить":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -648,7 +660,7 @@ class MyClassesHandlers(SupportingFunctions):
                                                            formatted_week_lessons_homework)
 
             trans_message = f"{diary_homework_text}\n\nДомашнее задание изменено!"
-            self.state_transition(user_id, States.S_EDIT_HOMEWORK_MYCLASSES, trans_message)
+            await self.state_transition(user_id, States.S_EDIT_HOMEWORK_MYCLASSES, trans_message)
 
         elif payload["text"] == "Отменить":
             week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
@@ -666,11 +678,11 @@ class MyClassesHandlers(SupportingFunctions):
             self.diary_homework_db.update_delete_weekday_from_temp_table(user_id)
 
             trans_message = f"{diary_homework_text}\n\nВсе изменения отменены!"
-            self.state_transition(user_id, States.S_EDIT_HOMEWORK_MYCLASSES, trans_message)
+            await self.state_transition(user_id, States.S_EDIT_HOMEWORK_MYCLASSES, trans_message)
 
         elif payload["text"] == "Главное меню":
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
-            self.trans_to_main_menu(user_id)
+            await self.trans_to_main_menu(user_id)
 
     @staticmethod
     def get_week_diary_text(formatted_week_lessons_diary: list, formatted_week_lessons_homework=None) -> str:

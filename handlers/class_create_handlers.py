@@ -2,12 +2,12 @@ from supporting_functions import *
 
 
 class ClassCreateHandlers(SupportingFunctions):
-    def __init__(self, token: str, group_id: int, user_db: UserDataCommands,
+    def __init__(self, bot: Bot, user_db: UserDataCommands,
                  classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
                  diary_homework_db: DiaryHomeworkCommands, role_db: RoleCommands,
                  notification_db: NotificationCommands) -> None:
         """Initialization"""
-        super().__init__(token=token, group_id=group_id, user_db=user_db, classroom_db=classroom_db,
+        super().__init__(bot=bot, user_db=user_db, classroom_db=classroom_db,
                          technical_support_db=technical_support_db, diary_homework_db=diary_homework_db,
                          role_db=role_db, notification_db=notification_db)
 
@@ -16,65 +16,65 @@ class ClassCreateHandlers(SupportingFunctions):
         if payload is None:
             if len(message) > 12:
                 trans_message = "Длина названия превышает 12 символов. Введите другое название:"
-                self.state_transition(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE, trans_message)
+                await self.state_transition(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE, trans_message)
             else:
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 self.classroom_db.update_classroom_name(classroom_id, message)
 
                 trans_message = f"Название класса: {message}\n\n" \
                                 f"Название школы будущего класса (макс. 32 символа):"
-                self.state_transition(user_id, States.S_ENTER_SCHOOL_NAME_CLASSCREATE, trans_message)
+                await self.state_transition(user_id, States.S_ENTER_SCHOOL_NAME_CLASSCREATE, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.cancel_creating_classroom(user_id)
+            await self.cancel_creating_classroom(user_id)
 
     async def s_enter_school_name_class_create_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_SCHOOL_NAME_CLASSCREATE"""
         if payload is None:
             if len(message) > 32:
                 trans_message = "Длина названия превышает 32 символа. Введите другое название:"
-                self.state_transition(user_id, States.S_ENTER_SCHOOL_NAME_CLASSCREATE, trans_message)
+                await self.state_transition(user_id, States.S_ENTER_SCHOOL_NAME_CLASSCREATE, trans_message)
             else:
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 self.classroom_db.update_school_name(classroom_id, message)
 
                 trans_message = f"Название школы будущего класса: {message}\n\n" \
                                 f"Тип будущего класса?"
-                self.state_transition(user_id, States.S_ENTER_ACCESS_CLASSCREATE, trans_message)
+                await self.state_transition(user_id, States.S_ENTER_ACCESS_CLASSCREATE, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.cancel_creating_classroom(user_id)
+            await self.cancel_creating_classroom(user_id)
 
         elif payload["text"] == "Назад":
             trans_message = "Напишите название будущего класса (макс. 12 символов):"
-            self.state_transition(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE, trans_message)
+            await self.state_transition(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE, trans_message)
 
     async def s_enter_access_class_create_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_ENTER_ACCESS_CLASSCREATE"""
         if payload is None:
             trans_message = "Для навигации используй кнопки!👇🏻"
-            self.state_transition(user_id, States.S_ENTER_ACCESS_CLASSCREATE, trans_message)
+            await self.state_transition(user_id, States.S_ENTER_ACCESS_CLASSCREATE, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.cancel_creating_classroom(user_id)
+            await self.cancel_creating_classroom(user_id)
 
         elif payload["text"] == "Назад":
             trans_message = "Название школы будущего класса (макс. 32 символа):"
-            self.state_transition(user_id, States.S_ENTER_SCHOOL_NAME_CLASSCREATE, trans_message)
+            await self.state_transition(user_id, States.S_ENTER_SCHOOL_NAME_CLASSCREATE, trans_message)
 
         elif payload["text"] in ["Публичный", "Заявки", "Закрытый"]:
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             self.classroom_db.update_classroom_access(classroom_id, payload["text"])
 
             trans_message = "Краткое описание класса (макс. 200 символов):"
-            self.state_transition(user_id, States.S_ENTER_DESCRIPTION_CLASSCREATE, trans_message)
+            await self.state_transition(user_id, States.S_ENTER_DESCRIPTION_CLASSCREATE, trans_message)
 
     async def s_enter_description_class_create_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_DESCRIPTION_CLASSCREATE"""
         if payload is None:
             if len(message) > 200:
                 trans_message = "Длина названия превышает 200 символа. Введите другое название:"
-                self.state_transition(user_id, States.S_ENTER_DESCRIPTION_CLASSCREATE, trans_message)
+                await self.state_transition(user_id, States.S_ENTER_DESCRIPTION_CLASSCREATE, trans_message)
             else:
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 self.classroom_db.update_classroom_description(classroom_id, message)
@@ -88,20 +88,20 @@ class ClassCreateHandlers(SupportingFunctions):
                                 f"Тип класса: {access}\n" \
                                 f"Описание класса: {description}\n\n" \
                                 f"Создать класс?"
-                self.state_transition(user_id, States.S_SUBMIT_CLASSCREATE, trans_message)
+                await self.state_transition(user_id, States.S_SUBMIT_CLASSCREATE, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.cancel_creating_classroom(user_id)
+            await self.cancel_creating_classroom(user_id)
 
         elif payload["text"] == "Назад":
             trans_message = "Тип будущего класса?"
-            self.state_transition(user_id, States.S_ENTER_ACCESS_CLASSCREATE, trans_message)
+            await self.state_transition(user_id, States.S_ENTER_ACCESS_CLASSCREATE, trans_message)
 
     async def s_submit_class_create_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_SUBMIT_CLASSCREATE"""
         if payload is None:
             trans_message = "Для навигации используй кнопки!👇🏻"
-            self.state_transition(user_id, States.S_SUBMIT_CLASSCREATE, trans_message)
+            await self.state_transition(user_id, States.S_SUBMIT_CLASSCREATE, trans_message)
 
         elif payload["text"] == "Принять":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -115,17 +115,17 @@ class ClassCreateHandlers(SupportingFunctions):
             self.classroom_db.update_user_customize_classroom_id(user_id, "null")
 
             trans_message = "Поздравляю! Класс создан"
-            self.state_transition(user_id, States.S_NOTHING, trans_message)
+            await self.state_transition(user_id, States.S_NOTHING, trans_message)
 
         elif payload["text"] == "Отклонить":
             trans_message = "Краткое описание класса (макс. 200 символов):"
-            self.state_transition(user_id, States.S_ENTER_DESCRIPTION_CLASSCREATE, trans_message)
+            await self.state_transition(user_id, States.S_ENTER_DESCRIPTION_CLASSCREATE, trans_message)
 
         elif payload["text"] == "Главное меню":
-            self.cancel_creating_classroom(user_id)
+            await self.cancel_creating_classroom(user_id)
 
-    def cancel_creating_classroom(self, user_id: int) -> None:
+    async def cancel_creating_classroom(self, user_id: int) -> None:
         """Set state to States.S_NOTHING"""
         classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
         self.classroom_db.delete_classroom(classroom_id)
-        self.trans_to_main_menu(user_id)
+        await self.trans_to_main_menu(user_id)
