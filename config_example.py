@@ -7,7 +7,6 @@ from vkbottle import GroupEventType, GroupTypes
 from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from vk_api.keyboard import VkKeyboard, VkKeyboardButton
-from vk_api.exceptions import VkApiError
 from random import randint, choice
 from datetime import datetime
 from re import search, fullmatch

@@ -23,30 +23,22 @@ class SupportingFunctions:
 
     async def send_message(self, user_id=None, message=None, keyboard=None, template=None, user_ids=None) -> None:
         """Send message to user"""
-        try:
-            await self.bot.api.messages.send(
-                user_ids=[user_id] if not user_ids else ",".join(map(str, user_ids)),
-                message=message,
-                keyboard=keyboard if user_id else None,
-                template=template,
-                random_id=randint(0, 2147483648)
-            )
-
-        except VkApiError as e:
-            print(e)
+        await self.bot.api.messages.send(
+            user_ids=[user_id] if not user_ids else ",".join(map(str, user_ids)),
+            message=message,
+            keyboard=keyboard if user_id else None,
+            template=template,
+            random_id=randint(0, 2147483648)
+        )
 
     async def send_message_event_answer(self, event_id: str, user_id: int, peer_id: int, event_data: str) -> None:
         """Send message to user after callback-button using"""
-        try:
-            await self.bot.api.messages.send_message_event_answer(
-                event_id=event_id,
-                user_id=user_id,
-                peer_id=peer_id,
-                event_data=event_data
-            )
-
-        except VkApiError as e:
-            print(e)
+        await self.bot.api.messages.send_message_event_answer(
+            event_id=event_id,
+            user_id=user_id,
+            peer_id=peer_id,
+            event_data=event_data
+        )
 
     async def state_transition(self, user_id: int, next_state, message: str, *args, **kwargs) -> None:
         """Changes states"""
