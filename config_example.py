@@ -4,8 +4,6 @@ from vk_api.keyboard import VkKeyboard  # import for Keyboards
 # import for main file
 from vkbottle.bot import Bot, Message
 from vkbottle import GroupEventType, GroupTypes
-from vk_api import VkApi
-from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from vk_api.keyboard import VkKeyboard, VkKeyboardButton
 from random import randint, choice
 from datetime import datetime
