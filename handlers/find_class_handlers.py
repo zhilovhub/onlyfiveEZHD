@@ -28,7 +28,7 @@ class FindClassHandlers(SupportingFunctions):
                 existing_classroom_ids = self.classroom_db.get_list_of_classroom_ids()
 
                 if classroom_id in existing_classroom_ids:
-                    keyboard = VkKeyboard(inline=True)
+                    keyboard = Keyboard(inline=True)
 
                     classroom_name, school_name, access, description = \
                         self.classroom_db.get_information_of_classroom(classroom_id)
@@ -37,15 +37,15 @@ class FindClassHandlers(SupportingFunctions):
 
                     for member_user_id in members_dictionary.keys():
                         if user_id == member_user_id:
-                            keyboard.add_callback_button("Войти", payload={
+                            keyboard.add(Callback("Войти", payload={
                                 "text": "enter_the_classroom", "classroom_id": classroom_id
-                            })
+                            }))
                             user_in_classroom_text = "Вы состоите в этом классе ✅"
                             break
                     else:
-                        keyboard.add_callback_button("Посмотреть", payload={
+                        keyboard.add(Callback("Посмотреть", payload={
                             "text": "look_at_the_classroom", "classroom_id": classroom_id
-                        })
+                        }))
                         user_in_classroom_text = "Вы не состоите в этом классе ❌"
 
                     await self.send_message(user_id, f"#{classroom_id}\n"
@@ -54,7 +54,7 @@ class FindClassHandlers(SupportingFunctions):
                                                      f"Описание: {description}\n"
                                                      f"Тип класса: {access}\n"
                                                      f"Участники: {len(members_dictionary)}/{members_limit}\n\n"
-                                                     f"{user_in_classroom_text}", keyboard.get_keyboard())
+                                                     f"{user_in_classroom_text}", keyboard.get_json())
                 else:
                     trans_message = f"Класса с id {classroom_id} не существует!"
                     await self.state_transition(user_id, States.S_FIND_CLASS, trans_message)

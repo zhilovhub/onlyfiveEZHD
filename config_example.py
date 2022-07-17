@@ -1,10 +1,9 @@
 # WRITE VALUES AND RENAME THIS FILE TO config.py
 
-from vk_api.keyboard import VkKeyboard  # import for Keyboards
 # import for main file
 from vkbottle.bot import Bot, Message
+from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback
 from vkbottle import GroupEventType, GroupTypes
-from vk_api.keyboard import VkKeyboard, VkKeyboardButton
 from random import randint, choice
 from datetime import datetime
 from re import search, fullmatch

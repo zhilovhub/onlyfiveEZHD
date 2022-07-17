@@ -45,16 +45,16 @@ class SupportingFunctions:
         match next_state:
             case States.S_NOTHING:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_MENU.get_json())
 
             # CLASSCREATE
             case States.S_ENTER_CLASS_NAME_CLASSCREATE:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_JUST_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_JUST_MENU.get_json())
 
             case States.S_ENTER_SCHOOL_NAME_CLASSCREATE:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_BACK_MENU.get_json())
 
             case States.S_ENTER_ACCESS_CLASSCREATE:
                 await self.send_message(user_id, message,
@@ -62,11 +62,11 @@ class SupportingFunctions:
 
             case States.S_ENTER_DESCRIPTION_CLASSCREATE:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_BACK_MENU.get_json())
 
             case States.S_SUBMIT_CLASSCREATE:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_SUBMIT_BACK.get_keyboard())
+                                        KeyBoards.KEYBOARD_SUBMIT_BACK.get_json())
 
             # MYCLASSES
             case States.S_IN_CLASS_MYCLASSES:
@@ -109,7 +109,7 @@ class SupportingFunctions:
             # FINDCLASS
             case States.S_FIND_CLASS:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_JUST_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_JUST_MENU.get_json())
 
             case States.S_LOOK_CLASSROOM:
                 await self.send_message(user_id, message,
@@ -117,16 +117,16 @@ class SupportingFunctions:
 
             case States.S_REQUEST_CLASSROOM:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_BACK_MENU.get_json())
 
             case States.S_EDIT_REQUEST_CLASSROOM:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_BACK_MENU_DELETE_REQUEST.get_keyboard())
+                                        KeyBoards.KEYBOARD_BACK_MENU_DELETE_REQUEST.get_json())
 
             # CLASSROOMSETTINGS
             case States.S_CLASSROOM_SETTINGS:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_CLASSROOM_SETTINGS.get_keyboard())
+                                        KeyBoards.KEYBOARD_CLASSROOM_SETTINGS.get_json())
 
             case States.S_MAIN_CLASSROOM_SETTINGS:
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -154,12 +154,12 @@ class SupportingFunctions:
             case States.S_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS:
                 await self.send_message(user_id, message,
                                         KeyBoards.KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS.
-                                        get_keyboard())
+                                        get_json())
 
             case States.S_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS:
                 await self.send_message(user_id, message,
                                         KeyBoards.KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.
-                                        get_keyboard())
+                                        get_json())
 
             case States.S_ACCESS_MAIN_CLASSROOM_SETTINGS:
                 await self.send_message(user_id, message,
@@ -167,19 +167,19 @@ class SupportingFunctions:
 
             case States.S_CLASSROOM_NAME_MAIN_CLASSROOM_SETTINGS:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_BACK_MENU.get_json())
 
             case States.S_SCHOOL_NAME_MAIN_CLASSROOM_SETTINGS:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_BACK_MENU.get_json())
 
             case States.S_DESCRIPTION_MAIN_CLASSROOM_SETTINGS:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_BACK_MENU.get_json())
 
             case States.S_LIMIT_MAIN_CLASSROOM_SETTINGS:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_BACK_MENU.get_json())
 
             case States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS:
                 value_meaning_dict = {
@@ -194,7 +194,7 @@ class SupportingFunctions:
             # TECHNICALSUPPORT
             case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_CANCEL_SEND.get_keyboard())
+                                        KeyBoards.KEYBOARD_CANCEL_SEND.get_json())
 
             # MEMBERSSETTINGS
             case States.S_MEMBERS_SETTINGS:
@@ -213,32 +213,32 @@ class SupportingFunctions:
 
             case States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_BACK_MENU.get_json())
 
             case States.S_DELETE_ROLE_MEMBERS_SETTINGS:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_BACK_MENU.get_json())
 
             case States.S_DELETE_MEMBER_MEMBERS_SETTINGS:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_BACK_MENU.get_json())
 
             case States.S_CHOOSE_ROLE_MEMBERS_SETTINGS:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_BACK_MENU.get_json())
 
             case States.S_CHOOSE_ADMIN_ROLE_CONFIRMATION_MEMBERS_SETTINGS:
                 await self.send_message(user_id, message,
                                         KeyBoards.KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS
-                                        .get_keyboard())
+                                        .get_json())
 
             case States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_BACK_MENU.get_json())
 
             case States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_BACK_MENU.get_json())
 
             case States.S_EDIT_ROLE_MEMBERS_SETTINGS:
                 await self.send_message(user_id, message,
@@ -246,7 +246,7 @@ class SupportingFunctions:
 
             case States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_BACK_MENU.get_keyboard())
+                                        KeyBoards.KEYBOARD_BACK_MENU.get_json())
 
             case States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS:
                 await self.send_message(user_id, message,

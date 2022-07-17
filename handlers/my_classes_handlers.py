@@ -34,14 +34,14 @@ class MyClassesHandlers(SupportingFunctions):
             roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
             members_text = self.get_members_text(roles_dictionary)
 
-            keyboard = VkKeyboard(inline=True)
-            keyboard.add_callback_button("Настройки",
-                                         payload={
-                                             "text": "enter_members_settings",
-                                             "classroom_id": classroom_id
-                                         })
+            keyboard = Keyboard(inline=True)
+            keyboard.add(Callback("Настройки",
+                                  payload={
+                                      "text": "enter_members_settings",
+                                      "classroom_id": classroom_id
+                                  }))
 
-            await self.send_message(user_id, members_text, keyboard.get_keyboard())
+            await self.send_message(user_id, members_text, keyboard.get_json())
 
         elif payload["text"] in ["Дз текущее", "Дз будущее"]:
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -70,15 +70,15 @@ class MyClassesHandlers(SupportingFunctions):
             diary_homework_text = self.get_week_diary_text(formatted_week_lessons_diary,
                                                            formatted_week_lessons_homework)
 
-            keyboard = VkKeyboard(inline=True)
-            keyboard.add_callback_button("Изменить" if can else "Изменить❌",
-                                         payload={
-                                             "text": callback_payload_text,
-                                             "classroom_id": classroom_id,
-                                             "can": can
-                                         })
+            keyboard = Keyboard(inline=True)
+            keyboard.add(Callback("Изменить" if can else "Изменить❌",
+                                  payload={
+                                      "text": callback_payload_text,
+                                      "classroom_id": classroom_id,
+                                      "can": can
+                                  }))
 
-            await self.send_message(user_id, help_text + diary_homework_text, keyboard.get_keyboard())
+            await self.send_message(user_id, help_text + diary_homework_text, keyboard.get_json())
 
         elif payload["text"] in ["Расписание эталонное", "Расписание текущее", "Расписание будущее"]:
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -108,15 +108,15 @@ class MyClassesHandlers(SupportingFunctions):
             formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, week_type)
             diary_text = self.get_week_diary_text(formatted_week_lessons)
 
-            keyboard = VkKeyboard(inline=True)
-            keyboard.add_callback_button("Изменить" if can else "Изменить❌",
-                                         payload={
-                                             "text": callback_payload_text,
-                                             "classroom_id": classroom_id,
-                                             "can": can
-                                         })
+            keyboard = Keyboard(inline=True)
+            keyboard.add(Callback("Изменить" if can else "Изменить❌",
+                                  payload={
+                                      "text": callback_payload_text,
+                                      "classroom_id": classroom_id,
+                                      "can": can
+                                  }))
 
-            await self.send_message(user_id, help_text + diary_text, keyboard.get_keyboard())
+            await self.send_message(user_id, help_text + diary_text, keyboard.get_json())
 
         elif payload["text"] in ("edit_standard", "edit_current", "edit_next",
                                  "edit_current_homework", "edit_next_homework"):
