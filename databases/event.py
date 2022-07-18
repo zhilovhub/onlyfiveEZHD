@@ -13,11 +13,20 @@ class EventCommands(DataBase):
         except Error as e:
             print(e)
 
-    def get_all_classroom_events(self, classroom_id: int) -> tuple:
+    def get_all_classroom_events(self, classroom_id: int) -> list:
         """Returns all classroom's events"""
+        events = []
+
         with self.connection.cursor() as cursor:
             cursor.execute(EventQueries.get_classroom_events_query, (classroom_id,))
-            return cursor.fetchall()
+            for event in cursor.fetchall():
+                events.append({
+                    "start_time": event[2],
+                    "end_time": event[3],
+                    "label": event[4],
+                })
+
+            return events
 
     def insert_new_event_diary(self, classroom_id: int) -> None:
         """Inserts new row into event_diary table"""
