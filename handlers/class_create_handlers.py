@@ -108,9 +108,10 @@ class ClassCreateHandlers(SupportingFunctions):
 
             role_id = self.role_db.insert_new_role(classroom_id, "Админ", is_admin=True)
             self.role_db.insert_new_role(classroom_id, "Участник", is_default_member=True)
-
             self.insert_new_student(user_id, classroom_id, role_id)
             self.diary_homework_db.insert_classroom_id(classroom_id)
+            self.event_db.insert_new_event_diary(classroom_id)
+
             self.classroom_db.update_classroom_created(classroom_id, True)
             self.classroom_db.update_user_customize_classroom_id(user_id, "null")
 

@@ -42,8 +42,6 @@ handlers_class = Handlers(bot=bot,
 @bot.on.message()
 async def listen_messages(message: Message) -> None:
     """Listening new messages"""
-    print(message)
-
     user_id = message.from_id  # Getting user_id
     message_text = message.text.strip()  # Getting message's text
     attachments = message.attachments
