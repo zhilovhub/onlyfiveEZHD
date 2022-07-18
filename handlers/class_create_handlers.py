@@ -5,11 +5,11 @@ class ClassCreateHandlers(SupportingFunctions):
     def __init__(self, bot: Bot, user_db: UserDataCommands,
                  classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
                  diary_homework_db: DiaryHomeworkCommands, role_db: RoleCommands,
-                 notification_db: NotificationCommands) -> None:
+                 notification_db: NotificationCommands, event_db: EventCommands) -> None:
         """Initialization"""
         super().__init__(bot=bot, user_db=user_db, classroom_db=classroom_db,
                          technical_support_db=technical_support_db, diary_homework_db=diary_homework_db,
-                         role_db=role_db, notification_db=notification_db)
+                         role_db=role_db, notification_db=notification_db, event_db=event_db)
 
     async def s_enter_class_name_class_create_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_CLASS_NAME_CLASSCREATE"""

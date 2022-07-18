@@ -10,7 +10,7 @@ class SupportingFunctions:
     def __init__(self, bot: Bot, user_db: UserDataCommands,
                  classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
                  diary_homework_db: DiaryHomeworkCommands, role_db: RoleCommands,
-                 notification_db: NotificationCommands) -> None:
+                 notification_db: NotificationCommands, event_db: EventCommands) -> None:
         """Initialization"""
         self.user_db = user_db
         self.classroom_db = classroom_db
@@ -18,6 +18,7 @@ class SupportingFunctions:
         self.diary_homework_db = diary_homework_db
         self.role_db = role_db
         self.notification_db = notification_db
+        self.event_db = event_db
 
         self.bot = bot
 
