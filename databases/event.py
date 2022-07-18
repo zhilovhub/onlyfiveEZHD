@@ -13,6 +13,12 @@ class EventCommands(DataBase):
         except Error as e:
             print(e)
 
+    def get_all_classroom_events(self, classroom_id: int) -> tuple:
+        """Returns all classroom's events"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.get_classroom_events_query, (classroom_id,))
+            return cursor.fetchall()
+
     def insert_new_event_diary(self, classroom_id: int) -> None:
         """Inserts new row into event_diary table"""
         with self.connection.cursor() as cursor:
@@ -39,4 +45,19 @@ class EventQueries:
         FOREIGN KEY (event_diary_id) REFERENCES event_diary (event_diary_id) ON DELETE CASCADE
     )"""
 
+    get_classroom_events_query = """SELECT * FROM event WHERE event_diary_id IN (SELECT event_diary_id FROM event_diary
+    WHERE classroom_id=%s)"""
+
     insert_event_diary_query = """INSERT INTO event_diary (classroom_id) VALUES (%s)"""
+
+
+if __name__ == '__main__':
+    connection = connect(
+        host=HOST,
+        user=USER,
+        password=PASSWORD,
+        database=DATABASE_NAME
+    )
+
+    event_db = EventCommands(connection)
+    print(event_db.get_all_classroom_events(35))
