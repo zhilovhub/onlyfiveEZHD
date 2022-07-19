@@ -108,7 +108,11 @@ class SupportingFunctions:
                 await self.send_message(user_id, message, KeyBoards.get_edit_homework_weekday_keyboard())
 
             case States.S_CHOOSE_EVENT_MYCLASSES:
-                await self.send_message(user_id, message, KeyBoards.get_choose_event_keyboard([]))
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                events = self.event_db.get_all_classroom_events(classroom_id)
+                sorted_events = sorted(events, key=lambda x: x["message_event_id"])
+
+                await self.send_message(user_id, message, KeyBoards.get_choose_event_keyboard(sorted_events))
 
             # FINDCLASS
             case States.S_FIND_CLASS:

@@ -97,8 +97,19 @@ class KeyBoards:
 
     # CHOOSE_EVENT KEYBOARD
     @staticmethod
-    def get_choose_event_keyboard(events: list) -> str:
+    def get_choose_event_keyboard(sorted_events: list) -> str:
         choose_event_keyboard = Keyboard()
+        for ind, event in enumerate(sorted_events, start=1):
+            message_event_id = event["message_event_id"]
+            if ind % 5 == 0 and ind != len(sorted_events):
+                choose_event_keyboard.add(Text(message_event_id,
+                                               payload=KeyBoards.get_payload(event["message_event_id"])))
+                choose_event_keyboard.row()
+            else:
+                choose_event_keyboard.add(Text(message_event_id,
+                                               payload=KeyBoards.get_payload(event["message_event_id"])))
+
+        choose_event_keyboard.row()
         choose_event_keyboard.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
         choose_event_keyboard.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
 
