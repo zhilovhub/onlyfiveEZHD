@@ -403,11 +403,35 @@ class SupportingFunctions:
 
             return f"{weekday}, {date.day} {month}, {date.year}"
 
+        def formatted_collective_event(start_time: datetime, end_time: datetime, label: str, message_event_id: int,
+                                       current_count: int, required_count: int, current_students_count: int,
+                                       required_students_count: int) -> str:
+            start_time_date = start_time.strftime("%d.%m.%y")
+            if end_time:
+                end_time_date = end_time.strftime("%d.%m.%y")
+                duration_time = f"{start_time_date} - {end_time_date}"
+                emoji = "✅" if datetime.now() > end_time else ""
+            else:
+                duration_time = start_time_date
+                emoji = "✅" if datetime.now() > start_time else ""
+
+            if required_count:
+                collected = f"\nСобрано: {current_count}/{required_count}"
+            else:
+                collected = ""
+
+            if required_students_count:
+                student_count_text = f"\nУчастники: {current_students_count}/{required_students_count}"
+            else:
+                student_count_text = ""
+
+            return f"⚠ {duration_time} {label} (#{message_event_id}) {emoji}{collected}{student_count_text}"
+
         def formatted_not_collective_event(start_time: datetime, end_time: datetime, label: str, message_event_id: int
                                            ) -> str:
-            start_time_hour_minute = f"{start_time.hour}:{start_time.minute}"
+            start_time_hour_minute = start_time.strftime("%H:%M")
             if end_time:
-                end_time_hour_minute = f"{end_time.hour}:{end_time.minute}"
+                end_time_hour_minute = end_time.strftime("%H:%M")
                 duration_time = f"{start_time_hour_minute}-{end_time_hour_minute}"
                 emoji = "✅" if datetime.now() > end_time else ""
             else:
@@ -416,21 +440,33 @@ class SupportingFunctions:
 
             return f"{duration_time} {label} (#{message_event_id}) {emoji}"
 
+        collective_events = []
         days = {}
         for event in events:
             start_time: datetime = event["start_time"]
             end_time: datetime = event["end_time"]
             label = event["label"]
             message_event_id = event["message_event_id"]
+            collective = event["collective"]
+            current_count = event["current_count"]
+            required_count = event["required_count"]
+            current_students_count = event["current_students_count"]
+            required_students_count = event["required_students_count"]
 
-            if start_time.date() in days:
-                days[start_time.date()].append(formatted_not_collective_event(start_time, end_time,
-                                                                              label, message_event_id))
+            if collective:
+                collective_events.append(formatted_collective_event(start_time, end_time, label, message_event_id,
+                                                                    current_count, required_count,
+                                                                    current_students_count, required_students_count))
             else:
-                days[start_time.date()] = [formatted_not_collective_event(start_time, end_time,
-                                                                          label, message_event_id)]
+                if start_time.date() in days:
+                    days[start_time.date()].append(formatted_not_collective_event(start_time, end_time,
+                                                                                  label, message_event_id))
+                else:
+                    days[start_time.date()] = [formatted_not_collective_event(start_time, end_time,
+                                                                              label, message_event_id)]
 
-        return "\n\n".join("‼ " + formatted_date(key) + "\n\n" + "\n".join(value) for key, value in days.items())
+        return "\n\n".join(collective_events) + "\n\n" + \
+               "\n\n".join("‼ " + formatted_date(key) + "\n\n" + "\n".join(value) for key, value in days.items())
 
     @staticmethod
     def get_all_role_names_text(all_role_names: list, admin_role_name: str, default_role_name: str) -> str:
