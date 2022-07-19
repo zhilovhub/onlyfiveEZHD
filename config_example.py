@@ -5,7 +5,7 @@ from vkbottle.bot import Bot, Message
 from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback
 from vkbottle import GroupEventType, GroupTypes
 from random import randint, choice
-from datetime import datetime
+from datetime import datetime, date
 from re import search, fullmatch
 from json import loads, dumps
 # import for states file
