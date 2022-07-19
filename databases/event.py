@@ -24,6 +24,8 @@ class EventCommands(DataBase):
                     "start_time": event[2],
                     "end_time": event[3],
                     "label": event[4],
+                    "message_event_id": event[5],
+                    "collective": event[6]
                 })
 
             return sorted(events, key=lambda x: x["start_time"])
@@ -50,6 +52,8 @@ class EventQueries:
         start_time DATETIME,
         end_time DATETIME,
         label TEXT,
+        message_event_id INT,
+        collective BOOL,
         
         FOREIGN KEY (event_diary_id) REFERENCES event_diary (event_diary_id) ON DELETE CASCADE
     )"""
