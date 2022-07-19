@@ -192,7 +192,8 @@ class MyClassesHandlers(SupportingFunctions):
                                                                        f"{last_name}] отклонена")
 
         elif payload["text"] == "event_settings":
-            pass
+            trans_message = "Выбери номер события, рассмотреть который ты хочешь!"
+            await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES, trans_message)
 
     async def s_in_class_my_classes2_handler(self, user_id: int, payload: dict, info_message="") -> None:
         """Handling States.S_IN_CLASS_MYCLASSES2"""
@@ -700,6 +701,18 @@ class MyClassesHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
+            await self.trans_to_main_menu(user_id)
+
+    async def s_choose_event_my_classes_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_CHOOSE_EVENT_MYCLASSES"""
+        if payload is None:
+            await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES, "Для навигации используй кнопки!👇🏻")
+
+        elif payload["text"] == "Назад":
+            await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Главное меню класса",
+                                        sign=self.get_sign(user_id))
+
+        elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
 
     @staticmethod

@@ -107,6 +107,9 @@ class SupportingFunctions:
             case States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.get_edit_homework_weekday_keyboard())
 
+            case States.S_CHOOSE_EVENT_MYCLASSES:
+                await self.send_message(user_id, message, KeyBoards.get_choose_event_keyboard([]))
+
             # FINDCLASS
             case States.S_FIND_CLASS:
                 await self.send_message(user_id, message,

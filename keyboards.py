@@ -95,6 +95,15 @@ class KeyBoards:
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add(Text("Назад", payload=get_payload("Назад")))
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add(Text("Главное меню", payload=get_payload("Главное меню")))
 
+    # CHOOSE_EVENT KEYBOARD
+    @staticmethod
+    def get_choose_event_keyboard(events: list) -> str:
+        choose_event_keyboard = Keyboard()
+        choose_event_keyboard.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
+        choose_event_keyboard.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+
+        return choose_event_keyboard.get_json()
+
     # NOTIFICATION_SETTINGS KEYBOARD
     @staticmethod
     def get_notification_settings_keyboard(colors) -> str:
