@@ -28,7 +28,7 @@ class EventCommands(DataBase):
                     "collective": event[6]
                 })
 
-            return sorted(events, key=lambda x: x["start_time"])
+            return sorted(events, key=lambda x: (-x["collective"], x["start_time"]))
 
     def insert_new_event_diary(self, classroom_id: int) -> None:
         """Inserts new row into event_diary table"""
