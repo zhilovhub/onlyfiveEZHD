@@ -406,11 +406,15 @@ class SupportingFunctions:
         def formatted_not_collective_event(start_time: datetime, end_time: datetime, label: str, message_event_id: int
                                            ) -> str:
             start_time_hour_minute = f"{start_time.hour}:{start_time.minute}"
-            end_time_hour_minute = f"{end_time.hour}:{end_time.minute}"
+            if end_time:
+                end_time_hour_minute = f"{end_time.hour}:{end_time.minute}"
+                duration_time = f"{start_time_hour_minute}-{end_time_hour_minute}"
+                emoji = "✅" if datetime.now() > end_time else ""
+            else:
+                duration_time = start_time_hour_minute
+                emoji = "✅" if datetime.now() > start_time else ""
 
-            emoji = "✅" if datetime.now() > end_time else ""
-
-            return f"{start_time_hour_minute}-{end_time_hour_minute} {label} (#{message_event_id}) {emoji}"
+            return f"{duration_time} {label} (#{message_event_id}) {emoji}"
 
         days = {}
         for event in events:
