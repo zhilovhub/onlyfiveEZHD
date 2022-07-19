@@ -191,6 +191,9 @@ class MyClassesHandlers(SupportingFunctions):
                                                           info_message=f"Заявка [id{request_user_id}|{first_name} "
                                                                        f"{last_name}] отклонена")
 
+        elif payload["text"] == "event_settings":
+            pass
+
     async def s_in_class_my_classes2_handler(self, user_id: int, payload: dict, info_message="") -> None:
         """Handling States.S_IN_CLASS_MYCLASSES2"""
         if payload is None:
@@ -262,7 +265,22 @@ class MyClassesHandlers(SupportingFunctions):
                                             "своей роли", sign=False)
 
         elif payload["text"] == "События":
-            await self.send_message(user_id, "Пока никаких событий в этом классе не запланировано")
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            events = self.event_db.get_all_classroom_events(classroom_id)
+
+            keyboard = Keyboard(inline=True)
+            keyboard.add(Callback("Подробнее", payload={
+                "text": "event_settings",
+                "classroom_id": classroom_id
+            }))
+
+            if events:
+                event_diary_text = self.get_event_diary_text(events)
+
+                await self.send_message(user_id, event_diary_text, keyboard=keyboard)
+            else:
+                await self.send_message(user_id, "Пока никаких событий в этом классе не запланировано",
+                                        keyboard=keyboard)
 
         elif payload["text"] == "Назад":
             trans_message = "Назад..."

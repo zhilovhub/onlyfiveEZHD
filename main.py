@@ -250,7 +250,7 @@ async def filter_callback_button_payload(user_id: int, payload: dict, current_di
         case "look_at_the_classroom":
             await handlers_class.p_look_at_the_classroom_handler(user_id, payload, current_dialog_state)
 
-        case ("accept_request" | "cancel_request"):
+        case ("accept_request" | "cancel_request" | "event_settings"):
             await handlers_class.p_accept_cancel_request_handler(user_id, payload, current_dialog_state)
 
 

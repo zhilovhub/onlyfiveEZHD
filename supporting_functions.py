@@ -371,6 +371,64 @@ class SupportingFunctions:
                                                                          f" покинул {classroom_name}!")
 
     @staticmethod
+    def get_event_diary_text(events: list) -> str:
+        """Returns text of events"""
+        def formatted_date(date: date) -> str:
+            weekday_dict = {
+                0: "ПОНЕДЕЛЬНИК",
+                1: "ВТОРНИК",
+                2: "СРЕДА",
+                3: "ЧЕТВЕРГ",
+                4: "ПЯТНИЦА",
+                5: "СУББОТА",
+                6: "ВОСКРЕСЕНЬЕ"
+            }
+
+            month_dict = {
+                1: "Янв",
+                2: "Фев",
+                3: "Мар",
+                4: "Апр",
+                5: "Май",
+                6: "Июн",
+                7: "Июл",
+                8: "Авг",
+                9: "Сен",
+                10: "Окт",
+                11: "Ноя",
+                12: "Дек",
+            }
+            weekday = weekday_dict[date.weekday()]
+            month = month_dict[date.month]
+
+            return f"{weekday}, {date.day} {month}, {date.year}"
+
+        def formatted_not_collective_event(start_time: datetime, end_time: datetime, label: str, message_event_id: int
+                                           ) -> str:
+            start_time_hour_minute = f"{start_time.hour}:{start_time.minute}"
+            end_time_hour_minute = f"{end_time.hour}:{end_time.minute}"
+
+            emoji = "✅" if datetime.now() > end_time else ""
+
+            return f"{start_time_hour_minute}-{end_time_hour_minute} {label} (#{message_event_id}) {emoji}"
+
+        days = {}
+        for event in events:
+            start_time: datetime = event["start_time"]
+            end_time: datetime = event["end_time"]
+            label = event["label"]
+            message_event_id = event["message_event_id"]
+
+            if start_time.date() in days:
+                days[start_time.date()].append(formatted_not_collective_event(start_time, end_time,
+                                                                              label, message_event_id))
+            else:
+                days[start_time.date()] = [formatted_not_collective_event(start_time, end_time,
+                                                                          label, message_event_id)]
+
+        return "\n\n".join("‼ " + formatted_date(key) + "\n\n" + "\n".join(value) for key, value in days.items())
+
+    @staticmethod
     def get_all_role_names_text(all_role_names: list, admin_role_name: str, default_role_name: str) -> str:
         """Returns text of all role names"""
         role_names = []
