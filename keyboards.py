@@ -373,6 +373,10 @@ class KeyBoards:
                                             payload=KeyBoards.get_payload("Уведомление участников")),
                                        color=KeyBoards.get_color(colors[3]))
         keyboard_members_privilege.row()
+        keyboard_members_privilege.add(Text("Редактирование событий",
+                                            payload=KeyBoards.get_payload("Редактирование событий")),
+                                       color=KeyBoards.get_color(colors[4]))
+        keyboard_members_privilege.row()
 
         keyboard_members_privilege.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
         keyboard_members_privilege.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))

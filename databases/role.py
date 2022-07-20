@@ -121,6 +121,7 @@ class RoleCommands(DataBase):
                 "invite_members",
                 "accept_requests",
                 "notify",
+                "redact_events",
                 "role_name",
                 "is_default_member",
                 "is_admin"
@@ -224,6 +225,7 @@ class RoleQueries:
         invite_members BOOLEAN DEFAULT 1,
         accept_requests BOOLEAN DEFAULT 1,
         notify BOOLEAN DEFAULT 1,
+        redact_events BOOLEAN DEFAULT 1,
         change_classroom_name BOOLEAN DEFAULT 1,
         change_school_name BOOLEAN DEFAULT 1,
         change_classroom_access BOOLEAN DEFAULT 1,
@@ -281,6 +283,7 @@ class RoleQueries:
         invite_members,
         accept_requests,
         notify,
+        redact_events,
         role_name,
         is_default_member,
         is_admin
@@ -304,9 +307,9 @@ class RoleQueries:
 
     insert_new_role_query = """INSERT INTO ROLE
     (classroom_id, role_name, change_standard_week, change_current_week, change_next_week, change_current_homework,
-    change_next_homework, kick_members, invite_members, accept_requests, notify, change_classroom_name,
+    change_next_homework, kick_members, invite_members, accept_requests, notify, redact_events, change_classroom_name,
     change_school_name, change_classroom_access, change_description, change_members_limit) VALUES(
-        {}, '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+        {}, '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
     )"""
 
     update_student_role_query = """UPDATE Student SET role_id={} WHERE user_id={}"""
