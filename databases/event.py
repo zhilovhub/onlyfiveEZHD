@@ -24,15 +24,15 @@ class EventCommands(DataBase):
                 cursor.execute(EventQueries.get_event_students_query, (event[0], ))
 
                 events.append({
-                    "start_time": event[2],
-                    "end_time": event[3],
-                    "label": event[4],
-                    "message_event_id": event[5],
-                    "collective": event[6],
-                    "current_count": event[7],
-                    "required_count": event[8],
+                    "start_time": event[3],
+                    "end_time": event[4],
+                    "label": event[5],
+                    "message_event_id": event[6],
+                    "collective": event[7],
+                    "current_count": event[8],
+                    "required_count": event[9],
                     "current_students_count": len(cursor.fetchall()),
-                    "required_students_count": event[9]
+                    "required_students_count": event[10]
                 })
 
             return sorted(events, key=lambda x: (-x["collective"], x["start_time"]))
@@ -56,11 +56,12 @@ class EventQueries:
         event_id INT NOT NULL UNIQUE PRIMARY KEY AUTO_INCREMENT,
         event_diary_id INT,
         
+        created BOOLEAN,
         start_time DATETIME,
         end_time DATETIME,
         label TEXT,
         message_event_id INT,
-        collective BOOL,
+        collective BOOLEAN,
         current_count INT,
         required_count INT,
         required_students_count INT,
@@ -78,7 +79,7 @@ class EventQueries:
     )"""
 
     get_classroom_events_query = """SELECT * FROM event WHERE event_diary_id IN (SELECT event_diary_id FROM event_diary
-    WHERE classroom_id=%s)"""
+    WHERE classroom_id=%s AND created=1)"""
 
     get_event_students_query = """SELECT student_id FROM event_collective WHERE event_id=%s"""
 
