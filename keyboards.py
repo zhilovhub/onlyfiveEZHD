@@ -110,6 +110,8 @@ class KeyBoards:
                                                payload=KeyBoards.get_payload(event["message_event_id"])))
 
         choose_event_keyboard.row()
+        choose_event_keyboard.add(Text("Добавить событие", payload=KeyBoards.get_payload("Добавить событие")))
+        choose_event_keyboard.row()
         choose_event_keyboard.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
         choose_event_keyboard.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
 
