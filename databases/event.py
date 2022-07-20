@@ -11,8 +11,15 @@ class EventCommands(DataBase):
                 cursor.execute(EventQueries.create_table_event_diary_query)
                 cursor.execute(EventQueries.create_table_event_query)
                 cursor.execute(EventQueries.create_table_event_collective_info_query)
+                cursor.execute(EventQueries.create_table_user_customize_query)
         except Error as e:
             print(e)
+
+    def get_customizing_event_id(self, user_id: int) -> int:
+        """Returns customizing event_id"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.get_customizing_event_id_query, (user_id, ))
+            return cursor.fetchone()[0]
 
     def get_all_classroom_events(self, classroom_id: int) -> list:
         """Returns all classroom's events"""
@@ -41,6 +48,12 @@ class EventCommands(DataBase):
         """Inserts new row into event_diary table"""
         with self.connection.cursor() as cursor:
             cursor.execute(EventQueries.insert_event_diary_query, (classroom_id,))
+            self.connection.commit()
+
+    def update_customizing_event_id(self, user_id: int, event_id: int) -> None:
+        """Updates customizing event_id"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.update_customizing_event_id_query, (event_id, user_id))
             self.connection.commit()
 
 
@@ -78,12 +91,27 @@ class EventQueries:
         FOREIGN KEY (student_id) REFERENCES student (student_id) ON DELETE CASCADE
     )"""
 
+    create_table_user_customize_query = """CREATE TABLE IF NOT EXISTS UserCustomize(
+            user_id INT UNIQUE,
+            classroom_id INT,
+            role_id INT,
+            event_id INT,
+            
+            FOREIGN KEY (user_id) REFERENCES User (user_id),
+            FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE SET NULL,
+            FOREIGN KEY (role_id) REFERENCES Role (role_id) ON DELETE SET NULL,
+            FOREIGN KEY (event_id) REFERENCES event (event_id) ON DELETE SET NULL
+        )"""
+
     get_classroom_events_query = """SELECT * FROM event WHERE event_diary_id IN (SELECT event_diary_id FROM event_diary
     WHERE classroom_id=%s AND created=1)"""
 
     get_event_students_query = """SELECT student_id FROM event_collective WHERE event_id=%s"""
+    get_customizing_event_id_query = """SELECT event_id FROM UserCustomize WHERE user_id=%s"""
 
     insert_event_diary_query = """INSERT INTO event_diary (classroom_id) VALUES (%s)"""
+
+    update_customizing_event_id_query = """UPDATE UserCustomize SET event_id=%s WHERE user_id=%s"""
 
 
 if __name__ == '__main__':

@@ -8,7 +8,6 @@ class RoleCommands(DataBase):
 
         with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.create_table_roles_query)
-            cursor.execute(RoleQueries.create_table_user_customize_query)
             cursor.execute(RoleQueries.create_table_student_query)
 
     def get_role_name(self, role_id: int) -> str:
@@ -235,15 +234,6 @@ class RoleQueries:
         is_admin BOOLEAN DEFAULT 0,
         
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE
-    )"""
-
-    create_table_user_customize_query = """CREATE TABLE IF NOT EXISTS UserCustomize(
-        user_id INT UNIQUE,
-        classroom_id INT,
-        role_id INT,
-        FOREIGN KEY (user_id) REFERENCES User (user_id),
-        FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE SET NULL,
-        FOREIGN KEY (role_id) REFERENCES Role (role_id) ON DELETE SET NULL
     )"""
 
     create_table_student_query = """CREATE TABLE IF NOT EXISTS Student(

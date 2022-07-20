@@ -270,7 +270,7 @@ class ClassroomQueries:
 
     insert_classroom_query = """INSERT INTO Classroom (members_limit, created) VALUES(40, FALSE)"""
     insert_new_classroom_user_query = """INSERT INTO Student (user_id, classroom_id, role_id) VALUES({}, {}, {})"""
-    insert_new_customizer_query = """INSERT INTO UserCustomize VALUES({}, null, null)"""
+    insert_new_customizer_query = """INSERT INTO UserCustomize VALUES({}, null, null, null)"""
     insert_request_query = """INSERT INTO Request VALUES({}, {}, '{}', '{}')"""
 
     update_classroom_name_query = """UPDATE Classroom SET classroom_name="{}" WHERE classroom_id={}"""
