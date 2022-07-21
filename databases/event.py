@@ -76,6 +76,12 @@ class EventCommands(DataBase):
             cursor.execute(EventQueries.update_event_type_query, (collective, event_id))
             self.connection.commit()
 
+    def update_event_label(self, event_id: int, label: str) -> None:
+        """Updates event's label"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.update_event_label_query, (label, event_id))
+            self.connection.commit()
+
     def delete_event(self, event_id: int) -> None:
         """Deletes event"""
         with self.connection.cursor() as cursor:
@@ -141,6 +147,7 @@ class EventQueries:
 
     update_customizing_event_id_query = """UPDATE UserCustomize SET event_id=%s WHERE user_id=%s"""
     update_event_type_query = """UPDATE event SET collective=%s WHERE event_id=%s"""
+    update_event_label_query = """UPDATE event SET label=%s WHERE event_id=%s"""
 
     delete_event_query = """DELETE FROM event WHERE event_id=%s"""
 

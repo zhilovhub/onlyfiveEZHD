@@ -123,6 +123,9 @@ class SupportingFunctions:
             case States.S_CHOOSE_EVENT_TYPE_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.get_choose_event_type_keyboard())
 
+            case States.S_ENTER_NOT_COLLECTIVE_EVENT_NAME_MYCLASSES:
+                await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
+
             # FINDCLASS
             case States.S_FIND_CLASS:
                 await self.send_message(user_id, message,
