@@ -126,7 +126,7 @@ class SupportingFunctions:
             case States.S_ENTER_NOT_COLLECTIVE_EVENT_NAME_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
 
-            case States.S_ENTER_NOT_COLLECTIVE_EVENT_DATE_MYCLASSES:
+            case States.S_ENTER_NOT_COLLECTIVE_EVENT_START_TIME_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
 
             # FINDCLASS
