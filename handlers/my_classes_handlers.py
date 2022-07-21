@@ -757,13 +757,15 @@ class MyClassesHandlers(SupportingFunctions):
 
     async def s_enter_not_collective_event_name_my_classes_handler(self, user_id: int, message: str, payload: dict
                                                                    ) -> None:
-        """Handling States.S_ENTER_BOT_COLLECTIVE_EVENT_NAME_MYCLASSES"""
+        """Handling States.S_ENTER_NOT_COLLECTIVE_EVENT_NAME_MYCLASSES"""
         if payload is None:
             if len(message) < 200:
                 event_id = self.event_db.get_customizing_event_id(user_id)
                 self.event_db.update_event_label(event_id, message)
 
-                await self.send_message(user_id, "Понял")
+                await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_DATE_MYCLASSES,
+                                            "Впиши дату и время начала события в следующем формате: YYYY-MM-DD hh:mm\n"
+                                            "Например, 2022-09-05 13:05")
             else:
                 await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_NAME_MYCLASSES,
                                             "Длина текста события превышает 200 символов.\nОпиши событие (макс 200 "
@@ -771,6 +773,29 @@ class MyClassesHandlers(SupportingFunctions):
 
         elif payload["text"] == "Назад":
             await self.state_transition(user_id, States.S_CHOOSE_EVENT_TYPE_MYCLASSES, "Выбери тип события:")
+
+        elif payload["text"] == "Главное меню":
+            await self.cancel_creating_event(user_id, to_main_menu=True)
+
+    async def s_enter_not_collective_event_date_my_classes_handler(self, user_id: int, message: str, payload: dict
+                                                                   ) -> None:
+        """Handling States.S_ENTER_NOT_COLLECTIVE_EVENT_DATE_MYCLASSES"""
+        if payload is None:
+            try:
+                event_start_time = datetime.strptime(message, "%Y-%m-%d %H:%M")
+
+                event_id = self.event_db.get_customizing_event_id(user_id)
+                self.event_db.update_event_start_time(event_id, event_start_time)
+
+                await self.send_message(user_id, "Понял")
+            except ValueError:
+                await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_DATE_MYCLASSES,
+                                            "Введенная запись не соответствует формату.\nВпиши дату и время начала "
+                                            "события в следующем формате: YYYY-MM-DD hh:mm\nНапример, 2022-09-05 13:05")
+
+        elif payload["text"] == "Назад":
+            await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_NAME_MYCLASSES,
+                                        "Опиши событие (макс 200 символов)")
 
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)
