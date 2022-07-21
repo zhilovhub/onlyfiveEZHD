@@ -95,6 +95,17 @@ class KeyBoards:
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add(Text("Назад", payload=get_payload("Назад")))
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add(Text("Главное меню", payload=get_payload("Главное меню")))
 
+    # BACK_MENU_SKIP_KEYBOARD
+    @staticmethod
+    def get_back_menu_skip_keyboard() -> str:
+        keyboard_back_menu_skip = Keyboard()
+        keyboard_back_menu_skip.add(Text("Пропустить", payload=KeyBoards.get_payload("Пропустить")))
+        keyboard_back_menu_skip.row()
+        keyboard_back_menu_skip.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
+        keyboard_back_menu_skip.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+
+        return keyboard_back_menu_skip.get_json()
+
     # CHOOSE_EVENT_TYPE KEYBOARD
     @staticmethod
     def get_choose_event_type_keyboard() -> str:

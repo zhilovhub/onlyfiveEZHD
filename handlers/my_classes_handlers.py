@@ -778,7 +778,7 @@ class MyClassesHandlers(SupportingFunctions):
             await self.cancel_creating_event(user_id, to_main_menu=True)
 
     async def s_enter_not_collective_event_start_time_my_classes_handler(self, user_id: int, message: str, payload: dict
-                                                                   ) -> None:
+                                                                         ) -> None:
         """Handling States.S_ENTER_NOT_COLLECTIVE_EVENT_START_TIME_MYCLASSES"""
         if payload is None:
             try:
@@ -787,7 +787,9 @@ class MyClassesHandlers(SupportingFunctions):
                 event_id = self.event_db.get_customizing_event_id(user_id)
                 self.event_db.update_event_start_time(event_id, event_start_time)
 
-                await self.send_message(user_id, "Понял")
+                await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_END_TIME_MYCLASSES,
+                                            "Впиши время конца события в формате (или нажми пропустить, если событие "
+                                            "не имеет продолжительности): hh:mm\nНапример, 13:05")
             except ValueError:
                 await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_START_TIME_MYCLASSES,
                                             "Введенная запись не соответствует формату.\nВпиши дату и время начала "
@@ -796,6 +798,44 @@ class MyClassesHandlers(SupportingFunctions):
         elif payload["text"] == "Назад":
             await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_NAME_MYCLASSES,
                                         "Опиши событие (макс 200 символов)")
+
+        elif payload["text"] == "Главное меню":
+            await self.cancel_creating_event(user_id, to_main_menu=True)
+
+    async def s_enter_not_collective_event_end_time_my_classes_handler(self, user_id: int, message: str, payload: dict
+                                                                       ) -> None:
+        """Handling States.S_ENTER_NOT_COLLECTIVE_EVENT_END_TIME_MYCLASSES"""
+        if payload is None:
+            try:
+                event_end_time_hour_minute = datetime.strptime(message, "%H:%M")
+
+                event_id = self.event_db.get_customizing_event_id(user_id)
+                event_start_time = self.event_db.get_event_start_time(event_id)
+                event_end_time = event_start_time.replace(hour=event_end_time_hour_minute.hour,
+                                                          minute=event_end_time_hour_minute.minute)
+
+                if event_end_time > event_start_time:
+                    self.event_db.update_event_end_time(event_id, event_end_time)
+                    await self.send_message(user_id, "Ес")
+                else:
+                    await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_END_TIME_MYCLASSES,
+                                                "Время окончания события не может быть меньше или быть таким же, как "
+                                                "время начала\nВпиши время конца события в формате (или нажми "
+                                                "пропустить, если событие не имеет продолжительности): hh:mm\n"
+                                                "Например, 13:05")
+            except ValueError:
+                await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_END_TIME_MYCLASSES,
+                                            "Введенная запись не соответствует формату.\nВпиши время конца события в "
+                                            "формате (или нажми пропустить, если событие "
+                                            "не имеет продолжительности): hh:mm\nНапример, 13:05")
+
+        elif payload["text"] == "Пропустить":
+            await self.send_message(user_id, "Ес")
+
+        elif payload["text"] == "Назад":
+            await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_START_TIME_MYCLASSES,
+                                        "Впиши дату и время начала события в следующем формате: YYYY-MM-DD hh:mm\n"
+                                        "Например, 2022-09-05 13:05")
 
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)

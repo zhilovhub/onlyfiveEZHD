@@ -50,6 +50,12 @@ class EventCommands(DataBase):
 
             return sorted(events, key=lambda x: (-x["collective"], x["start_time"]))
 
+    def get_event_start_time(self, event_id: int) -> datetime:
+        """Returns start time"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.get_event_start_time_query, (event_id,))
+            return cursor.fetchone()[0]
+
     def insert_new_event_diary(self, classroom_id: int) -> None:
         """Inserts new row into event_diary table"""
         with self.connection.cursor() as cursor:
@@ -86,6 +92,12 @@ class EventCommands(DataBase):
         """Updates event's start_time"""
         with self.connection.cursor() as cursor:
             cursor.execute(EventQueries.update_event_start_time_query, (start_time, event_id))
+            self.connection.commit()
+
+    def update_event_end_time(self, event_id: int, end_time: datetime) -> None:
+        """Updates event's end_time"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.update_event_end_time_query, (end_time, event_id))
             self.connection.commit()
 
     def delete_event(self, event_id: int) -> None:
@@ -147,6 +159,7 @@ class EventQueries:
     get_event_students_query = """SELECT student_id FROM event_collective WHERE event_id=%s"""
     get_customizing_event_id_query = """SELECT event_id FROM UserCustomize WHERE user_id=%s"""
     get_event_diary_id_query = """SELECT event_diary_id FROM event_diary WHERE classroom_id=%s"""
+    get_event_start_time_query = """SELECT start_time FROM event WHERE event_id=%s"""
 
     insert_event_diary_query = """INSERT INTO event_diary (classroom_id) VALUES (%s)"""
     insert_event_query = """INSERT INTO event (event_diary_id) VALUES (%s)"""
@@ -155,6 +168,7 @@ class EventQueries:
     update_event_type_query = """UPDATE event SET collective=%s WHERE event_id=%s"""
     update_event_label_query = """UPDATE event SET label=%s WHERE event_id=%s"""
     update_event_start_time_query = """UPDATE event SET start_time=%s WHERE event_id=%s"""
+    update_event_end_time_query = """UPDATE event SET end_time=%s WHERE event_id=%s"""
 
     delete_event_query = """DELETE FROM event WHERE event_id=%s"""
 
