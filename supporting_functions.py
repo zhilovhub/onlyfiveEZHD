@@ -120,6 +120,9 @@ class SupportingFunctions:
                 await self.send_message(user_id, message,
                                         KeyBoards.get_choose_event_keyboard(sorted_events, redact_events=redact_events))
 
+            case States.S_CHOOSE_EVENT_TYPE_MYCLASSES:
+                await self.send_message(user_id, message, KeyBoards.get_choose_event_type_keyboard())
+
             # FINDCLASS
             case States.S_FIND_CLASS:
                 await self.send_message(user_id, message,
@@ -281,6 +284,7 @@ class SupportingFunctions:
         trans_message = "Возвращение в главное меню"
         self.classroom_db.update_user_customize_classroom_id(user_id, "null")
         self.role_db.update_user_customize_role_id(user_id, "null")
+        self.event_db.update_customizing_event_id(user_id, None)
         await self.state_transition(user_id, States.S_NOTHING, trans_message)
 
     async def is_member(self, user_id: int) -> int:

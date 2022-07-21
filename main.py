@@ -146,6 +146,9 @@ async def filter_dialog_state(user_id: int, message: str, payload: dict, current
         case States.S_CHOOSE_EVENT_MYCLASSES.value:
             await handlers_class.s_choose_event_my_classes_handler(user_id, payload)
 
+        case States.S_CHOOSE_EVENT_TYPE_MYCLASSES.value:
+            await handlers_class.s_choose_event_type_my_classes_handler(user_id, payload)
+
         # FINDCLASS
         case States.S_FIND_CLASS.value:
             await handlers_class.s_find_class_handler(user_id, message, payload)

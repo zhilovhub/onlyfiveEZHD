@@ -64,10 +64,16 @@ class EventCommands(DataBase):
 
             return cursor.lastrowid
 
-    def update_customizing_event_id(self, user_id: int, event_id: int) -> None:
+    def update_customizing_event_id(self, user_id: int, event_id) -> None:
         """Updates customizing event_id"""
         with self.connection.cursor() as cursor:
             cursor.execute(EventQueries.update_customizing_event_id_query, (event_id, user_id))
+            self.connection.commit()
+
+    def delete_event(self, event_id: int) -> None:
+        """Deletes event"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.delete_event_query, (event_id,))
             self.connection.commit()
 
 
@@ -128,6 +134,8 @@ class EventQueries:
     insert_event_query = """INSERT INTO event (event_diary_id) VALUES (%s)"""
 
     update_customizing_event_id_query = """UPDATE UserCustomize SET event_id=%s WHERE user_id=%s"""
+
+    delete_event_query = """DELETE FROM event WHERE event_id=%s"""
 
 
 if __name__ == '__main__':

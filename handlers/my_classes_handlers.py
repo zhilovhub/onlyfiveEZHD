@@ -716,8 +716,7 @@ class MyClassesHandlers(SupportingFunctions):
 
                 self.event_db.update_customizing_event_id(user_id, event_id)
 
-                await self.send_message(user_id, "Выбери тип события:")
-                # await self.state_transition(user_id, States.S_CHOOSE_EVENT_TYPE_MYCLASSES, "Выбери тип события:")
+                await self.state_transition(user_id, States.S_CHOOSE_EVENT_TYPE_MYCLASSES, "Выбери тип события:")
             else:
                 await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES,
                                             "Ты не можешь добавлять события из-за своей роли")
@@ -728,6 +727,27 @@ class MyClassesHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
+
+    async def s_choose_event_type_my_classes_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_CHOOSE_EVENT_TYPE_MYCLASSES"""
+        if payload is None:
+            await self.state_transition(user_id, States.S_CHOOSE_EVENT_TYPE_MYCLASSES,
+                                        "Для навигации используй кнопки!👇🏻")
+
+        elif payload["text"] == "Назад":
+            await self.cancel_creating_event(user_id, to_main_menu=False)
+
+        elif payload["text"] == "Главное меню":
+            await self.cancel_creating_event(user_id, to_main_menu=True)
+
+    async def cancel_creating_event(self, user_id: int, to_main_menu: bool) -> None:
+        event_id = self.event_db.get_customizing_event_id(user_id)
+        self.event_db.delete_event(event_id)
+        if to_main_menu:
+            await self.trans_to_main_menu(user_id)
+        else:
+            await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES,
+                                        "Выбери номер события, рассмотреть который ты хочешь!")
 
     @staticmethod
     def get_week_diary_text(formatted_week_lessons_diary: list, formatted_week_lessons_homework=None) -> str:
