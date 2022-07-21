@@ -734,6 +734,16 @@ class MyClassesHandlers(SupportingFunctions):
             await self.state_transition(user_id, States.S_CHOOSE_EVENT_TYPE_MYCLASSES,
                                         "Для навигации используй кнопки!👇🏻")
 
+        elif payload["text"] in ("1", "2"):
+            payload_meaning_dict = {
+                "1": False,
+                "2": True
+            }
+            event_id = self.event_db.get_customizing_event_id(user_id)
+            self.event_db.update_event_type(event_id, payload_meaning_dict[payload["text"]])
+
+            await self.send_message(user_id, "Понял")
+
         elif payload["text"] == "Назад":
             await self.cancel_creating_event(user_id, to_main_menu=False)
 
