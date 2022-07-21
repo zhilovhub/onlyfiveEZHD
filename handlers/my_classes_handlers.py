@@ -708,6 +708,20 @@ class MyClassesHandlers(SupportingFunctions):
         if payload is None:
             await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES, "Для навигации используй кнопки!👇🏻")
 
+        elif payload["text"] == "Добавить событие":
+            if payload["can"]:
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                event_diary_id = self.event_db.get_event_diary_id(classroom_id)
+                event_id = self.event_db.insert_new_event(event_diary_id)
+
+                self.event_db.update_customizing_event_id(user_id, event_id)
+
+                await self.send_message(user_id, "Выбери тип события:")
+                # await self.state_transition(user_id, States.S_CHOOSE_EVENT_TYPE_MYCLASSES, "Выбери тип события:")
+            else:
+                await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES,
+                                            "Ты не можешь добавлять события из-за своей роли")
+
         elif payload["text"] == "Назад":
             await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Главное меню класса",
                                         sign=self.get_sign(user_id))

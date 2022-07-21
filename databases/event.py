@@ -21,6 +21,12 @@ class EventCommands(DataBase):
             cursor.execute(EventQueries.get_customizing_event_id_query, (user_id, ))
             return cursor.fetchone()[0]
 
+    def get_event_diary_id(self, classroom_id: int) -> int:
+        """Returns event_diary_id"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.get_event_diary_id_query, (classroom_id,))
+            return cursor.fetchone()[0]
+
     def get_all_classroom_events(self, classroom_id: int) -> list:
         """Returns all classroom's events"""
         events = []
@@ -49,6 +55,14 @@ class EventCommands(DataBase):
         with self.connection.cursor() as cursor:
             cursor.execute(EventQueries.insert_event_diary_query, (classroom_id,))
             self.connection.commit()
+
+    def insert_new_event(self, event_diary_id: int) -> int:
+        """Inserts new event"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.insert_event_query, (event_diary_id,))
+            self.connection.commit()
+
+            return cursor.lastrowid
 
     def update_customizing_event_id(self, user_id: int, event_id: int) -> None:
         """Updates customizing event_id"""
@@ -108,8 +122,10 @@ class EventQueries:
 
     get_event_students_query = """SELECT student_id FROM event_collective WHERE event_id=%s"""
     get_customizing_event_id_query = """SELECT event_id FROM UserCustomize WHERE user_id=%s"""
+    get_event_diary_id_query = """SELECT event_diary_id FROM event_diary WHERE classroom_id=%s"""
 
     insert_event_diary_query = """INSERT INTO event_diary (classroom_id) VALUES (%s)"""
+    insert_event_query = """INSERT INTO event (event_diary_id) VALUES (%s)"""
 
     update_customizing_event_id_query = """UPDATE UserCustomize SET event_id=%s WHERE user_id=%s"""
 

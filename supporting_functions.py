@@ -109,10 +109,16 @@ class SupportingFunctions:
 
             case States.S_CHOOSE_EVENT_MYCLASSES:
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
+
                 events = self.event_db.get_all_classroom_events(classroom_id)
                 sorted_events = sorted(events, key=lambda x: x["message_event_id"])
 
-                await self.send_message(user_id, message, KeyBoards.get_choose_event_keyboard(sorted_events))
+                members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
+                redact_events = members_role_properties_dictionary.get("redact_events", False)
+
+                await self.send_message(user_id, message,
+                                        KeyBoards.get_choose_event_keyboard(sorted_events, redact_events=redact_events))
 
             # FINDCLASS
             case States.S_FIND_CLASS:
