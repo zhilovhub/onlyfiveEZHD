@@ -132,6 +132,9 @@ class SupportingFunctions:
             case States.S_ENTER_NOT_COLLECTIVE_EVENT_END_TIME_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.get_back_menu_skip_keyboard())
 
+            case States.S_SUBMIT_EVENT_CREATE_MYCLASSES:
+                await self.send_message(user_id, message, KeyBoards.KEYBOARD_SUBMIT_BACK)
+
             # FINDCLASS
             case States.S_FIND_CLASS:
                 await self.send_message(user_id, message,

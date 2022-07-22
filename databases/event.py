@@ -50,6 +50,25 @@ class EventCommands(DataBase):
 
             return sorted(events, key=lambda x: (-x["collective"], x["start_time"]))
 
+    def get_classroom_event(self, event_id: int) -> dict:
+        """Returns classroom event"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.get_classroom_event_query, (event_id,))
+            event = cursor.fetchone()
+            cursor.execute(EventQueries.get_event_students_query, (event[0], ))
+
+            return {
+                    "start_time": event[3],
+                    "end_time": event[4],
+                    "label": event[5],
+                    "message_event_id": event[6],
+                    "collective": event[7],
+                    "current_count": event[8],
+                    "required_count": event[9],
+                    "current_students_count": len(cursor.fetchall()),
+                    "required_students_count": event[10]
+                }
+
     def get_event_start_time(self, event_id: int) -> datetime:
         """Returns start time"""
         with self.connection.cursor() as cursor:
@@ -94,10 +113,34 @@ class EventCommands(DataBase):
             cursor.execute(EventQueries.update_event_start_time_query, (start_time, event_id))
             self.connection.commit()
 
-    def update_event_end_time(self, event_id: int, end_time: datetime) -> None:
+    def update_event_end_time(self, event_id: int, end_time) -> None:
         """Updates event's end_time"""
         with self.connection.cursor() as cursor:
             cursor.execute(EventQueries.update_event_end_time_query, (end_time, event_id))
+            self.connection.commit()
+
+    def update_event_message_event_id(self, event_id: int, message_event_id=None, auto=False) -> None:
+        """Updates event's message_event_id"""
+        with self.connection.cursor() as cursor:
+            if auto:
+                cursor.execute(EventQueries.get_event_classroom_id_query, (event_id,))
+                classroom_id = cursor.fetchone()[0]
+                cursor.execute(EventQueries.get_classroom_message_event_ids_query, (classroom_id,))
+                message_event_ids = [row[0] for row in cursor.fetchall()]
+
+                for i in range(1, 21):
+                    if i not in message_event_ids:
+                        cursor.execute(EventQueries.update_event_message_event_id_query, (i, event_id))
+                        break
+            else:
+                cursor.execute(EventQueries.update_event_message_event_id_query, (message_event_id, event_id))
+
+            self.connection.commit()
+
+    def update_event_created(self, event_id: int, created: bool) -> None:
+        """Updates event's created"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.update_event_created_query, (created, event_id))
             self.connection.commit()
 
     def delete_event(self, event_id: int) -> None:
@@ -153,13 +196,18 @@ class EventQueries:
             FOREIGN KEY (event_id) REFERENCES event (event_id) ON DELETE SET NULL
         )"""
 
-    get_classroom_events_query = """SELECT * FROM event WHERE event_diary_id IN (SELECT event_diary_id FROM event_diary
-    WHERE classroom_id=%s AND created=1)"""
+    get_classroom_events_query = """SELECT * FROM event WHERE created=1 AND event_diary_id IN (SELECT event_diary_id 
+    FROM event_diary WHERE classroom_id=%s)"""
+    get_classroom_event_query = """SELECT * FROM event WHERE event_id=%s"""
+    get_classroom_message_event_ids_query = """SELECT message_event_id FROM event WHERE message_event_id IS NOT NULL
+    AND event_diary_id IN (SELECT event_diary_id FROM event_diary WHERE classroom_id=%s)"""
 
     get_event_students_query = """SELECT student_id FROM event_collective WHERE event_id=%s"""
     get_customizing_event_id_query = """SELECT event_id FROM UserCustomize WHERE user_id=%s"""
     get_event_diary_id_query = """SELECT event_diary_id FROM event_diary WHERE classroom_id=%s"""
     get_event_start_time_query = """SELECT start_time FROM event WHERE event_id=%s"""
+    get_event_classroom_id_query = """SELECT classroom_id FROM event_diary WHERE 
+    event_diary_id IN (SELECT event_diary_id FROM event WHERE event_id=%s)"""
 
     insert_event_diary_query = """INSERT INTO event_diary (classroom_id) VALUES (%s)"""
     insert_event_query = """INSERT INTO event (event_diary_id) VALUES (%s)"""
@@ -169,6 +217,8 @@ class EventQueries:
     update_event_label_query = """UPDATE event SET label=%s WHERE event_id=%s"""
     update_event_start_time_query = """UPDATE event SET start_time=%s WHERE event_id=%s"""
     update_event_end_time_query = """UPDATE event SET end_time=%s WHERE event_id=%s"""
+    update_event_message_event_id_query = """UPDATE event SET message_event_id=%s WHERE event_id=%s"""
+    update_event_created_query = """UPDATE event SET created=%s WHERE event_id=%s"""
 
     delete_event_query = """DELETE FROM event WHERE event_id=%s"""
 
