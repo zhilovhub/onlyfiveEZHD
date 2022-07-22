@@ -716,7 +716,12 @@ class MyClassesHandlers(SupportingFunctions):
 
                 self.event_db.update_customizing_event_id(user_id, event_id)
 
-                await self.state_transition(user_id, States.S_CHOOSE_EVENT_TYPE_MYCLASSES, "Выбери тип события:")
+                await self.state_transition(user_id,
+                                            States.S_CHOOSE_EVENT_TYPE_MYCLASSES,
+                                            "Выбери тип события\n\n‼1 - что-то одноразовое, например, встреча с кем-то "
+                                            "(событие происходит в течение одного дня)\n\n"
+                                            "⚠2 - что-то требующее коллективной работы людей, например, собрать"
+                                            " какое-то кол-во чего-либо (событие может длиться один день или больше):")
             else:
                 await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES,
                                             "Ты не можешь добавлять события из-за своей роли")
@@ -772,7 +777,12 @@ class MyClassesHandlers(SupportingFunctions):
                                             "символов)")
 
         elif payload["text"] == "Назад":
-            await self.state_transition(user_id, States.S_CHOOSE_EVENT_TYPE_MYCLASSES, "Выбери тип события:")
+            await self.state_transition(user_id,
+                                        States.S_CHOOSE_EVENT_TYPE_MYCLASSES,
+                                        "Выбери тип события\n\n‼1 - что-то одноразовое, например, встреча с кем-то "
+                                        "(событие происходит в течение одного дня)\n\n"
+                                        "⚠2 - что-то требующее коллективной работы людей, например, собрать"
+                                        " какое-то кол-во чего-либо (событие может длиться один день или больше):")
 
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)
