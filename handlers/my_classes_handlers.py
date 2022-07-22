@@ -891,6 +891,33 @@ class MyClassesHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)
 
+    async def s_enter_collective_event_name_my_classes_handler(self, user_id: int, message: str, payload: dict
+                                                                   ) -> None:
+        """Handling States.S_ENTER_COLLECTIVE_EVENT_NAME_MYCLASSES"""
+        if payload is None:
+            if len(message) < 200:
+                event_id = self.event_db.get_customizing_event_id(user_id)
+                self.event_db.update_event_label(event_id, message)
+
+                await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_START_TIME_MYCLASSES,
+                                            "Впиши дату начала события в следующем формате: YYYY-MM-DD\n"
+                                            "Например, 2022-09-05")
+            else:
+                await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_NAME_MYCLASSES,
+                                            "Длина текста события превышает 200 символов.\nОпиши событие (макс 200 "
+                                            "символов)")
+
+        elif payload["text"] == "Назад":
+            await self.state_transition(user_id,
+                                        States.S_CHOOSE_EVENT_TYPE_MYCLASSES,
+                                        "Выбери тип события\n\n‼1 - что-то одноразовое, например, встреча с кем-то "
+                                        "(событие происходит в течение одного дня)\n\n"
+                                        "⚠2 - что-то требующее коллективной работы людей, например, собрать"
+                                        " какое-то кол-во чего-либо (событие может длиться один день или больше):")
+
+        elif payload["text"] == "Главное меню":
+            await self.cancel_creating_event(user_id, to_main_menu=True)
+
     async def cancel_creating_event(self, user_id: int, to_main_menu: bool) -> None:
         event_id = self.event_db.get_customizing_event_id(user_id)
         self.event_db.delete_event(event_id)

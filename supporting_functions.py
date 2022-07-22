@@ -135,6 +135,9 @@ class SupportingFunctions:
             case States.S_SUBMIT_EVENT_CREATE_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.KEYBOARD_SUBMIT_BACK)
 
+            case States.S_ENTER_COLLECTIVE_EVENT_NAME_MYCLASSES:
+                await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
+
             # FINDCLASS
             case States.S_FIND_CLASS:
                 await self.send_message(user_id, message,
