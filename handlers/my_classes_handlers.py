@@ -749,7 +749,8 @@ class MyClassesHandlers(SupportingFunctions):
             self.event_db.update_event_type(event_id, collective)
 
             if collective:
-                await self.send_message(user_id, "Понял")
+                await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_NAME_MYCLASSES,
+                                            "Опиши событие (макс 200 символов):")
             else:
                 await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_NAME_MYCLASSES,
                                             "Опиши событие (макс 200 символов):")
@@ -940,6 +941,48 @@ class MyClassesHandlers(SupportingFunctions):
         elif payload["text"] == "Назад":
             await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_NAME_MYCLASSES,
                                         "Опиши событие (макс 200 символов)")
+
+        elif payload["text"] == "Главное меню":
+            await self.cancel_creating_event(user_id, to_main_menu=True)
+
+    async def s_enter_collective_event_end_time_my_classes_handler(self, user_id: int, message: str, payload: dict
+                                                                       ) -> None:
+        """Handling States.S_ENTER_COLLECTIVE_EVENT_END_TIME_MYCLASSES"""
+        if payload is None:
+            try:
+                event_end_time = datetime.strptime(message, "%Y-%m-%d")
+
+                event_id = self.event_db.get_customizing_event_id(user_id)
+                event_start_time = self.event_db.get_event_start_time(event_id)
+
+                if event_end_time > event_start_time:
+                    self.event_db.update_event_end_time(event_id, event_end_time)
+
+                    await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_COUNT_MYCLASSES,
+                                                f"Впиши требуемое кол-во того, что нужно собрать:")
+                else:
+                    await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_END_TIME_MYCLASSES,
+                                                "Дата окончания события не может быть меньше или быть такой же, как "
+                                                "дата начала\nВпиши дату конца события в формате (или нажми пропустить,"
+                                                " если событие не имеет продолжительности больше одного дня): hh:mm\n"
+                                                "Например, 2022-09-06")
+            except ValueError:
+                await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_END_TIME_MYCLASSES,
+                                            "Введенная запись не соответствует формату.\nВпиши дату конца события в "
+                                            "формате (или нажми пропустить, если событие не имеет продолжительности "
+                                            "больше одного дня): hh:mm\nНапример, 2022-09-06")
+
+        elif payload["text"] == "Пропустить":
+            event_id = self.event_db.get_customizing_event_id(user_id)
+            self.event_db.update_event_end_time(event_id, None)
+
+            await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_COUNT_MYCLASSES,
+                                        f"Впиши требуемое кол-во того, что нужно собрать:")
+
+        elif payload["text"] == "Назад":
+            await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_START_TIME_MYCLASSES,
+                                        "Впиши дату начала события в следующем формате: YYYY-MM-DD\nНапример, "
+                                        "2022-09-05")
 
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)

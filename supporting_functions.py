@@ -111,8 +111,8 @@ class SupportingFunctions:
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
 
-                events = self.event_db.get_all_classroom_events(classroom_id)
-                sorted_events = sorted(events, key=lambda x: x["message_event_id"])
+                classroom_events = self.event_db.get_all_classroom_events(classroom_id)
+                sorted_events = sorted(classroom_events, key=lambda x: x["message_event_id"])
 
                 members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
                 redact_events = members_role_properties_dictionary.get("redact_events", False)
@@ -140,6 +140,9 @@ class SupportingFunctions:
 
             case States.S_ENTER_COLLECTIVE_EVENT_START_TIME_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
+
+            case States.S_ENTER_COLLECTIVE_EVENT_END_TIME_MYCLASSES:
+                await self.send_message(user_id, message, KeyBoards.get_back_menu_skip_keyboard())
 
             # FINDCLASS
             case States.S_FIND_CLASS:
@@ -406,7 +409,7 @@ class SupportingFunctions:
                                                                          f" покинул {classroom_name}!")
 
     @staticmethod
-    def get_event_diary_text(events: list) -> str:
+    def get_event_diary_text(classroom_events: list) -> str:
         """Returns text of events"""
         def formatted_date(date: date) -> str:
             weekday_dict = {
@@ -477,7 +480,7 @@ class SupportingFunctions:
 
         collective_events = []
         days = {}
-        for event in events:
+        for event in classroom_events:
             start_time: datetime = event["start_time"]
             end_time: datetime = event["end_time"]
             label = event["label"]
