@@ -708,6 +708,19 @@ class MyClassesHandlers(SupportingFunctions):
         if payload is None:
             await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES, "Для навигации используй кнопки!👇🏻")
 
+        elif payload["text"] == "edit_event":
+            message_event_id = payload["message_event_id"]
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            event_id = self.event_db.get_event_id_by_message_event_id(message_event_id, classroom_id)
+
+            event = self.event_db.get_classroom_event(event_id)
+            event_text = self.get_event_diary_text([event])
+
+            self.event_db.update_customizing_event_id(user_id, event_id)
+
+            await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES,
+                                        event_text + "\n\nПодробности события")
+
         elif payload["text"] == "Добавить событие":
             if payload["can"]:
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -1080,6 +1093,24 @@ class MyClassesHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)
+
+    async def s_edit_event_my_classes_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_EDIT_EVENT_MYCLASSES"""
+        if payload is None:
+            await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, "Для навигации используй кнопки!👇🏻")
+
+        elif payload["text"] == "Назад":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            events = self.event_db.get_all_classroom_events(classroom_id)
+            event_diary_text = self.get_event_diary_text(events)
+
+            self.event_db.update_customizing_event_id(user_id, None)
+
+            trans_message = f"{event_diary_text}\n\nВыбери номер события, рассмотреть который ты хочешь!"
+            await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES, trans_message)
+
+        elif payload["text"] == "Главное меню":
+            await self.trans_to_main_menu(user_id)
 
     async def cancel_creating_event(self, user_id: int, to_main_menu: bool) -> None:
         event_id = self.event_db.get_customizing_event_id(user_id)

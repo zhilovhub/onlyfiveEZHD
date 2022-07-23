@@ -18,7 +18,7 @@ class EventCommands(DataBase):
     def get_customizing_event_id(self, user_id: int) -> int:
         """Returns customizing event_id"""
         with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.get_customizing_event_id_query, (user_id, ))
+            cursor.execute(EventQueries.get_customizing_event_id_query, (user_id,))
             return cursor.fetchone()[0]
 
     def get_event_diary_id(self, classroom_id: int) -> int:
@@ -34,7 +34,7 @@ class EventCommands(DataBase):
         with self.connection.cursor() as cursor:
             cursor.execute(EventQueries.get_classroom_events_query, (classroom_id,))
             for event in cursor.fetchall():
-                cursor.execute(EventQueries.get_event_students_query, (event[0], ))
+                cursor.execute(EventQueries.get_event_students_query, (event[0],))
 
                 events.append({
                     "start_time": event[3],
@@ -55,7 +55,7 @@ class EventCommands(DataBase):
         with self.connection.cursor() as cursor:
             cursor.execute(EventQueries.get_classroom_event_query, (event_id,))
             event = cursor.fetchone()
-            cursor.execute(EventQueries.get_event_students_query, (event[0], ))
+            cursor.execute(EventQueries.get_event_students_query, (event[0],))
 
             return {
                     "start_time": event[3],
@@ -73,6 +73,13 @@ class EventCommands(DataBase):
         """Returns start time"""
         with self.connection.cursor() as cursor:
             cursor.execute(EventQueries.get_event_start_time_query, (event_id,))
+            return cursor.fetchone()[0]
+
+    def get_event_id_by_message_event_id(self, message_event_id: int, classroom_id: int) -> int:
+        """Returns event_id by message_event_id"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.get_event_id_by_message_event_id_query, (message_event_id, classroom_id))
+
             return cursor.fetchone()[0]
 
     def insert_new_event_diary(self, classroom_id: int) -> None:
@@ -221,6 +228,8 @@ class EventQueries:
     AND event_diary_id IN (SELECT event_diary_id FROM event_diary WHERE classroom_id=%s)"""
 
     get_event_students_query = """SELECT student_id FROM event_collective WHERE event_id=%s"""
+    get_event_id_by_message_event_id_query = """SELECT event_id FROM event WHERE message_event_id=%s AND 
+    event_diary_id IN (SELECT event_diary_id FROM event_diary WHERE classroom_id=%s)"""
     get_customizing_event_id_query = """SELECT event_id FROM UserCustomize WHERE user_id=%s"""
     get_event_diary_id_query = """SELECT event_diary_id FROM event_diary WHERE classroom_id=%s"""
     get_event_start_time_query = """SELECT start_time FROM event WHERE event_id=%s"""

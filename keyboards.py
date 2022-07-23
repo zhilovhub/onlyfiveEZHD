@@ -126,6 +126,15 @@ class KeyBoards:
 
         return keyboard_choose_event_type.get_json()
 
+    # EDIT_EVENT KEYBOARD
+    @staticmethod
+    def get_edit_event_keyboard() -> str:
+        keyboard_edit_event = Keyboard()
+        keyboard_edit_event.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
+        keyboard_edit_event.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+
+        return keyboard_edit_event.get_json()
+
     # CHOOSE_EVENT KEYBOARD
     @staticmethod
     def get_choose_event_keyboard(sorted_events: list, redact_events: bool) -> str:
@@ -136,11 +145,15 @@ class KeyBoards:
             message_event_id = event["message_event_id"]
             if ind % 5 == 0 and ind != len(sorted_events):
                 choose_event_keyboard.add(Text(message_event_id,
-                                               payload=KeyBoards.get_payload(event["message_event_id"])))
+                                               payload=KeyBoards.get_payload("edit_event",
+                                                                             message_event_id=
+                                                                             event["message_event_id"])))
                 choose_event_keyboard.row()
             else:
                 choose_event_keyboard.add(Text(message_event_id,
-                                               payload=KeyBoards.get_payload(event["message_event_id"])))
+                                               payload=KeyBoards.get_payload("edit_event",
+                                                                             message_event_id=
+                                                                             event["message_event_id"])))
 
         choose_event_keyboard.row()
         choose_event_keyboard.add(Text(add_event_label, payload=KeyBoards.get_payload("Добавить событие",

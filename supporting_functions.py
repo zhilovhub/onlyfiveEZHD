@@ -150,6 +150,9 @@ class SupportingFunctions:
             case States.S_SUBMIT_EVENT_CREATE_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.get_submit_back_keyboard(**kwargs))
 
+            case States.S_EDIT_EVENT_MYCLASSES:
+                await self.send_message(user_id, message, KeyBoards.get_edit_event_keyboard())
+
             # FINDCLASS
             case States.S_FIND_CLASS:
                 await self.send_message(user_id, message,
