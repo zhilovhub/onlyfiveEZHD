@@ -832,7 +832,7 @@ class MyClassesHandlers(SupportingFunctions):
                     event_text = self.get_event_diary_text([event])
 
                     await self.state_transition(user_id, States.S_SUBMIT_EVENT_CREATE_MYCLASSES,
-                                                f"{event_text}\n\nСоздать?")
+                                                f"{event_text}\n\nСоздать?", collective=False)
                 else:
                     await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_END_TIME_MYCLASSES,
                                                 "Время окончания события не может быть меньше или быть таким же, как "
@@ -852,7 +852,8 @@ class MyClassesHandlers(SupportingFunctions):
             event = self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
-            await self.state_transition(user_id, States.S_SUBMIT_EVENT_CREATE_MYCLASSES, f"{event_text}\n\nСоздать?")
+            await self.state_transition(user_id, States.S_SUBMIT_EVENT_CREATE_MYCLASSES, f"{event_text}\n\nСоздать?",
+                                        collective=False)
 
         elif payload["text"] == "Назад":
             await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_START_TIME_MYCLASSES,
@@ -862,38 +863,8 @@ class MyClassesHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)
 
-    async def s_submit_event_create_my_classes_handler(self, user_id: int, payload: dict) -> None:
-        """Handling States.S_SUBMIT_EVENT_CREATE_MYCLASSES"""
-        if payload is None:
-            await self.state_transition(user_id, States.S_SUBMIT_EVENT_CREATE_MYCLASSES,
-                                        "Для навигации используй кнопки!👇🏻")
-
-        elif payload["text"] == "Принять":
-            event_id = self.event_db.get_customizing_event_id(user_id)
-            self.event_db.update_event_created(event_id, True)
-
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            events = self.event_db.get_all_classroom_events(classroom_id)
-            event_diary_text = self.get_event_diary_text(events)
-
-            self.event_db.update_customizing_event_id(user_id, None)
-
-            await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2,
-                                        f"{event_diary_text}\n\nСобытие создано!", sign=self.get_sign(user_id))
-
-        elif payload["text"] == "Отклонить":
-            event_id = self.event_db.get_customizing_event_id(user_id)
-            self.event_db.update_event_message_event_id(event_id, None)
-
-            await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_END_TIME_MYCLASSES,
-                                        "Впиши время конца события в формате (или нажми пропустить, если событие не "
-                                        "имеет продолжительности): hh:mm\nНапример, 13:05")
-
-        elif payload["text"] == "Главное меню":
-            await self.cancel_creating_event(user_id, to_main_menu=True)
-
     async def s_enter_collective_event_name_my_classes_handler(self, user_id: int, message: str, payload: dict
-                                                                   ) -> None:
+                                                               ) -> None:
         """Handling States.S_ENTER_COLLECTIVE_EVENT_NAME_MYCLASSES"""
         if payload is None:
             if len(message) < 200:
@@ -920,7 +891,7 @@ class MyClassesHandlers(SupportingFunctions):
             await self.cancel_creating_event(user_id, to_main_menu=True)
 
     async def s_enter_collective_event_start_time_my_classes_handler(self, user_id: int, message: str, payload: dict
-                                                                         ) -> None:
+                                                                     ) -> None:
         """Handling States.S_ENTER_COLLECTIVE_EVENT_START_TIME_MYCLASSES"""
         if payload is None:
             try:
@@ -946,7 +917,7 @@ class MyClassesHandlers(SupportingFunctions):
             await self.cancel_creating_event(user_id, to_main_menu=True)
 
     async def s_enter_collective_event_end_time_my_classes_handler(self, user_id: int, message: str, payload: dict
-                                                                       ) -> None:
+                                                                   ) -> None:
         """Handling States.S_ENTER_COLLECTIVE_EVENT_END_TIME_MYCLASSES"""
         if payload is None:
             try:
@@ -1041,8 +1012,12 @@ class MyClassesHandlers(SupportingFunctions):
                 if count < 10000:
                     event_id = self.event_db.get_customizing_event_id(user_id)
                     self.event_db.update_event_required_students_count(event_id, count)
+                    self.event_db.update_event_message_event_id(event_id, auto=True)
+                    event = self.event_db.get_classroom_event(event_id)
+                    event_text = self.get_event_diary_text([event])
 
-                    await self.send_message(user_id, "Понял")
+                    await self.state_transition(user_id, States.S_SUBMIT_EVENT_CREATE_MYCLASSES,
+                                                f"{event_text}\n\nСоздать?", collective=True)
                 else:
                     await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_STUDENT_MYCLASSES,
                                                 "Введено слишком большое число\n"
@@ -1056,13 +1031,52 @@ class MyClassesHandlers(SupportingFunctions):
         elif payload["text"] == "Пропустить":
             event_id = self.event_db.get_customizing_event_id(user_id)
             self.event_db.update_event_required_students_count(event_id, None)
+            self.event_db.update_event_message_event_id(event_id, auto=True)
+            event = self.event_db.get_classroom_event(event_id)
+            event_text = self.get_event_diary_text([event])
 
-            await self.send_message(user_id, "Понял")
+            await self.state_transition(user_id, States.S_SUBMIT_EVENT_CREATE_MYCLASSES,
+                                        f"{event_text}\n\nСоздать?", collective=True)
 
         elif payload["text"] == "Назад":
             await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_COUNT_MYCLASSES,
                                         "Впиши требуемое кол-во того, что нужно собрать (или нажми пропустить, если "
                                         "ничего собирать не нужно):")
+
+        elif payload["text"] == "Главное меню":
+            await self.cancel_creating_event(user_id, to_main_menu=True)
+
+    async def s_submit_event_create_my_classes_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_SUBMIT_EVENT_CREATE_MYCLASSES"""
+        if payload is None:
+            await self.state_transition(user_id, States.S_SUBMIT_EVENT_CREATE_MYCLASSES,
+                                        "Для навигации используй кнопки!👇🏻")
+
+        elif payload["text"] == "Принять":
+            event_id = self.event_db.get_customizing_event_id(user_id)
+            self.event_db.update_event_created(event_id, True)
+
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            events = self.event_db.get_all_classroom_events(classroom_id)
+            event_diary_text = self.get_event_diary_text(events)
+
+            self.event_db.update_customizing_event_id(user_id, None)
+
+            await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2,
+                                        f"{event_diary_text}\n\nСобытие создано!", sign=self.get_sign(user_id))
+
+        elif payload["text"] == "Отклонить":
+            event_id = self.event_db.get_customizing_event_id(user_id)
+            self.event_db.update_event_message_event_id(event_id, None)
+
+            if payload["collective"]:
+                await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_STUDENT_MYCLASSES,
+                                            "Впиши требуемое кол-во участников (или нажми пропустить, если не нужна"
+                                            " запись участников):")
+            else:
+                await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_END_TIME_MYCLASSES,
+                                            "Впиши время конца события в формате (или нажми пропустить, если событие не"
+                                            " имеет продолжительности): hh:mm\nНапример, 13:05")
 
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)

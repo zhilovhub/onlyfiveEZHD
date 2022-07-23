@@ -36,13 +36,6 @@ class KeyBoards:
     KEYBOARD_MENU.row()
     KEYBOARD_MENU.add(Text("Обращение в тех. поддержку", payload=get_payload("Обращение в тех. поддержку")))
 
-    # SUBMIT_BACK KEYBOARD
-    KEYBOARD_SUBMIT_BACK = Keyboard()
-    KEYBOARD_SUBMIT_BACK.add(Text("Отклонить", payload=get_payload("Отклонить")))
-    KEYBOARD_SUBMIT_BACK.add(Text("Принять", payload=get_payload("Принять")))
-    KEYBOARD_SUBMIT_BACK.row()
-    KEYBOARD_SUBMIT_BACK.add(Text("Главное меню", payload=get_payload("Главное меню")))
-
     # CANCEL_SEND KEYBOARD
     KEYBOARD_CANCEL_SEND = Keyboard()
     KEYBOARD_CANCEL_SEND.add(Text("Отменить", payload=get_payload("Отменить")))
@@ -94,6 +87,21 @@ class KeyBoards:
     KEYBOARD_BACK_MENU_DELETE_REQUEST.row()
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add(Text("Назад", payload=get_payload("Назад")))
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add(Text("Главное меню", payload=get_payload("Главное меню")))
+
+    # SUBMIT_BACK KEYBOARD
+    @staticmethod
+    def get_submit_back_keyboard(collective=None) -> str:
+        keyboard_submit_back = Keyboard()
+        if collective is None:
+            keyboard_submit_back.add(Text("Отклонить", payload=KeyBoards.get_payload("Отклонить")))
+        else:
+            keyboard_submit_back.add(Text("Отклонить",
+                                          payload=KeyBoards.get_payload("Отклонить", collective=collective)))
+        keyboard_submit_back.add(Text("Принять", payload=KeyBoards.get_payload("Принять")))
+        keyboard_submit_back.row()
+        keyboard_submit_back.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+
+        return keyboard_submit_back.get_json()
 
     # BACK_MENU_SKIP_KEYBOARD
     @staticmethod

@@ -67,7 +67,7 @@ class SupportingFunctions:
 
             case States.S_SUBMIT_CLASSCREATE:
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_SUBMIT_BACK.get_json())
+                                        KeyBoards.get_submit_back_keyboard())
 
             # MYCLASSES
             case States.S_IN_CLASS_MYCLASSES:
@@ -132,9 +132,6 @@ class SupportingFunctions:
             case States.S_ENTER_NOT_COLLECTIVE_EVENT_END_TIME_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.get_back_menu_skip_keyboard())
 
-            case States.S_SUBMIT_EVENT_CREATE_MYCLASSES:
-                await self.send_message(user_id, message, KeyBoards.KEYBOARD_SUBMIT_BACK)
-
             case States.S_ENTER_COLLECTIVE_EVENT_NAME_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
 
@@ -149,6 +146,9 @@ class SupportingFunctions:
 
             case States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_STUDENT_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.get_back_menu_skip_keyboard())
+
+            case States.S_SUBMIT_EVENT_CREATE_MYCLASSES:
+                await self.send_message(user_id, message, KeyBoards.get_submit_back_keyboard(**kwargs))
 
             # FINDCLASS
             case States.S_FIND_CLASS:
