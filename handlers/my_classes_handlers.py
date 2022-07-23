@@ -919,8 +919,8 @@ class MyClassesHandlers(SupportingFunctions):
                                             "Например, 2022-09-06")
             except ValueError:
                 await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_START_TIME_MYCLASSES,
-                                            "Впиши дату начала события в следующем формате: YYYY-MM-DD\n"
-                                            "Например, 2022-09-05")
+                                            "Введенная запись не соответствует формату.\nВпиши дату начала события в "
+                                            "следующем формате: YYYY-MM-DD\nНапример, 2022-09-05")
 
         elif payload["text"] == "Назад":
             await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_NAME_MYCLASSES,
