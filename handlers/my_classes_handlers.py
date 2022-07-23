@@ -1099,6 +1099,23 @@ class MyClassesHandlers(SupportingFunctions):
         if payload is None:
             await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, "Для навигации используй кнопки!👇🏻")
 
+        elif payload["text"] == "Удалить событие":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            event_id = self.event_db.get_customizing_event_id(user_id)
+
+            self.event_db.delete_event(event_id)
+            self.event_db.update_customizing_event_id(user_id, None)
+
+            classroom_events = self.event_db.get_all_classroom_events(classroom_id)
+            if classroom_events:
+                event_diary_text = self.get_event_diary_text(classroom_events)
+                trans_message = f"{event_diary_text}\n\nСобытие удалено!\nВыбери номер события, рассмотреть который " \
+                                f"ты хочешь:"
+            else:
+                trans_message = f"Событие удалено!\nСобытий в классе больше нет"
+
+            await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES, trans_message)
+
         elif payload["text"] == "Назад":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             events = self.event_db.get_all_classroom_events(classroom_id)

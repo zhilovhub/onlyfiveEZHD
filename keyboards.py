@@ -130,6 +130,9 @@ class KeyBoards:
     @staticmethod
     def get_edit_event_keyboard() -> str:
         keyboard_edit_event = Keyboard()
+        keyboard_edit_event.add(Text("Удалить событие", payload=KeyBoards.get_payload("Удалить событие")),
+                                color=KeyboardButtonColor.NEGATIVE)
+        keyboard_edit_event.row()
         keyboard_edit_event.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
         keyboard_edit_event.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
 
@@ -146,14 +149,14 @@ class KeyBoards:
             if ind % 5 == 0 and ind != len(sorted_events):
                 choose_event_keyboard.add(Text(message_event_id,
                                                payload=KeyBoards.get_payload("edit_event",
-                                                                             message_event_id=
-                                                                             event["message_event_id"])))
+                                                                             message_event_id=event[
+                                                                                 "message_event_id"])))
                 choose_event_keyboard.row()
             else:
                 choose_event_keyboard.add(Text(message_event_id,
                                                payload=KeyBoards.get_payload("edit_event",
-                                                                             message_event_id=
-                                                                             event["message_event_id"])))
+                                                                             message_event_id=event[
+                                                                                 "message_event_id"])))
 
         choose_event_keyboard.row()
         choose_event_keyboard.add(Text(add_event_label, payload=KeyBoards.get_payload("Добавить событие",
