@@ -144,6 +144,9 @@ class SupportingFunctions:
             case States.S_ENTER_COLLECTIVE_EVENT_END_TIME_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.get_back_menu_skip_keyboard())
 
+            case States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_COUNT_MYCLASSES:
+                await self.send_message(user_id, message, KeyBoards.get_back_menu_skip_keyboard())
+
             # FINDCLASS
             case States.S_FIND_CLASS:
                 await self.send_message(user_id, message,

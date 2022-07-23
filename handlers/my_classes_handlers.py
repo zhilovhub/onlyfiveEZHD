@@ -959,7 +959,7 @@ class MyClassesHandlers(SupportingFunctions):
                     self.event_db.update_event_end_time(event_id, event_end_time)
 
                     await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_COUNT_MYCLASSES,
-                                                f"Впиши требуемое кол-во того, что нужно собрать:")
+                                                "Впиши требуемое кол-во того, что нужно собрать:")
                 else:
                     await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_END_TIME_MYCLASSES,
                                                 "Дата окончания события не может быть меньше или быть такой же, как "
@@ -983,6 +983,42 @@ class MyClassesHandlers(SupportingFunctions):
             await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_START_TIME_MYCLASSES,
                                         "Впиши дату начала события в следующем формате: YYYY-MM-DD\nНапример, "
                                         "2022-09-05")
+
+        elif payload["text"] == "Главное меню":
+            await self.cancel_creating_event(user_id, to_main_menu=True)
+
+    async def s_enter_collective_event_required_count_my_classes_handler(self, user_id: int, message: str,
+                                                                         payload: dict) -> None:
+        """Handling States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_COUNT_MYCLASSES"""
+        if payload is None:
+            if message.isdigit():
+                count = int(message)
+
+                if count < 2000000000:
+                    event_id = self.event_db.get_customizing_event_id(user_id)
+                    self.event_db.update_event_current_count(event_id, 0)
+                    self.event_db.update_event_required_count(event_id, count)
+
+                    await self.send_message(user_id, "Пон")
+                else:
+                    await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_COUNT_MYCLASSES,
+                                                "Введено слишком большое число\n"
+                                                "Впиши требуемое кол-во того, что нужно собрать:")
+            else:
+                await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_COUNT_MYCLASSES,
+                                            "Введено не число\nВпиши требуемое кол-во того, что нужно собрать:")
+
+        elif payload["text"] == "Пропустить":
+            event_id = self.event_db.get_customizing_event_id(user_id)
+            self.event_db.update_event_current_count(event_id, None)
+            self.event_db.update_event_required_count(event_id, None)
+
+            await self.send_message(user_id, "Понял")
+
+        elif payload["text"] == "Назад":
+            await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_END_TIME_MYCLASSES,
+                                        "Впиши дату конца события в формате (или нажми пропустить, если событие не "
+                                        "имеет продолжительности больше одного дня): hh:mm\nНапример, 2022-09-06")
 
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)

@@ -137,6 +137,18 @@ class EventCommands(DataBase):
 
             self.connection.commit()
 
+    def update_event_current_count(self, event_id: int, current_count) -> None:
+        """Updates event's current count"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.update_event_current_count_query, (current_count, event_id))
+            self.connection.commit()
+
+    def update_event_required_count(self, event_id: int, required_count) -> None:
+        """Updates event's required count"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.update_event_required_count_query, (required_count, event_id))
+            self.connection.commit()
+
     def update_event_created(self, event_id: int, created: bool) -> None:
         """Updates event's created"""
         with self.connection.cursor() as cursor:
@@ -218,6 +230,8 @@ class EventQueries:
     update_event_start_time_query = """UPDATE event SET start_time=%s WHERE event_id=%s"""
     update_event_end_time_query = """UPDATE event SET end_time=%s WHERE event_id=%s"""
     update_event_message_event_id_query = """UPDATE event SET message_event_id=%s WHERE event_id=%s"""
+    update_event_current_count_query = """UPDATE event SET current_count=%s WHERE event_id=%s"""
+    update_event_required_count_query = """UPDATE event SET required_count=%s WHERE event_id=%s"""
     update_event_created_query = """UPDATE event SET created=%s WHERE event_id=%s"""
 
     delete_event_query = """DELETE FROM event WHERE event_id=%s"""
