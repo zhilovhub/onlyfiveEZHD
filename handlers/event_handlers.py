@@ -11,15 +11,6 @@ class EventHandlers(SupportingFunctions):
                          technical_support_db=technical_support_db, diary_homework_db=diary_homework_db,
                          role_db=role_db, notification_db=notification_db, event_db=event_db)
 
-    async def cancel_creating_event(self, user_id: int, to_main_menu: bool) -> None:
-        event_id = self.event_db.get_customizing_event_id(user_id)
-        self.event_db.delete_event(event_id)
-        if to_main_menu:
-            await self.trans_to_main_menu(user_id)
-        else:
-            await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES,
-                                        "Выбери номер события, рассмотреть который ты хочешь!")
-
     async def s_choose_event_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_CHOOSE_EVENT_MYCLASSES"""
         if payload is None:
@@ -595,3 +586,12 @@ class EventHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
+
+    async def cancel_creating_event(self, user_id: int, to_main_menu: bool) -> None:
+        event_id = self.event_db.get_customizing_event_id(user_id)
+        self.event_db.delete_event(event_id)
+        if to_main_menu:
+            await self.trans_to_main_menu(user_id)
+        else:
+            await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES,
+                                        "Выбери номер события, рассмотреть который ты хочешь!")
