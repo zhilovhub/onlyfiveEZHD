@@ -1173,10 +1173,16 @@ class MyClassesHandlers(SupportingFunctions):
             if message.isdigit():
                 count = int(message)
 
-                if count < 2000000000:
+                if 0 < count < 2000000000:
                     event_id = self.event_db.get_customizing_event_id(user_id)
                     current_count = self.event_db.get_event_current_count(event_id)
                     self.event_db.update_event_current_count(event_id, current_count + count)
+
+                    classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                    student_id = self.classroom_db.get_student_id(user_id, classroom_id)
+                    event_students = self.event_db.get_event_students(event_id)
+                    if student_id not in event_students:
+                        self.event_db.insert_new_student(event_id, student_id)
 
                     event = self.event_db.get_classroom_event(event_id)
                     event_text = self.get_event_diary_text([event])
@@ -1186,7 +1192,7 @@ class MyClassesHandlers(SupportingFunctions):
                                                 f"Впиши количество, которое ты хочешь внести:")
                 else:
                     await self.state_transition(user_id, States.S_ADD_COUNT_COLLECTIVE_EVENT_MYCLASSES,
-                                                "Введено слишком большое число\n\n"
+                                                "Введено слишком большое число или 0\n\n"
                                                 "Впиши количество, которое ты хочешь внести:")
             else:
                 await self.state_transition(user_id, States.S_ADD_COUNT_COLLECTIVE_EVENT_MYCLASSES,
