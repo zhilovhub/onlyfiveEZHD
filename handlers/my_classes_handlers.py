@@ -1099,6 +1099,15 @@ class MyClassesHandlers(SupportingFunctions):
         if payload is None:
             await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, "Для навигации используй кнопки!👇🏻")
 
+        elif payload["text"] == "Редактировать":
+            event_id = self.event_db.get_customizing_event_id(user_id)
+
+            event = self.event_db.get_classroom_event(event_id)
+            event_text = self.get_event_diary_text([event])
+
+            await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
+                                        f"{event_text}\n\nНастройки события:")
+
         elif payload["text"] == "Участвовать":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             student_id = self.classroom_db.get_student_id(user_id, classroom_id)
@@ -1251,6 +1260,22 @@ class MyClassesHandlers(SupportingFunctions):
                 await self.state_transition(user_id, States.S_DECREASE_COUNT_COLLECTIVE_EVENT_MYCLASSES,
                                             "Введено не число\n\n"
                                             "Впиши количество, на которое ты хочешь уменьшить собранное:")
+
+        elif payload["text"] == "Назад":
+            event_id = self.event_db.get_customizing_event_id(user_id)
+
+            event = self.event_db.get_classroom_event(event_id)
+            event_text = self.get_event_diary_text([event])
+
+            await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, f"{event_text}\n\nПодробности события")
+
+        elif payload["text"] == "Главное меню":
+            await self.trans_to_main_menu(user_id)
+
+    async def s_event_settings_my_classes_handler(self, user_id: int, payload: dict) -> None:
+        """Handling States.S_EVENT_SETTINGS_MYCLASSES"""
+        if payload is None:
+            await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES, "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Назад":
             event_id = self.event_db.get_customizing_event_id(user_id)

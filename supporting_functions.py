@@ -168,6 +168,9 @@ class SupportingFunctions:
             case States.S_DECREASE_COUNT_COLLECTIVE_EVENT_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
 
+            case States.S_EVENT_SETTINGS_MYCLASSES:
+                await self.send_message(user_id, message, KeyBoards.get_event_settings_keyboard())
+
             # FINDCLASS
             case States.S_FIND_CLASS:
                 await self.send_message(user_id, message,
