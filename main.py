@@ -143,6 +143,7 @@ async def filter_dialog_state(user_id: int, message: str, payload: dict, current
         case States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES.value:
             await handlers_class.s_edit_homework_weekday_my_classes_handler(user_id, message, payload)
 
+        # EVENTS
         case States.S_CHOOSE_EVENT_MYCLASSES.value:
             await handlers_class.s_choose_event_my_classes_handler(user_id, payload)
 
@@ -187,6 +188,9 @@ async def filter_dialog_state(user_id: int, message: str, payload: dict, current
 
         case States.S_EVENT_SETTINGS_MYCLASSES.value:
             await handlers_class.s_event_settings_my_classes_handler(user_id, payload)
+
+        case States.S_ENTER_NEW_EVENT_NAME_MYCLASSES.value:
+            await handlers_class.s_enter_new_event_name_my_classes_handler(user_id, message, payload)
 
         # FINDCLASS
         case States.S_FIND_CLASS.value:

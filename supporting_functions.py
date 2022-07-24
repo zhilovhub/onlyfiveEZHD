@@ -107,6 +107,7 @@ class SupportingFunctions:
             case States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.get_edit_homework_weekday_keyboard())
 
+            # EVENTS
             case States.S_CHOOSE_EVENT_MYCLASSES:
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
@@ -173,6 +174,9 @@ class SupportingFunctions:
                 event = self.event_db.get_classroom_event(event_id)
 
                 await self.send_message(user_id, message, KeyBoards.get_event_settings_keyboard(event))
+
+            case States.S_ENTER_NEW_EVENT_NAME_MYCLASSES:
+                await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
 
             # FINDCLASS
             case States.S_FIND_CLASS:

@@ -576,6 +576,10 @@ class EventHandlers(SupportingFunctions):
         if payload is None:
             await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES, "Для навигации используй кнопки!👇🏻")
 
+        elif payload["text"] == "Название":
+            await self.state_transition(user_id, States.S_ENTER_NEW_EVENT_NAME_MYCLASSES,
+                                        "Впиши новое описание события (макс. 200 символов)")
+
         elif payload["text"] == "Назад":
             event_id = self.event_db.get_customizing_event_id(user_id)
 
@@ -583,6 +587,35 @@ class EventHandlers(SupportingFunctions):
             event_text = self.get_event_diary_text([event])
 
             await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, f"{event_text}\n\nПодробности события")
+
+        elif payload["text"] == "Главное меню":
+            await self.trans_to_main_menu(user_id)
+
+    async def s_enter_new_event_name_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
+        """Handling States.S_ENTER_NEW_EVENT_NAME_MYCLASSES"""
+        if payload is None:
+            if len(message) < 200:
+                event_id = self.event_db.get_customizing_event_id(user_id)
+                self.event_db.update_event_label(event_id, message)
+
+                event = self.event_db.get_classroom_event(event_id)
+                event_text = self.get_event_diary_text([event])
+
+                await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
+                                            f"{event_text}\n\nТекст события изменён!")
+            else:
+                await self.state_transition(user_id, States.S_ENTER_NEW_EVENT_NAME_MYCLASSES,
+                                            "Длина текста события превышает 200 символов.\n"
+                                            "Впиши новое описание события (макс. 200 символов)")
+
+        elif payload["text"] == "Назад":
+            event_id = self.event_db.get_customizing_event_id(user_id)
+
+            event = self.event_db.get_classroom_event(event_id)
+            event_text = self.get_event_diary_text([event])
+
+            await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
+                                        f"{event_text}\n\nНастройки события:")
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
