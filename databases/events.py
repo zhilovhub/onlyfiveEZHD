@@ -187,6 +187,12 @@ class EventCommands(DataBase):
             cursor.execute(EventQueries.delete_event_query, (event_id,))
             self.connection.commit()
 
+    def delete_student(self, event_id: int, student_id: int) -> None:
+        """Deletes student from the collective event"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.delete_student_query, (event_id, student_id))
+            self.connection.commit()
+
 
 class EventQueries:
     create_table_event_diary_query = """CREATE TABLE IF NOT EXISTS event_diary(
@@ -266,6 +272,7 @@ class EventQueries:
     update_event_created_query = """UPDATE event SET created=%s WHERE event_id=%s"""
 
     delete_event_query = """DELETE FROM event WHERE event_id=%s"""
+    delete_student_query = """DELETE FROM event_collective WHERE event_id=%s AND student_id=%s"""
 
 
 if __name__ == '__main__':

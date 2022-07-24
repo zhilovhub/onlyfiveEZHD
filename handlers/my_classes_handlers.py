@@ -1111,6 +1111,19 @@ class MyClassesHandlers(SupportingFunctions):
 
             await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, f"{event_text}\n\nТы участвуешь!")
 
+        elif payload["text"] == "Покинуть":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            student_id = self.classroom_db.get_student_id(user_id, classroom_id)
+            event_id = self.event_db.get_customizing_event_id(user_id)
+
+            self.event_db.delete_student(event_id, student_id)
+
+            event = self.event_db.get_classroom_event(event_id)
+            event_text = self.get_event_diary_text([event])
+
+            await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES,
+                                        f"{event_text}\n\nТы больше не участвуешь!")
+
         elif payload["text"] == "Удалить событие":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             event_id = self.event_db.get_customizing_event_id(user_id)
