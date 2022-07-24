@@ -461,15 +461,15 @@ class SupportingFunctions:
 
         def formatted_collective_event(start_time: datetime, end_time: datetime, label: str, message_event_id: int,
                                        current_count: int, required_count: int, current_students_count: int,
-                                       required_students_count: int) -> str:
+                                       required_students_count: int, finished: int) -> str:
             start_time_date = start_time.strftime("%d.%m.%y")
             if end_time:
                 end_time_date = end_time.strftime("%d.%m.%y")
                 duration_time = f"{start_time_date} - {end_time_date}"
-                emoji = "✅" if datetime.now() > end_time else ""
+                emoji = "✅" if datetime.now() > end_time or finished else ""
             else:
                 duration_time = start_time_date
-                emoji = "✅" if datetime.now() > start_time else ""
+                emoji = "✅" if datetime.now() > start_time or finished else ""
 
             if required_count:
                 collected = f"\nСобрано: {current_count}/{required_count}"
@@ -483,16 +483,16 @@ class SupportingFunctions:
 
             return f"⚠ {duration_time} {label} (#{message_event_id}) {emoji}{collected}{student_count_text}"
 
-        def formatted_not_collective_event(start_time: datetime, end_time: datetime, label: str, message_event_id: int
-                                           ) -> str:
+        def formatted_not_collective_event(start_time: datetime, end_time: datetime, label: str, message_event_id: int,
+                                           finished: int) -> str:
             start_time_hour_minute = start_time.strftime("%H:%M")
             if end_time:
                 end_time_hour_minute = end_time.strftime("%H:%M")
                 duration_time = f"{start_time_hour_minute}-{end_time_hour_minute}"
-                emoji = "✅" if datetime.now() > end_time else ""
+                emoji = "✅" if datetime.now() > end_time or finished else ""
             else:
                 duration_time = start_time_hour_minute
-                emoji = "✅" if datetime.now() > start_time else ""
+                emoji = "✅" if datetime.now() > start_time or finished else ""
 
             return f"{duration_time} {label} (#{message_event_id}) {emoji}"
 
@@ -508,18 +508,20 @@ class SupportingFunctions:
             required_count = event["required_count"]
             current_students_count = event["current_students_count"]
             required_students_count = event["required_students_count"]
+            finished = event["finished"]
 
             if collective:
                 collective_events.append(formatted_collective_event(start_time, end_time, label, message_event_id,
                                                                     current_count, required_count,
-                                                                    current_students_count, required_students_count))
+                                                                    current_students_count, required_students_count,
+                                                                    finished))
             else:
                 if start_time.date() in days:
                     days[start_time.date()].append(formatted_not_collective_event(start_time, end_time,
-                                                                                  label, message_event_id))
+                                                                                  label, message_event_id, finished))
                 else:
                     days[start_time.date()] = [formatted_not_collective_event(start_time, end_time,
-                                                                              label, message_event_id)]
+                                                                              label, message_event_id, finished)]
 
         return "\n\n".join(collective_events) + "\n\n" + \
                "\n\n".join("‼ " + formatted_date(key) + "\n\n" + "\n".join(value) for key, value in days.items())

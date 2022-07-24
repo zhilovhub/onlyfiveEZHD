@@ -45,7 +45,8 @@ class EventCommands(DataBase):
                     "current_count": event[8],
                     "required_count": event[9],
                     "current_students_count": len(cursor.fetchall()),
-                    "required_students_count": event[10]
+                    "required_students_count": event[10],
+                    "finished": event[11]
                 })
 
             return sorted(events, key=lambda x: (-x["collective"], x["start_time"]))
@@ -66,7 +67,8 @@ class EventCommands(DataBase):
                     "current_count": event[8],
                     "required_count": event[9],
                     "current_students_count": len(cursor.fetchall()),
-                    "required_students_count": event[10]
+                    "required_students_count": event[10],
+                    "finished": event[11]
                 }
 
     def get_event_students(self, event_id: int) -> list:
@@ -201,6 +203,7 @@ class EventQueries:
         current_count INT,
         required_count INT,
         required_students_count INT,
+        finished BOOLEAN DEFAULT 0,
         
         FOREIGN KEY (event_diary_id) REFERENCES event_diary (event_diary_id) ON DELETE CASCADE
     )"""
