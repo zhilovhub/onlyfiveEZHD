@@ -128,10 +128,29 @@ class KeyBoards:
 
     # EDIT_EVENT KEYBOARD
     @staticmethod
-    def get_edit_event_keyboard() -> str:
+    def get_edit_event_keyboard(event: dict, has_joined: bool) -> str:
+        collective = event["collective"]
+        required_count = event["required_count"]
+        required_students_count = event["required_students_count"]
+
         keyboard_edit_event = Keyboard()
+
+        if collective:
+            if required_students_count:
+                if not has_joined:
+                    keyboard_edit_event.add(Text("Участвовать", payload=KeyBoards.get_payload("Участвовать")))
+                else:
+                    keyboard_edit_event.add(Text("Покинуть", payload=KeyBoards.get_payload("Покинуть")))
+            if required_count:
+                keyboard_edit_event.add(Text("Внести", payload=KeyBoards.get_payload("Внести")))
+            keyboard_edit_event.row()
+
+        keyboard_edit_event.add(Text("Редактировать", payload=KeyBoards.get_payload("Редактировать")))
+        keyboard_edit_event.row()
         keyboard_edit_event.add(Text("Удалить событие", payload=KeyBoards.get_payload("Удалить событие")),
                                 color=KeyboardButtonColor.NEGATIVE)
+        keyboard_edit_event.add(Text("Завершили", payload=KeyBoards.get_payload("Завершили")),
+                                color=KeyboardButtonColor.POSITIVE)
         keyboard_edit_event.row()
         keyboard_edit_event.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
         keyboard_edit_event.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))

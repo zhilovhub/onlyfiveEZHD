@@ -69,6 +69,11 @@ class EventCommands(DataBase):
                     "required_students_count": event[10]
                 }
 
+    def get_event_students(self, event_id: int) -> list:
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.get_event_students_query, (event_id,))
+            return [row[0] for row in cursor.fetchall()]
+
     def get_event_start_time(self, event_id: int) -> datetime:
         """Returns start time"""
         with self.connection.cursor() as cursor:

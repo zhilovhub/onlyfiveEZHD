@@ -151,7 +151,16 @@ class SupportingFunctions:
                 await self.send_message(user_id, message, KeyBoards.get_submit_back_keyboard(**kwargs))
 
             case States.S_EDIT_EVENT_MYCLASSES:
-                await self.send_message(user_id, message, KeyBoards.get_edit_event_keyboard())
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                event_id = self.event_db.get_customizing_event_id(user_id)
+                event = self.event_db.get_classroom_event(event_id)
+
+                event_students = self.event_db.get_event_students(event_id)
+                student_id = self.classroom_db.get_student_id(user_id, classroom_id)
+
+                await self.send_message(user_id, message,
+                                        KeyBoards.get_edit_event_keyboard(event=event,
+                                                                          has_joined=student_id in event_students))
 
             # FINDCLASS
             case States.S_FIND_CLASS:

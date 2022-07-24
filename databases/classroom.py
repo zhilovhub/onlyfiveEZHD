@@ -14,6 +14,12 @@ class ClassroomCommands(DataBase):
         except Error as e:
             print(e)
 
+    def get_student_id(self, user_id: int, classroom_id: int) -> int:
+        """Returns student_id"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.get_student_id_query, (user_id, classroom_id))
+            return cursor.fetchone()[0]
+
     def get_classroom_name(self, classroom_id: int) -> str:
         """Get name of the classroom"""
         with self.connection.cursor() as cursor:
@@ -42,7 +48,7 @@ class ClassroomCommands(DataBase):
         """Returns user's classrooms_id and his role_id"""
         with self.connection.cursor() as cursor:
             classrooms_dictionary = {}
-            cursor.execute(ClassroomQueries.get_user_classrooms_with_role_id.format(user_id))
+            cursor.execute(ClassroomQueries.get_user_classrooms_with_role_id_query.format(user_id))
             for (classroom_id, role_id) in cursor:
                 classrooms_dictionary[classroom_id] = role_id
 
@@ -258,7 +264,8 @@ class ClassroomQueries:
         access,
         description
     FROM Classroom WHERE classroom_id={}"""
-    get_user_classrooms_with_role_id = """SELECT classroom_id, role_id FROM Student WHERE user_id={}"""
+    get_user_classrooms_with_role_id_query = """SELECT classroom_id, role_id FROM Student WHERE user_id={}"""
+    get_student_id_query = """SELECT student_id FROM Student WHERE user_id=%s AND classroom_id=%s"""
     get_classroom_name_query = """SELECT classroom_name FROM Classroom WHERE classroom_id={}"""
     get_classroom_access_query = """SELECT access FROM Classroom WHERE classroom_id={}"""
     get_classroom_members_limit_query = """SELECT members_limit FROM Classroom WHERE classroom_id={}"""
