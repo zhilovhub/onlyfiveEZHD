@@ -4,10 +4,11 @@ from .find_class_handlers import *
 from .members_settings_handlers import *
 from .my_classes_handlers import *
 from .technical_support_handlers import *
+from .event_handlers import *
 
 
 class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers, MembersSettingsHandlers,
-               MyClassesHandlers, TechnicalSupportHandlers):
+               MyClassesHandlers, TechnicalSupportHandlers, EventHandlers):
     """Some atypical handlers"""
 
     def __init__(self, bot: Bot, user_db: UserDataCommands,
