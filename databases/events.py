@@ -103,6 +103,12 @@ class EventCommands(DataBase):
 
             return cursor.lastrowid
 
+    def insert_new_student(self, event_id: int, student_id: int) -> None:
+        """Inserts new student to the collective event"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.insert_new_student_query, (event_id, student_id))
+            self.connection.commit()
+
     def update_customizing_event_id(self, user_id: int, event_id) -> None:
         """Updates customizing event_id"""
         with self.connection.cursor() as cursor:
@@ -246,6 +252,7 @@ class EventQueries:
 
     insert_event_diary_query = """INSERT INTO event_diary (classroom_id) VALUES (%s)"""
     insert_event_query = """INSERT INTO event (event_diary_id) VALUES (%s)"""
+    insert_new_student_query = """INSERT INTO event_collective (event_id, student_id) VALUES (%s, %s)"""
 
     update_customizing_event_id_query = """UPDATE UserCustomize SET event_id=%s WHERE user_id=%s"""
     update_event_type_query = """UPDATE event SET collective=%s WHERE event_id=%s"""
