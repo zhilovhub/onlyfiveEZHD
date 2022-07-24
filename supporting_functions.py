@@ -169,7 +169,10 @@ class SupportingFunctions:
                 await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
 
             case States.S_EVENT_SETTINGS_MYCLASSES:
-                await self.send_message(user_id, message, KeyBoards.get_event_settings_keyboard())
+                event_id = self.event_db.get_customizing_event_id(user_id)
+                event = self.event_db.get_classroom_event(event_id)
+
+                await self.send_message(user_id, message, KeyBoards.get_event_settings_keyboard(event))
 
             # FINDCLASS
             case States.S_FIND_CLASS:

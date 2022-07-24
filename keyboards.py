@@ -90,8 +90,24 @@ class KeyBoards:
 
     # EVENT_SETTINGS KEYBOARD
     @staticmethod
-    def get_event_settings_keyboard() -> str:
+    def get_event_settings_keyboard(event: dict) -> str:
+        end_time = event["end_time"]
+        required_count = event["required_count"]
+        required_students_count = event["required_students_count"]
+
         keyboard_event_settings = Keyboard()
+        keyboard_event_settings.add(Text("Название", payload=KeyBoards.get_payload("Название")))
+        keyboard_event_settings.row()
+        keyboard_event_settings.add(Text("Начало", payload=KeyBoards.get_payload("Начало")))
+        if end_time:
+            keyboard_event_settings.add(Text("Конец", payload=KeyBoards.get_payload("Конец")))
+        keyboard_event_settings.row()
+        if required_count:
+            keyboard_event_settings.add(Text("Кол-во собрать", payload=KeyBoards.get_payload("Кол-во собрать")))
+        if required_students_count:
+            keyboard_event_settings.add(Text("Кол-во участников", payload=KeyBoards.get_payload("Кол-во участников")))
+        if required_count or required_students_count:
+            keyboard_event_settings.row()
         keyboard_event_settings.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
         keyboard_event_settings.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
 
