@@ -143,6 +143,7 @@ class KeyBoards:
                     keyboard_edit_event.add(Text("Покинуть", payload=KeyBoards.get_payload("Покинуть")))
             if required_count:
                 keyboard_edit_event.add(Text("Внести", payload=KeyBoards.get_payload("Внести")))
+                keyboard_edit_event.add(Text("Убавить", payload=KeyBoards.get_payload("Убавить")))
             keyboard_edit_event.row()
 
         keyboard_edit_event.add(Text("Редактировать", payload=KeyBoards.get_payload("Редактировать")))
