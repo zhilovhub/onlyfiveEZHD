@@ -179,6 +179,9 @@ async def filter_dialog_state(user_id: int, message: str, payload: dict, current
         case States.S_EDIT_EVENT_MYCLASSES.value:
             await handlers_class.s_edit_event_my_classes_handler(user_id, payload)
 
+        case States.S_ADD_COUNT_COLLECTIVE_EVENT_MYCLASSES.value:
+            await handlers_class.s_add_count_collective_event_my_classes_handler(user_id, message, payload)
+
         # FINDCLASS
         case States.S_FIND_CLASS.value:
             await handlers_class.s_find_class_handler(user_id, message, payload)

@@ -162,6 +162,9 @@ class SupportingFunctions:
                                         KeyBoards.get_edit_event_keyboard(event=event,
                                                                           has_joined=student_id in event_students))
 
+            case States.S_ADD_COUNT_COLLECTIVE_EVENT_MYCLASSES:
+                await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
+
             # FINDCLASS
             case States.S_FIND_CLASS:
                 await self.send_message(user_id, message,

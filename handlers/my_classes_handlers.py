@@ -1141,6 +1141,10 @@ class MyClassesHandlers(SupportingFunctions):
 
             await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES, trans_message)
 
+        elif payload["text"] == "Внести":
+            trans_message = "Впиши количество, которое ты хочешь внести:"
+            await self.state_transition(user_id, States.S_ADD_COUNT_COLLECTIVE_EVENT_MYCLASSES, trans_message)
+
         elif payload["text"] == "Назад":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             events = self.event_db.get_all_classroom_events(classroom_id)
@@ -1162,6 +1166,42 @@ class MyClassesHandlers(SupportingFunctions):
         else:
             await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES,
                                         "Выбери номер события, рассмотреть который ты хочешь!")
+
+    async def s_add_count_collective_event_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
+        """Handling States.S_ADD_COUNT_COLLECTIVE_EVENT_MYCLASSES"""
+        if payload is None:
+            if message.isdigit():
+                count = int(message)
+
+                if count < 2000000000:
+                    event_id = self.event_db.get_customizing_event_id(user_id)
+                    current_count = self.event_db.get_event_current_count(event_id)
+                    self.event_db.update_event_current_count(event_id, current_count + count)
+
+                    event = self.event_db.get_classroom_event(event_id)
+                    event_text = self.get_event_diary_text([event])
+
+                    await self.state_transition(user_id, States.S_ADD_COUNT_COLLECTIVE_EVENT_MYCLASSES,
+                                                f"{event_text}\n\nУспешно добавлено!\n\n"
+                                                f"Впиши количество, которое ты хочешь внести:")
+                else:
+                    await self.state_transition(user_id, States.S_ADD_COUNT_COLLECTIVE_EVENT_MYCLASSES,
+                                                "Введено слишком большое число\n\n"
+                                                "Впиши количество, которое ты хочешь внести:")
+            else:
+                await self.state_transition(user_id, States.S_ADD_COUNT_COLLECTIVE_EVENT_MYCLASSES,
+                                            "Введено не число\n\nВпиши количество, которое ты хочешь внести:")
+
+        elif payload["text"] == "Назад":
+            event_id = self.event_db.get_customizing_event_id(user_id)
+
+            event = self.event_db.get_classroom_event(event_id)
+            event_text = self.get_event_diary_text([event])
+
+            await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, f"{event_text}\n\nПодробности события")
+
+        elif payload["text"] == "Главное меню":
+            await self.trans_to_main_menu(user_id)
 
     @staticmethod
     def get_week_diary_text(formatted_week_lessons_diary: list, formatted_week_lessons_homework=None) -> str:
