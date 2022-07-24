@@ -1145,6 +1145,10 @@ class MyClassesHandlers(SupportingFunctions):
             trans_message = "Впиши количество, которое ты хочешь внести:"
             await self.state_transition(user_id, States.S_ADD_COUNT_COLLECTIVE_EVENT_MYCLASSES, trans_message)
 
+        elif payload["text"] == "Убавить":
+            trans_message = "Впиши количество, на которое ты хочешь уменьшить собранное:"
+            await self.state_transition(user_id, States.S_DECREASE_COUNT_COLLECTIVE_EVENT_MYCLASSES, trans_message)
+
         elif payload["text"] == "Назад":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             events = self.event_db.get_all_classroom_events(classroom_id)
@@ -1197,6 +1201,56 @@ class MyClassesHandlers(SupportingFunctions):
             else:
                 await self.state_transition(user_id, States.S_ADD_COUNT_COLLECTIVE_EVENT_MYCLASSES,
                                             "Введено не число\n\nВпиши количество, которое ты хочешь внести:")
+
+        elif payload["text"] == "Назад":
+            event_id = self.event_db.get_customizing_event_id(user_id)
+
+            event = self.event_db.get_classroom_event(event_id)
+            event_text = self.get_event_diary_text([event])
+
+            await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, f"{event_text}\n\nПодробности события")
+
+        elif payload["text"] == "Главное меню":
+            await self.trans_to_main_menu(user_id)
+
+    async def s_decrease_count_collective_event_my_classes_handler(self, user_id: int, message: str, payload: dict
+                                                                   ) -> None:
+        """Handling States.S_DECREASE_COUNT_COLLECTIVE_EVENT_MYCLASSES"""
+        if payload is None:
+            if message.isdigit():
+                count = int(message)
+
+                if 0 < count < 2000000000:
+                    event_id = self.event_db.get_customizing_event_id(user_id)
+                    current_count = self.event_db.get_event_current_count(event_id)
+
+                    if count <= current_count:
+                        self.event_db.update_event_current_count(event_id, current_count - count)
+
+                        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                        student_id = self.classroom_db.get_student_id(user_id, classroom_id)
+                        event_students = self.event_db.get_event_students(event_id)
+                        if student_id not in event_students:
+                            self.event_db.insert_new_student(event_id, student_id)
+
+                        event = self.event_db.get_classroom_event(event_id)
+                        event_text = self.get_event_diary_text([event])
+
+                        await self.state_transition(user_id, States.S_DECREASE_COUNT_COLLECTIVE_EVENT_MYCLASSES,
+                                                    f"{event_text}\n\nУспешно уменьшено!\n\n"
+                                                    f"Впиши количество, на которое ты хочешь уменьшить собранное:")
+                    else:
+                        await self.state_transition(user_id, States.S_DECREASE_COUNT_COLLECTIVE_EVENT_MYCLASSES,
+                                                    "Введено число, большее текущего количества\n\n"
+                                                    "Впиши количество, на которое ты хочешь уменьшить собранное:")
+                else:
+                    await self.state_transition(user_id, States.S_DECREASE_COUNT_COLLECTIVE_EVENT_MYCLASSES,
+                                                "Введено слишком большое число или 0\n\n"
+                                                "пиши количество, на которое ты хочешь уменьшить собранное:")
+            else:
+                await self.state_transition(user_id, States.S_DECREASE_COUNT_COLLECTIVE_EVENT_MYCLASSES,
+                                            "Введено не число\n\n"
+                                            "Впиши количество, на которое ты хочешь уменьшить собранное:")
 
         elif payload["text"] == "Назад":
             event_id = self.event_db.get_customizing_event_id(user_id)
