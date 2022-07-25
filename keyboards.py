@@ -43,12 +43,12 @@ class KeyBoards:
 
     # BACK_MENU KEYBOARD
     KEYBOARD_BACK_MENU = Keyboard()
-    KEYBOARD_BACK_MENU.add(Text("Назад", payload=get_payload("Назад")))
-    KEYBOARD_BACK_MENU.add(Text("Главное меню", payload=get_payload("Главное меню")))
+    KEYBOARD_BACK_MENU.add(Text("⏪Назад", payload=get_payload("Назад")))
+    KEYBOARD_BACK_MENU.add(Text("Главное меню", payload=get_payload("Главное меню")), color=KeyboardButtonColor.PRIMARY)
 
     # JUST_MENU KEYBOARD
     KEYBOARD_JUST_MENU = Keyboard()
-    KEYBOARD_JUST_MENU.add(Text("Главное меню", payload=get_payload("Главное меню")))
+    KEYBOARD_JUST_MENU.add(Text("Главное меню", payload=get_payload("Главное меню")), color=KeyboardButtonColor.PRIMARY)
 
     # CLASSROOM_SETTINGS KEYBOARD
     KEYBOARD_CLASSROOM_SETTINGS = Keyboard()
@@ -56,8 +56,9 @@ class KeyBoards:
     KEYBOARD_CLASSROOM_SETTINGS.row()
     KEYBOARD_CLASSROOM_SETTINGS.add(Text("Уведомления", payload=get_payload("Уведомления")))
     KEYBOARD_CLASSROOM_SETTINGS.row()
-    KEYBOARD_CLASSROOM_SETTINGS.add(Text("Назад", payload=get_payload("Назад")))
-    KEYBOARD_CLASSROOM_SETTINGS.add(Text("Главное меню", payload=get_payload("Главное меню")))
+    KEYBOARD_CLASSROOM_SETTINGS.add(Text("⏪Назад", payload=get_payload("Назад")))
+    KEYBOARD_CLASSROOM_SETTINGS.add(Text("Главное меню", payload=get_payload("Главное меню")),
+                                    color=KeyboardButtonColor.PRIMARY)
 
     # MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS KEYBOARD
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS = Keyboard()
@@ -67,7 +68,8 @@ class KeyBoards:
                                                                    color=KeyboardButtonColor.POSITIVE)
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS.row()
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS.add(Text("Главное меню",
-                                                                        payload=get_payload("Главное меню")))
+                                                                        payload=get_payload("Главное меню")),
+                                                                   color=KeyboardButtonColor.PRIMARY)
 
     # MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS KEYBOARD
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS = Keyboard()
@@ -78,15 +80,17 @@ class KeyBoards:
                                                                    color=KeyboardButtonColor.POSITIVE)
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.row()
     KEYBOARD_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS.add(Text("Главное меню",
-                                                                        payload=get_payload("Главное меню")))
+                                                                        payload=get_payload("Главное меню")),
+                                                                   color=KeyboardButtonColor.PRIMARY)
 
     # BACK_MENU_DELETE_REQUEST
     KEYBOARD_BACK_MENU_DELETE_REQUEST = Keyboard()
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add(Text("Удалить заявку", payload=get_payload("Удалить заявку")),
                                           color=KeyboardButtonColor.NEGATIVE)
     KEYBOARD_BACK_MENU_DELETE_REQUEST.row()
-    KEYBOARD_BACK_MENU_DELETE_REQUEST.add(Text("Назад", payload=get_payload("Назад")))
-    KEYBOARD_BACK_MENU_DELETE_REQUEST.add(Text("Главное меню", payload=get_payload("Главное меню")))
+    KEYBOARD_BACK_MENU_DELETE_REQUEST.add(Text("⏪Назад", payload=get_payload("Назад")))
+    KEYBOARD_BACK_MENU_DELETE_REQUEST.add(Text("Главное меню", payload=get_payload("Главное меню")),
+                                          color=KeyboardButtonColor.PRIMARY)
 
     # EVENT_SETTINGS KEYBOARD
     @staticmethod
@@ -108,8 +112,9 @@ class KeyBoards:
             keyboard_event_settings.add(Text("Кол-во участников", payload=KeyBoards.get_payload("Кол-во участников")))
         if required_count or required_students_count:
             keyboard_event_settings.row()
-        keyboard_event_settings.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
-        keyboard_event_settings.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        keyboard_event_settings.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
+        keyboard_event_settings.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                    color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_event_settings.get_json()
 
@@ -124,7 +129,8 @@ class KeyBoards:
                                           payload=KeyBoards.get_payload("Отклонить", collective=collective)))
         keyboard_submit_back.add(Text("Принять", payload=KeyBoards.get_payload("Принять")))
         keyboard_submit_back.row()
-        keyboard_submit_back.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        keyboard_submit_back.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                 color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_submit_back.get_json()
 
@@ -134,8 +140,9 @@ class KeyBoards:
         keyboard_back_menu_skip = Keyboard()
         keyboard_back_menu_skip.add(Text("Пропустить", payload=KeyBoards.get_payload("Пропустить")))
         keyboard_back_menu_skip.row()
-        keyboard_back_menu_skip.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
-        keyboard_back_menu_skip.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        keyboard_back_menu_skip.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
+        keyboard_back_menu_skip.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                    color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_back_menu_skip.get_json()
 
@@ -146,8 +153,9 @@ class KeyBoards:
         keyboard_choose_event_type.add(Text("‼1", payload=KeyBoards.get_payload("1")))
         keyboard_choose_event_type.add(Text("⚠2", payload=KeyBoards.get_payload("2")))
         keyboard_choose_event_type.row()
-        keyboard_choose_event_type.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
-        keyboard_choose_event_type.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        keyboard_choose_event_type.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
+        keyboard_choose_event_type.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                       color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_choose_event_type.get_json()
 
@@ -178,8 +186,9 @@ class KeyBoards:
         keyboard_edit_event.add(Text("Завершили", payload=KeyBoards.get_payload("Завершили")),
                                 color=KeyboardButtonColor.POSITIVE)
         keyboard_edit_event.row()
-        keyboard_edit_event.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
-        keyboard_edit_event.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        keyboard_edit_event.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
+        keyboard_edit_event.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_edit_event.get_json()
 
@@ -207,8 +216,9 @@ class KeyBoards:
         choose_event_keyboard.add(Text(add_event_label, payload=KeyBoards.get_payload("Добавить событие",
                                                                                       can=redact_events)))
         choose_event_keyboard.row()
-        choose_event_keyboard.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
-        choose_event_keyboard.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        choose_event_keyboard.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
+        choose_event_keyboard.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                  color=KeyboardButtonColor.PRIMARY)
 
         return choose_event_keyboard.get_json()
 
@@ -224,8 +234,9 @@ class KeyBoards:
         notification_settings_keyboard.add(Text("Новая заявка", payload=KeyBoards.get_payload("Новая заявка")),
                                            color=KeyBoards.get_color(colors[2]))
         notification_settings_keyboard.row()
-        notification_settings_keyboard.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
-        notification_settings_keyboard.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        notification_settings_keyboard.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
+        notification_settings_keyboard.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                           color=KeyboardButtonColor.PRIMARY)
 
         return notification_settings_keyboard.get_json()
 
@@ -258,8 +269,9 @@ class KeyBoards:
         keyboard_edit_homework.add(Text("СБ", payload=KeyBoards.get_payload("СБ")))
         keyboard_edit_homework.add(Text("ВС", payload=KeyBoards.get_payload("ВС")))
         keyboard_edit_homework.row()
-        keyboard_edit_homework.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
-        keyboard_edit_homework.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        keyboard_edit_homework.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
+        keyboard_edit_homework.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                   color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_edit_homework.get_json()
 
@@ -274,10 +286,11 @@ class KeyBoards:
                                                                      payload=KeyBoards.get_payload("Удалить класс")),
                                                                 color=KeyboardButtonColor.NEGATIVE)
         keyboard_main_dangerous_zone_classroom_settings.row()
-        keyboard_main_dangerous_zone_classroom_settings.add(Text("Назад",
+        keyboard_main_dangerous_zone_classroom_settings.add(Text("⏪Назад",
                                                                  payload=KeyBoards.get_payload("Назад")))
         keyboard_main_dangerous_zone_classroom_settings.add(Text("Главное меню",
-                                                                 payload=KeyBoards.get_payload("Главное меню")))
+                                                                 payload=KeyBoards.get_payload("Главное меню")),
+                                                            color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_main_dangerous_zone_classroom_settings.get_json()
 
@@ -309,10 +322,11 @@ class KeyBoards:
                                            payload=KeyBoards.get_payload("Удалить участника",
                                                                          can=kick_members)))
         keyboard_members_settings.row()
-        keyboard_members_settings.add(Text("Назад",
+        keyboard_members_settings.add(Text("⏪Назад",
                                            payload=KeyBoards.get_payload("Назад")))
         keyboard_members_settings.add(Text("Главное меню",
-                                           payload=KeyBoards.get_payload("Главное меню")))
+                                           payload=KeyBoards.get_payload("Главное меню")),
+                                      color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_members_settings.get_json()
 
@@ -351,10 +365,11 @@ class KeyBoards:
                                                   payload=KeyBoards.get_payload("Опасная зона")),
                                              color=KeyboardButtonColor.NEGATIVE)
         keyboard_main_classroom_settings.row()
-        keyboard_main_classroom_settings.add(Text("Назад",
+        keyboard_main_classroom_settings.add(Text("⏪Назад",
                                                   payload=KeyBoards.get_payload("Назад")))
         keyboard_main_classroom_settings.add(Text("Главное меню",
-                                                  payload=KeyBoards.get_payload("Главное меню")))
+                                                  payload=KeyBoards.get_payload("Главное меню")),
+                                             color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_main_classroom_settings.get_json()
 
@@ -375,8 +390,9 @@ class KeyBoards:
             keyboard_edit_week.add(Text("Скопировать с эталонного",
                                         payload=KeyBoards.get_payload("Скопировать с эталонного")))
             keyboard_edit_week.row()
-        keyboard_edit_week.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
-        keyboard_edit_week.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        keyboard_edit_week.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
+        keyboard_edit_week.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                               color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_edit_week.get_json()
 
@@ -397,7 +413,8 @@ class KeyBoards:
         keyboard_my_class_menu2.add(Text("Уведомить", payload=KeyBoards.get_payload("Уведомить")))
         keyboard_my_class_menu2.row()
         keyboard_my_class_menu2.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
-        keyboard_my_class_menu2.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        keyboard_my_class_menu2.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                    color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_my_class_menu2.get_json()
 
@@ -423,7 +440,8 @@ class KeyBoards:
         else:
             keyboard_my_class_menu.add(Text("⏩Ещё", payload=KeyBoards.get_payload("Ещё")))
         keyboard_my_class_menu.row()
-        keyboard_my_class_menu.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        keyboard_my_class_menu.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                   color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_my_class_menu.get_json()
 
@@ -445,8 +463,9 @@ class KeyBoards:
         keyboard_classroom_privilege.add(Text("Лимит участников", payload=KeyBoards.get_payload("Лимит участников")),
                                          color=KeyBoards.get_color(colors[4]))
         keyboard_classroom_privilege.row()
-        keyboard_classroom_privilege.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
-        keyboard_classroom_privilege.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        keyboard_classroom_privilege.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
+        keyboard_classroom_privilege.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                         color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_classroom_privilege.get_json()
 
@@ -473,8 +492,9 @@ class KeyBoards:
                                        color=KeyBoards.get_color(colors[4]))
         keyboard_members_privilege.row()
 
-        keyboard_members_privilege.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
-        keyboard_members_privilege.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        keyboard_members_privilege.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
+        keyboard_members_privilege.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                       color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_members_privilege.get_json()
 
@@ -499,8 +519,9 @@ class KeyBoards:
                                      color=KeyBoards.get_color(colors[4]))
         keyboard_diary_privilege.row()
 
-        keyboard_diary_privilege.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
-        keyboard_diary_privilege.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        keyboard_diary_privilege.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
+        keyboard_diary_privilege.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                     color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_diary_privilege.get_json()
 
@@ -524,7 +545,8 @@ class KeyBoards:
         keyboard_look_classroom_menu.add(Text("Вступить по ссылке",
                                               payload=KeyBoards.get_payload("Вступить по ссылке")))
         keyboard_look_classroom_menu.row()
-        keyboard_look_classroom_menu.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        keyboard_look_classroom_menu.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                         color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_look_classroom_menu.get_json()
 
@@ -538,8 +560,9 @@ class KeyBoards:
         keyboard_role_settings_menu.add(Text("Участники", payload=KeyBoards.get_payload("Участники")))
         keyboard_role_settings_menu.add(Text("Класс", payload=KeyBoards.get_payload("Класс")))
         keyboard_role_settings_menu.row()
-        keyboard_role_settings_menu.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
-        keyboard_role_settings_menu.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        keyboard_role_settings_menu.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
+        keyboard_role_settings_menu.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                        color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_role_settings_menu.get_json()
 
@@ -584,7 +607,8 @@ class KeyBoards:
         keyboard_access_menu_back.add(Text("Закрытый", payload=KeyBoards.get_payload("Закрытый")),
                                       color=KeyBoards.get_color(close_color))
         keyboard_access_menu_back.row()
-        keyboard_access_menu_back.add(Text("Назад", payload=KeyBoards.get_payload("Назад")))
-        keyboard_access_menu_back.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")))
+        keyboard_access_menu_back.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
+        keyboard_access_menu_back.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                      color=KeyboardButtonColor.PRIMARY)
 
         return keyboard_access_menu_back.get_json()
