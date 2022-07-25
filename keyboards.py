@@ -162,13 +162,16 @@ class KeyBoards:
 
     # EDIT_EVENT KEYBOARD
     @staticmethod
-    def get_edit_event_keyboard(event: dict, has_joined: bool) -> str:
+    def get_edit_event_keyboard(event: dict, has_joined: bool, redact_events: bool) -> str:
         collective = event["collective"]
         required_count = event["required_count"]
         required_students_count = event["required_students_count"]
 
-        keyboard_edit_event = Keyboard()
+        redact_label = "Редактировать" if redact_events else "Редактировать❌"
+        delete_label = "Удалить событие" if redact_events else "Удалить событие❌"
+        finish_label = "Завершили" if redact_events else "Завершили❌"
 
+        keyboard_edit_event = Keyboard()
         if collective:
             if required_students_count:
                 if not has_joined:
@@ -180,11 +183,11 @@ class KeyBoards:
                 keyboard_edit_event.add(Text("Убавить", payload=KeyBoards.get_payload("Убавить")))
             keyboard_edit_event.row()
 
-        keyboard_edit_event.add(Text("Редактировать", payload=KeyBoards.get_payload("Редактировать")))
+        keyboard_edit_event.add(Text(redact_label, payload=KeyBoards.get_payload("Редактировать", can=redact_events)))
         keyboard_edit_event.row()
-        keyboard_edit_event.add(Text("Удалить событие", payload=KeyBoards.get_payload("Удалить событие")),
+        keyboard_edit_event.add(Text(delete_label, payload=KeyBoards.get_payload("Удалить событие", can=redact_events)),
                                 color=KeyboardButtonColor.NEGATIVE)
-        keyboard_edit_event.add(Text("Завершили", payload=KeyBoards.get_payload("Завершили")),
+        keyboard_edit_event.add(Text(finish_label, payload=KeyBoards.get_payload("Завершили", can=redact_events)),
                                 color=KeyboardButtonColor.POSITIVE)
         keyboard_edit_event.row()
         keyboard_edit_event.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))

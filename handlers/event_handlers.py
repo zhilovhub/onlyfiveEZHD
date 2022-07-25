@@ -408,13 +408,17 @@ class EventHandlers(SupportingFunctions):
             await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Редактировать":
-            event_id = self.event_db.get_customizing_event_id(user_id)
+            if payload["can"]:
+                event_id = self.event_db.get_customizing_event_id(user_id)
 
-            event = self.event_db.get_classroom_event(event_id)
-            event_text = self.get_event_diary_text([event])
+                event = self.event_db.get_classroom_event(event_id)
+                event_text = self.get_event_diary_text([event])
 
-            await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
-                                        f"{event_text}\n\nНастройки события:")
+                await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
+                                            f"{event_text}\n\nНастройки события:")
+            else:
+                await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, "Ты не можешь редактировать "
+                                                                                    "события из-за своей роли!")
 
         elif payload["text"] == "Участвовать":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -442,21 +446,25 @@ class EventHandlers(SupportingFunctions):
                                         f"{event_text}\n\nТы больше не участвуешь!")
 
         elif payload["text"] == "Удалить событие":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            event_id = self.event_db.get_customizing_event_id(user_id)
+            if payload["can"]:
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                event_id = self.event_db.get_customizing_event_id(user_id)
 
-            self.event_db.delete_event(event_id)
-            self.event_db.update_customizing_event_id(user_id, None)
+                self.event_db.delete_event(event_id)
+                self.event_db.update_customizing_event_id(user_id, None)
 
-            classroom_events = self.event_db.get_all_classroom_events(classroom_id)
-            if classroom_events:
-                event_diary_text = self.get_event_diary_text(classroom_events)
-                trans_message = f"{event_diary_text}\n\nСобытие удалено!\nВыбери номер события, рассмотреть который " \
-                                f"ты хочешь:"
+                classroom_events = self.event_db.get_all_classroom_events(classroom_id)
+                if classroom_events:
+                    event_diary_text = self.get_event_diary_text(classroom_events)
+                    trans_message = f"{event_diary_text}\n\nСобытие удалено!\nВыбери номер события, рассмотреть" \
+                                    f" который ты хочешь:"
+                else:
+                    trans_message = f"Событие удалено!\nСобытий в классе больше нет"
+
+                await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES, trans_message)
             else:
-                trans_message = f"Событие удалено!\nСобытий в классе больше нет"
-
-            await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES, trans_message)
+                await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, "Ты не можешь удалять событии из-за"
+                                                                                    " своей роли!")
 
         elif payload["text"] == "Внести":
             trans_message = "Впиши количество, которое ты хочешь внести:"
