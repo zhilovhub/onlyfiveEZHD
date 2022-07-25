@@ -587,9 +587,10 @@ class EventHandlers(SupportingFunctions):
 
         elif payload["text"] == "Конец":
             if payload["collective"]:
-                pass
+                trans_message = "Впиши новую дату конца события в следующем формате: YYYY-MM-DD\nНапример, 2022-09-05"
             else:
-                pass
+                trans_message = "Впиши новое время конца события в следующем формате: hh:mm\nНапример, 13:05"
+            await self.state_transition(user_id, States.S_ENTER_NEW_EVENT_END_TIME, trans_message)
 
         elif payload["text"] == "Кол-во собрать":
             await self.state_transition(user_id, States.S_ENTER_NEW_EVENT_REQUIRED_COUNT,
@@ -747,6 +748,58 @@ class EventHandlers(SupportingFunctions):
                                                 f"{ask_message}")
             except ValueError:
                 await self.state_transition(user_id, States.S_ENTER_NEW_EVENT_START_TIME,
+                                            f"Введенная запись не соответствует формату.\n{ask_message}")
+
+        elif payload["text"] == "Назад":
+            event_id = self.event_db.get_customizing_event_id(user_id)
+
+            event = self.event_db.get_classroom_event(event_id)
+            event_text = self.get_event_diary_text([event])
+
+            await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
+                                        f"{event_text}\n\nНастройки события:")
+
+        elif payload["text"] == "Главное меню":
+            await self.trans_to_main_menu(user_id)
+
+    async def s_enter_new_event_end_time_handler(self, user_id: int, message: str, payload: dict
+                                                 ) -> None:
+        """Handling States.S_ENTER_NEW_EVENT_END_TIME"""
+        if payload is None:
+            event_id = self.event_db.get_customizing_event_id(user_id)
+            collective = self.event_db.get_event_collective(event_id)
+
+            if collective:
+                pattern = "%Y-%m-%d"
+                ask_message = "Впиши новую дату конца события в следующем формате: YYYY-MM-DD\nНапример, 2022-09-05"
+            else:
+                pattern = "%H:%M"
+                ask_message = "Впиши новое время конца события в следующем формате: hh:mm\n" \
+                              "Например, 13:05"
+
+            try:
+                event_start_time = self.event_db.get_event_start_time(event_id)
+                if collective:
+                    event_end_time = datetime.strptime(message, pattern)
+                else:
+                    event_end_time_hour_minute = datetime.strptime(message, pattern)
+                    event_end_time = event_start_time.replace(hour=event_end_time_hour_minute.hour,
+                                                              minute=event_end_time_hour_minute.minute)
+
+                if event_end_time > event_start_time:
+                    self.event_db.update_event_end_time(event_id, event_end_time)
+
+                    event = self.event_db.get_classroom_event(event_id)
+                    event_text = self.get_event_diary_text([event])
+
+                    await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
+                                                f"{event_text}\n\nНастройки события:")
+                else:
+                    await self.state_transition(user_id, States.S_ENTER_NEW_EVENT_END_TIME,
+                                                f"Время конца не может быть раньше или равным времени начала\n"
+                                                f"{ask_message}")
+            except ValueError:
+                await self.state_transition(user_id, States.S_ENTER_NEW_EVENT_END_TIME,
                                             f"Введенная запись не соответствует формату.\n{ask_message}")
 
         elif payload["text"] == "Назад":
