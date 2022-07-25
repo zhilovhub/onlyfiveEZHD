@@ -98,13 +98,14 @@ class KeyBoards:
         end_time = event["end_time"]
         required_count = event["required_count"]
         required_students_count = event["required_students_count"]
+        collective = event["collective"]
 
         keyboard_event_settings = Keyboard()
         keyboard_event_settings.add(Text("Название", payload=KeyBoards.get_payload("Название")))
         keyboard_event_settings.row()
-        keyboard_event_settings.add(Text("Начало", payload=KeyBoards.get_payload("Начало")))
+        keyboard_event_settings.add(Text("Начало", payload=KeyBoards.get_payload("Начало", collective=collective)))
         if end_time:
-            keyboard_event_settings.add(Text("Конец", payload=KeyBoards.get_payload("Конец")))
+            keyboard_event_settings.add(Text("Конец", payload=KeyBoards.get_payload("Конец", collective=collective)))
         keyboard_event_settings.row()
         if required_count:
             keyboard_event_settings.add(Text("Кол-во собрать", payload=KeyBoards.get_payload("Кол-во собрать")))

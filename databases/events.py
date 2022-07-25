@@ -82,10 +82,22 @@ class EventCommands(DataBase):
             cursor.execute(EventQueries.get_event_start_time_query, (event_id,))
             return cursor.fetchone()[0]
 
+    def get_event_end_time(self, event_id: int) -> datetime:
+        """Returns end time"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.get_event_end_time_query, (event_id,))
+            return cursor.fetchone()[0]
+
     def get_event_current_count(self, event_id: int) -> int:
         """Returns current count"""
         with self.connection.cursor() as cursor:
             cursor.execute(EventQueries.get_event_current_count_query, (event_id,))
+            return cursor.fetchone()[0]
+
+    def get_event_collective(self, event_id: int) -> int:
+        """Returns collective"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.get_event_collective_query, (event_id,))
             return cursor.fetchone()[0]
 
     def get_event_id_by_message_event_id(self, message_event_id: int, classroom_id: int) -> int:
@@ -259,7 +271,9 @@ class EventQueries:
     get_customizing_event_id_query = """SELECT event_id FROM UserCustomize WHERE user_id=%s"""
     get_event_diary_id_query = """SELECT event_diary_id FROM event_diary WHERE classroom_id=%s"""
     get_event_start_time_query = """SELECT start_time FROM event WHERE event_id=%s"""
+    get_event_end_time_query = """SELECT end_time FROM event WHERE event_id=%s"""
     get_event_current_count_query = """SELECT current_count FROM event WHERE event_id=%s"""
+    get_event_collective_query = """SELECT collective FROM event WHERE event_id=%s"""
     get_event_classroom_id_query = """SELECT classroom_id FROM event_diary WHERE 
     event_diary_id IN (SELECT event_diary_id FROM event WHERE event_id=%s)"""
 
