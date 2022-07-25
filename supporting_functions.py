@@ -178,6 +178,9 @@ class SupportingFunctions:
             case States.S_ENTER_NEW_EVENT_NAME_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
 
+            case States.S_ENTER_NEW_EVENT_REQUIRED_COUNT:
+                await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
+
             # FINDCLASS
             case States.S_FIND_CLASS:
                 await self.send_message(user_id, message,
