@@ -145,52 +145,52 @@ async def filter_dialog_state(user_id: int, message: str, payload: dict, current
 
         # EVENTS
         case States.S_CHOOSE_EVENT_MYCLASSES.value:
-            await handlers_class.s_choose_event_my_classes_handler(user_id, payload)
+            await handlers_class.s_choose_event_handler(user_id, payload)
 
         case States.S_CHOOSE_EVENT_TYPE_MYCLASSES.value:
-            await handlers_class.s_choose_event_type_my_classes_handler(user_id, payload)
+            await handlers_class.s_choose_event_type_handler(user_id, payload)
 
         case States.S_ENTER_NOT_COLLECTIVE_EVENT_NAME_MYCLASSES.value:
-            await handlers_class.s_enter_not_collective_event_name_my_classes_handler(user_id, message, payload)
+            await handlers_class.s_enter_not_collective_event_name_handler(user_id, message, payload)
 
         case States.S_ENTER_NOT_COLLECTIVE_EVENT_START_TIME_MYCLASSES.value:
-            await handlers_class.s_enter_not_collective_event_start_time_my_classes_handler(user_id, message, payload)
+            await handlers_class.s_enter_not_collective_event_start_time_handler(user_id, message, payload)
 
         case States.S_ENTER_NOT_COLLECTIVE_EVENT_END_TIME_MYCLASSES.value:
-            await handlers_class.s_enter_not_collective_event_end_time_my_classes_handler(user_id, message, payload)
+            await handlers_class.s_enter_not_collective_event_end_time_handler(user_id, message, payload)
 
         case States.S_SUBMIT_EVENT_CREATE_MYCLASSES.value:
-            await handlers_class.s_submit_event_create_my_classes_handler(user_id, payload)
+            await handlers_class.s_submit_event_create_handler(user_id, payload)
 
         case States.S_ENTER_COLLECTIVE_EVENT_NAME_MYCLASSES.value:
-            await handlers_class.s_enter_collective_event_name_my_classes_handler(user_id, message, payload)
+            await handlers_class.s_enter_collective_event_name_handler(user_id, message, payload)
 
         case States.S_ENTER_COLLECTIVE_EVENT_START_TIME_MYCLASSES.value:
-            await handlers_class.s_enter_collective_event_start_time_my_classes_handler(user_id, message, payload)
+            await handlers_class.s_enter_collective_event_start_time_handler(user_id, message, payload)
 
         case States.S_ENTER_COLLECTIVE_EVENT_END_TIME_MYCLASSES.value:
-            await handlers_class.s_enter_collective_event_end_time_my_classes_handler(user_id, message, payload)
+            await handlers_class.s_enter_collective_event_end_time_handler(user_id, message, payload)
 
         case States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_COUNT_MYCLASSES.value:
-            await handlers_class.s_enter_collective_event_required_count_my_classes_handler(user_id, message, payload)
+            await handlers_class.s_enter_collective_event_required_count_handler(user_id, message, payload)
 
         case States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_STUDENT_MYCLASSES.value:
-            await handlers_class.s_enter_collective_event_required_student_my_classes_handler(user_id, message, payload)
+            await handlers_class.s_enter_collective_event_required_student_handler(user_id, message, payload)
 
         case States.S_EDIT_EVENT_MYCLASSES.value:
-            await handlers_class.s_edit_event_my_classes_handler(user_id, payload)
+            await handlers_class.s_edit_event_handler(user_id, payload)
 
         case States.S_ADD_COUNT_COLLECTIVE_EVENT_MYCLASSES.value:
-            await handlers_class.s_add_count_collective_event_my_classes_handler(user_id, message, payload)
+            await handlers_class.s_add_count_collective_event_handler(user_id, message, payload)
 
         case States.S_DECREASE_COUNT_COLLECTIVE_EVENT_MYCLASSES.value:
-            await handlers_class.s_decrease_count_collective_event_my_classes_handler(user_id, message, payload)
+            await handlers_class.s_decrease_count_collective_event_handler(user_id, message, payload)
 
         case States.S_EVENT_SETTINGS_MYCLASSES.value:
-            await handlers_class.s_event_settings_my_classes_handler(user_id, payload)
+            await handlers_class.s_event_settings_handler(user_id, payload)
 
         case States.S_ENTER_NEW_EVENT_NAME_MYCLASSES.value:
-            await handlers_class.s_enter_new_event_name_my_classes_handler(user_id, message, payload)
+            await handlers_class.s_enter_new_event_name_handler(user_id, message, payload)
 
         # FINDCLASS
         case States.S_FIND_CLASS.value:
