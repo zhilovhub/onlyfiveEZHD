@@ -432,6 +432,8 @@ class EventHandlers(SupportingFunctions):
             event = self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
+            await self.notify_new_leave_student_event(user_id, event_id, new=True, without_user_ids=[user_id])
+
             await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, f"{event_text}\n\nТы участвуешь!")
 
         elif payload["text"] == "Покинуть":
@@ -443,6 +445,8 @@ class EventHandlers(SupportingFunctions):
 
             event = self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
+
+            await self.notify_new_leave_student_event(user_id, event_id, new=False, without_user_ids=[user_id])
 
             await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES,
                                         f"{event_text}\n\nТы больше не участвуешь!")
