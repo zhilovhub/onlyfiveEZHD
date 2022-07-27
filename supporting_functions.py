@@ -516,6 +516,30 @@ class SupportingFunctions:
 
             await self.send_message(user_ids=notified_users, message=notification_text)
 
+    async def notify_new_count_event(self, user_id: int, event_id: int, count: int, add: bool,
+                                     without_user_ids=None) -> None:
+        """Notifies about new event"""
+        notified_users = self.classroom_db.get_user_ids(self.event_db.get_event_students(event_id))
+        if without_user_ids:
+            for without_user_id in without_user_ids:
+                if without_user_id in notified_users:
+                    notified_users.remove(without_user_id)
+
+        if notified_users:
+            first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+
+            event = self.event_db.get_classroom_event(event_id)
+            event_text = self.get_event_diary_text([event])
+
+            if add:
+                notification_text = f"[id{user_id}|{first_name} {last_name}] " \
+                                    f"добавил ({count}) в следующее событие:\n\n{event_text}"
+            else:
+                notification_text = f"[id{user_id}|{first_name} {last_name}] убрал ({count}) из " \
+                                    f"следующего события:\n\n{event_text}"
+
+            await self.send_message(user_ids=notified_users, message=notification_text)
+
     @staticmethod
     def get_event_diary_text(classroom_events: list) -> str:
         """Returns text of events"""

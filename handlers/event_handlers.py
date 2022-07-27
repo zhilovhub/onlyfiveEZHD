@@ -515,6 +515,8 @@ class EventHandlers(SupportingFunctions):
                     event = self.event_db.get_classroom_event(event_id)
                     event_text = self.get_event_diary_text([event])
 
+                    await self.notify_new_count_event(user_id, event_id, count, add=True, without_user_ids=[user_id])
+
                     await self.state_transition(user_id, States.S_ADD_COUNT_COLLECTIVE_EVENT_MYCLASSES,
                                                 f"{event_text}\n\nУспешно добавлено!\n\n"
                                                 f"Впиши количество, которое ты хочешь внести:")
@@ -559,6 +561,9 @@ class EventHandlers(SupportingFunctions):
 
                         event = self.event_db.get_classroom_event(event_id)
                         event_text = self.get_event_diary_text([event])
+
+                        await self.notify_new_count_event(user_id, event_id, count, add=False,
+                                                          without_user_ids=[user_id])
 
                         await self.state_transition(user_id, States.S_DECREASE_COUNT_COLLECTIVE_EVENT_MYCLASSES,
                                                     f"{event_text}\n\nУспешно уменьшено!\n\n"
