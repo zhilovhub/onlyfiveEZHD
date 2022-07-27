@@ -459,6 +459,23 @@ class SupportingFunctions:
                 await self.send_message(user_ids=notified_users, message=f"[id{user_id}|{first_name} {last_name}]"
                                                                          f" покинул {classroom_name}!")
 
+    async def notify_new_event(self, user_id: int, event_id: int, classroom_id: int, without_user_ids=None) -> None:
+        """Notifies about new event"""
+        notified_users = self.notification_db.get_users_with_notification_type(classroom_id, "events")
+        if without_user_ids:
+            for without_user_id in without_user_ids:
+                if without_user_id in notified_users:
+                    notified_users.remove(without_user_id)
+
+        if notified_users:
+            first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+
+            event = self.event_db.get_classroom_event(event_id)
+            event_text = self.get_event_diary_text([event])
+
+            await self.send_message(user_ids=notified_users, message=f"[id{user_id}|{first_name} {last_name}] создал "
+                                                                     f"новое событие!\n\n{event_text}")
+
     @staticmethod
     def get_event_diary_text(classroom_events: list) -> str:
         """Returns text of events"""

@@ -383,6 +383,8 @@ class EventHandlers(SupportingFunctions):
 
             self.event_db.update_customizing_event_id(user_id, None)
 
+            await self.notify_new_event(user_id, event_id, classroom_id, without_user_ids=[user_id])
+
             await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2,
                                         f"{event_diary_text}\n\nСобытие создано!", sign=self.get_sign(user_id))
 
