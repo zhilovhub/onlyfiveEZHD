@@ -19,7 +19,8 @@ class NotificationCommands(DataBase):
             notification_types = [
                 "new_classmate",
                 "leave_classmate",
-                "requests"
+                "requests",
+                "events"
             ]
 
             cursor.execute(NotificationQueries.get_notification_values_query, (user_id, classroom_id))
@@ -67,7 +68,8 @@ class NotificationQueries:
         
         new_classmate BOOLEAN DEFAULT 1,
         leave_classmate BOOLEAN DEFAULT 1,
-        requests BOOLEAN DEFAULT 1
+        requests BOOLEAN DEFAULT 1,
+        events BOOLEAN DEFAULT 1
     )"""
 
     get_notification_values_query = """SELECT * FROM notification WHERE user_id=%s AND classroom_id=%s"""

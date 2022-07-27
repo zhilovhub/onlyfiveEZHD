@@ -238,6 +238,9 @@ class KeyBoards:
         notification_settings_keyboard.add(Text("Новая заявка", payload=KeyBoards.get_payload("Новая заявка")),
                                            color=KeyBoards.get_color(colors[2]))
         notification_settings_keyboard.row()
+        notification_settings_keyboard.add(Text("События", payload=KeyBoards.get_payload("События")),
+                                           color=KeyBoards.get_color(colors[3]))
+        notification_settings_keyboard.row()
         notification_settings_keyboard.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
         notification_settings_keyboard.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
                                            color=KeyboardButtonColor.PRIMARY)
