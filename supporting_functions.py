@@ -608,15 +608,15 @@ class SupportingFunctions:
 
         def formatted_collective_event(start_time: datetime, end_time: datetime, label: str, message_event_id: int,
                                        current_count: int, required_count: int, current_students_count: int,
-                                       required_students_count: int, finished: int) -> str:
+                                       required_students_count: int, finished: datetime) -> str:
             start_time_date = start_time.strftime("%d.%m.%y")
             if end_time:
                 end_time_date = end_time.strftime("%d.%m.%y")
                 duration_time = f"{start_time_date} - {end_time_date}"
-                emoji = "✅" if datetime.now() > end_time or finished else ""
+                emoji = "✅" if finished else ""
             else:
                 duration_time = start_time_date
-                emoji = "✅" if datetime.now() > start_time or finished else ""
+                emoji = "✅" if finished else ""
 
             if required_count:
                 collected = f"\nСобрано: {current_count}/{required_count}"
@@ -631,15 +631,15 @@ class SupportingFunctions:
             return f"⚠ {duration_time} {label} (#{message_event_id}) {emoji}{collected}{student_count_text}"
 
         def formatted_not_collective_event(start_time: datetime, end_time: datetime, label: str, message_event_id: int,
-                                           finished: int) -> str:
+                                           finished: datetime) -> str:
             start_time_hour_minute = start_time.strftime("%H:%M")
             if end_time:
                 end_time_hour_minute = end_time.strftime("%H:%M")
                 duration_time = f"{start_time_hour_minute}-{end_time_hour_minute}"
-                emoji = "✅" if datetime.now() > end_time or finished else ""
+                emoji = "✅" if finished else ""
             else:
                 duration_time = start_time_hour_minute
-                emoji = "✅" if datetime.now() > start_time or finished else ""
+                emoji = "✅" if finished else ""
 
             return f"{duration_time} {label} (#{message_event_id}) {emoji}"
 

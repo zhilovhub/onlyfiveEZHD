@@ -233,7 +233,7 @@ class EventQueries:
         current_count INT,
         required_count INT,
         required_students_count INT,
-        finished BOOLEAN DEFAULT 0,
+        finished DATETIME DEFAULT NULL,
         
         FOREIGN KEY (event_diary_id) REFERENCES event_diary (event_diary_id) ON DELETE CASCADE
     )"""
