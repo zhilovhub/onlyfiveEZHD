@@ -199,6 +199,12 @@ class EventCommands(DataBase):
             cursor.execute(EventQueries.update_event_created_query, (created, event_id))
             self.connection.commit()
 
+    def update_event_finished(self, event_id: int, finished: datetime) -> None:
+        """Updates event's finsihed"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.update_event_finished_query, (finished, event_id))
+            self.connection.commit()
+
     def delete_event(self, event_id: int) -> None:
         """Deletes event"""
         with self.connection.cursor() as cursor:
@@ -291,6 +297,7 @@ class EventQueries:
     update_event_required_count_query = """UPDATE event SET required_count=%s WHERE event_id=%s"""
     update_event_required_students_count_query = """UPDATE event SET required_students_count=%s WHERE event_id=%s"""
     update_event_created_query = """UPDATE event SET created=%s WHERE event_id=%s"""
+    update_event_finished_query = """UPDATE event SET finished=%s WHERE event_id=%s"""
 
     delete_event_query = """DELETE FROM event WHERE event_id=%s"""
     delete_student_query = """DELETE FROM event_collective WHERE event_id=%s AND student_id=%s"""

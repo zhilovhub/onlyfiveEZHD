@@ -409,6 +409,24 @@ class EventHandlers(SupportingFunctions):
         if payload is None:
             await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, "Для навигации используй кнопки!👇🏻")
 
+        elif payload["text"] == "Завершили":
+            if payload["can"]:
+                finished_date = datetime.now()
+
+                event_id = self.event_db.get_customizing_event_id(user_id)
+                self.event_db.update_event_finished(event_id, finished_date)
+
+                event = self.event_db.get_classroom_event(event_id)
+                event_text = self.get_event_diary_text([event])
+
+                await self.notify_finished_event(event_id, user_id=user_id, without_user_ids=[user_id])
+
+                await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES,
+                                            f"{event_text}\n\nСобытие завершено! (через 2 дня оно удалится из списка)")
+            else:
+                await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, "Ты не можешь завершать "
+                                                                                    "события из-за своей роли!")
+
         elif payload["text"] == "Редактировать":
             if payload["can"]:
                 event_id = self.event_db.get_customizing_event_id(user_id)
