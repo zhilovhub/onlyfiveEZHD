@@ -646,6 +646,8 @@ class EventHandlers(SupportingFunctions):
                 event = self.event_db.get_classroom_event(event_id)
                 event_text = self.get_event_diary_text([event])
 
+                await self.notify_change_event(user_id, event_id, "label", message, without_user_ids=[user_id])
+
                 await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
                                             f"{event_text}\n\nТекст события изменён!")
             else:
@@ -678,6 +680,9 @@ class EventHandlers(SupportingFunctions):
 
                     event = self.event_db.get_classroom_event(event_id)
                     event_text = self.get_event_diary_text([event])
+
+                    await self.notify_change_event(user_id, event_id, "required_count", count,
+                                                   without_user_ids=[user_id])
 
                     await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
                                                 f"{event_text}\n\nТребуемое количество собрать изменёно!")
@@ -714,6 +719,9 @@ class EventHandlers(SupportingFunctions):
 
                     event = self.event_db.get_classroom_event(event_id)
                     event_text = self.get_event_diary_text([event])
+
+                    await self.notify_change_event(user_id, event_id, "required_students_count", count,
+                                                   without_user_ids=[user_id])
 
                     await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
                                                 f"{event_text}\n\nТребуемое количество участников изменёно!")
@@ -760,6 +768,9 @@ class EventHandlers(SupportingFunctions):
 
                     event = self.event_db.get_classroom_event(event_id)
                     event_text = self.get_event_diary_text([event])
+
+                    await self.notify_change_event(user_id, event_id, "start_time", event_start_time,
+                                                   without_user_ids=[user_id])
 
                     await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
                                                 f"{event_text}\n\nНастройки события:")
@@ -812,6 +823,9 @@ class EventHandlers(SupportingFunctions):
 
                     event = self.event_db.get_classroom_event(event_id)
                     event_text = self.get_event_diary_text([event])
+
+                    await self.notify_change_event(user_id, event_id, "end_time", event_end_time,
+                                                   without_user_ids=[user_id])
 
                     await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
                                                 f"{event_text}\n\nНастройки события:")
