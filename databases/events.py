@@ -46,7 +46,8 @@ class EventCommands(DataBase):
                     "required_count": event[9],
                     "current_students_count": len(cursor.fetchall()),
                     "required_students_count": event[10],
-                    "finished": event[11]
+                    "finished": event[11],
+                    "unfinished": event[12]
                 })
 
             return sorted(events, key=lambda x: (-x["collective"], x["start_time"]))
@@ -68,7 +69,8 @@ class EventCommands(DataBase):
                     "required_count": event[9],
                     "current_students_count": len(cursor.fetchall()),
                     "required_students_count": event[10],
-                    "finished": event[11]
+                    "finished": event[11],
+                    "unfinished": event[12]
                 }
 
     def get_event_students(self, event_id: int) -> list:
@@ -98,6 +100,12 @@ class EventCommands(DataBase):
         """Returns collective"""
         with self.connection.cursor() as cursor:
             cursor.execute(EventQueries.get_event_collective_query, (event_id,))
+            return cursor.fetchone()[0]
+
+    def get_event_unfinished(self, event_id: int) -> int:
+        """Returns unfinished"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.get_event_unfinished_query, (event_id,))
             return cursor.fetchone()[0]
 
     def get_event_id_by_message_event_id(self, message_event_id: int, classroom_id: int) -> int:
@@ -199,10 +207,16 @@ class EventCommands(DataBase):
             cursor.execute(EventQueries.update_event_created_query, (created, event_id))
             self.connection.commit()
 
-    def update_event_finished(self, event_id: int, finished: datetime) -> None:
+    def update_event_finished(self, event_id: int, finished) -> None:
         """Updates event's finsihed"""
         with self.connection.cursor() as cursor:
             cursor.execute(EventQueries.update_event_finished_query, (finished, event_id))
+            self.connection.commit()
+
+    def update_event_unfinished(self, event_id: int, unfinished: bool) -> None:
+        """Updates event's unfinished"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.update_event_unfinished_query, (unfinished, event_id))
             self.connection.commit()
 
     def delete_event(self, event_id: int) -> None:
@@ -240,6 +254,7 @@ class EventQueries:
         required_count INT,
         required_students_count INT,
         finished DATETIME DEFAULT NULL,
+        unfinished BOOLEAN DEFAULT 0,
         
         FOREIGN KEY (event_diary_id) REFERENCES event_diary (event_diary_id) ON DELETE CASCADE
     )"""
@@ -280,6 +295,7 @@ class EventQueries:
     get_event_end_time_query = """SELECT end_time FROM event WHERE event_id=%s"""
     get_event_current_count_query = """SELECT current_count FROM event WHERE event_id=%s"""
     get_event_collective_query = """SELECT collective FROM event WHERE event_id=%s"""
+    get_event_unfinished_query = """SELECT unfinished FROM event WHERE event_id=%s"""
     get_event_classroom_id_query = """SELECT classroom_id FROM event_diary WHERE 
     event_diary_id IN (SELECT event_diary_id FROM event WHERE event_id=%s)"""
 
@@ -298,6 +314,7 @@ class EventQueries:
     update_event_required_students_count_query = """UPDATE event SET required_students_count=%s WHERE event_id=%s"""
     update_event_created_query = """UPDATE event SET created=%s WHERE event_id=%s"""
     update_event_finished_query = """UPDATE event SET finished=%s WHERE event_id=%s"""
+    update_event_unfinished_query = """UPDATE event SET unfinished=%s WHERE event_id=%s"""
 
     delete_event_query = """DELETE FROM event WHERE event_id=%s"""
     delete_student_query = """DELETE FROM event_collective WHERE event_id=%s AND student_id=%s"""

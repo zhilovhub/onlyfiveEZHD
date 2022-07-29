@@ -573,7 +573,7 @@ class SupportingFunctions:
                                     message=f"[id{user_id}|{first_name} {last_name}] изменил {event_type_text} на "
                                             f"{new_value} в следующем событии:\n\n{event_text}")
 
-    async def notify_finished_event(self, event_id: int, user_id=None, without_user_ids=None) -> None:
+    async def notify_result_of_event(self, event_id: int, user_id=None, finished=True, without_user_ids=None) -> None:
         """Notifies about new event"""
         classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
         notified_users = list(set(self.classroom_db.get_user_ids(self.event_db.get_event_students(event_id)) +
@@ -591,8 +591,12 @@ class SupportingFunctions:
             event_text = self.get_event_diary_text([event])
 
             if user_id:
-                notification_text = f"[id{user_id}|{first_name} {last_name}] завершил следующее событие:" \
-                                    f"\n\n{event_text}"
+                if finished:
+                    notification_text = f"[id{user_id}|{first_name} {last_name}] завершил следующее событие:" \
+                                        f"\n\n{event_text}"
+                else:
+                    notification_text = f"[id{user_id}|{first_name} {last_name}] отменил завершенность следующего " \
+                                        f"события:\n\n{event_text}"
             else:
                 notification_text = f"Следующее событие завершено:\n\n{event_text}"
 
