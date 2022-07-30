@@ -315,5 +315,12 @@ async def filter_callback_button_payload(user_id: int, payload: dict, current_di
             await handlers_class.p_accept_cancel_request_handler(user_id, payload, current_dialog_state)
 
 
+async def create_tasks():
+    tasks = [
+        bot.run_polling()
+    ]
+    await asyncio.gather(*tasks)
+
+
 if __name__ == '__main__':
-    bot.run_forever()
+    asyncio.run(create_tasks())

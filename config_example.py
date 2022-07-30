@@ -1,6 +1,7 @@
 # WRITE VALUES AND RENAME THIS FILE TO config.py
 
 # import for main file
+import asyncio
 from vkbottle.bot import Bot, Message
 from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback
 from vkbottle import GroupEventType, GroupTypes
