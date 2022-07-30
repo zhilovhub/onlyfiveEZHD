@@ -62,8 +62,6 @@ async def listen_messages(message: Message) -> None:
         if user_db.check_user_is_ready(user_id):  # Checking second condition
 
             if not attachments and message_text:  # Checking user didn't send attachment
-                diary_homework_db.update_change_current_and_next_diary()
-
                 current_dialog_state = user_db.get_user_dialog_state(user_id)
                 await filter_dialog_state(user_id, message_text, payload, current_dialog_state)
             elif attachments:
@@ -315,9 +313,20 @@ async def filter_callback_button_payload(user_id: int, payload: dict, current_di
             await handlers_class.p_accept_cancel_request_handler(user_id, payload, current_dialog_state)
 
 
-async def create_tasks():
+async def aioscheduler_tasks() -> None:
+    import aioschedule
+    aioschedule.every().monday.do(diary_homework_db.update_change_current_and_next_diary)
+
+    while True:
+        await aioschedule.run_pending()
+        await asyncio.sleep(0.5)
+
+
+async def create_tasks() -> None:
+    """Creates tasks for asyncio-loop"""
     tasks = [
-        bot.run_polling()
+        bot.run_polling(),
+        aioscheduler_tasks()
     ]
     await asyncio.gather(*tasks)
 

@@ -14,7 +14,6 @@ class DiaryHomeworkCommands(DataBase):
                 cursor.execute(DiaryHomeworkQueries.create_table_diary_current_week_query)
                 cursor.execute(DiaryHomeworkQueries.create_table_diary_next_week_query)
                 cursor.execute(DiaryHomeworkQueries.create_table_temp_weekday_diary)
-                cursor.execute(DiaryHomeworkQueries.create_table_week_support)
 
         except Error as e:
             print(e)
@@ -180,39 +179,26 @@ class DiaryHomeworkCommands(DataBase):
                            (*none_list, classroom_id))
             self.connection.commit()
 
-    def update_change_current_and_next_diary(self) -> None:
+    async def update_change_current_and_next_diary(self) -> None:
         """Changes every new week current_week and next_week_diary"""
-        current_week_index = int(datetime.now().strftime("%W"))
-
         with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_week_index_query)
-            week_index_row = cursor.fetchone()
+            cursor.execute(DiaryHomeworkQueries.get_all_classroom_ids_query)
 
-            if week_index_row is not None:
-                last_week_index = week_index_row[0]
+            classroom_ids = [row[0] for row in cursor.fetchall()]
+            for classroom_id in classroom_ids:
+                formatted_standard_week_lessons = self.get_all_days_lessons_from_week(classroom_id, "standard")
+                formatted_next_week_lessons = self.get_all_days_lessons_from_week(classroom_id, "next")
+                formatted_next_week_homework = self.get_all_days_lessons_from_week(classroom_id, "next",
+                                                                                   homework=True)
+                self.update_copy_diary_from_week_into_another_week(classroom_id, "next",
+                                                                   formatted_standard_week_lessons)
+                self.update_copy_diary_from_week_into_another_week(classroom_id, "current",
+                                                                   formatted_next_week_lessons)
+                self.update_copy_diary_from_week_into_another_week(classroom_id, "current",
+                                                                   formatted_next_week_homework, homework=True)
+                self.update_clear_week(classroom_id, "next", homework=True)
 
-                if current_week_index != last_week_index:
-                    cursor.execute(DiaryHomeworkQueries.update_week_index_week_support_query.format(current_week_index))
-                    cursor.execute(DiaryHomeworkQueries.get_all_classroom_ids_query)
-
-                    classroom_ids = [row[0] for row in cursor.fetchall()]
-                    for classroom_id in classroom_ids:
-                        formatted_standard_week_lessons = self.get_all_days_lessons_from_week(classroom_id, "standard")
-                        formatted_next_week_lessons = self.get_all_days_lessons_from_week(classroom_id, "next")
-                        formatted_next_week_homework = self.get_all_days_lessons_from_week(classroom_id, "next",
-                                                                                           homework=True)
-                        self.update_copy_diary_from_week_into_another_week(classroom_id, "next",
-                                                                           formatted_standard_week_lessons)
-                        self.update_copy_diary_from_week_into_another_week(classroom_id, "current",
-                                                                           formatted_next_week_lessons)
-                        self.update_copy_diary_from_week_into_another_week(classroom_id, "current",
-                                                                           formatted_next_week_homework, homework=True)
-                        self.update_clear_week(classroom_id, "next", homework=True)
-
-                    self.connection.commit()
-            else:
-                cursor.execute(DiaryHomeworkQueries.insert_week_index_week_support_query.format(current_week_index))
-                self.connection.commit()
+            self.connection.commit()
 
     def delete_row_from_temp_weekday_table(self, user_id: int) -> None:
         """Deletes row from temp table"""
@@ -760,17 +746,12 @@ class DiaryHomeworkQueries:
         lesson12 TEXT
     )"""
 
-    create_table_week_support = """CREATE TABLE IF NOT EXISTS week_support(
-        week_index INT
-    )"""
-
     get_all_days_from_week_query = """SELECT * FROM {} WHERE classroom_id={}"""
 
     get_weekday_lessons_from_temp_table_query = """SELECT * FROM temp_weekday_diary WHERE user_id={}"""
     get_week_type_from_temp_table_query = """SELECT week_type FROM temp_weekday_diary WHERE user_id={}"""
     get_temp_weekday_name_query = """SELECT weekday FROM temp_weekday_diary WHERE user_id={}"""
 
-    get_week_index_query = """SELECT week_index FROM week_support"""
     get_all_classroom_ids_query = """SELECT classroom_id FROM classroom"""
 
     insert_classroom_id_homework_current_week_query = "INSERT INTO homework_current_week (classroom_id) VALUES({})"
@@ -778,8 +759,6 @@ class DiaryHomeworkQueries:
     insert_classroom_id_standard_week_query = "INSERT INTO diary_standard_week (classroom_id) VALUES({})"
     insert_classroom_id_current_week_query = "INSERT INTO diary_current_week (classroom_id) VALUES({})"
     insert_classroom_id_next_week_query = "INSERT INTO diary_next_week (classroom_id) VALUES({})"
-
-    insert_week_index_week_support_query = "INSERT INTO week_support VALUES({})"
 
     insert_new_row_into_temp_weekday_diary_query = """INSERT INTO temp_weekday_diary VALUES(
         {}, NULL, '{}', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
@@ -823,8 +802,6 @@ class DiaryHomeworkQueries:
     update_lesson_in_temp_table_query = "UPDATE temp_weekday_diary SET lesson{}='{}' WHERE user_id={}"
     update_delete_lesson_from_temp_table_query = """UPDATE temp_weekday_diary SET lesson{}=NULL WHERE user_id={}"""
     update_delete_weekday_from_temp_table_query = """UPDATE temp_weekday_diary SET weekday=NULL WHERE user_id={}"""
-
-    update_week_index_week_support_query = "UPDATE week_support SET week_index={}"
 
     update_copy_diary_from_week_into_another_week_query = """UPDATE {} SET
         monday_lesson1=%s,
