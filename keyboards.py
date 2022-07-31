@@ -171,7 +171,6 @@ class KeyBoards:
         redact_label = "Редактировать" if redact_events else "Редактировать❌"
         delete_label = "Удалить событие" if redact_events else "Удалить событие❌"
         finish_label = "Завершили" if redact_events else "Завершили❌"
-        unfinish_label = "Отменить завершение" if redact_events else "Отменить завершение❌"
 
         keyboard_edit_event = Keyboard()
         if collective:
@@ -187,17 +186,10 @@ class KeyBoards:
 
         keyboard_edit_event.add(Text(redact_label, payload=KeyBoards.get_payload("Редактировать", can=redact_events)))
         keyboard_edit_event.row()
-        if finished:
-            keyboard_edit_event.add(Text(unfinish_label,
-                                         payload=KeyBoards.get_payload("Отменить завершение", can=redact_events)))
-            keyboard_edit_event.row()
-            keyboard_edit_event.add(Text(delete_label,
-                                         payload=KeyBoards.get_payload("Удалить событие", can=redact_events)),
-                                    color=KeyboardButtonColor.NEGATIVE)
-        else:
-            keyboard_edit_event.add(Text(delete_label,
-                                         payload=KeyBoards.get_payload("Удалить событие", can=redact_events)),
-                                    color=KeyboardButtonColor.NEGATIVE)
+        keyboard_edit_event.add(Text(delete_label,
+                                     payload=KeyBoards.get_payload("Удалить событие", can=redact_events)),
+                                color=KeyboardButtonColor.NEGATIVE)
+        if not finished:
             keyboard_edit_event.add(Text(finish_label, payload=KeyBoards.get_payload("Завершили", can=redact_events)),
                                     color=KeyboardButtonColor.POSITIVE)
         keyboard_edit_event.row()
