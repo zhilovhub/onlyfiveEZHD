@@ -100,6 +100,12 @@ class EventCommands(DataBase):
             cursor.execute(EventQueries.get_event_collective_query, (event_id,))
             return cursor.fetchone()[0]
 
+    def get_event_finished(self, event_id: int) -> datetime:
+        """Returns finished date"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.get_event_finished_query, (event_id,))
+            return cursor.fetchone()[0]
+
     def get_event_id_by_message_event_id(self, message_event_id: int, classroom_id: int) -> int:
         """Returns event_id by message_event_id"""
         with self.connection.cursor() as cursor:
@@ -299,6 +305,7 @@ class EventQueries:
     get_event_end_time_query = """SELECT end_time FROM event WHERE event_id=%s"""
     get_event_current_count_query = """SELECT current_count FROM event WHERE event_id=%s"""
     get_event_collective_query = """SELECT collective FROM event WHERE event_id=%s"""
+    get_event_finished_query = """SELECT finished FROM event WHERE event_id=%s"""
     get_event_classroom_id_query = """SELECT classroom_id FROM event_diary WHERE 
     event_diary_id IN (SELECT event_diary_id FROM event WHERE event_id=%s)"""
     get_just_finished_events_query = """SELECT event_id FROM event 

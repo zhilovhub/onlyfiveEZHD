@@ -782,6 +782,10 @@ class EventHandlers(SupportingFunctions):
                 event_end_time = self.event_db.get_event_end_time(event_id)
 
                 if event_end_time and event_start_time < event_end_time or not event_end_time:
+                    finished_date = self.event_db.get_event_finished(event_id)
+                    if finished_date and finished_date < event_start_time:
+                        self.event_db.update_event_finished(event_id, None)
+
                     self.event_db.update_event_start_time(event_id, event_start_time)
 
                     event = self.event_db.get_classroom_event(event_id)
@@ -837,6 +841,10 @@ class EventHandlers(SupportingFunctions):
                                                               minute=event_end_time_hour_minute.minute)
 
                 if event_end_time > event_start_time:
+                    finished_date = self.event_db.get_event_finished(event_id)
+                    if finished_date and finished_date < event_end_time:
+                        self.event_db.update_event_finished(event_id, None)
+
                     self.event_db.update_event_end_time(event_id, event_end_time)
 
                     event = self.event_db.get_classroom_event(event_id)
