@@ -780,6 +780,9 @@ class EventHandlers(SupportingFunctions):
             try:
                 event_start_time = datetime.strptime(message, pattern)
                 event_end_time = self.event_db.get_event_end_time(event_id)
+                if event_end_time:
+                    event_end_time = event_end_time.replace(year=event_start_time.year, month=event_start_time.month,
+                                                            day=event_start_time.day)
 
                 if event_end_time and event_start_time < event_end_time or not event_end_time:
                     finished_date = self.event_db.get_event_finished(event_id)
