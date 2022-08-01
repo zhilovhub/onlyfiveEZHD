@@ -46,7 +46,8 @@ class EventCommands(DataBase):
                     "required_count": event[9],
                     "current_students_count": len(cursor.fetchall()),
                     "required_students_count": event[10],
-                    "finished": event[11]
+                    "last": event[11],
+                    "finished": event[12]
                 })
 
             return sorted(events, key=lambda x: (-x["collective"], x["start_time"]))
@@ -68,7 +69,8 @@ class EventCommands(DataBase):
                     "required_count": event[9],
                     "current_students_count": len(cursor.fetchall()),
                     "required_students_count": event[10],
-                    "finished": event[11]
+                    "last": event[11],
+                    "finished": event[12]
                 }
 
     def get_event_students(self, event_id: int) -> list:
@@ -119,6 +121,30 @@ class EventCommands(DataBase):
             cursor.execute(EventQueries.get_event_classroom_id_query, (event_id,))
 
             return cursor.fetchone()[0]
+
+    def get_started_events_and_mark_them(self) -> list:
+        """Returns just started events and mark them last"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.get_just_started_events_query)
+            event_ids = [row[0] for row in cursor.fetchall()]
+
+            if event_ids:
+                cursor.execute(EventQueries.update_events_last_query.format(",".join(map(str, event_ids))))
+                self.connection.commit()
+
+            return event_ids
+
+    def get_finished_events_and_mark_them(self) -> list:
+        """Returns just finished events and mark them finished"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.get_just_finished_events_query)
+            event_ids = [row[0] for row in cursor.fetchall()]
+
+            if event_ids:
+                cursor.execute(EventQueries.update_events_finished_query.format(",".join(map(str, event_ids))))
+                self.connection.commit()
+
+            return event_ids
 
     def insert_new_event_diary(self, classroom_id: int) -> None:
         """Inserts new row into event_diary table"""
@@ -212,10 +238,10 @@ class EventCommands(DataBase):
             cursor.execute(EventQueries.update_event_created_query, (created, event_id))
             self.connection.commit()
 
-    def update_event_finished(self, event_id: int, finished) -> None:
-        """Updates event's finsihed"""
+    def update_event_last_and_finished(self, event_id: int, last: bool, finished) -> None:
+        """Updates event's last and finished"""
         with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.update_event_finished_query, (finished, event_id))
+            cursor.execute(EventQueries.update_event_last_and_finished_query, (last, finished, event_id))
             self.connection.commit()
 
     def delete_event(self, event_id: int) -> None:
@@ -229,18 +255,6 @@ class EventCommands(DataBase):
         with self.connection.cursor() as cursor:
             cursor.execute(EventQueries.delete_student_query, (event_id, student_id))
             self.connection.commit()
-
-    def get_finished_events_and_mark_them(self) -> list:
-        """Returns just finished events and mark them finished"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.get_just_finished_events_query)
-            event_ids = [row[0] for row in cursor.fetchall()]
-
-            if event_ids:
-                cursor.execute(EventQueries.update_events_finished_query.format(",".join(map(str, event_ids))))
-                self.connection.commit()
-
-            return event_ids
 
 
 class EventQueries:
@@ -264,6 +278,7 @@ class EventQueries:
         current_count INT,
         required_count INT,
         required_students_count INT,
+        last BOOLEAN DEFAULT 0,
         finished DATETIME DEFAULT NULL
         
         FOREIGN KEY (event_diary_id) REFERENCES event_diary (event_diary_id) ON DELETE CASCADE
@@ -308,6 +323,8 @@ class EventQueries:
     get_event_finished_query = """SELECT finished FROM event WHERE event_id=%s"""
     get_event_classroom_id_query = """SELECT classroom_id FROM event_diary WHERE 
     event_diary_id IN (SELECT event_diary_id FROM event WHERE event_id=%s)"""
+    get_just_started_events_query = """SELECT event_id FROM event WHERE NOW() > start_time AND last=0 AND 
+    finished IS NULL AND created=1"""
     get_just_finished_events_query = """SELECT event_id FROM event 
     WHERE ((NOW() > end_time) OR (end_time IS NULL AND NOW() > start_time)) AND finished IS NULL AND created=1"""
 
@@ -325,7 +342,8 @@ class EventQueries:
     update_event_required_count_query = """UPDATE event SET required_count=%s WHERE event_id=%s"""
     update_event_required_students_count_query = """UPDATE event SET required_students_count=%s WHERE event_id=%s"""
     update_event_created_query = """UPDATE event SET created=%s WHERE event_id=%s"""
-    update_event_finished_query = """UPDATE event SET finished=%s WHERE event_id=%s"""
+    update_event_last_and_finished_query = """UPDATE event SET last=%s, finished=%s WHERE event_id=%s"""
+    update_events_last_query = """UPDATE event SET last=1 WHERE event_id IN ({})"""
     update_events_finished_query = """UPDATE event SET finished=NOW() WHERE event_id IN ({})"""
 
     delete_event_query = """DELETE FROM event WHERE event_id=%s"""

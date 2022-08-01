@@ -414,7 +414,7 @@ class EventHandlers(SupportingFunctions):
                 finished_date = datetime.now()
 
                 event_id = self.event_db.get_customizing_event_id(user_id)
-                self.event_db.update_event_finished(event_id, finished_date)
+                self.event_db.update_event_last_and_finished(event_id, False, finished_date)
 
                 event = self.event_db.get_classroom_event(event_id)
                 event_text = self.get_event_diary_text([event])
@@ -785,10 +785,7 @@ class EventHandlers(SupportingFunctions):
                                                             day=event_start_time.day)
 
                 if event_end_time and event_start_time < event_end_time or not event_end_time:
-                    finished_date = self.event_db.get_event_finished(event_id)
-                    if finished_date and finished_date < event_start_time:
-                        self.event_db.update_event_finished(event_id, None)
-
+                    self.event_db.update_event_last_and_finished(event_id, False, None)
                     self.event_db.update_event_start_time(event_id, event_start_time)
 
                     event = self.event_db.get_classroom_event(event_id)
@@ -844,10 +841,7 @@ class EventHandlers(SupportingFunctions):
                                                               minute=event_end_time_hour_minute.minute)
 
                 if event_end_time > event_start_time:
-                    finished_date = self.event_db.get_event_finished(event_id)
-                    if finished_date and finished_date < event_end_time:
-                        self.event_db.update_event_finished(event_id, None)
-
+                    self.event_db.update_event_last_and_finished(event_id, False, None)
                     self.event_db.update_event_end_time(event_id, event_end_time)
 
                     event = self.event_db.get_classroom_event(event_id)

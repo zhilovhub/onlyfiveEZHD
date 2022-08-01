@@ -2,6 +2,7 @@
 
 # import for main file
 import asyncio
+import aioschedule
 from vkbottle.bot import Bot, Message
 from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback
 from vkbottle import GroupEventType, GroupTypes

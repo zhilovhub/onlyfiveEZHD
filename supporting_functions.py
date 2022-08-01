@@ -1,3 +1,5 @@
+import aioschedule
+
 from databases import *
 
 from keyboards import KeyBoards
@@ -412,6 +414,12 @@ class SupportingFunctions:
         student_id = self.classroom_db.insert_new_user_in_classroom(user_id, classroom_id, role_id)
         self.notification_db.insert_new_notification(student_id, user_id, classroom_id)
 
+    async def check_events_started(self) -> None:
+        """Finds event that started and notifies about it"""
+        started_event_ids = self.event_db.get_started_events_and_mark_them()
+        for event_id in started_event_ids:
+            await self.notify_start_event(event_id)
+
     async def check_events_finished(self) -> None:
         """Finds event that finished and notifies about it"""
         finished_event_ids = self.event_db.get_finished_events_and_mark_them()
@@ -603,6 +611,19 @@ class SupportingFunctions:
 
             await self.send_message(user_ids=notified_users,
                                     message=notification_text)
+
+    async def notify_start_event(self, event_id: int) -> None:
+        """Notifies about start of the event"""
+        classroom_id = self.event_db.get_event_classroom_id(event_id)
+        notified_users = list(set(self.classroom_db.get_user_ids(self.event_db.get_event_students(event_id)) +
+                                  self.notification_db.get_users_with_notification_type(classroom_id, "events")))
+
+        if notified_users:
+            event = self.event_db.get_classroom_event(event_id)
+            event_text = self.get_event_diary_text([event])
+
+            await self.send_message(user_ids=notified_users,
+                                    message=f"Следующее событие началось:\n\n{event_text}")
 
     @staticmethod
     def get_event_diary_text(classroom_events: list) -> str:
