@@ -474,7 +474,7 @@ class EventHandlers(SupportingFunctions):
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
                 event_id = self.event_db.get_customizing_event_id(user_id)
 
-                await self.notify_delete_event(user_id, event_id, without_user_ids=[user_id])
+                await self.notify_delete_event(event_id, user_id=user_id, without_user_ids=[user_id])
 
                 self.event_db.delete_event(event_id)
                 self.event_db.update_customizing_event_id(user_id, None)

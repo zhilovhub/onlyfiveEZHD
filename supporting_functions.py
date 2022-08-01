@@ -426,6 +426,13 @@ class SupportingFunctions:
         for event_id in finished_event_ids:
             await self.notify_finished_event(event_id)
 
+    async def delete_finished_events(self) -> None:
+        """Deletes events that finished two days ago"""
+        deleted_event_ids = self.event_db.get_deleted_finished_events()
+        for event_id in deleted_event_ids:
+            await self.notify_delete_event(event_id)
+        self.event_db.delete_finished_events(deleted_event_ids)
+
     async def notify_new_classmate(self, user_id: int, classroom_id: int, without_user_ids=None) -> None:
         """Notifies about new classmate"""
         notified_users = self.notification_db.get_users_with_notification_type(classroom_id, "new_classmate")
@@ -490,9 +497,9 @@ class SupportingFunctions:
             await self.send_message(user_ids=notified_users, message=f"[id{user_id}|{first_name} {last_name}] создал "
                                                                      f"новое событие!\n\n{event_text}")
 
-    async def notify_delete_event(self, user_id: int, event_id: int, without_user_ids=None) -> None:
+    async def notify_delete_event(self, event_id: int, user_id=None, without_user_ids=None) -> None:
         """Notifies about deleted event"""
-        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+        classroom_id = self.event_db.get_event_classroom_id(event_id)
         notified_users = list(set(self.classroom_db.get_user_ids(self.event_db.get_event_students(event_id)) +
                                   self.notification_db.get_users_with_notification_type(classroom_id, "events")))
         if without_user_ids:
@@ -501,13 +508,16 @@ class SupportingFunctions:
                     notified_users.remove(without_user_id)
 
         if notified_users:
-            first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
-
             event = self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
-            await self.send_message(user_ids=notified_users, message=f"[id{user_id}|{first_name} {last_name}] удалил "
-                                                                     f"следующее событие:\n\n{event_text}")
+            if user_id:
+                first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+                notification_text = f"[id{user_id}|{first_name} {last_name}] удалил следующее событие:\n\n{event_text}"
+            else:
+                notification_text = f"Следующее событие удалено (прошло 2 дня с его окончания):\n\n{event_text}"
+
+            await self.send_message(user_ids=notified_users, message=notification_text)
 
     async def notify_new_leave_student_event(self, user_id: int, event_id: int, new: bool, without_user_ids=None
                                              ) -> None:

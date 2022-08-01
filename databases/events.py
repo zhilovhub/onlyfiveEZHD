@@ -146,6 +146,14 @@ class EventCommands(DataBase):
 
             return event_ids
 
+    def get_deleted_finished_events(self) -> list:
+        """Returns and events that finished two days ago"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.get_deleted_finished_events_query)
+            event_ids = [row[0] for row in cursor.fetchall()]
+
+            return event_ids
+
     def insert_new_event_diary(self, classroom_id: int) -> None:
         """Inserts new row into event_diary table"""
         with self.connection.cursor() as cursor:
@@ -256,6 +264,13 @@ class EventCommands(DataBase):
             cursor.execute(EventQueries.delete_student_query, (event_id, student_id))
             self.connection.commit()
 
+    def delete_finished_events(self, event_ids: list) -> None:
+        """Deletes evevnts that finished two days ago"""
+        with self.connection.cursor() as cursor:
+            if event_ids:
+                cursor.execute(EventQueries.delete_events_query.format(",".join(map(str, event_ids))))
+                self.connection.commit()
+
 
 class EventQueries:
     create_table_event_diary_query = """CREATE TABLE IF NOT EXISTS event_diary(
@@ -327,6 +342,8 @@ class EventQueries:
     finished IS NULL AND created=1"""
     get_just_finished_events_query = """SELECT event_id FROM event 
     WHERE ((NOW() > end_time) OR (end_time IS NULL AND NOW() > start_time)) AND finished IS NULL AND created=1"""
+    get_deleted_finished_events_query = """SELECT event_id FROM event
+    WHERE DATEDIFF(NOW(), finished) >= 2"""
 
     insert_event_diary_query = """INSERT INTO event_diary (classroom_id) VALUES (%s)"""
     insert_event_query = """INSERT INTO event (event_diary_id) VALUES (%s)"""
@@ -348,6 +365,7 @@ class EventQueries:
 
     delete_event_query = """DELETE FROM event WHERE event_id=%s"""
     delete_student_query = """DELETE FROM event_collective WHERE event_id=%s AND student_id=%s"""
+    delete_events_query = """DELETE FROM event WHERE event_id IN ({})"""
 
 
 if __name__ == '__main__':

@@ -317,6 +317,7 @@ async def aioscheduler_tasks() -> None:
     aioschedule.every().monday.at("0:00").do(diary_homework_db.update_change_current_and_next_diary)
     aioschedule.every(10).seconds.do(handlers_class.check_events_started)
     aioschedule.every(10).seconds.do(handlers_class.check_events_finished)
+    aioschedule.every(10).seconds.do(handlers_class.delete_finished_events)
 
     while True:
         await aioschedule.run_pending()
