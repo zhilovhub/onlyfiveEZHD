@@ -419,7 +419,7 @@ class EventHandlers(SupportingFunctions):
                 event = self.event_db.get_classroom_event(event_id)
                 event_text = self.get_event_diary_text([event])
 
-                await self.notify_result_of_event(event_id, user_id=user_id, without_user_ids=[user_id])
+                await self.notify_finished_event(event_id, user_id=user_id, without_user_ids=[user_id])
 
                 await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES,
                                             f"{event_text}\n\nСобытие завершено! (через 2 дня оно удалится из списка)")

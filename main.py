@@ -315,8 +315,8 @@ async def filter_callback_button_payload(user_id: int, payload: dict, current_di
 
 async def aioscheduler_tasks() -> None:
     import aioschedule
-    aioschedule.every().monday.do(diary_homework_db.update_change_current_and_next_diary)
-    # aioschedule.every(1).seconds.do(handlers_class.check_events_finished)
+    aioschedule.every().monday.at("0:00").do(diary_homework_db.update_change_current_and_next_diary)
+    aioschedule.every(10).seconds.do(handlers_class.check_events_finished)
 
     while True:
         await aioschedule.run_pending()

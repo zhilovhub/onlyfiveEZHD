@@ -107,6 +107,13 @@ class EventCommands(DataBase):
 
             return cursor.fetchone()[0]
 
+    def get_event_classroom_id(self, event_id: int) -> int:
+        """Returns event's classroom id"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(EventQueries.get_event_classroom_id_query, (event_id,))
+
+            return cursor.fetchone()[0]
+
     def insert_new_event_diary(self, classroom_id: int) -> None:
         """Inserts new row into event_diary table"""
         with self.connection.cursor() as cursor:
@@ -223,6 +230,10 @@ class EventCommands(DataBase):
             cursor.execute(EventQueries.get_just_finished_events_query)
             event_ids = [row[0] for row in cursor.fetchall()]
 
+            if event_ids:
+                cursor.execute(EventQueries.update_events_finished_query.format(",".join(map(str, event_ids))))
+                self.connection.commit()
+
             return event_ids
 
 
@@ -291,7 +302,7 @@ class EventQueries:
     get_event_classroom_id_query = """SELECT classroom_id FROM event_diary WHERE 
     event_diary_id IN (SELECT event_diary_id FROM event WHERE event_id=%s)"""
     get_just_finished_events_query = """SELECT event_id FROM event 
-    WHERE ((NOW() > end_time) OR (end_time IS NULL AND NOW() > start_time)) AND finished IS NULL"""
+    WHERE ((NOW() > end_time) OR (end_time IS NULL AND NOW() > start_time)) AND finished IS NULL AND created=1"""
 
     insert_event_diary_query = """INSERT INTO event_diary (classroom_id) VALUES (%s)"""
     insert_event_query = """INSERT INTO event (event_diary_id) VALUES (%s)"""
@@ -308,6 +319,7 @@ class EventQueries:
     update_event_required_students_count_query = """UPDATE event SET required_students_count=%s WHERE event_id=%s"""
     update_event_created_query = """UPDATE event SET created=%s WHERE event_id=%s"""
     update_event_finished_query = """UPDATE event SET finished=%s WHERE event_id=%s"""
+    update_events_finished_query = """UPDATE event SET finished=NOW() WHERE event_id IN ({})"""
 
     delete_event_query = """DELETE FROM event WHERE event_id=%s"""
     delete_student_query = """DELETE FROM event_collective WHERE event_id=%s AND student_id=%s"""
