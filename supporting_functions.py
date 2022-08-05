@@ -82,10 +82,12 @@ class SupportingFunctions:
                 members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
 
                 accept_requests = members_role_properties_dictionary["accept_requests"]
+                notify = members_role_properties_dictionary["notify"]
 
                 await self.send_message(user_id, message,
                                         KeyBoards.get_my_class_menu2_keyboard(**kwargs,
-                                                                              accept_requests=accept_requests))
+                                                                              accept_requests=accept_requests,
+                                                                              notify=notify))
 
             case States.S_EDIT_WEEK_MYCLASSES:
                 await self.send_message(user_id, message,
@@ -108,6 +110,10 @@ class SupportingFunctions:
 
             case States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.get_edit_homework_weekday_keyboard())
+
+            # NOTIFICATIONS
+            case States.S_CHOOSE_USER_FOR_NOTIFICATION_MYCLASSES:
+                await self.send_message(user_id, message, KeyBoards.get_choose_user_for_notification_keyboard())
 
             # EVENTS
             case States.S_CHOOSE_EVENT_MYCLASSES:

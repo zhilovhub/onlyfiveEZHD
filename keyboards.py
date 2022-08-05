@@ -92,6 +92,18 @@ class KeyBoards:
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add(Text("Главное меню", payload=get_payload("Главное меню")),
                                           color=KeyboardButtonColor.PRIMARY)
 
+    # CHOOSE_NOTIFICATION KEYBOARD
+    @staticmethod
+    def get_choose_user_for_notification_keyboard() -> str:
+        choose_notification_keyboard = Keyboard()
+        choose_notification_keyboard.add(Text("Всех", payload=KeyBoards.get_payload("Всех")))
+        choose_notification_keyboard.row()
+        choose_notification_keyboard.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
+        choose_notification_keyboard.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
+                                         color=KeyboardButtonColor.PRIMARY)
+
+        return choose_notification_keyboard.get_json()
+
     # EVENT_SETTINGS KEYBOARD
     @staticmethod
     def get_event_settings_keyboard(event: dict) -> str:
@@ -408,7 +420,9 @@ class KeyBoards:
 
     # MY_CLASS_MENU2 KEYBOARD
     @staticmethod
-    def get_my_class_menu2_keyboard(sign: bool, accept_requests: bool) -> str:
+    def get_my_class_menu2_keyboard(sign: bool, accept_requests: bool, notify: bool) -> str:
+        notify_label = "Уведомить" if notify else "Уведомить❌"
+
         keyboard_my_class_menu2 = Keyboard()
         if not accept_requests:
             keyboard_my_class_menu2.add(Text("Заявки❌", payload=KeyBoards.get_payload("Заявки",
@@ -420,7 +434,8 @@ class KeyBoards:
             keyboard_my_class_menu2.add(Text("Заявки", payload=KeyBoards.get_payload("Заявки",
                                                                                      can=accept_requests)))
         keyboard_my_class_menu2.add(Text("События", payload=KeyBoards.get_payload("События")))
-        keyboard_my_class_menu2.add(Text("Уведомить", payload=KeyBoards.get_payload("Уведомить")))
+        keyboard_my_class_menu2.add(Text(notify_label, payload=KeyBoards.get_payload("Уведомить",
+                                                                                     can=notify)))
         keyboard_my_class_menu2.row()
         keyboard_my_class_menu2.add(Text("⏪Назад", payload=KeyBoards.get_payload("Назад")))
         keyboard_my_class_menu2.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),

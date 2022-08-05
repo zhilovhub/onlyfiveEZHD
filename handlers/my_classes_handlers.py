@@ -201,6 +201,20 @@ class MyClassesHandlers(SupportingFunctions):
             await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Для навигации используй кнопки!👇🏻",
                                         sign=self.get_sign(user_id))
 
+        elif payload["text"] == "Уведомить":
+            if payload["can"]:
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+                members_text = self.get_members_text(roles_dictionary)
+
+                await self.state_transition(user_id, States.S_CHOOSE_USER_FOR_NOTIFICATION_MYCLASSES,
+                                            f"{members_text}\n\nВыбери, кого уведомить\n(впиши их номера через пробел,"
+                                            f" например, 1 2 21 23):")
+            else:
+                await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2,
+                                            "Ты не можешь уведомлять из-за своей роли!",
+                                            sign=self.get_sign(user_id))
+
         elif payload["text"] == "Заявки":
             if payload["can"]:
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
