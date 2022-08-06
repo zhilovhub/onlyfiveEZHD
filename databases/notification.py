@@ -9,9 +9,17 @@ class NotificationCommands(DataBase):
         try:
             with self.connection.cursor() as cursor:
                 cursor.execute(NotificationQueries.create_table_notification_query)
+                cursor.execute(NotificationQueries.create_table_notification_diary_query)
+                cursor.execute(NotificationQueries.create_table_notification_students_query)
 
         except Error as e:
             print(e)
+
+    def get_customizing_notification_id(self, user_id: int, classroom_id: int) -> int:
+        """Returns customizing notification id"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(NotificationQueries.get_customizing_notification_id_query, (user_id, classroom_id))
+            return cursor.fetchone()[0]
 
     def get_notification_values_dict(self, user_id: int, classroom_id: int) -> dict:
         """Returns notification's values"""
@@ -44,6 +52,14 @@ class NotificationCommands(DataBase):
             cursor.execute(NotificationQueries.insert_new_notification_query, (student_id, user_id, classroom_id))
             self.connection.commit()
 
+    def insert_new_notification_into_diary(self, user_id: int, classroom_id: int) -> None:
+        """Inserts new notification into diary"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(NotificationQueries.get_student_id_query, (user_id, classroom_id))
+            student_id = cursor.fetchone()[0]
+            cursor.execute(NotificationQueries.insert_new_notification_into_diary_query, (student_id,))
+            self.connection.commit()
+
     def update_notification_value(self, user_id: int, classroom_id: int, notification_type: str) -> None:
         """Updates notification's value"""
         with self.connection.cursor() as cursor:
@@ -54,6 +70,12 @@ class NotificationCommands(DataBase):
 
             cursor.execute(NotificationQueries.update_notification_value_query.format(notification_type),
                            (new_value, user_id, classroom_id))
+            self.connection.commit()
+
+    def delete_notification_from_diary(self, notification_id: int) -> None:
+        """Deletes notification from diary"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(NotificationQueries.delete_notification_from_diary_query, (notification_id,))
             self.connection.commit()
 
 
@@ -72,11 +94,36 @@ class NotificationQueries:
         events BOOLEAN DEFAULT 1
     )"""
 
+    create_table_notification_diary_query = """CREATE TABLE IF NOT EXISTS notification_diary(
+        notification_id INT NOT NULL UNIQUE PRIMARY KEY AUTO_INCREMENT,
+        student_id INT,
+        
+        text TEXT,
+        date DATETIME,
+        created BOOLEAN DEFAULT 0,
+        
+        FOREIGN KEY (student_id) REFERENCES Student (student_id) ON DELETE CASCADE
+    )"""
+
+    create_table_notification_students_query = """CREATE TABLE IF NOT EXISTS notification_students(
+        notification_id INT,
+        student_id INT,
+        
+        FOREIGN KEY (notification_id) REFERENCES notification_diary (notification_id) ON DELETE CASCADE,
+        FOREIGN KEY (student_id) REFERENCES Student (student_id) ON DELETE CASCADE
+    )"""
+
+    get_customizing_notification_id_query = """SELECT notification_id FROM notification_diary 
+    WHERE student_id IN (SELECT student_id FROM Student WHERE user_id=%s AND classroom_id=%s)"""
     get_notification_values_query = """SELECT * FROM notification WHERE user_id=%s AND classroom_id=%s"""
     get_notification_value_query = """SELECT {} FROM notification WHERE user_id=%s AND classroom_id=%s"""
     get_users_with_notification_type = """SELECT user_id FROM notification WHERE {}=1 AND classroom_id=%s"""
+    get_student_id_query = """SELECT student_id FROM Student WHERE user_id=%s AND classroom_id=%s"""
 
     insert_new_notification_query = """INSERT INTO notification (student_id, user_id, classroom_id) 
         VALUES(%s, %s, %s)"""
+    insert_new_notification_into_diary_query = """INSERT INTO notification_diary (student_id) VALUES (%s)"""
 
     update_notification_value_query = """UPDATE notification SET {}=%s WHERE user_id=%s AND classroom_id=%s"""
+
+    delete_notification_from_diary_query = """DELETE FROM notification_diary WHERE notification_id=%s"""

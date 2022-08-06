@@ -17,9 +17,23 @@ class NotificationHandlers(SupportingFunctions):
         if payload is None:
             pass
 
+        elif payload["text"] == "Всех":
+            pass
+
         elif payload["text"] == "Назад":
-            await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Главное меню класса",
-                                        sign=self.get_sign(user_id))
+            await self.cancel_creating_notification(user_id, to_main_menu=False)
+
 
         elif payload["text"] == "Главное меню":
+            await self.cancel_creating_notification(user_id, to_main_menu=True)
+
+    async def cancel_creating_notification(self, user_id: int, to_main_menu: bool) -> None:
+        """Trans to classroom/main menu"""
+        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+        notification_id = self.notification_db.get_customizing_notification_id(user_id, classroom_id)
+        self.notification_db.delete_notification_from_diary(notification_id)
+        if to_main_menu:
             await self.trans_to_main_menu(user_id)
+        else:
+            await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Главное меню класса",
+                                        sign=self.get_sign(user_id))

@@ -207,6 +207,8 @@ class MyClassesHandlers(SupportingFunctions):
                 roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
                 members_text = self.get_members_text(roles_dictionary)
 
+                self.notification_db.insert_new_notification_into_diary(user_id, classroom_id)
+
                 await self.state_transition(user_id, States.S_CHOOSE_USER_FOR_NOTIFICATION_MYCLASSES,
                                             f"{members_text}\n\nВыбери, кого уведомить\n(впиши их номера через пробел,"
                                             f" например, 1 2 21 23):")
