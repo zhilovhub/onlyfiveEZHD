@@ -331,6 +331,7 @@ async def aioscheduler_tasks() -> None:
     aioschedule.every(10).seconds.do(handlers_class.check_events_started)
     aioschedule.every(10).seconds.do(handlers_class.check_events_finished)
     aioschedule.every(10).seconds.do(handlers_class.delete_finished_events)
+    aioschedule.every(10).seconds.do(handlers_class.check_notifications)
 
     while True:
         await aioschedule.run_pending()

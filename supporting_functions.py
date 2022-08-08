@@ -446,6 +446,21 @@ class SupportingFunctions:
             await self.notify_delete_event(event_id)
         self.event_db.delete_finished_events(deleted_event_ids)
 
+    async def check_notifications(self) -> None:
+        """Check users' notifications and notifies about them"""
+        notification_ids = self.notification_db.get_notified_notifications()
+        for notification_id in notification_ids:
+            await self.notify_notification(notification_id)
+        self.notification_db.delete_notified_notifications(notification_ids)
+
+    async def notify_notification(self, notification_id: int) -> None:
+        """Notifies about notification"""
+        notification_text = self.get_notification_text(notification_id)
+        notification_students = self.notification_db.get_notification_students(notification_id)
+        user_ids = self.classroom_db.get_user_ids(notification_students)
+
+        await self.send_message(user_ids=user_ids, message=notification_text)
+
     async def notify_new_classmate(self, user_id: int, classroom_id: int, without_user_ids=None) -> None:
         """Notifies about new classmate"""
         notified_users = self.notification_db.get_users_with_notification_type(classroom_id, "new_classmate")
