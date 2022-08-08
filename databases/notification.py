@@ -60,10 +60,10 @@ class NotificationCommands(DataBase):
             cursor.execute(NotificationQueries.insert_new_notification_into_diary_query, (student_id,))
             self.connection.commit()
 
-    def insert_notification_students(self, notification_id: int, students_id: list) -> None:
+    def insert_notification_students(self, notification_id: int, student_ids: list) -> None:
         """Inserts notification students"""
         with self.connection.cursor() as cursor:
-            for student_id in students_id:
+            for student_id in student_ids:
                 cursor.execute(NotificationQueries.insert_notification_student_query, (notification_id, student_id))
             self.connection.commit()
 
