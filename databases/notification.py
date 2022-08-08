@@ -100,6 +100,12 @@ class NotificationCommands(DataBase):
                            (notification_datetime, notification_id))
             self.connection.commit()
 
+    def update_notification_created(self, notification_id: int, created: bool) -> None:
+        """Updates notification's created"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(NotificationQueries.update_notification_created_query, (created, notification_id))
+            self.connection.commit()
+
     def delete_notification_from_diary(self, notification_id: int) -> None:
         """Deletes notification from diary"""
         with self.connection.cursor() as cursor:
@@ -148,7 +154,7 @@ class NotificationQueries:
     )"""
 
     get_customizing_notification_id_query = """SELECT notification_id FROM notification_diary 
-    WHERE student_id IN (SELECT student_id FROM Student WHERE user_id=%s AND classroom_id=%s)"""
+    WHERE student_id IN (SELECT student_id FROM Student WHERE user_id=%s AND classroom_id=%s) AND created=0"""
     get_notification_values_query = """SELECT * FROM notification WHERE user_id=%s AND classroom_id=%s"""
     get_notification_value_query = """SELECT {} FROM notification WHERE user_id=%s AND classroom_id=%s"""
     get_notification_information_query = """SELECT student_id, text FROM notification_diary WHERE notification_id=%s"""
@@ -163,6 +169,7 @@ class NotificationQueries:
     update_notification_value_query = """UPDATE notification SET {}=%s WHERE user_id=%s AND classroom_id=%s"""
     update_notification_text_query = """UPDATE notification_diary SET text=%s WHERE notification_id=%s"""
     update_notification_datetime_query = """UPDATE notification_diary SET date=%s WHERE notification_id=%s"""
+    update_notification_created_query = """UPDATE notification_diary SET created=%s WHERE notification_id=%s"""
 
     delete_notification_from_diary_query = """DELETE FROM notification_diary WHERE notification_id=%s"""
     delete_notification_students_query = """DELETE FROM notification_students WHERE notification_id=%s"""

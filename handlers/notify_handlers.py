@@ -139,6 +139,12 @@ class NotificationHandlers(SupportingFunctions):
             await self.state_transition(user_id, States.S_ACCEPT_CREATE_NOTIFICATION_MYCLASSES,
                                         "Для навигации используй кнопки!👇🏻")
 
+        elif payload["text"] == "Принять":
+            self.notification_db.update_notification_created(notification_id, True)
+
+            await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Уведомление создано!",
+                                        sign=self.get_sign(user_id))
+
         elif payload["text"] == "Отклонить":
             self.notification_db.update_notification_datetime(notification_id, None)
 
