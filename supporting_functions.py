@@ -1,5 +1,3 @@
-import aioschedule
-
 from databases import *
 
 from keyboards import KeyBoards

@@ -20,6 +20,16 @@ class ClassroomCommands(DataBase):
             cursor.execute(ClassroomQueries.get_student_id_query, (user_id, classroom_id))
             return cursor.fetchone()[0]
 
+    def get_student_ids(self, user_ids: list, classroom_id: int) -> list:
+        """Returns student_ids by user_ids and classroom_id"""
+        if user_ids:
+            with self.connection.cursor() as cursor:
+                cursor.execute(ClassroomQueries.get_student_ids_query.format(",".join(map(str, user_ids))),
+                               (classroom_id,))
+                return [row[0] for row in cursor.fetchall()]
+
+        return []
+
     def get_user_ids(self, student_ids: list) -> list:
         """Returns user_ids by student_ids"""
         if student_ids:
@@ -275,6 +285,7 @@ class ClassroomQueries:
     FROM Classroom WHERE classroom_id={}"""
     get_user_classrooms_with_role_id_query = """SELECT classroom_id, role_id FROM Student WHERE user_id={}"""
     get_student_id_query = """SELECT student_id FROM Student WHERE user_id=%s AND classroom_id=%s"""
+    get_student_ids_query = """SELECT student_id FROM Student WHERE user_id IN ({}) AND classroom_id=%s"""
     get_user_ids_query = """SELECT user_id FROM Student WHERE student_id IN ({})"""
     get_classroom_name_query = """SELECT classroom_name FROM Classroom WHERE classroom_id={}"""
     get_classroom_access_query = """SELECT access FROM Classroom WHERE classroom_id={}"""

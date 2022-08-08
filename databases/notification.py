@@ -60,6 +60,13 @@ class NotificationCommands(DataBase):
             cursor.execute(NotificationQueries.insert_new_notification_into_diary_query, (student_id,))
             self.connection.commit()
 
+    def insert_notification_students(self, notification_id: int, students_id: list) -> None:
+        """Inserts notification students"""
+        with self.connection.cursor() as cursor:
+            for student_id in students_id:
+                cursor.execute(NotificationQueries.insert_notification_student_query, (notification_id, student_id))
+            self.connection.commit()
+
     def update_notification_value(self, user_id: int, classroom_id: int, notification_type: str) -> None:
         """Updates notification's value"""
         with self.connection.cursor() as cursor:
@@ -76,6 +83,12 @@ class NotificationCommands(DataBase):
         """Deletes notification from diary"""
         with self.connection.cursor() as cursor:
             cursor.execute(NotificationQueries.delete_notification_from_diary_query, (notification_id,))
+            self.connection.commit()
+
+    def delete_notification_students(self, notification_id: int) -> None:
+        """Deletes notification's students"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(NotificationQueries.delete_notification_students_query, (notification_id,))
             self.connection.commit()
 
 
@@ -123,7 +136,9 @@ class NotificationQueries:
     insert_new_notification_query = """INSERT INTO notification (student_id, user_id, classroom_id) 
         VALUES(%s, %s, %s)"""
     insert_new_notification_into_diary_query = """INSERT INTO notification_diary (student_id) VALUES (%s)"""
+    insert_notification_student_query = """INSERT INTO notification_students VALUES (%s, %s)"""
 
     update_notification_value_query = """UPDATE notification SET {}=%s WHERE user_id=%s AND classroom_id=%s"""
 
     delete_notification_from_diary_query = """DELETE FROM notification_diary WHERE notification_id=%s"""
+    delete_notification_students_query = """DELETE FROM notification_students WHERE notification_id=%s"""
