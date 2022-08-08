@@ -37,6 +37,14 @@ class NotificationCommands(DataBase):
 
             return notification_dict
 
+    def get_notification_information(self, notification_id: int) -> tuple:
+        """Returns notification's information"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(NotificationQueries.get_notification_information_query, (notification_id,))
+            student_id, text = cursor.fetchone()
+
+            return student_id, text
+
     def get_users_with_notification_type(self, classroom_id: int, notification_type: str) -> list:
         """Returns tuple of the users who has this notification_type True"""
         with self.connection.cursor() as cursor:
@@ -83,6 +91,13 @@ class NotificationCommands(DataBase):
         """Updates notification's text"""
         with self.connection.cursor() as cursor:
             cursor.execute(NotificationQueries.update_notification_text_query, (text, notification_id))
+            self.connection.commit()
+
+    def update_notification_datetime(self, notification_id: int, notification_datetime) -> None:
+        """Updates notification's text"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(NotificationQueries.update_notification_datetime_query,
+                           (notification_datetime, notification_id))
             self.connection.commit()
 
     def delete_notification_from_diary(self, notification_id: int) -> None:
@@ -136,6 +151,7 @@ class NotificationQueries:
     WHERE student_id IN (SELECT student_id FROM Student WHERE user_id=%s AND classroom_id=%s)"""
     get_notification_values_query = """SELECT * FROM notification WHERE user_id=%s AND classroom_id=%s"""
     get_notification_value_query = """SELECT {} FROM notification WHERE user_id=%s AND classroom_id=%s"""
+    get_notification_information_query = """SELECT student_id, text FROM notification_diary WHERE notification_id=%s"""
     get_users_with_notification_type = """SELECT user_id FROM notification WHERE {}=1 AND classroom_id=%s"""
     get_student_id_query = """SELECT student_id FROM Student WHERE user_id=%s AND classroom_id=%s"""
 
@@ -146,6 +162,7 @@ class NotificationQueries:
 
     update_notification_value_query = """UPDATE notification SET {}=%s WHERE user_id=%s AND classroom_id=%s"""
     update_notification_text_query = """UPDATE notification_diary SET text=%s WHERE notification_id=%s"""
+    update_notification_datetime_query = """UPDATE notification_diary SET date=%s WHERE notification_id=%s"""
 
     delete_notification_from_diary_query = """DELETE FROM notification_diary WHERE notification_id=%s"""
     delete_notification_students_query = """DELETE FROM notification_students WHERE notification_id=%s"""

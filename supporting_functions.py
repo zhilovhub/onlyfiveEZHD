@@ -119,6 +119,9 @@ class SupportingFunctions:
             case States.S_ENTER_DATE_FOR_NOTIFICATION_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
 
+            case States.S_ACCEPT_CREATE_NOTIFICATION_MYCLASSES:
+                await self.send_message(user_id, message, KeyBoards.get_submit_back_keyboard())
+
             # EVENTS
             case States.S_CHOOSE_EVENT_MYCLASSES:
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -759,6 +762,14 @@ class SupportingFunctions:
 
         role_names_text = "\n".join([f"{ind}. {role_name}" for ind, role_name in enumerate(role_names, start=1)])
         return role_names_text
+
+    def get_notification_text(self, notification_id: int) -> str:
+        """Returns text of the notification"""
+        student_id, text = self.notification_db.get_notification_information(notification_id)
+        user_id = self.classroom_db.get_user_ids([student_id])[0]
+        first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+
+        return f"[id{user_id}|{first_name} {last_name}] уведомляет❗\n{text}"
 
     def get_sign(self, user_id: int) -> bool:
         """Returns sign"""
