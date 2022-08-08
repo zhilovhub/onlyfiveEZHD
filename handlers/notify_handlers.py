@@ -66,10 +66,15 @@ class NotificationHandlers(SupportingFunctions):
     async def s_enter_text_for_notification_handler_my_classes(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_TEXT_FOR_NOTIFICATION_MYCLASSES"""
         classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+        notification_id = self.notification_db.get_customizing_notification_id(user_id, classroom_id)
 
         if payload is None:
             if len(message) <= 2000:
-                pass
+                self.notification_db.update_notification_text(notification_id, message)
+
+                await self.state_transition(user_id, States.S_ENTER_DATE_FOR_NOTIFICATION_MYCLASSES,
+                                            "Впиши дату, когда это уведомление прислать выбранным участникам, в формате"
+                                            " DD.MM.YYYY hh:mm\nНапример, 01.09.2022 12:05")
             else:
                 await self.state_transition(user_id, States.S_ENTER_TEXT_FOR_NOTIFICATION_MYCLASSES,
                                             f"Длина твоего текста больше 2000 символов!\n\n"
@@ -79,7 +84,6 @@ class NotificationHandlers(SupportingFunctions):
             roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
             members_text = self.get_members_text(roles_dictionary)
 
-            notification_id = self.notification_db.get_customizing_notification_id(user_id, classroom_id)
             self.notification_db.delete_notification_students(notification_id)
 
             await self.state_transition(user_id, States.S_CHOOSE_USER_FOR_NOTIFICATION_MYCLASSES,
@@ -87,9 +91,23 @@ class NotificationHandlers(SupportingFunctions):
                                         f"например, 1 2 21 23):")
 
         elif payload["text"] == "Главное меню":
-            notification_id = self.notification_db.get_customizing_notification_id(user_id, classroom_id)
-            self.notification_db.delete_notification_students(notification_id)
+            await self.cancel_creating_notification(user_id, to_main_menu=True)
 
+    async def s_enter_date_for_notification_handler_my_classes(self, user_id: int, message: str, payload: dict) -> None:
+        """Handling States.S_ENTER_DATE_FOR_NOTIFICATION_MYCLASSES"""
+        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+        notification_id = self.notification_db.get_customizing_notification_id(user_id, classroom_id)
+
+        if payload is None:
+            pass
+
+        elif payload["text"] == "Назад":
+            self.notification_db.update_notification_text(notification_id, None)
+
+            await self.state_transition(user_id, States.S_ENTER_TEXT_FOR_NOTIFICATION_MYCLASSES,
+                                        "Напиши текст уведомления (макс. 2000 символов):")
+
+        elif payload["text"] == "Главное меню":
             await self.cancel_creating_notification(user_id, to_main_menu=True)
 
     async def cancel_creating_notification(self, user_id: int, to_main_menu: bool) -> None:

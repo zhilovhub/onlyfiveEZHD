@@ -116,6 +116,9 @@ class SupportingFunctions:
             case States.S_ENTER_TEXT_FOR_NOTIFICATION_MYCLASSES:
                 await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
 
+            case States.S_ENTER_DATE_FOR_NOTIFICATION_MYCLASSES:
+                await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
+
             # EVENTS
             case States.S_CHOOSE_EVENT_MYCLASSES:
                 classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)

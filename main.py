@@ -148,6 +148,9 @@ async def filter_dialog_state(user_id: int, message: str, payload: dict, current
         case States.S_ENTER_TEXT_FOR_NOTIFICATION_MYCLASSES.value:
             await handlers_class.s_enter_text_for_notification_handler_my_classes(user_id, message, payload)
 
+        case States.S_ENTER_DATE_FOR_NOTIFICATION_MYCLASSES.value:
+            await handlers_class.s_enter_date_for_notification_handler_my_classes(user_id, message, payload)
+
         # EVENTS
         case States.S_CHOOSE_EVENT_MYCLASSES.value:
             await handlers_class.s_choose_event_handler(user_id, payload)

@@ -79,6 +79,12 @@ class NotificationCommands(DataBase):
                            (new_value, user_id, classroom_id))
             self.connection.commit()
 
+    def update_notification_text(self, notification_id: int, text) -> None:
+        """Updates notification's text"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(NotificationQueries.update_notification_text_query, (text, notification_id))
+            self.connection.commit()
+
     def delete_notification_from_diary(self, notification_id: int) -> None:
         """Deletes notification from diary"""
         with self.connection.cursor() as cursor:
@@ -139,6 +145,7 @@ class NotificationQueries:
     insert_notification_student_query = """INSERT INTO notification_students VALUES (%s, %s)"""
 
     update_notification_value_query = """UPDATE notification SET {}=%s WHERE user_id=%s AND classroom_id=%s"""
+    update_notification_text_query = """UPDATE notification_diary SET text=%s WHERE notification_id=%s"""
 
     delete_notification_from_diary_query = """DELETE FROM notification_diary WHERE notification_id=%s"""
     delete_notification_students_query = """DELETE FROM notification_students WHERE notification_id=%s"""
