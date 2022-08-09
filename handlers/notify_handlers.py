@@ -63,6 +63,9 @@ class NotificationHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_notification(user_id, to_main_menu=True)
 
+        else:
+            raise UnknownPayload(user_id)
+
     async def s_enter_text_for_notification_handler_my_classes(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_TEXT_FOR_NOTIFICATION_MYCLASSES"""
         classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -92,6 +95,9 @@ class NotificationHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_notification(user_id, to_main_menu=True)
+
+        else:
+            raise UnknownPayload(user_id)
 
     async def s_enter_date_for_notification_handler_my_classes(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_DATE_FOR_NOTIFICATION_MYCLASSES"""
@@ -130,6 +136,9 @@ class NotificationHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_notification(user_id, to_main_menu=True)
 
+        else:
+            raise UnknownPayload(user_id)
+
     async def s_accept_create_notification_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_ACCEPT_CREATE_NOTIFICATION_MYCLASSES"""
         classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -154,6 +163,9 @@ class NotificationHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_notification(user_id, to_main_menu=True)
+
+        else:
+            raise UnknownPayload(user_id)
 
     async def cancel_creating_notification(self, user_id: int, to_main_menu: bool) -> None:
         """Trans to classroom/main menu"""

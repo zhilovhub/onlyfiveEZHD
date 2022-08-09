@@ -28,6 +28,9 @@ class ClassCreateHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_classroom(user_id)
 
+        else:
+            raise UnknownPayload(user_id)
+
     async def s_enter_school_name_class_create_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_SCHOOL_NAME_CLASSCREATE"""
         if payload is None:
@@ -49,6 +52,9 @@ class ClassCreateHandlers(SupportingFunctions):
             trans_message = "Напишите название будущего класса (макс. 12 символов):"
             await self.state_transition(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE, trans_message)
 
+        else:
+            raise UnknownPayload(user_id)
+
     async def s_enter_access_class_create_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_ENTER_ACCESS_CLASSCREATE"""
         if payload is None:
@@ -68,6 +74,9 @@ class ClassCreateHandlers(SupportingFunctions):
 
             trans_message = "Краткое описание класса (макс. 200 символов):"
             await self.state_transition(user_id, States.S_ENTER_DESCRIPTION_CLASSCREATE, trans_message)
+
+        else:
+            raise UnknownPayload(user_id)
 
     async def s_enter_description_class_create_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_DESCRIPTION_CLASSCREATE"""
@@ -96,6 +105,9 @@ class ClassCreateHandlers(SupportingFunctions):
         elif payload["text"] == "Назад":
             trans_message = "Тип будущего класса?"
             await self.state_transition(user_id, States.S_ENTER_ACCESS_CLASSCREATE, trans_message)
+
+        else:
+            raise UnknownPayload(user_id)
 
     async def s_submit_class_create_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_SUBMIT_CLASSCREATE"""
@@ -127,6 +139,9 @@ class ClassCreateHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_classroom(user_id)
+
+        else:
+            raise UnknownPayload(user_id)
 
     async def cancel_creating_classroom(self, user_id: int) -> None:
         """Set state to States.S_NOTHING"""

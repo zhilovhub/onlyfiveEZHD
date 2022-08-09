@@ -11,19 +11,22 @@ class TechnicalSupportHandlers(SupportingFunctions):
                          technical_support_db=technical_support_db, diary_homework_db=diary_homework_db,
                          role_db=role_db, notification_db=notification_db, event_db=event_db)
 
-    async def s_enter_technical_support_message_handler(self, user_id: int, message: str) -> None:
+    async def s_enter_technical_support_message_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE"""
-        if message == "Отменить":
+        if payload is None:
+            user_message = self.technical_support_db.get_message(user_id) + "\n"
+            user_message += message
+            self.technical_support_db.insert_message(user_id, user_message)
+
+        elif payload["text"] == "Отменить":
             await self.cancel_entering_technical_support_message(user_id)
 
-        elif message == "Отправить":
+        elif payload["text"] == "Отправить":
             trans_message = "Вопросы отправлены администраторам!"
             await self.state_transition(user_id, States.S_NOTHING, trans_message)
 
         else:
-            user_message = self.technical_support_db.get_message(user_id) + "\n"
-            user_message += message
-            self.technical_support_db.insert_message(user_id, user_message)
+            raise UnknownPayload(user_id)
 
     async def cancel_entering_technical_support_message(self, user_id: int) -> None:
         """Cancel creating technical support message and set state to States.S_NOTHING"""

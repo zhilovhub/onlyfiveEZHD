@@ -63,7 +63,12 @@ async def listen_messages(message: Message) -> None:
 
             if not attachments and message_text:  # Checking user didn't send attachment
                 current_dialog_state = user_db.get_user_dialog_state(user_id)
-                await filter_dialog_state(user_id, message_text, payload, current_dialog_state)
+
+                try:
+                    await filter_dialog_state(user_id, message_text, payload, current_dialog_state)
+                except UnknownPayload:
+                    trans_message = "Произошла ошибка, возвращение в главное меню"
+                    await handlers_class.state_transition(user_id, States.S_NOTHING, trans_message)
             elif attachments:
                 await handlers_class.send_message(user_id, "Пиши текстом... Или используй кнопки для навигации!👇🏻")
             elif not message_text:
@@ -264,7 +269,7 @@ async def filter_dialog_state(user_id: int, message: str, payload: dict, current
 
         # TECHNICALSUPPORT
         case States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE.value:
-            await handlers_class.s_enter_technical_support_message_handler(user_id, message)
+            await handlers_class.s_enter_technical_support_message_handler(user_id, message, payload)
 
         # MEMBERSSETTINGS
         case States.S_MEMBERS_SETTINGS.value:

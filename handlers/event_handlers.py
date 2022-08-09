@@ -54,6 +54,9 @@ class EventHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
 
+        else:
+            raise UnknownPayload(user_id)
+
     async def s_choose_event_type_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_CHOOSE_EVENT_TYPE_MYCLASSES"""
         if payload is None:
@@ -82,6 +85,9 @@ class EventHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)
 
+        else:
+            raise UnknownPayload(user_id)
+
     async def s_enter_not_collective_event_name_handler(self, user_id: int, message: str, payload: dict
                                                         ) -> None:
         """Handling States.S_ENTER_NOT_COLLECTIVE_EVENT_NAME_MYCLASSES"""
@@ -109,6 +115,9 @@ class EventHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)
 
+        else:
+            raise UnknownPayload(user_id)
+
     async def s_enter_not_collective_event_start_time_handler(self, user_id: int, message: str, payload: dict
                                                               ) -> None:
         """Handling States.S_ENTER_NOT_COLLECTIVE_EVENT_START_TIME_MYCLASSES"""
@@ -133,6 +142,9 @@ class EventHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)
+
+        else:
+            raise UnknownPayload(user_id)
 
     async def s_enter_not_collective_event_end_time_handler(self, user_id: int, message: str, payload: dict
                                                             ) -> None:
@@ -184,6 +196,9 @@ class EventHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)
 
+        else:
+            raise UnknownPayload(user_id)
+
     async def s_enter_collective_event_name_handler(self, user_id: int, message: str, payload: dict
                                                     ) -> None:
         """Handling States.S_ENTER_COLLECTIVE_EVENT_NAME_MYCLASSES"""
@@ -211,6 +226,9 @@ class EventHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)
 
+        else:
+            raise UnknownPayload(user_id)
+
     async def s_enter_collective_event_start_time_handler(self, user_id: int, message: str, payload: dict
                                                           ) -> None:
         """Handling States.S_ENTER_COLLECTIVE_EVENT_START_TIME_MYCLASSES"""
@@ -236,6 +254,9 @@ class EventHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)
+
+        else:
+            raise UnknownPayload(user_id)
 
     async def s_enter_collective_event_end_time_handler(self, user_id: int, message: str, payload: dict
                                                         ) -> None:
@@ -281,6 +302,9 @@ class EventHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)
 
+        else:
+            raise UnknownPayload(user_id)
+
     async def s_enter_collective_event_required_count_handler(self, user_id: int, message: str,
                                                               payload: dict) -> None:
         """Handling States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_COUNT_MYCLASSES"""
@@ -322,6 +346,9 @@ class EventHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)
+
+        else:
+            raise UnknownPayload(user_id)
 
     async def s_enter_collective_event_required_student_handler(self, user_id: int, message: str,
                                                                 payload: dict) -> None:
@@ -367,6 +394,9 @@ class EventHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)
 
+        else:
+            raise UnknownPayload(user_id)
+
     async def s_submit_event_create_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_SUBMIT_EVENT_CREATE_MYCLASSES"""
         if payload is None:
@@ -403,6 +433,9 @@ class EventHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.cancel_creating_event(user_id, to_main_menu=True)
+
+        else:
+            raise UnknownPayload(user_id)
 
     async def s_edit_event_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_EVENT_MYCLASSES"""
@@ -513,6 +546,9 @@ class EventHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
 
+        else:
+            raise UnknownPayload(user_id)
+
     async def s_add_count_collective_event_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ADD_COUNT_COLLECTIVE_EVENT_MYCLASSES"""
         if payload is None:
@@ -556,6 +592,9 @@ class EventHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
+
+        else:
+            raise UnknownPayload(user_id)
 
     async def s_decrease_count_collective_event_handler(self, user_id: int, message: str, payload: dict
                                                         ) -> None:
@@ -610,6 +649,9 @@ class EventHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
 
+        else:
+            raise UnknownPayload(user_id)
+
     async def s_event_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EVENT_SETTINGS_MYCLASSES"""
         if payload is None:
@@ -654,6 +696,9 @@ class EventHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
 
+        else:
+            raise UnknownPayload(user_id)
+
     async def s_enter_new_event_name_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_NEW_EVENT_NAME_MYCLASSES"""
         if payload is None:
@@ -684,6 +729,9 @@ class EventHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
+
+        else:
+            raise UnknownPayload(user_id)
 
     async def s_enter_new_event_required_count_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_NEW_EVENT_REQUIRED_COUNT"""
@@ -723,6 +771,9 @@ class EventHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
 
+        else:
+            raise UnknownPayload(user_id)
+
     async def s_enter_new_event_required_students_count_handler(self, user_id: int, message: str, payload: dict
                                                                 ) -> None:
         """Handling States.S_ENTER_NEW_EVENT_REQUIRED_STUDENTS_COUNT"""
@@ -761,6 +812,9 @@ class EventHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
+
+        else:
+            raise UnknownPayload(user_id)
 
     async def s_enter_new_event_start_time_handler(self, user_id: int, message: str, payload: dict
                                                    ) -> None:
@@ -815,6 +869,9 @@ class EventHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
+
+        else:
+            raise UnknownPayload(user_id)
 
     async def s_enter_new_event_end_time_handler(self, user_id: int, message: str, payload: dict
                                                  ) -> None:
@@ -871,6 +928,9 @@ class EventHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
+
+        else:
+            raise UnknownPayload(user_id)
 
     async def cancel_creating_event(self, user_id: int, to_main_menu: bool) -> None:
         event_id = self.event_db.get_customizing_event_id(user_id)
