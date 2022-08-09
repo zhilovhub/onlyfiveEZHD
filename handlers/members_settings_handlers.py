@@ -16,6 +16,15 @@ class MembersSettingsHandlers(SupportingFunctions):
         if payload is None:
             await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, "Для навигации используй кнопки!👇🏻")
 
+        elif payload["text"] == "Пригл. ссылка":
+            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            invite_code = self.classroom_db.get_classroom_invite_code(classroom_id)
+
+            trans_message = f"Ссылка-приглашение твоего класса👇🏻\n\n" \
+                            f"[club{GROUP_ID}|onlyfiveEZHD/invite_link/{invite_code}]"
+            await self.state_transition(user_id, States.S_MEMBERS_SETTINGS,
+                                        trans_message, sign=self.get_sign(user_id))
+
         elif payload["text"] == "Редактировать роли":
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             admin_role_name = self.role_db.get_admin_role_name(classroom_id)
