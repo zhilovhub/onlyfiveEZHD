@@ -112,6 +112,9 @@ class ClassCreateHandlers(SupportingFunctions):
             self.diary_homework_db.insert_classroom_id(classroom_id)
             self.event_db.insert_new_event_diary(classroom_id)
 
+            invite_code = "".join(choices(ascii_letters + digits, k=9))
+            self.classroom_db.update_classroom_invite_code(classroom_id, invite_code)
+
             self.classroom_db.update_classroom_created(classroom_id, True)
             self.classroom_db.update_user_customize_classroom_id(user_id, "null")
 

@@ -63,6 +63,14 @@ class ClassroomCommands(DataBase):
 
             return members_limit
 
+    def get_classroom_invite_code(self, classroom_id: int) -> str:
+        """Get invite code of the classroom"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.get_classroom_invite_code_query, (classroom_id,))
+            invite_code = cursor.fetchone()[0]
+
+            return invite_code
+
     def get_user_classrooms_with_role_id(self, user_id: int) -> dict:
         """Returns user's classrooms_id and his role_id"""
         with self.connection.cursor() as cursor:
@@ -145,6 +153,14 @@ class ClassroomCommands(DataBase):
 
             return request_information_list
 
+    def get_classroom_by_invite_code(self, invite_code: str) -> int:
+        """Returns classroom id by invite code"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.get_classroom_by_invite_code, (invite_code,))
+            classroom_id = cursor.fetchone()[0]
+
+            return classroom_id
+
     def insert_new_customizer(self, user_id: int) -> None:
         """Insert customizer into UserCustomize"""
         try:
@@ -211,6 +227,12 @@ class ClassroomCommands(DataBase):
             cursor.execute(ClassroomQueries.update_classroom_members_limit_query.format(members_limit, classroom_id))
             self.connection.commit()
 
+    def update_classroom_invite_code(self, classroom_id: int, invite_code: str) -> None:
+        """Update invite code of the classroom"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(ClassroomQueries.update_classroom_invite_code_query, (invite_code, classroom_id))
+            self.connection.commit()
+
     def update_classroom_created(self, classroom_id: int, created: bool) -> None:
         """Update created of classroom"""
         with self.connection.cursor() as cursor:
@@ -263,6 +285,7 @@ class ClassroomQueries:
             access TEXT,
             description TEXT,
             members_limit INT,
+            invite_code TEXT,
             created BOOLEAN
         )"""
 
@@ -290,6 +313,8 @@ class ClassroomQueries:
     get_classroom_name_query = """SELECT classroom_name FROM Classroom WHERE classroom_id={}"""
     get_classroom_access_query = """SELECT access FROM Classroom WHERE classroom_id={}"""
     get_classroom_members_limit_query = """SELECT members_limit FROM Classroom WHERE classroom_id={}"""
+    get_classroom_invite_code_query = """SELECT invite_code FROM Classroom WHERE classroom_id=%s"""
+    get_classroom_by_invite_code = """SELECT classroom_id FROM Classroom WHERE invite_code=%s"""
     get_list_of_classroom_users_query = """SELECT user_id, role_id FROM Student WHERE classroom_id={}"""
     get_list_of_classroom_ids_query = """SELECT classroom_id FROM Classroom WHERE created=1"""
     get_request_information_query = """SELECT * FROM Request WHERE user_id={} AND classroom_id={}"""
@@ -306,6 +331,7 @@ class ClassroomQueries:
     update_classroom_access_query = """UPDATE Classroom SET access="{}" WHERE classroom_id={}"""
     update_classroom_description_query = """UPDATE Classroom SET description="{}" WHERE classroom_id={}"""
     update_classroom_members_limit_query = """UPDATE Classroom SET members_limit={} WHERE classroom_id={}"""
+    update_classroom_invite_code_query = """UPDATE Classroom SET invite_code=%s WHERE classroom_id=%s"""
     update_user_role_id_query = """UPDATE Student SET role_id={} WHERE user_id={}"""
     update_user_customize_classroom_id_query = """UPDATE UserCustomize SET classroom_id={} WHERE user_id={}"""
     update_classroom_created_query = """UPDATE Classroom SET created={} WHERE classroom_id={}"""

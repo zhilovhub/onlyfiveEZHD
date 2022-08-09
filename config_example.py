@@ -6,7 +6,8 @@ import aioschedule
 from vkbottle.bot import Bot, Message
 from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback
 from vkbottle import GroupEventType, GroupTypes
-from random import randint, choice
+from random import randint, choice, choices
+from string import ascii_letters, digits
 from datetime import datetime, date
 from re import search, fullmatch
 from json import loads, dumps
