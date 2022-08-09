@@ -157,9 +157,9 @@ class ClassroomCommands(DataBase):
         """Returns classroom id by invite code"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.get_classroom_by_invite_code, (invite_code,))
-            classroom_id = cursor.fetchone()[0]
+            classroom_id = cursor.fetchone()
 
-            return classroom_id
+            return classroom_id[0] if classroom_id else -1
 
     def insert_new_customizer(self, user_id: int) -> None:
         """Insert customizer into UserCustomize"""

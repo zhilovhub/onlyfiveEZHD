@@ -20,9 +20,10 @@ class FindClassHandlers(SupportingFunctions):
             if fullmatch(r"#\d+", stripped_message):
                 classroom_id = int(stripped_message[1:])
 
-            elif search(r"onlyfiveEZHD/invite_link/\d+", stripped_message):
-                result = search(r"onlyfiveEZHD/invite_link/\d+", stripped_message)
-                classroom_id = int(stripped_message[result.start():result.end()].split("/")[-1])
+            elif search(r"onlyfiveEZHD/invite_link/\w+", stripped_message):
+                result = search(r"onlyfiveEZHD/invite_link/\w+", stripped_message)
+                invite_code = stripped_message[result.start():result.end()].split("/")[-1]
+                classroom_id = self.classroom_db.get_classroom_by_invite_code(invite_code)  # -1 if not exists
 
             if classroom_id:
                 existing_classroom_ids = self.classroom_db.get_list_of_classroom_ids()
@@ -55,6 +56,9 @@ class FindClassHandlers(SupportingFunctions):
                                                      f"Тип класса: {access}\n"
                                                      f"Участники: {len(members_dictionary)}/{members_limit}\n\n"
                                                      f"{user_in_classroom_text}", keyboard.get_json())
+                elif classroom_id == -1:
+                    trans_message = f"Класса с такой ссылкой не существует!"
+                    await self.state_transition(user_id, States.S_FIND_CLASS, trans_message)
                 else:
                     trans_message = f"Класса с id {classroom_id} не существует!"
                     await self.state_transition(user_id, States.S_FIND_CLASS, trans_message)
