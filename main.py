@@ -3,6 +3,7 @@ from handlers import *
 # Creating database if not exists
 with connect(
         host=HOST,
+        port=PORT,
         user=USER,
         password=PASSWORD
 ) as connection_to_create_db:
@@ -12,6 +13,7 @@ with connect(
 # Connection to the database
 connection = connect(
     host=HOST,
+    port=PORT,
     user=USER,
     password=PASSWORD,
     database=DATABASE_NAME

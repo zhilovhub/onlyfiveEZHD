@@ -24,6 +24,7 @@ GROUP_ID = 0
 
 # DB constants
 HOST = ""
+PORT = 0
 USER = ""
 PASSWORD = ""
 DATABASE_NAME = ""

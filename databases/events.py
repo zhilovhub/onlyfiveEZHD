@@ -305,7 +305,7 @@ class EventQueries:
         student_id INT,
         
         FOREIGN KEY (event_id) REFERENCES event (event_id) ON DELETE CASCADE,
-        FOREIGN KEY (student_id) REFERENCES student (student_id) ON DELETE CASCADE
+        FOREIGN KEY (student_id) REFERENCES Student (student_id) ON DELETE CASCADE
     )"""
 
     create_table_user_customize_query = """CREATE TABLE IF NOT EXISTS UserCustomize(
