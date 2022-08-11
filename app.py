@@ -1,48 +1,7 @@
-from handlers import *
-
-bot = Bot(TOKEN)
+from loader import *
 
 
-async def get_connection():
-
-    # Connection to the database
-    connection = await connect(
-        host=HOST,
-        port=PORT,
-        user=USER,
-        password=PASSWORD,
-        db=DATABASE_NAME
-    )
-    return connection
-
-
-async def get_handlers():
-    connection = await get_connection()
-
-    # Classes for working with database's tables
-    user_db = await UserDataCommands(connection)
-    classroom_db = await ClassroomCommands(connection)
-    technical_support_db = await TechnicalSupportCommands(connection)
-    diary_homework_db = await DiaryHomeworkCommands(connection)
-    role_db = await RoleCommands(connection)
-    notification_db = await NotificationCommands(connection)
-    event_db = await EventCommands(connection)
-
-    # All handlers + bot
-    handlers_class = Handlers(bot=bot,
-                              user_db=user_db,
-                              classroom_db=classroom_db,
-                              technical_support_db=technical_support_db,
-                              diary_homework_db=diary_homework_db,
-                              role_db=role_db,
-                              notification_db=notification_db,
-                              event_db=event_db
-                              )
-
-    return handlers_class
-
-
-@bot.on.message(penis=1)
+@bot.on.message()
 async def listen_messages(message: Message) -> None:
     """Listening new messages"""
     user_id = message.from_id  # Getting user_id
@@ -346,18 +305,8 @@ async def aioscheduler_tasks() -> None:
         await asyncio.sleep(0.5)
 
 
-async def main() -> None:
-    # Creating database if not exists
-    async with connect(
-            host=HOST,
-            port=PORT,
-            user=USER,
-            password=PASSWORD
-    ) as connection_to_create_db:
-        async with connection_to_create_db.cursor() as cursor:
-            await cursor.execute(f"""CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}""")
-
-    """Creates tasks for asyncio-loop and initializes some important things"""
+async def create_tasks() -> None:
+    """Creates tasks for asyncio-loop"""
     tasks = [
         bot.run_polling(),
         aioscheduler_tasks()
@@ -366,4 +315,4 @@ async def main() -> None:
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    asyncio.run(create_tasks())
