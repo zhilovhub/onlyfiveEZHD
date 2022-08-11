@@ -19,19 +19,20 @@ class TechnicalSupportCommands(DataBase):
 
         return self
 
-    def insert_message(self, user_id: int, message: str) -> None:
+    async def insert_message(self, user_id: int, message: str) -> None:
         """Add a new message to message table"""
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        with self.connection.cursor() as cursor:
-            cursor.execute(TechnicalSupportQueries.insert_message_query.format(user_id, message, current_datetime))
-            self.connection.commit()
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(TechnicalSupportQueries.insert_message_query.format(user_id, message,
+                                                                                     current_datetime))
+            await self.connection.commit()
 
-    def get_message(self, user_id: int) -> str:
+    async def get_message(self, user_id: int) -> str:
         """Return the message from DB by user_id"""
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             try:
-                cursor.execute(TechnicalSupportQueries.get_message_query.format(user_id))
-                message = cursor.fetchone()
+                await cursor.execute(TechnicalSupportQueries.get_message_query.format(user_id))
+                message = list(await cursor.fetchone())
 
                 return message[0] if message else ''
             except Error:
@@ -48,4 +49,5 @@ class TechnicalSupportQueries:
 
     insert_message_query = """INSERT INTO Technical_support_messages VALUES({}, '{}', '{}')"""
 
-    get_message_query = """SELECT message FROM Technical_support_messages WHERE user_id={} ORDER BY datetime DESC LIMIT 1"""
+    get_message_query = """SELECT message FROM Technical_support_messages 
+    WHERE user_id={} ORDER BY datetime DESC LIMIT 1"""

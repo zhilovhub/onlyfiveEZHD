@@ -20,59 +20,60 @@ class UserDataCommands(DataBase):
 
         return self
 
-    def get_user_first_and_last_name(self, user_id: int) -> tuple:
+    async def get_user_first_and_last_name(self, user_id: int) -> tuple:
         """Returns user's first and last name"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(UserDataQueries.get_user_first_and_last_name_query.format(user_id))
-            first_name, last_name = cursor.fetchone()
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(UserDataQueries.get_user_first_and_last_name_query.format(user_id))
+            first_name, last_name = await cursor.fetchone()
 
             return first_name, last_name
 
-    def insert_new_user(self, user_id: int, screen_name: str, first_name: str, last_name: str, is_ready: bool) -> None:
+    async def insert_new_user(self, user_id: int, screen_name: str, first_name: str, last_name: str,
+                              is_ready: bool) -> None:
         try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(UserDataQueries.insert_new_user_query.format(user_id, screen_name, first_name,
-                                                                            last_name, is_ready))
-                self.connection.commit()
+            async with self.connection.cursor() as cursor:
+                await cursor.execute(UserDataQueries.insert_new_user_query.format(user_id, screen_name, first_name,
+                                                                                  last_name, is_ready))
+                await self.connection.commit()
 
         except Error as e:
             print(e, 123)
 
-    def set_user_is_ready(self, user_id: int) -> None:
+    async def set_user_is_ready(self, user_id: int) -> None:
         try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(UserDataQueries.set_user_is_ready_query.format(user_id))
-                self.connection.commit()
+            async with self.connection.cursor() as cursor:
+                await cursor.execute(UserDataQueries.set_user_is_ready_query.format(user_id))
+                await self.connection.commit()
 
         except Error as e:
             print(e)
 
-    def check_user_is_ready(self, user_id: int) -> bool:
+    async def check_user_is_ready(self, user_id: int) -> bool:
         try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(UserDataQueries.check_user_is_ready_query.format(user_id))
-                user = cursor.fetchone()
+            async with self.connection.cursor() as cursor:
+                await cursor.execute(UserDataQueries.check_user_is_ready_query.format(user_id))
+                user = await cursor.fetchone()
                 return True if user else False
 
         except Error as e:
             print(e)
 
-    def get_user_dialog_state(self, user_id: int) -> int:
+    async def get_user_dialog_state(self, user_id: int) -> int:
         try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(UserDataQueries.get_user_dialog_state_query.format(user_id))
-                state = cursor.fetchone()[0]
+            async with self.connection.cursor() as cursor:
+                await cursor.execute(UserDataQueries.get_user_dialog_state_query.format(user_id))
+                state = list(await cursor.fetchone())[0]
 
                 return state
 
         except Error as e:
             print(e)
 
-    def set_user_dialog_state(self, user_id: int, state: int) -> None:
+    async def set_user_dialog_state(self, user_id: int, state: int) -> None:
         try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(UserDataQueries.set_user_dialog_state_query.format(state, user_id))
-                self.connection.commit()
+            async with self.connection.cursor() as cursor:
+                await cursor.execute(UserDataQueries.set_user_dialog_state_query.format(state, user_id))
+                await self.connection.commit()
 
         except Error as e:
             print(e)

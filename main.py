@@ -13,20 +13,20 @@ async def listen_messages(message: Message) -> None:
 
     user_information = await handlers_class.get_user_info(user_id)  # User_id, first_name, nickname
 
-    handlers_class.user_db.insert_new_user(user_id,
-                                           user_information["screen_name"],
-                                           user_information["first_name"],
-                                           user_information["last_name"],
-                                           False
-                                           )  # Will add a new user if user writes his first message
-    handlers_class.classroom_db.insert_new_customizer(user_id)
+    await handlers_class.user_db.insert_new_user(user_id,
+                                                 user_information["screen_name"],
+                                                 user_information["first_name"],
+                                                 user_information["last_name"],
+                                                 False
+                                                 )  # Will add a new user if user writes his first message
+    await handlers_class.classroom_db.insert_new_customizer(user_id)
 
     if await handlers_class.is_member(user_id):  # Checking first condition
 
         if handlers_class.user_db.check_user_is_ready(user_id):  # Checking second condition
 
             if not attachments and message_text:  # Checking user didn't send attachment
-                current_dialog_state = handlers_class.user_db.get_user_dialog_state(user_id)
+                current_dialog_state = await handlers_class.user_db.get_user_dialog_state(user_id)
 
                 try:
                     await filter_dialog_state(user_id, message_text, payload, current_dialog_state)
@@ -38,7 +38,7 @@ async def listen_messages(message: Message) -> None:
             elif not message_text:
                 await handlers_class.send_message(user_id, "Пустой текст😐")
         else:
-            handlers_class.user_db.set_user_is_ready(
+            await handlers_class.user_db.set_user_is_ready(
                 user_id)  # First condition is True but this is a first user's message
 
             trans_message = "Добро пожаловать в наше сообщество!\nЧто может наш бот? (Инструкция)"
@@ -57,7 +57,7 @@ async def listen_message_events(event: GroupTypes.MessageEvent):
 
     await handlers_class.send_message_event_answer(event_id, user_id, peer_id, "")
     if await handlers_class.is_member(user_id):
-        current_dialog_state = handlers_class.user_db.get_user_dialog_state(user_id)
+        current_dialog_state = await handlers_class.user_db.get_user_dialog_state(user_id)
         await filter_callback_button_payload(user_id, payload, current_dialog_state)
     else:
         await handlers_class.send_message(user_id, "Перед использованием бота подпишись на группу!")

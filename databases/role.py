@@ -20,92 +20,92 @@ class RoleCommands(DataBase):
 
         return self
 
-    def get_role_name(self, role_id: int) -> str:
+    async def get_role_name(self, role_id: int) -> str:
         """Returns role name"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_role_name_query.format(role_id))
-            role_name = cursor.fetchone()[0]
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(RoleQueries.get_role_name_query.format(role_id))
+            role_name = list(await cursor.fetchone())[0]
 
             return role_name
 
-    def get_customizing_role_id(self, user_id: int) -> int:
+    async def get_customizing_role_id(self, user_id: int) -> int:
         """Select role_id that user_id is customizing"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_customizing_role_id_query.format(user_id))
-            role_id = cursor.fetchone()[0]
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(RoleQueries.get_customizing_role_id_query.format(user_id))
+            role_id = list(await cursor.fetchone())[0]
 
             return role_id
 
-    def get_default_role_id(self, classroom_id: int) -> int:
+    async def get_default_role_id(self, classroom_id: int) -> int:
         """Returns default role's id"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_default_role_id_query.format(classroom_id))
-            role_id = cursor.fetchone()[0]
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(RoleQueries.get_default_role_id_query.format(classroom_id))
+            role_id = list(await cursor.fetchone())[0]
 
             return role_id
 
-    def get_admin_role_id(self, classroom_id: int) -> int:
+    async def get_admin_role_id(self, classroom_id: int) -> int:
         """Returns admin role's id"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_admin_role_id_query.format(classroom_id))
-            role_id = cursor.fetchone()[0]
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(RoleQueries.get_admin_role_id_query.format(classroom_id))
+            role_id = list(await cursor.fetchone())[0]
 
             return role_id
 
-    def get_role_id_by_name(self, classroom_id: int, role_name: str) -> int:
+    async def get_role_id_by_name(self, classroom_id: int, role_name: str) -> int:
         """Returns role's id by name"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_role_id_by_name_query.format(classroom_id, role_name))
-            role_id = cursor.fetchone()[0]
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(RoleQueries.get_role_id_by_name_query.format(classroom_id, role_name))
+            role_id = list(await cursor.fetchone())[0]
 
             return role_id
 
-    def get_role_id_by_user_id(self, user_id: int, classroom_id: id) -> int:
+    async def get_role_id_by_user_id(self, user_id: int, classroom_id: id) -> int:
         """Returns role's id by user_id"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_role_id_by_user_id_query.format(user_id, classroom_id))
-            role_id = cursor.fetchone()[0]
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(RoleQueries.get_role_id_by_user_id_query.format(user_id, classroom_id))
+            role_id = list(await cursor.fetchone())[0]
 
             return role_id
         
-    def get_default_role_name(self, classroom_id: int) -> str:
+    async def get_default_role_name(self, classroom_id: int) -> str:
         """Returns default role's name"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_default_role_name_query.format(classroom_id))
-            default_role_name = cursor.fetchone()[0]
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(RoleQueries.get_default_role_name_query.format(classroom_id))
+            default_role_name = list(await cursor.fetchone())[0]
 
             return default_role_name
 
-    def get_admin_role_name(self, classroom_id: int) -> str:
+    async def get_admin_role_name(self, classroom_id: int) -> str:
         """Returns admin role's name"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_admin_role_name_query.format(classroom_id))
-            admin_role_name = cursor.fetchone()[0]
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(RoleQueries.get_admin_role_name_query.format(classroom_id))
+            admin_role_name = list(await cursor.fetchone())[0]
 
             return admin_role_name
 
-    def get_all_role_names_from_classroom(self, classroom_id: int) -> list:
+    async def get_all_role_names_from_classroom(self, classroom_id: int) -> list:
         """Returns all role names from classroom"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_all_role_names_from_classroom_query.format(classroom_id))
-            role_names = [row[0] for row in cursor.fetchall()]
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(RoleQueries.get_all_role_names_from_classroom_query.format(classroom_id))
+            role_names = [row[0] for row in list(await cursor.fetchall())]
 
             return role_names
 
-    def get_role_properties_dict(self, role_id: int) -> dict:
+    async def get_role_properties_dict(self, role_id: int) -> dict:
         """Returns all role's properties"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.show_columns_query)
-            property_names = [row[0] for row in cursor.fetchall()][2:]
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(RoleQueries.show_columns_query)
+            property_names = [row[0] for row in list(await cursor.fetchall())][2:]
 
-            cursor.execute(RoleQueries.get_all_role_properties_query.format(role_id))
-            property_values = cursor.fetchone()[2:]
+            await cursor.execute(RoleQueries.get_all_role_properties_query.format(role_id))
+            property_values = list(await cursor.fetchone())[2:]
 
             return {name: value for name, value in zip(property_names, property_values)}
 
-    def get_diary_role_properties_dict(self, role_id: int) -> dict:
+    async def get_diary_role_properties_dict(self, role_id: int) -> dict:
         """Returns role's diary properties"""
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             property_names = [
                 "change_current_homework",
                 "change_next_homework",
@@ -117,14 +117,14 @@ class RoleCommands(DataBase):
                 "is_admin"
             ]
 
-            cursor.execute(RoleQueries.get_diary_role_properties_query.format(role_id))
-            property_values = cursor.fetchone()
+            await cursor.execute(RoleQueries.get_diary_role_properties_query.format(role_id))
+            property_values = list(await cursor.fetchone())
 
             return {name: value for name, value in zip(property_names, property_values)}
 
-    def get_members_role_properties_dict(self, role_id: int) -> dict:
+    async def get_members_role_properties_dict(self, role_id: int) -> dict:
         """Returns role's members properties"""
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             property_names = [
                 "kick_members",
                 "invite_members",
@@ -136,14 +136,14 @@ class RoleCommands(DataBase):
                 "is_admin"
             ]
 
-            cursor.execute(RoleQueries.get_members_role_properties_query.format(role_id))
-            property_values = cursor.fetchone()
+            await cursor.execute(RoleQueries.get_members_role_properties_query.format(role_id))
+            property_values = list(await cursor.fetchone())
 
             return {name: value for name, value in zip(property_names, property_values)}
 
-    def get_classroom_role_properties_dict(self, role_id: int) -> dict:
+    async def get_classroom_role_properties_dict(self, role_id: int) -> dict:
         """Returns role's classroom properties"""
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             property_names = [
                 "change_classroom_name",
                 "change_school_name",
@@ -156,13 +156,13 @@ class RoleCommands(DataBase):
             ]
 
             cursor.execute(RoleQueries.get_classroom_role_properties_query.format(role_id))
-            property_values = cursor.fetchone()
+            property_values = list(await cursor.fetchone())
 
             return {name: value for name, value in zip(property_names, property_values)}
 
-    def insert_new_role(self, classroom_id: int, role_name: str, is_default_member=False, is_admin=False) -> int:
+    async def insert_new_role(self, classroom_id: int, role_name: str, is_default_member=False, is_admin=False) -> int:
         """Inserts new role into Role"""
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             if is_admin:
                 kick_members = True
             else:
@@ -173,51 +173,51 @@ class RoleCommands(DataBase):
                                                                                 is_default_member, is_admin))
             else:
                 cursor.execute(RoleQueries.get_default_role_id_query.format(classroom_id))
-                default_role_id = cursor.fetchone()[0]
+                default_role_id = list(await cursor.fetchone())[0]
                 cursor.execute(RoleQueries.get_all_role_properties_query.format(default_role_id))
-                default_role_properties = cursor.fetchone()[3:-2]
+                default_role_properties = list(await cursor.fetchone())[3:-2]
                 cursor.execute(RoleQueries.insert_new_role_query.format(classroom_id, role_name,
                                                                         *default_role_properties, False, False))
 
-            self.connection.commit()
+            await self.connection.commit()
 
             return cursor.lastrowid
 
-    def update_student_role(self, user_id: int, new_role_id: int) -> None:
+    async def update_student_role(self, user_id: int, new_role_id: int) -> None:
         """Updates student's role with new role_id"""
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.update_student_role_query.format(new_role_id, user_id))
-            self.connection.commit()
+            await self.connection.commit()
 
-    def update_all_roles(self, old_role_id: int, new_role_id: int) -> None:
+    async def update_all_roles(self, old_role_id: int, new_role_id: int) -> None:
         """Updates students' role with new role_id"""
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.update_all_roles_query.format(new_role_id, old_role_id))
-            self.connection.commit()
+            await self.connection.commit()
 
-    def update_user_customize_role_id(self, user_id: int, role_id) -> None:
+    async def update_user_customize_role_id(self, user_id: int, role_id) -> None:
         """Update role_id that user is customizing"""
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.update_user_customize_role_id_query.format(role_id, user_id))
-            self.connection.commit()
+            await self.connection.commit()
 
-    def update_role_name(self, role_id: int, new_name: str) -> None:
+    async def update_role_name(self, role_id: int, new_name: str) -> None:
         """Updates role's name"""
         with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.update_role_name_query.format(new_name, role_id))
-            self.connection.commit()
+            await self.connection.commit()
 
-    def update_role_privilege(self, role_id: int, new_value: bool, privilege_type: str) -> None:
+    async def update_role_privilege(self, role_id: int, new_value: bool, privilege_type: str) -> None:
         """Updates role's privilege_type"""
         with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.update_role_privilege_query.format(privilege_type, new_value, role_id))
-            self.connection.commit()
+            await self.connection.commit()
 
-    def delete_role(self, role_id: int) -> None:
+    async def delete_role(self, role_id: int) -> None:
         """Deletes role"""
         with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.delete_role_query.format(role_id))
-            self.connection.commit()
+            await self.connection.commit()
 
 
 class RoleQueries:

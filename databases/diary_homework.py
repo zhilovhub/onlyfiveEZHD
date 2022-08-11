@@ -24,7 +24,7 @@ class DiaryHomeworkCommands(DataBase):
 
         return self
 
-    def get_all_days_lessons_from_week(self, classroom_id: int, week_type: str, homework=False) -> list:
+    async def get_all_days_lessons_from_week(self, classroom_id: int, week_type: str, homework=False) -> list:
         """Returns everyday diary from week"""
         week_type_dict = {
             "standard": "diary_standard_week",
@@ -33,9 +33,9 @@ class DiaryHomeworkCommands(DataBase):
         }
         table_name = week_type_dict[week_type]
 
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_all_days_from_week_query.format(table_name, classroom_id))
-            all_lessons = cursor.fetchone()[1:]
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(DiaryHomeworkQueries.get_all_days_from_week_query.format(table_name, classroom_id))
+            all_lessons = list(await cursor.fetchone())[1:]
 
             formatted_all_lessons = []
             for i in range(0, len(all_lessons), 12):
@@ -43,7 +43,8 @@ class DiaryHomeworkCommands(DataBase):
 
         return formatted_all_lessons
 
-    def get_weekday_lessons_from_week(self, classroom_id: int, week_type: str, weekday: str, homework=False) -> tuple:
+    async def get_weekday_lessons_from_week(self, classroom_id: int, week_type: str, weekday: str,
+                                            homework=False) -> tuple:
         """Returns weekday from week"""
         week_type_dict = {
             "standard": "diary_standard_week",
@@ -52,60 +53,63 @@ class DiaryHomeworkCommands(DataBase):
         }
         table_name = week_type_dict[week_type]
 
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_query(weekday, table_name).format(classroom_id))
-            lessons = cursor.fetchone()
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(
+                DiaryHomeworkQueries.get_weekday_lessons_query(weekday, table_name).format(classroom_id))
+            lessons = tuple(await cursor.fetchone())
 
         return lessons
 
-    def get_weekday_lessons_from_temp_table(self, user_id: int) -> tuple:
+    async def get_weekday_lessons_from_temp_table(self, user_id: int) -> tuple:
         """Returns weekday's lessons from the temp table"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_from_temp_table_query.format(user_id))
-            lessons = cursor.fetchone()[3:]
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(DiaryHomeworkQueries.get_weekday_lessons_from_temp_table_query.format(user_id))
+            lessons = tuple(await cursor.fetchone())[3:]
 
         return lessons
 
-    def get_weekday_name_from_temp_table(self, user_id: int) -> str:
+    async def get_weekday_name_from_temp_table(self, user_id: int) -> str:
         """Returns weekday's name from temp table"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_temp_weekday_name_query.format(user_id))
-            weekday = cursor.fetchone()[0]
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(DiaryHomeworkQueries.get_temp_weekday_name_query.format(user_id))
+            weekday = list(await cursor.fetchone())[0]
 
         return weekday
 
-    def get_week_type_from_temp_table(self, user_id: int) -> str:
+    async def get_week_type_from_temp_table(self, user_id: int) -> str:
         """Returns week's type from temp table"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_week_type_from_temp_table_query.format(user_id))
-            week_type = cursor.fetchone()[0]
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(DiaryHomeworkQueries.get_week_type_from_temp_table_query.format(user_id))
+            week_type = list(await cursor.fetchone())[0]
 
         return week_type
 
-    def insert_classroom_id(self, classroom_id: int) -> None:
+    async def insert_classroom_id(self, classroom_id: int) -> None:
         """Inserts classroom_id into the tables"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.insert_classroom_id_homework_current_week_query.format(classroom_id))
-            cursor.execute(DiaryHomeworkQueries.insert_classroom_id_homework_next_week_query.format(classroom_id))
-            cursor.execute(DiaryHomeworkQueries.insert_classroom_id_standard_week_query.format(classroom_id))
-            cursor.execute(DiaryHomeworkQueries.insert_classroom_id_current_week_query.format(classroom_id))
-            cursor.execute(DiaryHomeworkQueries.insert_classroom_id_next_week_query.format(classroom_id))
-            self.connection.commit()
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(
+                DiaryHomeworkQueries.insert_classroom_id_homework_current_week_query.format(classroom_id))
+            await cursor.execute(DiaryHomeworkQueries.insert_classroom_id_homework_next_week_query.format(classroom_id))
+            await cursor.execute(DiaryHomeworkQueries.insert_classroom_id_standard_week_query.format(classroom_id))
+            await cursor.execute(DiaryHomeworkQueries.insert_classroom_id_current_week_query.format(classroom_id))
+            await cursor.execute(DiaryHomeworkQueries.insert_classroom_id_next_week_query.format(classroom_id))
+            await self.connection.commit()
 
-    def insert_row_into_temp_weekday_table(self, user_id: int, week_type: str) -> None:
+    async def insert_row_into_temp_weekday_table(self, user_id: int, week_type: str) -> None:
         """Inserts new row into temp table"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.insert_new_row_into_temp_weekday_diary_query.format(user_id, week_type))
-            self.connection.commit()
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(
+                DiaryHomeworkQueries.insert_new_row_into_temp_weekday_diary_query.format(user_id, week_type))
+            await self.connection.commit()
 
-    def update_all_lessons_in_temp_weekday_table(self, user_id: int, weekday: str, lessons: tuple) -> None:
+    async def update_all_lessons_in_temp_weekday_table(self, user_id: int, weekday: str, lessons: tuple) -> None:
         """Updates lessons in temp weekday table"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.update_all_lessons_in_temp_table, (weekday, *lessons, user_id))
-            self.connection.commit()
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(DiaryHomeworkQueries.update_all_lessons_in_temp_table, (weekday, *lessons, user_id))
+            await self.connection.commit()
 
-    def update_weekday_in_week(self, classroom_id: int, lessons: tuple, week_type: str, weekday: str,
-                               homework=False) -> None:
+    async def update_weekday_in_week(self, classroom_id: int, lessons: tuple, week_type: str, weekday: str,
+                                     homework=False) -> None:
         """Updates week's weekday"""
         week_type_dict = {
             "standard": "diary_standard_week",
@@ -116,46 +120,47 @@ class DiaryHomeworkCommands(DataBase):
 
         query = DiaryHomeworkQueries.update_weekday_lessons_query(weekday, table_name)
 
-        with self.connection.cursor() as cursor:
-            cursor.execute(query, (*lessons, classroom_id))
-            self.connection.commit()
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(query, (*lessons, classroom_id))
+            await self.connection.commit()
 
-    def update_add_new_lesson_into_temp_table(self, user_id: int, lesson: str, new_lesson_index: int) -> None:
+    async def update_add_new_lesson_into_temp_table(self, user_id: int, lesson: str, new_lesson_index: int) -> None:
         """Update the row with new lesson"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.update_add_new_lesson_into_temp_weekday_diary_query.format(
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(DiaryHomeworkQueries.update_add_new_lesson_into_temp_weekday_diary_query.format(
                 new_lesson_index, lesson, user_id)
             )
-            self.connection.commit()
+            await self.connection.commit()
 
-    def update_delete_all_lessons_from_temp_table(self, user_id: int) -> None:
+    async def update_delete_all_lessons_from_temp_table(self, user_id: int) -> None:
         """Deletes all lessons from temp table"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.update_delete_all_lessons_from_temp_table_query.format(user_id))
-            self.connection.commit()
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(DiaryHomeworkQueries.update_delete_all_lessons_from_temp_table_query.format(user_id))
+            await self.connection.commit()
 
-    def update_lesson_in_temp_table(self, user_id: int, lesson_name: str, lesson_index: int) -> None:
+    async def update_lesson_in_temp_table(self, user_id: int, lesson_name: str, lesson_index: int) -> None:
         """Updates lesson's name in temp table"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.update_lesson_in_temp_table_query.format(lesson_index, lesson_name,
-                                                                                         user_id))
-            self.connection.commit()
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(
+                DiaryHomeworkQueries.update_lesson_in_temp_table_query.format(lesson_index, lesson_name,
+                                                                              user_id))
+            await self.connection.commit()
 
-    def update_delete_lesson_from_temp_table(self, user_id: int, lesson_index: int) -> None:
+    async def update_delete_lesson_from_temp_table(self, user_id: int, lesson_index: int) -> None:
         """Deletes lesson from the row in the temp table"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.update_delete_lesson_from_temp_table_query.format(lesson_index,
-                                                                                                  user_id))
-            self.connection.commit()
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(DiaryHomeworkQueries.update_delete_lesson_from_temp_table_query.format(lesson_index,
+                                                                                                        user_id))
+            await self.connection.commit()
 
-    def update_delete_weekday_from_temp_table(self, user_id: int) -> None:
+    async def update_delete_weekday_from_temp_table(self, user_id: int) -> None:
         """Deletes weekday from the row in the temp table"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.update_delete_weekday_from_temp_table_query.format(user_id))
-            self.connection.commit()
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(DiaryHomeworkQueries.update_delete_weekday_from_temp_table_query.format(user_id))
+            await self.connection.commit()
 
-    def update_copy_diary_from_week_into_another_week(self, classroom_id: int, week_type: str,
-                                                      week_lessons: list, homework=False) -> None:
+    async def update_copy_diary_from_week_into_another_week(self, classroom_id: int, week_type: str,
+                                                            week_lessons: list, homework=False) -> None:
         """Copy week's diary into another type week's diary"""
         week_type_dict = {
             "standard": "diary_standard_week",
@@ -164,13 +169,13 @@ class DiaryHomeworkCommands(DataBase):
         }
         table_name = week_type_dict[week_type]
 
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.update_copy_diary_from_week_into_another_week_query.
-                           format(table_name), (*[lesson for weekday_lessons in week_lessons
-                                                  for lesson in weekday_lessons], classroom_id))
-            self.connection.commit()
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(DiaryHomeworkQueries.update_copy_diary_from_week_into_another_week_query.
+                                 format(table_name), (*[lesson for weekday_lessons in week_lessons
+                                                        for lesson in weekday_lessons], classroom_id))
+            await self.connection.commit()
 
-    def update_clear_week(self, classroom_id: int, week_type: str, homework=False) -> None:
+    async def update_clear_week(self, classroom_id: int, week_type: str, homework=False) -> None:
         """Clears week"""
         week_type_dict = {
             "standard": "diary_standard_week",
@@ -180,37 +185,37 @@ class DiaryHomeworkCommands(DataBase):
         table_name = week_type_dict[week_type]
 
         none_list = [None] * 84
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.update_copy_diary_from_week_into_another_week_query.format(table_name),
                            (*none_list, classroom_id))
-            self.connection.commit()
+            await self.connection.commit()
 
     async def update_change_current_and_next_diary(self) -> None:
         """Changes every new week current_week and next_week_diary"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.get_all_classroom_ids_query)
 
-            classroom_ids = [row[0] for row in cursor.fetchall()]
+            classroom_ids = [row[0] for row in list(await cursor.fetchall())]
             for classroom_id in classroom_ids:
-                formatted_standard_week_lessons = self.get_all_days_lessons_from_week(classroom_id, "standard")
-                formatted_next_week_lessons = self.get_all_days_lessons_from_week(classroom_id, "next")
-                formatted_next_week_homework = self.get_all_days_lessons_from_week(classroom_id, "next",
-                                                                                   homework=True)
-                self.update_copy_diary_from_week_into_another_week(classroom_id, "next",
-                                                                   formatted_standard_week_lessons)
-                self.update_copy_diary_from_week_into_another_week(classroom_id, "current",
-                                                                   formatted_next_week_lessons)
-                self.update_copy_diary_from_week_into_another_week(classroom_id, "current",
-                                                                   formatted_next_week_homework, homework=True)
-                self.update_clear_week(classroom_id, "next", homework=True)
+                formatted_standard_week_lessons = await self.get_all_days_lessons_from_week(classroom_id, "standard")
+                formatted_next_week_lessons = await self.get_all_days_lessons_from_week(classroom_id, "next")
+                formatted_next_week_homework = await self.get_all_days_lessons_from_week(classroom_id, "next",
+                                                                                         homework=True)
+                await self.update_copy_diary_from_week_into_another_week(classroom_id, "next",
+                                                                         formatted_standard_week_lessons)
+                await self.update_copy_diary_from_week_into_another_week(classroom_id, "current",
+                                                                         formatted_next_week_lessons)
+                await self.update_copy_diary_from_week_into_another_week(classroom_id, "current",
+                                                                         formatted_next_week_homework, homework=True)
+                await self.update_clear_week(classroom_id, "next", homework=True)
 
-            self.connection.commit()
+            await self.connection.commit()
 
-    def delete_row_from_temp_weekday_table(self, user_id: int) -> None:
+    async def delete_row_from_temp_weekday_table(self, user_id: int) -> None:
         """Deletes row from temp table"""
         with self.connection.cursor() as cursor:
             cursor.execute(DiaryHomeworkQueries.delete_row_from_temp_weekday_diary_query.format(user_id))
-            self.connection.commit()
+            await self.connection.commit()
 
 
 class DiaryHomeworkQueries:
