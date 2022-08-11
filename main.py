@@ -1,47 +1,48 @@
 from handlers import *
 
-# Creating database if not exists
-with connect(
+bot = Bot(TOKEN)
+
+
+async def get_connection():
+
+    # Connection to the database
+    connection = await connect(
         host=HOST,
         port=PORT,
         user=USER,
-        password=PASSWORD
-) as connection_to_create_db:
-    with connection_to_create_db.cursor() as cursor:
-        cursor.execute(f"""CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}""")
-
-# Connection to the database
-connection = connect(
-    host=HOST,
-    port=PORT,
-    user=USER,
-    password=PASSWORD,
-    database=DATABASE_NAME
-)
-
-# Classes for working with database's tables
-user_db = UserDataCommands(connection)
-classroom_db = ClassroomCommands(connection)
-technical_support_db = TechnicalSupportCommands(connection)
-diary_homework_db = DiaryHomeworkCommands(connection)
-role_db = RoleCommands(connection)
-notification_db = NotificationCommands(connection)
-event_db = EventCommands(connection)
-
-# All handlers + bot
-bot = Bot(TOKEN)
-handlers_class = Handlers(bot=bot,
-                          user_db=user_db,
-                          classroom_db=classroom_db,
-                          technical_support_db=technical_support_db,
-                          diary_homework_db=diary_homework_db,
-                          role_db=role_db,
-                          notification_db=notification_db,
-                          event_db=event_db
-                          )
+        password=PASSWORD,
+        db=DATABASE_NAME
+    )
+    return connection
 
 
-@bot.on.message()
+async def get_handlers():
+    connection = await get_connection()
+
+    # Classes for working with database's tables
+    user_db = await UserDataCommands(connection)
+    classroom_db = await ClassroomCommands(connection)
+    technical_support_db = await TechnicalSupportCommands(connection)
+    diary_homework_db = await DiaryHomeworkCommands(connection)
+    role_db = await RoleCommands(connection)
+    notification_db = await NotificationCommands(connection)
+    event_db = await EventCommands(connection)
+
+    # All handlers + bot
+    handlers_class = Handlers(bot=bot,
+                              user_db=user_db,
+                              classroom_db=classroom_db,
+                              technical_support_db=technical_support_db,
+                              diary_homework_db=diary_homework_db,
+                              role_db=role_db,
+                              notification_db=notification_db,
+                              event_db=event_db
+                              )
+
+    return handlers_class
+
+
+@bot.on.message(penis=1)
 async def listen_messages(message: Message) -> None:
     """Listening new messages"""
     user_id = message.from_id  # Getting user_id
@@ -51,20 +52,20 @@ async def listen_messages(message: Message) -> None:
 
     user_information = await handlers_class.get_user_info(user_id)  # User_id, first_name, nickname
 
-    user_db.insert_new_user(user_id,
-                            user_information["screen_name"],
-                            user_information["first_name"],
-                            user_information["last_name"],
-                            False
-                            )  # Will add a new user if user writes his first message
-    classroom_db.insert_new_customizer(user_id)
+    handlers_class.user_db.insert_new_user(user_id,
+                                           user_information["screen_name"],
+                                           user_information["first_name"],
+                                           user_information["last_name"],
+                                           False
+                                           )  # Will add a new user if user writes his first message
+    handlers_class.classroom_db.insert_new_customizer(user_id)
 
     if await handlers_class.is_member(user_id):  # Checking first condition
 
-        if user_db.check_user_is_ready(user_id):  # Checking second condition
+        if handlers_class.user_db.check_user_is_ready(user_id):  # Checking second condition
 
             if not attachments and message_text:  # Checking user didn't send attachment
-                current_dialog_state = user_db.get_user_dialog_state(user_id)
+                current_dialog_state = handlers_class.user_db.get_user_dialog_state(user_id)
 
                 try:
                     await filter_dialog_state(user_id, message_text, payload, current_dialog_state)
@@ -76,7 +77,7 @@ async def listen_messages(message: Message) -> None:
             elif not message_text:
                 await handlers_class.send_message(user_id, "Пустой текст😐")
         else:
-            user_db.set_user_is_ready(
+            handlers_class.user_db.set_user_is_ready(
                 user_id)  # First condition is True but this is a first user's message
 
             trans_message = "Добро пожаловать в наше сообщество!\nЧто может наш бот? (Инструкция)"
@@ -95,7 +96,7 @@ async def listen_message_events(event: GroupTypes.MessageEvent):
 
     await handlers_class.send_message_event_answer(event_id, user_id, peer_id, "")
     if await handlers_class.is_member(user_id):
-        current_dialog_state = user_db.get_user_dialog_state(user_id)
+        current_dialog_state = handlers_class.user_db.get_user_dialog_state(user_id)
         await filter_callback_button_payload(user_id, payload, current_dialog_state)
     else:
         await handlers_class.send_message(user_id, "Перед использованием бота подпишись на группу!")
@@ -345,8 +346,18 @@ async def aioscheduler_tasks() -> None:
         await asyncio.sleep(0.5)
 
 
-async def create_tasks() -> None:
-    """Creates tasks for asyncio-loop"""
+async def main() -> None:
+    # Creating database if not exists
+    async with connect(
+            host=HOST,
+            port=PORT,
+            user=USER,
+            password=PASSWORD
+    ) as connection_to_create_db:
+        async with connection_to_create_db.cursor() as cursor:
+            await cursor.execute(f"""CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}""")
+
+    """Creates tasks for asyncio-loop and initializes some important things"""
     tasks = [
         bot.run_polling(),
         aioscheduler_tasks()
@@ -355,4 +366,4 @@ async def create_tasks() -> None:
 
 
 if __name__ == '__main__':
-    asyncio.run(create_tasks())
+    asyncio.run(main())
