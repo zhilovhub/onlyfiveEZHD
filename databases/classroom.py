@@ -3,16 +3,22 @@ from database import *
 
 class ClassroomCommands(DataBase):
     """Initialization"""
-    def __init__(self, connection: CMySQLConnection) -> None:
+    def __init__(self, connection: Connection) -> None:
         super().__init__(connection)
 
+    @classmethod
+    async def get_self(cls, connection: Connection):
+        self = cls(connection)
+
         try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(ClassroomQueries.create_table_classroom_query)
-                cursor.execute(ClassroomQueries.create_table_request_query)
+            async with self.connection.cursor() as cursor:
+                await cursor.execute(ClassroomQueries.create_table_classroom_query)
+                await cursor.execute(ClassroomQueries.create_table_request_query)
 
         except Error as e:
             print(e)
+
+        return self
 
     def get_student_id(self, user_id: int, classroom_id: int) -> int:
         """Returns student_id"""
@@ -349,7 +355,7 @@ if __name__ == "__main__":
         host=HOST,
         user=USER,
         password=PASSWORD,
-        database=DATABASE_NAME
+        db=DATABASE_NAME
     )
 
     db = ClassroomCommands(connection)

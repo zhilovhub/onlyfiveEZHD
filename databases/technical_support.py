@@ -3,15 +3,21 @@ from database import *
 
 class TechnicalSupportCommands(DataBase):
     """Initialisation"""
-    def __init__(self, connection: CMySQLConnection) -> None:
+    def __init__(self, connection: Connection) -> None:
         super().__init__(connection)
 
+    @classmethod
+    async def get_self(cls, connection: Connection):
+        self = cls(connection)
+
         try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(TechnicalSupportQueries.create_table_technical_support_messages_query)
+            async with self.connection.cursor() as cursor:
+                await cursor.execute(TechnicalSupportQueries.create_table_technical_support_messages_query)
 
         except Error as e:
             print(e)
+
+        return self
 
     def insert_message(self, user_id: int, message: str) -> None:
         """Add a new message to message table"""

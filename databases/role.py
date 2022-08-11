@@ -2,13 +2,23 @@ from database import *
 
 
 class RoleCommands(DataBase):
-    def __init__(self, connection: CMySQLConnection) -> None:
+    def __init__(self, connection: Connection) -> None:
         """Initialization"""
         super().__init__(connection)
 
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.create_table_roles_query)
-            cursor.execute(RoleQueries.create_table_student_query)
+    @classmethod
+    async def get_self(cls, connection: Connection):
+        self = cls(connection)
+
+        try:
+            async with self.connection.cursor() as cursor:
+                await cursor.execute(RoleQueries.create_table_roles_query)
+                await cursor.execute(RoleQueries.create_table_student_query)
+
+        except Error as e:
+            print(e)
+
+        return self
 
     def get_role_name(self, role_id: int) -> str:
         """Returns role name"""
@@ -320,7 +330,7 @@ if __name__ == '__main__':
         host=HOST,
         user=USER,
         password=PASSWORD,
-        database=DATABASE_NAME
+        db=DATABASE_NAME
     )
 
     roles_db = RoleCommands(connection)

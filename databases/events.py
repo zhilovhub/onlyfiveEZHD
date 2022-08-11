@@ -2,18 +2,24 @@ from database import *
 
 
 class EventCommands(DataBase):
-    def __init__(self, connection: CMySQLConnection) -> None:
+    def __init__(self, connection: Connection) -> None:
         """Initialization"""
         super().__init__(connection)
 
+    @classmethod
+    async def get_self(cls, connection: Connection):
+        self = cls(connection)
+
         try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(EventQueries.create_table_event_diary_query)
-                cursor.execute(EventQueries.create_table_event_query)
-                cursor.execute(EventQueries.create_table_event_collective_info_query)
-                cursor.execute(EventQueries.create_table_user_customize_query)
+            async with self.connection.cursor() as cursor:
+                await cursor.execute(EventQueries.create_table_event_diary_query)
+                await cursor.execute(EventQueries.create_table_event_query)
+                await cursor.execute(EventQueries.create_table_event_collective_info_query)
+                await cursor.execute(EventQueries.create_table_user_customize_query)
         except Error as e:
             print(e)
+
+        return self
 
     def get_customizing_event_id(self, user_id: int) -> int:
         """Returns customizing event_id"""
@@ -373,7 +379,7 @@ if __name__ == '__main__':
         host=HOST,
         user=USER,
         password=PASSWORD,
-        database=DATABASE_NAME
+        db=DATABASE_NAME
     )
 
     event_db = EventCommands(connection)

@@ -14,8 +14,7 @@ from json import loads, dumps
 # import for states file
 from enum import Enum
 # import for database file
-from mysql.connector import connect, Error
-from mysql.connector.connection_cext import CMySQLConnection
+from aiomysql import connect, Error, Connection
 
 # VK_api constants
 TOKEN = ""

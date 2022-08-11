@@ -2,17 +2,23 @@ from database import *
 
 
 class UserDataCommands(DataBase):
-    def __init__(self, connection: CMySQLConnection) -> None:
+    def __init__(self, connection: Connection) -> None:
         """Initialization"""
         super().__init__(connection)
 
+    @classmethod
+    async def get_self(cls, connection: Connection):
+        self = cls(connection)
+
         try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(UserDataQueries.create_table_user_query)
-                self.connection.commit()
+            async with self.connection.cursor() as cursor:
+                await cursor.execute(UserDataQueries.create_table_user_query)
+                await self.connection.commit()
 
         except Error as e:
             print(e)
+
+        return self
 
     def get_user_first_and_last_name(self, user_id: int) -> tuple:
         """Returns user's first and last name"""
@@ -100,7 +106,7 @@ if __name__ == '__main__':
         host=HOST,
         user=USER,
         password=PASSWORD,
-        database=DATABASE_NAME
+        db=DATABASE_NAME
     )
 
     db = UserDataCommands(connection)

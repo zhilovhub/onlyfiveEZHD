@@ -2,21 +2,27 @@ from database import *
 
 
 class DiaryHomeworkCommands(DataBase):
-    def __init__(self, connection: CMySQLConnection) -> None:
+    def __init__(self, connection: Connection) -> None:
         """Initialization"""
         super().__init__(connection)
 
+    @classmethod
+    async def get_self(cls, connection: Connection):
+        self = cls(connection)
+
         try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(DiaryHomeworkQueries.create_table_homework_current_week_query)
-                cursor.execute(DiaryHomeworkQueries.create_table_homework_next_week_query)
-                cursor.execute(DiaryHomeworkQueries.create_table_diary_standard_week_query)
-                cursor.execute(DiaryHomeworkQueries.create_table_diary_current_week_query)
-                cursor.execute(DiaryHomeworkQueries.create_table_diary_next_week_query)
-                cursor.execute(DiaryHomeworkQueries.create_table_temp_weekday_diary)
+            async with self.connection.cursor() as cursor:
+                await cursor.execute(DiaryHomeworkQueries.create_table_homework_current_week_query)
+                await cursor.execute(DiaryHomeworkQueries.create_table_homework_next_week_query)
+                await cursor.execute(DiaryHomeworkQueries.create_table_diary_standard_week_query)
+                await cursor.execute(DiaryHomeworkQueries.create_table_diary_current_week_query)
+                await cursor.execute(DiaryHomeworkQueries.create_table_diary_next_week_query)
+                await cursor.execute(DiaryHomeworkQueries.create_table_temp_weekday_diary)
 
         except Error as e:
             print(e)
+
+        return self
 
     def get_all_days_lessons_from_week(self, classroom_id: int, week_type: str, homework=False) -> list:
         """Returns everyday diary from week"""
@@ -904,7 +910,7 @@ if __name__ == '__main__':
         host=HOST,
         user=USER,
         password=PASSWORD,
-        database=DATABASE_NAME
+        db=DATABASE_NAME
     )
 
     diary_homework_db = DiaryHomeworkCommands(connection)

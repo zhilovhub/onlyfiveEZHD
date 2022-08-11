@@ -1,4 +1,6 @@
-from loader import *
+from handlers import *
+
+bot = Bot(TOKEN)
 
 
 @bot.on.message()
@@ -294,7 +296,7 @@ async def filter_callback_button_payload(user_id: int, payload: dict, current_di
 
 
 async def aioscheduler_tasks() -> None:
-    aioschedule.every().monday.at("0:00").do(diary_homework_db.update_change_current_and_next_diary)
+    aioschedule.every().monday.at("0:00").do(handlers_class.diary_homework_db.update_change_current_and_next_diary)
     aioschedule.every(10).seconds.do(handlers_class.check_events_started)
     aioschedule.every(10).seconds.do(handlers_class.check_events_finished)
     aioschedule.every(10).seconds.do(handlers_class.delete_finished_events)
@@ -305,8 +307,49 @@ async def aioscheduler_tasks() -> None:
         await asyncio.sleep(0.5)
 
 
-async def create_tasks() -> None:
-    """Creates tasks for asyncio-loop"""
+async def start_bot() -> None:
+    """Starts bot"""
+    global handlers_class
+
+    # Creating Database
+    async with connect(
+            host=HOST,
+            port=PORT,
+            user=USER,
+            password=PASSWORD
+    ) as connection_to_create_db:
+        async with connection_to_create_db.cursor() as cursor:
+            await cursor.execute(f"""CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}""")
+
+    # Classes for working with database's tables (and creating all tables)
+    connection = await connect(
+        host=HOST,
+        port=PORT,
+        user=USER,
+        password=PASSWORD,
+        db=DATABASE_NAME
+    )
+
+    user_db = await UserDataCommands.get_self(connection)
+    classroom_db = await ClassroomCommands.get_self(connection)
+    technical_support_db = await TechnicalSupportCommands.get_self(connection)
+    diary_homework_db = await DiaryHomeworkCommands.get_self(connection)
+    role_db = await RoleCommands.get_self(connection)
+    notification_db = await NotificationCommands.get_self(connection)
+    event_db = await EventCommands.get_self(connection)
+
+    # All handlers
+    handlers_class = Handlers(bot=bot,
+                              user_db=user_db,
+                              classroom_db=classroom_db,
+                              technical_support_db=technical_support_db,
+                              diary_homework_db=diary_homework_db,
+                              role_db=role_db,
+                              notification_db=notification_db,
+                              event_db=event_db
+                              )
+
+    # Tasks for asyncio loop
     tasks = [
         bot.run_polling(),
         aioscheduler_tasks()
@@ -315,4 +358,4 @@ async def create_tasks() -> None:
 
 
 if __name__ == '__main__':
-    asyncio.run(create_tasks())
+    asyncio.run(start_bot())

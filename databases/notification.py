@@ -2,18 +2,24 @@ from database import *
 
 
 class NotificationCommands(DataBase):
-    def __init__(self, connection: CMySQLConnection) -> None:
+    def __init__(self, connection: Connection) -> None:
         """Initialization"""
         super().__init__(connection)
 
+    @classmethod
+    async def get_self(cls, connection: Connection):
+        self = cls(connection)
+
         try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(NotificationQueries.create_table_notification_query)
-                cursor.execute(NotificationQueries.create_table_notification_diary_query)
-                cursor.execute(NotificationQueries.create_table_notification_students_query)
+            async with self.connection.cursor() as cursor:
+                await cursor.execute(NotificationQueries.create_table_notification_query)
+                await cursor.execute(NotificationQueries.create_table_notification_diary_query)
+                await cursor.execute(NotificationQueries.create_table_notification_students_query)
 
         except Error as e:
             print(e)
+
+        return self
 
     def get_customizing_notification_id(self, user_id: int, classroom_id: int) -> int:
         """Returns customizing notification id"""
