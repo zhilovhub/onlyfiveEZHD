@@ -31,14 +31,14 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
             await self.state_transition(user_id, States.S_FIND_CLASS, trans_message)
 
         elif payload["text"] == "Создать класс":
-            classroom_id = self.classroom_db.insert_new_classroom()
-            self.classroom_db.update_user_customize_classroom_id(user_id, classroom_id)
+            classroom_id = await self.classroom_db.insert_new_classroom()
+            await self.classroom_db.update_user_customize_classroom_id(user_id, classroom_id)
 
             trans_message = "Напишите название будущего класса (макс. 12 символов):"
             await self.state_transition(user_id, States.S_ENTER_CLASS_NAME_CLASSCREATE, trans_message)
 
         elif payload["text"] == "Мои классы":
-            user_classrooms_dictionary = self.classroom_db.get_user_classrooms_with_role_id(user_id)
+            user_classrooms_dictionary = await self.classroom_db.get_user_classrooms_with_role_id(user_id)
 
             if not user_classrooms_dictionary:
                 trans_message = "Пока что ты не состоишь ни в одном классе!"
@@ -58,11 +58,11 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
                         }
                     }
 
-                    members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
+                    members_dictionary = await self.classroom_db.get_dict_of_classroom_users(classroom_id)
                     classroom_name, school_name, access, description = \
-                        self.classroom_db.get_information_of_classroom(classroom_id)
-                    role_name = self.role_db.get_role_name(role_id)
-                    members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
+                        await self.classroom_db.get_information_of_classroom(classroom_id)
+                    role_name = await self.role_db.get_role_name(role_id)
+                    members_limit = await self.classroom_db.get_classroom_members_limit(classroom_id)
 
                     elements.append(
                         {
@@ -87,11 +87,11 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
         elif payload["text"] in ("enter_the_classroom", "look_at_the_classroom"):
             classroom_id = payload["classroom_id"]
             classroom_name, school_name, access, description = \
-                self.classroom_db.get_information_of_classroom(classroom_id)
-            self.classroom_db.update_user_customize_classroom_id(user_id, classroom_id)
+                await self.classroom_db.get_information_of_classroom(classroom_id)
+            await self.classroom_db.update_user_customize_classroom_id(user_id, classroom_id)
 
-            members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
-            members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
+            members_dictionary = await self.classroom_db.get_dict_of_classroom_users(classroom_id)
+            members_limit = await self.classroom_db.get_classroom_members_limit(classroom_id)
 
             if payload["text"] == "enter_the_classroom":
                 for key, value in members_dictionary.items():
@@ -100,7 +100,7 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
                         break
                 else:
                     role_id = None
-                role_name = self.role_db.get_role_name(role_id)
+                role_name = await self.role_db.get_role_name(role_id)
 
                 trans_message = f"Ты в классе {classroom_name}\n\n#{classroom_id}\n" \
                                 f"Школа: {school_name}\n" \
@@ -109,10 +109,10 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
                                 f"Вы: {role_name}\n" \
                                 f"Участники: {len(members_dictionary)}/{members_limit}"
                 await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message,
-                                            sign=self.get_sign(user_id))
+                                            sign=await self.get_sign(user_id))
 
             elif payload["text"] == "look_at_the_classroom":
-                keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)
+                keyboard_kwarg = await self.get_look_keyboard_kwargs(user_id, classroom_id)
 
                 trans_message = f"Ты осматриваешь класс {classroom_name}\n\n#{classroom_id}\n" \
                                 f"Школа: {school_name}\n" \
@@ -135,7 +135,7 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
     async def p_edit_week_or_homework_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Handling payload with text: edit_current_homework | edit_next_homework + all week types"""
         if current_dialog_state in (States.S_IN_CLASS_MYCLASSES.value, States.S_IN_CLASS_MYCLASSES2.value):
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
 
             if classroom_id == payload["classroom_id"]:
                 await self.s_in_class_my_classes_handler(user_id, payload)
@@ -148,7 +148,7 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
     async def p_enter_members_settings_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Handling payload with text: enter_member_settings"""
         if current_dialog_state == States.S_IN_CLASS_MYCLASSES.value:
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
 
             if classroom_id == payload["classroom_id"]:
                 await self.s_in_class_my_classes_handler(user_id, payload)
@@ -169,7 +169,7 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
 
     async def p_accept_cancel_request_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         if current_dialog_state in (States.S_IN_CLASS_MYCLASSES.value, States.S_IN_CLASS_MYCLASSES2.value):
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
 
             if classroom_id == payload["classroom_id"]:
                 await self.s_in_class_my_classes_handler(user_id, payload)

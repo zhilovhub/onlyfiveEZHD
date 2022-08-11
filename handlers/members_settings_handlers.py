@@ -17,20 +17,20 @@ class MembersSettingsHandlers(SupportingFunctions):
             await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Редактировать роли":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
-            default_role_name = self.role_db.get_default_role_name(classroom_id)
-            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            admin_role_name = await self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = await self.role_db.get_default_role_name(classroom_id)
+            all_role_names = await self.role_db.get_all_role_names_from_classroom(classroom_id)
             role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
 
             trans_message = f"{role_names_text}\n\nВведите номер роли для редактрования:"
             await self.state_transition(user_id, States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Назначить роли":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
-            default_role_name = self.role_db.get_default_role_name(classroom_id)
-            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            admin_role_name = await self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = await self.role_db.get_default_role_name(classroom_id)
+            all_role_names = await self.role_db.get_all_role_names_from_classroom(classroom_id)
             role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
 
             trans_message = f"{role_names_text}\n\nВпишите номер роли, назначать которой хотите:"
@@ -38,9 +38,9 @@ class MembersSettingsHandlers(SupportingFunctions):
 
         elif payload["text"] == "Удалить участника":
             if payload["can"]:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
-                members_text = self.get_members_text(roles_dictionary)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                roles_dictionary = await self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+                members_text = await self.get_members_text(roles_dictionary)
 
                 trans_message = f"{members_text}\n\nВпиши номер участника, которого ты хочешь удалить:"
                 await self.state_transition(user_id, States.S_DELETE_MEMBER_MEMBERS_SETTINGS, trans_message)
@@ -50,23 +50,23 @@ class MembersSettingsHandlers(SupportingFunctions):
 
         elif payload["text"] == "Пригл. ссылка":
             if payload["can"]:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                invite_code = self.classroom_db.get_classroom_invite_code(classroom_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                invite_code = await self.classroom_db.get_classroom_invite_code(classroom_id)
 
                 trans_message = f"Ссылка-приглашение твоего класса👇🏻\n\n" \
                                 f"[club{GROUP_ID}|onlyfiveEZHD/invite_link/{invite_code}]"
                 await self.state_transition(user_id, States.S_MEMBERS_SETTINGS,
-                                            trans_message, sign=self.get_sign(user_id))
+                                            trans_message, sign=await self.get_sign(user_id))
             else:
                 await self.state_transition(user_id, States.S_MEMBERS_SETTINGS,
                                             "Ты не можешь приглашать участников из-за "
                                             "своей роли")
 
         elif payload["text"] == "Удалить роли":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
-            default_role_name = self.role_db.get_default_role_name(classroom_id)
-            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            admin_role_name = await self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = await self.role_db.get_default_role_name(classroom_id)
+            all_role_names = await self.role_db.get_all_role_names_from_classroom(classroom_id)
             role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
 
             if len(all_role_names) > 2:
@@ -78,10 +78,10 @@ class MembersSettingsHandlers(SupportingFunctions):
                 await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Добавить роли":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
-            default_role_name = self.role_db.get_default_role_name(classroom_id)
-            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            admin_role_name = await self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = await self.role_db.get_default_role_name(classroom_id)
+            all_role_names = await self.role_db.get_all_role_names_from_classroom(classroom_id)
             role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
 
             if len(all_role_names) < 8:
@@ -105,7 +105,7 @@ class MembersSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Назад":
             trans_message = "Возвращаемся в меню класса..."
             await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message,
-                                        sign=self.get_sign(user_id))
+                                        sign=await self.get_sign(user_id))
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
@@ -117,12 +117,12 @@ class MembersSettingsHandlers(SupportingFunctions):
         """Handling States.S_ADD_ROLE_ENTER_NAME_MEMBERS_SETTINGS"""
         if payload is None:
             if len(message) <= 20:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                old_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                old_role_names = await self.role_db.get_all_role_names_from_classroom(classroom_id)
 
                 if message not in old_role_names:
-                    self.role_db.insert_new_role(classroom_id, message.strip())
-                    role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+                    await self.role_db.insert_new_role(classroom_id, message.strip())
+                    role_names = await self.role_db.get_all_role_names_from_classroom(classroom_id)
                     role_names_text = "\n".join(
                         [f"{ind}. {role_name}" for ind, role_name in enumerate(role_names, start=1)])
 
@@ -151,21 +151,21 @@ class MembersSettingsHandlers(SupportingFunctions):
             ask_message = "Введите номер роли, удалить которую хотите:"
 
             if message.isdigit():
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
                 role_index = int(message)
-                all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
+                all_role_names = await self.role_db.get_all_role_names_from_classroom(classroom_id)
 
                 if 0 < role_index <= len(all_role_names):
-                    admin_role_name = self.role_db.get_admin_role_name(classroom_id)
-                    default_role_name = self.role_db.get_default_role_name(classroom_id)
+                    admin_role_name = await self.role_db.get_admin_role_name(classroom_id)
+                    default_role_name = await self.role_db.get_default_role_name(classroom_id)
                     role_name = all_role_names[role_index - 1]
 
                     if role_name != admin_role_name and role_name != default_role_name:
-                        default_role_id = self.role_db.get_default_role_id(classroom_id)
-                        role_id = self.role_db.get_role_id_by_name(classroom_id, role_name)
+                        default_role_id = await self.role_db.get_default_role_id(classroom_id)
+                        role_id = await self.role_db.get_role_id_by_name(classroom_id, role_name)
 
-                        self.role_db.update_all_roles(role_id, default_role_id)
-                        self.role_db.delete_role(role_id)
+                        await self.role_db.update_all_roles(role_id, default_role_id)
+                        await self.role_db.delete_role(role_id)
 
                         trans_message = "Роль удалена!"
                         await self.state_transition(user_id, States.S_MEMBERS_SETTINGS, trans_message)
@@ -196,13 +196,13 @@ class MembersSettingsHandlers(SupportingFunctions):
             ask_message = "Впиши номер участника, удалить которого хотите:"
 
             if message.isdigit():
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                members_dictionary = await self.classroom_db.get_dict_of_classroom_users(classroom_id)
                 member_index = int(message) - 1
 
                 if 0 <= member_index < len(members_dictionary):
-                    roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
-                    admin_role_id = self.role_db.get_admin_role_id(classroom_id)
+                    roles_dictionary = await self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+                    admin_role_id = await self.role_db.get_admin_role_id(classroom_id)
 
                     ind = 0
                     trans_message = "Что-то пошло не так"
@@ -210,9 +210,9 @@ class MembersSettingsHandlers(SupportingFunctions):
                         for member_id in member_ids:
                             if ind == member_index:
                                 if role_id != admin_role_id and member_id != user_id:
-                                    self.classroom_db.delete_student(classroom_id, member_id)
-                                    new_roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
-                                    new_members_text = self.get_members_text(new_roles_dictionary)
+                                    await self.classroom_db.delete_student(classroom_id, member_id)
+                                    new_roles_dictionary = await self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+                                    new_members_text = await self.get_members_text(new_roles_dictionary)
                                     await self.notify_leave_classmate(member_id, classroom_id, kicked=True,
                                                                       without_user_ids=[user_id])
 
@@ -251,10 +251,10 @@ class MembersSettingsHandlers(SupportingFunctions):
         if payload is None:
             ask_message = "Впишите номер роли, назначать которой хотите:"
 
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
-            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
-            default_role_name = self.role_db.get_default_role_name(classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            all_role_names = await self.role_db.get_all_role_names_from_classroom(classroom_id)
+            admin_role_name = await self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = await self.role_db.get_default_role_name(classroom_id)
             all_role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
 
             if message.isdigit():
@@ -262,8 +262,8 @@ class MembersSettingsHandlers(SupportingFunctions):
 
                 if 0 < role_index <= len(all_role_names):
                     role_name = all_role_names[role_index - 1]
-                    admin_role_id = self.role_db.get_admin_role_id(classroom_id)
-                    role_id = self.role_db.get_role_id_by_name(classroom_id, role_name)
+                    admin_role_id = await self.role_db.get_admin_role_id(classroom_id)
+                    role_id = await self.role_db.get_role_id_by_name(classroom_id, role_name)
 
                     if role_id == admin_role_id:
                         trans_message = "Вы уверены, что хотите назначить кого-то ролью админа? После " \
@@ -271,14 +271,14 @@ class MembersSettingsHandlers(SupportingFunctions):
                         await self.state_transition(user_id, States.S_CHOOSE_ADMIN_ROLE_CONFIRMATION_MEMBERS_SETTINGS,
                                                     trans_message)
                     else:
-                        roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
-                        members_text = self.get_members_text(roles_dictionary)
+                        roles_dictionary = await self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+                        members_text = await self.get_members_text(roles_dictionary)
 
                         trans_message = f"{members_text}\n\nВпишите номер участника, которому хотите " \
                                         f"назначить роль - {role_name}"
                         await self.state_transition(user_id, States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS,
                                                     trans_message)
-                    self.role_db.update_user_customize_role_id(user_id, role_id)
+                    await self.role_db.update_user_customize_role_id(user_id, role_id)
                 else:
                     trans_message = f"{all_role_names_text}\n\nНомер роли не может быть отрицательным числом" \
                                     f" или быть больше текущего количества ролей\n\n{ask_message}"
@@ -304,22 +304,22 @@ class MembersSettingsHandlers(SupportingFunctions):
                                         "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Нет":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
-            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
-            default_role_name = self.role_db.get_default_role_name(classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            all_role_names = await self.role_db.get_all_role_names_from_classroom(classroom_id)
+            admin_role_name = await self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = await self.role_db.get_default_role_name(classroom_id)
             all_role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
 
-            self.role_db.update_user_customize_role_id(user_id, "null")
+            await self.role_db.update_user_customize_role_id(user_id, "null")
 
             trans_message = f"{all_role_names_text}\n\nВпишите номер роли, назначать которой хотите:"
             await self.state_transition(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Да":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
-            roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
-            members_text = self.get_members_text(roles_dictionary)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            admin_role_name = await self.role_db.get_admin_role_name(classroom_id)
+            roles_dictionary = await self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+            members_text = await self.get_members_text(roles_dictionary)
 
             trans_message = f"{members_text}\n\nВпишите номер участника, которому хотите " \
                             f"назначить роль - {admin_role_name}"
@@ -335,37 +335,37 @@ class MembersSettingsHandlers(SupportingFunctions):
                                                                    ) -> None:
         """Handling States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
-            new_role_id = self.role_db.get_customizing_role_id(user_id)
-            role_name = self.role_db.get_role_name(new_role_id)
+            new_role_id = await self.role_db.get_customizing_role_id(user_id)
+            role_name = await self.role_db.get_role_name(new_role_id)
             ask_message = f"Впишите номер участника, которому хотите назначить роль - {role_name}"
 
             if message.isdigit():
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                members_dictionary = await self.classroom_db.get_dict_of_classroom_users(classroom_id)
                 member_index = int(message) - 1
 
                 if 0 <= member_index < len(members_dictionary):
-                    roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
-                    members_text = self.get_members_text(roles_dictionary)
+                    roles_dictionary = await self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+                    members_text = await self.get_members_text(roles_dictionary)
 
                     ind = 0
                     for role_id, member_ids in roles_dictionary.items():
                         for member_id in member_ids:
                             if ind == member_index:
-                                admin_role_id = self.role_db.get_admin_role_id(classroom_id)
+                                admin_role_id = await self.role_db.get_admin_role_id(classroom_id)
 
                                 if member_id != user_id and role_id != new_role_id:
-                                    self.role_db.update_student_role(member_id, new_role_id)
+                                    await self.role_db.update_student_role(member_id, new_role_id)
 
                                     if admin_role_id == new_role_id:
-                                        default_role_id = self.role_db.get_default_role_id(classroom_id)
-                                        self.role_db.update_student_role(user_id, default_role_id)
+                                        default_role_id = await self.role_db.get_default_role_id(classroom_id)
+                                        await self.role_db.update_student_role(user_id, default_role_id)
 
-                                    new_roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
-                                    new_members_text = self.get_members_text(new_roles_dictionary)
+                                    new_roles_dictionary = await self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+                                    new_members_text = await self.get_members_text(new_roles_dictionary)
 
                                     if admin_role_id == new_role_id:
-                                        self.role_db.update_user_customize_role_id(user_id, "null")
+                                        await self.role_db.update_user_customize_role_id(user_id, "null")
 
                                         trans_message = f"{new_members_text}\n\nНовая роль участнику назначена!\n\nВы" \
                                                         f" больше не админ"
@@ -404,12 +404,12 @@ class MembersSettingsHandlers(SupportingFunctions):
                 await self.state_transition(user_id, States.S_CHOOSE_MEMBER_CHANGE_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Назад":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
-            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
-            default_role_name = self.role_db.get_default_role_name(classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            all_role_names = await self.role_db.get_all_role_names_from_classroom(classroom_id)
+            admin_role_name = await self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = await self.role_db.get_default_role_name(classroom_id)
             all_role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
-            self.role_db.update_user_customize_role_id(user_id, "null")
+            await self.role_db.update_user_customize_role_id(user_id, "null")
 
             trans_message = f"{all_role_names_text}\n\nВпишите номер роли, назначать которой хотите:"
             await self.state_transition(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS, trans_message)
@@ -425,10 +425,10 @@ class MembersSettingsHandlers(SupportingFunctions):
         if payload is None:
             ask_message = "Впишите номер роли, редактировать которую хотите:"
 
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
-            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
-            default_role_name = self.role_db.get_default_role_name(classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            all_role_names = await self.role_db.get_all_role_names_from_classroom(classroom_id)
+            admin_role_name = await self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = await self.role_db.get_default_role_name(classroom_id)
             all_role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
 
             if message.isdigit():
@@ -436,10 +436,10 @@ class MembersSettingsHandlers(SupportingFunctions):
 
                 if 0 < role_index <= len(all_role_names):
                     role_name = all_role_names[role_index - 1]
-                    role_id = self.role_db.get_role_id_by_name(classroom_id, role_name)
-                    self.role_db.update_user_customize_role_id(user_id, role_id)
+                    role_id = await self.role_db.get_role_id_by_name(classroom_id, role_name)
+                    await self.role_db.update_user_customize_role_id(user_id, role_id)
 
-                    role_properties_dict = self.role_db.get_role_properties_dict(role_id)
+                    role_properties_dict = await self.role_db.get_role_properties_dict(role_id)
                     role_properties_text = self.get_role_properties_text(role_properties_dict)
 
                     await self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, role_properties_text)
@@ -468,8 +468,8 @@ class MembersSettingsHandlers(SupportingFunctions):
                                         "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Класс":
-            role_id = self.role_db.get_customizing_role_id(user_id)
-            classroom_role_properties_dictionary = self.role_db.get_classroom_role_properties_dict(role_id)
+            role_id = await self.role_db.get_customizing_role_id(user_id)
+            classroom_role_properties_dictionary = await self.role_db.get_classroom_role_properties_dict(role_id)
             color_values = self.get_edit_role_keyboard_color_values(classroom_role_properties_dictionary)
 
             trans_message = "Что участник с этой ролью может делать с классом:"
@@ -477,8 +477,8 @@ class MembersSettingsHandlers(SupportingFunctions):
                                         *color_values)
 
         elif payload["text"] == "Участники":
-            role_id = self.role_db.get_customizing_role_id(user_id)
-            members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
+            role_id = await self.role_db.get_customizing_role_id(user_id)
+            members_role_properties_dictionary = await self.role_db.get_members_role_properties_dict(role_id)
             color_values = self.get_edit_role_keyboard_color_values(members_role_properties_dictionary)
 
             trans_message = "Что участник с этой ролью может делать с другими учатниками:"
@@ -486,8 +486,8 @@ class MembersSettingsHandlers(SupportingFunctions):
                                         *color_values)
 
         elif payload["text"] == "Дневник":
-            role_id = self.role_db.get_customizing_role_id(user_id)
-            diary_role_properties_dictionary = self.role_db.get_diary_role_properties_dict(role_id)
+            role_id = await self.role_db.get_customizing_role_id(user_id)
+            diary_role_properties_dictionary = await self.role_db.get_diary_role_properties_dict(role_id)
             color_values = self.get_edit_role_keyboard_color_values(diary_role_properties_dictionary)
 
             trans_message = "Что участник с этой ролью может делать с дневником:"
@@ -501,12 +501,12 @@ class MembersSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Назад":
             ask_message = "Впишите номер роли, редактировать которую хотите:"
 
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            all_role_names = self.role_db.get_all_role_names_from_classroom(classroom_id)
-            admin_role_name = self.role_db.get_admin_role_name(classroom_id)
-            default_role_name = self.role_db.get_default_role_name(classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            all_role_names = await self.role_db.get_all_role_names_from_classroom(classroom_id)
+            admin_role_name = await self.role_db.get_admin_role_name(classroom_id)
+            default_role_name = await self.role_db.get_default_role_name(classroom_id)
             all_role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
-            self.role_db.update_user_customize_role_id(user_id, "null")
+            await self.role_db.update_user_customize_role_id(user_id, "null")
 
             trans_message = f"{all_role_names_text}\n\n{ask_message}"
             await self.state_transition(user_id, States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
@@ -521,10 +521,10 @@ class MembersSettingsHandlers(SupportingFunctions):
         """Handling States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
             if len(message) <= 20:
-                role_id = self.role_db.get_customizing_role_id(user_id)
-                self.role_db.update_role_name(role_id, message)
+                role_id = await self.role_db.get_customizing_role_id(user_id)
+                await self.role_db.update_role_name(role_id, message)
 
-                role_properties_dict = self.role_db.get_role_properties_dict(role_id)
+                role_properties_dict = await self.role_db.get_role_properties_dict(role_id)
                 role_properties_text = self.get_role_properties_text(role_properties_dict)
 
                 trans_message = f"{role_properties_text}\n\nНазвание роли изменено!"
@@ -535,8 +535,8 @@ class MembersSettingsHandlers(SupportingFunctions):
                 await self.state_transition(user_id, States.S_ENTER_NAME_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)
 
         elif payload["text"] == "Назад":
-            role_id = self.role_db.get_customizing_role_id(user_id)
-            role_properties_dict = self.role_db.get_role_properties_dict(role_id)
+            role_id = await self.role_db.get_customizing_role_id(user_id)
+            role_properties_dict = await self.role_db.get_role_properties_dict(role_id)
             role_properties_text = self.get_role_properties_text(role_properties_dict)
 
             await self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, role_properties_text)
@@ -550,8 +550,8 @@ class MembersSettingsHandlers(SupportingFunctions):
     async def s_diary_privilege_edit_role_members_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
-            role_id = self.role_db.get_customizing_role_id(user_id)
-            diary_role_properties_dictionary = self.role_db.get_diary_role_properties_dict(role_id)
+            role_id = await self.role_db.get_customizing_role_id(user_id)
+            diary_role_properties_dictionary = await self.role_db.get_diary_role_properties_dict(role_id)
             color_values = self.get_edit_role_keyboard_color_values(diary_role_properties_dictionary)
 
             await self.state_transition(user_id, States.S_DIARY_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
@@ -568,11 +568,11 @@ class MembersSettingsHandlers(SupportingFunctions):
             }
             privilege_type = payload_meaning_dictionary[payload["text"]]
 
-            role_id = self.role_db.get_customizing_role_id(user_id)
-            diary_role_properties_dictionary = self.role_db.get_diary_role_properties_dict(role_id)
+            role_id = await self.role_db.get_customizing_role_id(user_id)
+            diary_role_properties_dictionary = await self.role_db.get_diary_role_properties_dict(role_id)
             new_value = False if diary_role_properties_dictionary[privilege_type] else True
 
-            self.role_db.update_role_privilege(role_id, new_value, privilege_type)
+            await self.role_db.update_role_privilege(role_id, new_value, privilege_type)
             diary_role_properties_dictionary[privilege_type] = new_value
 
             diary_role_properties_text = self.get_role_properties_text(diary_role_properties_dictionary, "diary")
@@ -582,8 +582,8 @@ class MembersSettingsHandlers(SupportingFunctions):
                                         diary_role_properties_text, *color_values)
 
         elif payload["text"] == "Назад":
-            role_id = self.role_db.get_customizing_role_id(user_id)
-            role_properties_dict = self.role_db.get_role_properties_dict(role_id)
+            role_id = await self.role_db.get_customizing_role_id(user_id)
+            role_properties_dict = await self.role_db.get_role_properties_dict(role_id)
             role_properties_text = self.get_role_properties_text(role_properties_dict)
 
             await self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, role_properties_text)
@@ -597,8 +597,8 @@ class MembersSettingsHandlers(SupportingFunctions):
     async def s_members_privilege_edit_role_members_settings(self, user_id: int, payload: dict) -> None:
         """Handling States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
-            role_id = self.role_db.get_customizing_role_id(user_id)
-            members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
+            role_id = await self.role_db.get_customizing_role_id(user_id)
+            members_role_properties_dictionary = await self.role_db.get_members_role_properties_dict(role_id)
             color_values = self.get_edit_role_keyboard_color_values(members_role_properties_dictionary)
 
             await self.state_transition(user_id, States.S_MEMBERS_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
@@ -615,14 +615,14 @@ class MembersSettingsHandlers(SupportingFunctions):
             }
             privilege_type = payload_meaning_dictionary[payload["text"]]
 
-            role_id = self.role_db.get_customizing_role_id(user_id)
-            members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
+            role_id = await self.role_db.get_customizing_role_id(user_id)
+            members_role_properties_dictionary = await self.role_db.get_members_role_properties_dict(role_id)
             new_value = False if members_role_properties_dictionary[privilege_type] else True
 
-            self.role_db.update_role_privilege(role_id, new_value, privilege_type)
+            await self.role_db.update_role_privilege(role_id, new_value, privilege_type)
             members_role_properties_dictionary[privilege_type] = new_value
 
-            role_properties_dict = self.role_db.get_role_properties_dict(role_id)
+            role_properties_dict = await self.role_db.get_role_properties_dict(role_id)
             role_properties_text = self.get_role_properties_text(role_properties_dict)
             color_values = self.get_edit_role_keyboard_color_values(members_role_properties_dictionary)
 
@@ -630,8 +630,8 @@ class MembersSettingsHandlers(SupportingFunctions):
                                         role_properties_text, *color_values)
 
         elif payload["text"] == "Назад":
-            role_id = self.role_db.get_customizing_role_id(user_id)
-            role_properties_dict = self.role_db.get_role_properties_dict(role_id)
+            role_id = await self.role_db.get_customizing_role_id(user_id)
+            role_properties_dict = await self.role_db.get_role_properties_dict(role_id)
             role_properties_text = self.get_role_properties_text(role_properties_dict)
 
             await self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, role_properties_text)
@@ -645,8 +645,8 @@ class MembersSettingsHandlers(SupportingFunctions):
     async def s_classroom_privilege_edit_role_members_settings(self, user_id: int, payload: dict) -> None:
         """Handling States.S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS"""
         if payload is None:
-            role_id = self.role_db.get_customizing_role_id(user_id)
-            classroom_role_properties_dictionary = self.role_db.get_classroom_role_properties_dict(role_id)
+            role_id = await self.role_db.get_customizing_role_id(user_id)
+            classroom_role_properties_dictionary = await self.role_db.get_classroom_role_properties_dict(role_id)
             color_values = self.get_edit_role_keyboard_color_values(classroom_role_properties_dictionary)
 
             await self.state_transition(user_id, States.S_CLASSROOM_PRIVILEGE_EDIT_ROLE_MEMBERS_SETTINGS,
@@ -663,14 +663,14 @@ class MembersSettingsHandlers(SupportingFunctions):
             }
             privilege_type = payload_meaning_dictionary[payload["text"]]
 
-            role_id = self.role_db.get_customizing_role_id(user_id)
-            classroom_role_properties_dictionary = self.role_db.get_classroom_role_properties_dict(role_id)
+            role_id = await self.role_db.get_customizing_role_id(user_id)
+            classroom_role_properties_dictionary = await self.role_db.get_classroom_role_properties_dict(role_id)
             new_value = False if classroom_role_properties_dictionary[privilege_type] else True
 
-            self.role_db.update_role_privilege(role_id, new_value, privilege_type)
+            await self.role_db.update_role_privilege(role_id, new_value, privilege_type)
             classroom_role_properties_dictionary[privilege_type] = new_value
 
-            role_properties_dict = self.role_db.get_role_properties_dict(role_id)
+            role_properties_dict = await self.role_db.get_role_properties_dict(role_id)
             role_properties_text = self.get_role_properties_text(role_properties_dict)
             color_values = self.get_edit_role_keyboard_color_values(classroom_role_properties_dictionary)
 
@@ -678,8 +678,8 @@ class MembersSettingsHandlers(SupportingFunctions):
                                         role_properties_text, *color_values)
 
         elif payload["text"] == "Назад":
-            role_id = self.role_db.get_customizing_role_id(user_id)
-            role_properties_dict = self.role_db.get_role_properties_dict(role_id)
+            role_id = await self.role_db.get_customizing_role_id(user_id)
+            role_properties_dict = await self.role_db.get_role_properties_dict(role_id)
             role_properties_text = self.get_role_properties_text(role_properties_dict)
 
             await self.state_transition(user_id, States.S_EDIT_ROLE_MEMBERS_SETTINGS, role_properties_text)

@@ -23,7 +23,7 @@ async def listen_messages(message: Message) -> None:
 
     if await handlers_class.is_member(user_id):  # Checking first condition
 
-        if handlers_class.user_db.check_user_is_ready(user_id):  # Checking second condition
+        if await handlers_class.user_db.check_user_is_ready(user_id):  # Checking second condition
 
             if not attachments and message_text:  # Checking user didn't send attachment
                 current_dialog_state = await handlers_class.user_db.get_user_dialog_state(user_id)
@@ -352,7 +352,7 @@ async def start_bot() -> None:
     # Tasks for asyncio loop
     tasks = [
         bot.run_polling(),
-        aioscheduler_tasks()
+        # aioscheduler_tasks()
     ]
     await asyncio.gather(*tasks)
 

@@ -186,14 +186,14 @@ class DiaryHomeworkCommands(DataBase):
 
         none_list = [None] * 84
         async with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.update_copy_diary_from_week_into_another_week_query.format(table_name),
+            await cursor.execute(DiaryHomeworkQueries.update_copy_diary_from_week_into_another_week_query.format(table_name),
                            (*none_list, classroom_id))
             await self.connection.commit()
 
     async def update_change_current_and_next_diary(self) -> None:
         """Changes every new week current_week and next_week_diary"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.get_all_classroom_ids_query)
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(DiaryHomeworkQueries.get_all_classroom_ids_query)
 
             classroom_ids = [row[0] for row in list(await cursor.fetchall())]
             for classroom_id in classroom_ids:
@@ -213,8 +213,8 @@ class DiaryHomeworkCommands(DataBase):
 
     async def delete_row_from_temp_weekday_table(self, user_id: int) -> None:
         """Deletes row from temp table"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(DiaryHomeworkQueries.delete_row_from_temp_weekday_diary_query.format(user_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(DiaryHomeworkQueries.delete_row_from_temp_weekday_diary_query.format(user_id))
             await self.connection.commit()
 
 

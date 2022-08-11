@@ -31,7 +31,7 @@ class ClassroomCommands(DataBase):
         if user_ids:
             async with self.connection.cursor() as cursor:
                 await cursor.execute(ClassroomQueries.get_student_ids_query.format(",".join(map(str, user_ids))),
-                               (classroom_id,))
+                                     (classroom_id,))
                 return [row[0] for row in list(await cursor.fetchall())]
 
         return []
@@ -82,7 +82,7 @@ class ClassroomCommands(DataBase):
         async with self.connection.cursor() as cursor:
             classrooms_dictionary = {}
             await cursor.execute(ClassroomQueries.get_user_classrooms_with_role_id_query.format(user_id))
-            for (classroom_id, role_id) in cursor:
+            for (classroom_id, role_id) in await cursor.fetchall():
                 classrooms_dictionary[classroom_id] = role_id
 
             return classrooms_dictionary
@@ -92,7 +92,7 @@ class ClassroomCommands(DataBase):
         async with self.connection.cursor() as cursor:
             users_dictionary = {}
             await cursor.execute(ClassroomQueries.get_list_of_classroom_users_query.format(classroom_id))
-            for (user_id, user_role_id) in cursor:
+            for (user_id, user_role_id) in await cursor.fetchall():
                 users_dictionary[user_id] = user_role_id
 
             return users_dictionary
@@ -171,7 +171,8 @@ class ClassroomCommands(DataBase):
         """Insert customizer into UserCustomize"""
         try:
             async with self.connection.cursor() as cursor:
-                cursor.execute(ClassroomQueries.insert_new_customizer_query.format(user_id))
+                await cursor.execute(
+                    ClassroomQueries.insert_new_customizer_query.format(user_id))
                 await self.connection.commit()
 
         except Error as e:
@@ -180,8 +181,9 @@ class ClassroomCommands(DataBase):
     async def insert_new_user_in_classroom(self, user_id: int, classroom_id: int, role_id: int) -> int:
         """Add user to the classroom"""
         async with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.insert_new_classroom_user_query.format(user_id, classroom_id, role_id))
-            cursor.execute(ClassroomQueries.get_last_primary_id)
+            await cursor.execute(
+                ClassroomQueries.insert_new_classroom_user_query.format(user_id, classroom_id, role_id))
+            await cursor.execute(ClassroomQueries.get_last_primary_id)
             student_id = list(await cursor.fetchone())[0]
             await self.connection.commit()
 
@@ -190,7 +192,7 @@ class ClassroomCommands(DataBase):
     async def insert_new_classroom(self) -> int:
         """Insert new classroom and student-owner"""
         async with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.insert_classroom_query)
+            await cursor.execute(ClassroomQueries.insert_classroom_query)
             classroom_id = cursor.lastrowid
 
         return classroom_id
@@ -199,87 +201,89 @@ class ClassroomCommands(DataBase):
         """Inserts new request"""
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         async with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.insert_request_query.format(user_id, classroom_id, request_text,
-                                                                        current_datetime))
+            await cursor.execute(ClassroomQueries.insert_request_query.format(user_id, classroom_id, request_text,
+                                                                              current_datetime))
             await self.connection.commit()
 
     async def update_classroom_name(self, classroom_id: int, new_classroom_name: str) -> None:
         """Set name to the classroom"""
         async with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_classroom_name_query.format(new_classroom_name, classroom_id))
+            await cursor.execute(ClassroomQueries.update_classroom_name_query.format(new_classroom_name, classroom_id))
             await self.connection.commit()
 
     async def update_school_name(self, classroom_id: int, new_school_name: str) -> None:
         """Update school name of the classroom"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_school_name_query.format(new_school_name, classroom_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(ClassroomQueries.update_school_name_query.format(new_school_name, classroom_id))
             await self.connection.commit()
 
     async def update_classroom_access(self, classroom_id: int, access: str) -> None:
         """Update access of the classroom"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_classroom_access_query.format(access, classroom_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(ClassroomQueries.update_classroom_access_query.format(access, classroom_id))
             await self.connection.commit()
 
     async def update_classroom_description(self, classroom_id: int, description: str) -> None:
         """Update description of the classroom"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_classroom_description_query.format(description, classroom_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(ClassroomQueries.update_classroom_description_query.format(description, classroom_id))
             await self.connection.commit()
 
     async def update_classroom_members_limit(self, classroom_id: int, members_limit: int) -> None:
         """Update members_limit of the classroom"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_classroom_members_limit_query.format(members_limit, classroom_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(
+                ClassroomQueries.update_classroom_members_limit_query.format(members_limit, classroom_id))
             await self.connection.commit()
 
     async def update_classroom_invite_code(self, classroom_id: int, invite_code: str) -> None:
         """Update invite code of the classroom"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_classroom_invite_code_query, (invite_code, classroom_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(ClassroomQueries.update_classroom_invite_code_query, (invite_code, classroom_id))
             await self.connection.commit()
 
     async def update_classroom_created(self, classroom_id: int, created: bool) -> None:
         """Update created of classroom"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_classroom_created_query.format(created, classroom_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(ClassroomQueries.update_classroom_created_query.format(created, classroom_id))
             await self.connection.commit()
 
     async def update_role_id_of_user(self, user_id: int, user_role_id: int) -> None:
         """Set role_id to the user"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_user_role_id_query.format(user_role_id, user_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(ClassroomQueries.update_user_role_id_query.format(user_role_id, user_id))
             await self.connection.commit()
 
     async def update_user_customize_classroom_id(self, user_id: int, classroom_id) -> None:
         """Update classroom_id that user is customizing"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_user_customize_classroom_id_query.format(classroom_id, user_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(
+                ClassroomQueries.update_user_customize_classroom_id_query.format(classroom_id, user_id))
             await self.connection.commit()
 
     async def update_request(self, user_id: int, classroom_id: int, new_request_text: str) -> None:
         """Updates request"""
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_request_query.format(new_request_text, current_datetime,
-                                                                        user_id, classroom_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(ClassroomQueries.update_request_query.format(new_request_text, current_datetime,
+                                                                              user_id, classroom_id))
 
     async def delete_classroom(self, classroom_id: int) -> None:
         """Delete classroom and its owner from Student"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.delete_classroom_query.format(classroom_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(ClassroomQueries.delete_classroom_query.format(classroom_id))
             await self.connection.commit()
 
     async def delete_student(self, classroom_id: int, user_id: int) -> None:
         """Deletes user from classroom"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.delete_user_from_classroom_query.format(user_id, classroom_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(ClassroomQueries.delete_user_from_classroom_query.format(user_id, classroom_id))
             await self.connection.commit()
 
     async def delete_request(self, user_id: int, classroom_id: int) -> None:
         """Deletes request from Request"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.delete_request_query.format(user_id, classroom_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(ClassroomQueries.delete_request_query.format(user_id, classroom_id))
             await self.connection.commit()
 
 
@@ -368,5 +372,5 @@ if __name__ == "__main__":
     # elif flag == "del":
     #     for i in range(1, 55):
     #         with connection.cursor() as cursor:
-    #             cursor.execute(ClassroomQueries.delete_user_from_classroom_query.format(i))
+    #             await cursor.execute(ClassroomQueries.delete_user_from_classroom_query.format(i))
     #             connection.commit()

@@ -14,9 +14,9 @@ class TechnicalSupportHandlers(SupportingFunctions):
     async def s_enter_technical_support_message_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE"""
         if payload is None:
-            user_message = self.technical_support_db.get_message(user_id) + "\n"
+            user_message = await self.technical_support_db.get_message(user_id) + "\n"
             user_message += message
-            self.technical_support_db.insert_message(user_id, user_message)
+            await self.technical_support_db.insert_message(user_id, user_message)
 
         elif payload["text"] == "Отменить":
             await self.cancel_entering_technical_support_message(user_id)

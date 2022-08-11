@@ -177,104 +177,104 @@ class EventCommands(DataBase):
     async def insert_new_student(self, event_id: int, student_id: int) -> None:
         """Inserts new student to the collective event"""
         async with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.insert_new_student_query, (event_id, student_id))
+            await cursor.execute(EventQueries.insert_new_student_query, (event_id, student_id))
             await self.connection.commit()
 
     async def update_customizing_event_id(self, user_id: int, event_id) -> None:
         """Updates customizing event_id"""
         async with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.update_customizing_event_id_query, (event_id, user_id))
+            await cursor.execute(EventQueries.update_customizing_event_id_query, (event_id, user_id))
             await self.connection.commit()
 
     async def update_event_type(self, event_id: int, collective: bool) -> None:
         """Updates event's type"""
         async with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.update_event_type_query, (collective, event_id))
+            await cursor.execute(EventQueries.update_event_type_query, (collective, event_id))
             await self.connection.commit()
 
     async def update_event_label(self, event_id: int, label: str) -> None:
         """Updates event's label"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.update_event_label_query, (label, event_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(EventQueries.update_event_label_query, (label, event_id))
             await self.connection.commit()
 
     async def update_event_start_time(self, event_id: int, start_time: datetime) -> None:
         """Updates event's start_time"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.update_event_start_time_query, (start_time, event_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(EventQueries.update_event_start_time_query, (start_time, event_id))
             await self.connection.commit()
 
     async def update_event_end_time(self, event_id: int, end_time) -> None:
         """Updates event's end_time"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.update_event_end_time_query, (end_time, event_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(EventQueries.update_event_end_time_query, (end_time, event_id))
             await self.connection.commit()
 
     async def update_event_message_event_id(self, event_id: int, message_event_id=None, auto=False) -> None:
         """Updates event's message_event_id"""
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             if auto:
-                cursor.execute(EventQueries.get_event_classroom_id_query, (event_id,))
+                await cursor.execute(EventQueries.get_event_classroom_id_query, (event_id,))
                 classroom_id = list(await cursor.fetchone())[0]
-                cursor.execute(EventQueries.get_classroom_message_event_ids_query, (classroom_id,))
+                await cursor.execute(EventQueries.get_classroom_message_event_ids_query, (classroom_id,))
                 message_event_ids = [row[0] for row in list(await cursor.fetchall())]
 
                 for i in range(1, 21):
                     if i not in message_event_ids:
-                        cursor.execute(EventQueries.update_event_message_event_id_query, (i, event_id))
+                        await cursor.execute(EventQueries.update_event_message_event_id_query, (i, event_id))
                         break
             else:
-                cursor.execute(EventQueries.update_event_message_event_id_query, (message_event_id, event_id))
+                await cursor.execute(EventQueries.update_event_message_event_id_query, (message_event_id, event_id))
 
             await self.connection.commit()
 
     async def update_event_current_count(self, event_id: int, current_count) -> None:
         """Updates event's current count"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.update_event_current_count_query, (current_count, event_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(EventQueries.update_event_current_count_query, (current_count, event_id))
             await self.connection.commit()
 
     async def update_event_required_count(self, event_id: int, required_count) -> None:
         """Updates event's required count"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.update_event_required_count_query, (required_count, event_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(EventQueries.update_event_required_count_query, (required_count, event_id))
             await self.connection.commit()
 
     async def update_event_required_students_count(self, event_id: int, required_students_count) -> None:
         """Updates event's required students count"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.update_event_required_students_count_query, (required_students_count, event_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(EventQueries.update_event_required_students_count_query, (required_students_count, event_id))
             await self.connection.commit()
 
     async def update_event_created(self, event_id: int, created: bool) -> None:
         """Updates event's created"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.update_event_created_query, (created, event_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(EventQueries.update_event_created_query, (created, event_id))
             await self.connection.commit()
 
     async def update_event_last_and_finished(self, event_id: int, last: bool, finished) -> None:
         """Updates event's last and finished"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.update_event_last_and_finished_query, (last, finished, event_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(EventQueries.update_event_last_and_finished_query, (last, finished, event_id))
             await self.connection.commit()
 
     async def delete_event(self, event_id: int) -> None:
         """Deletes event"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.delete_event_query, (event_id,))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(EventQueries.delete_event_query, (event_id,))
             await self.connection.commit()
 
     async def delete_student(self, event_id: int, student_id: int) -> None:
         """Deletes student from the collective event"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.delete_student_query, (event_id, student_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(EventQueries.delete_student_query, (event_id, student_id))
             await self.connection.commit()
 
     async def delete_finished_events(self, event_ids: list) -> None:
         """Deletes evevnts that finished two days ago"""
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             if event_ids:
-                cursor.execute(EventQueries.delete_events_query.format(",".join(map(str, event_ids))))
+                await cursor.execute(EventQueries.delete_events_query.format(",".join(map(str, event_ids))))
                 await self.connection.commit()
 
 

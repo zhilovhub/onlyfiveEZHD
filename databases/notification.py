@@ -122,26 +122,26 @@ class NotificationCommands(DataBase):
     async def update_notification_created(self, notification_id: int, created: bool) -> None:
         """Updates notification's created"""
         async with self.connection.cursor() as cursor:
-            cursor.execute(NotificationQueries.update_notification_created_query, (created, notification_id))
+            await cursor.execute(NotificationQueries.update_notification_created_query, (created, notification_id))
             await self.connection.commit()
 
     async def delete_notification_from_diary(self, notification_id: int) -> None:
         """Deletes notification from diary"""
         async with self.connection.cursor() as cursor:
-            cursor.execute(NotificationQueries.delete_notification_from_diary_query, (notification_id,))
+            await cursor.execute(NotificationQueries.delete_notification_from_diary_query, (notification_id,))
             await self.connection.commit()
 
     async def delete_notification_students(self, notification_id: int) -> None:
         """Deletes notification's students"""
         async with self.connection.cursor() as cursor:
-            cursor.execute(NotificationQueries.delete_notification_students_query, (notification_id,))
+            await cursor.execute(NotificationQueries.delete_notification_students_query, (notification_id,))
             await self.connection.commit()
 
     async def delete_notified_notifications(self, notification_ids: list) -> None:
         """Deletes notified notifications"""
         if notification_ids:
             async with self.connection.cursor() as cursor:
-                cursor.execute(NotificationQueries.delete_notified_notifications_query.format(",".join(map(
+                await cursor.execute(NotificationQueries.delete_notified_notifications_query.format(",".join(map(
                     str, notification_ids))))
                 await self.connection.commit()
 

@@ -21,8 +21,8 @@ class ClassroomSettingsHandlers(SupportingFunctions):
             await self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, trans_message)
 
         elif payload["text"] == "Уведомления":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            notification_dict = self.notification_db.get_notification_values_dict(user_id, classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            notification_dict = await self.notification_db.get_notification_values_dict(user_id, classroom_id)
 
             trans_message = "Выбери, какие уведомления получать/не получать"
             await self.state_transition(user_id, States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS, trans_message,
@@ -31,7 +31,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Назад":
             trans_message = "Возвращаемся в меню класса..."
             await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message,
-                                        sign=self.get_sign(user_id))
+                                        sign=await self.get_sign(user_id))
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
@@ -42,8 +42,8 @@ class ClassroomSettingsHandlers(SupportingFunctions):
     async def s_notification_settings_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS"""
         if payload is None:
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            notification_dict = self.notification_db.get_notification_values_dict(user_id, classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            notification_dict = await self.notification_db.get_notification_values_dict(user_id, classroom_id)
 
             await self.state_transition(user_id, States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS,
                                         "Для навигации используй кнопки!👇🏻", *notification_dict.values())
@@ -57,9 +57,9 @@ class ClassroomSettingsHandlers(SupportingFunctions):
             }
             notification_type = payload_text_meaning_dict[payload["text"]]
 
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            self.notification_db.update_notification_value(user_id, classroom_id, notification_type)
-            notification_dict = self.notification_db.get_notification_values_dict(user_id, classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            await self.notification_db.update_notification_value(user_id, classroom_id, notification_type)
+            notification_dict = await self.notification_db.get_notification_values_dict(user_id, classroom_id)
 
             trans_message = "Сохранено!"
             await self.state_transition(user_id, States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS,
@@ -92,8 +92,8 @@ class ClassroomSettingsHandlers(SupportingFunctions):
                     "Заявки": {"public_color": "negative", "invite_color": "positive", "close_color": "negative"},
                     "Закрытый": {"public_color": "negative", "invite_color": "negative", "close_color": "positive"}
                 }
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                access = self.classroom_db.get_classroom_access(classroom_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                access = await self.classroom_db.get_classroom_access(classroom_id)
                 keyboard_kwargs = keyboard_type_kwargs[access]
 
                 trans_message = "Выберете новый тип класса (зеленым покрашен текущий тип):"
@@ -133,8 +133,8 @@ class ClassroomSettingsHandlers(SupportingFunctions):
 
         elif payload["text"] == "Лимит участников":
             if payload["can"]:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                members_limit = await self.classroom_db.get_classroom_members_limit(classroom_id)
 
                 trans_message = f"Текущий лимит участников: {members_limit}\n\n" \
                                 f"Впишите новое число максимального количества участников (не может быть меньше " \
@@ -165,16 +165,16 @@ class ClassroomSettingsHandlers(SupportingFunctions):
                                         "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Покинуть класс":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            admin_role_id = self.role_db.get_admin_role_id(classroom_id)
-            role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            admin_role_id = await self.role_db.get_admin_role_id(classroom_id)
+            role_id = await self.role_db.get_role_id_by_user_id(user_id, classroom_id)
 
             if admin_role_id == role_id:
                 trans_message = "Ты не можешь покинуть класс будучи админом!"
                 await self.state_transition(user_id, States.S_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS, trans_message)
             else:
-                self.classroom_db.delete_student(classroom_id, user_id)
-                keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)
+                await self.classroom_db.delete_student(classroom_id, user_id)
+                keyboard_kwarg = await self.get_look_keyboard_kwargs(user_id, classroom_id)
                 await self.notify_leave_classmate(user_id, classroom_id, kicked=False)
 
                 trans_message = "Ты покинул класс!"
@@ -224,10 +224,10 @@ class ClassroomSettingsHandlers(SupportingFunctions):
                                         "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Удалить":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            classroom_name = self.classroom_db.get_classroom_name(classroom_id)
-            self.classroom_db.delete_classroom(classroom_id)
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            classroom_name = await self.classroom_db.get_classroom_name(classroom_id)
+            await self.classroom_db.delete_classroom(classroom_id)
+            await self.classroom_db.update_user_customize_classroom_id(user_id, "null")
 
             trans_message = f"Класс с именем {classroom_name} удалён!"
             await self.state_transition(user_id, States.S_NOTHING, trans_message)
@@ -250,8 +250,8 @@ class ClassroomSettingsHandlers(SupportingFunctions):
                 "Заявки": {"public_color": "negative", "invite_color": "positive", "close_color": "negative"},
                 "Закрытый": {"public_color": "negative", "invite_color": "negative", "close_color": "positive"}
             }
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            access = self.classroom_db.get_classroom_access(classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            access = await self.classroom_db.get_classroom_access(classroom_id)
             keyboard_kwargs = keyboard_type_kwargs[access]
 
             await self.state_transition(user_id, States.S_ACCESS_MAIN_CLASSROOM_SETTINGS,
@@ -259,8 +259,8 @@ class ClassroomSettingsHandlers(SupportingFunctions):
                                         **keyboard_kwargs)
 
         elif payload["text"] in ["Публичный", "Заявки", "Закрытый"]:
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            self.classroom_db.update_classroom_access(classroom_id, payload["text"])
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            await self.classroom_db.update_classroom_access(classroom_id, payload["text"])
 
             trans_message = f"Тип класса изменен на {payload['text']}!"
             await self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, trans_message)
@@ -282,8 +282,8 @@ class ClassroomSettingsHandlers(SupportingFunctions):
                 trans_message = "Длина названия превышает 12 символов. Введите другое название:"
                 await self.state_transition(user_id, States.S_CLASSROOM_NAME_MAIN_CLASSROOM_SETTINGS, trans_message)
             else:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                self.classroom_db.update_classroom_name(classroom_id, message)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                await self.classroom_db.update_classroom_name(classroom_id, message)
 
                 trans_message = f"Новое название класса: {message}"
                 await self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, trans_message)
@@ -305,8 +305,8 @@ class ClassroomSettingsHandlers(SupportingFunctions):
                 trans_message = "Длина названия превышает 32 символа. Введите другое название:"
                 await self.state_transition(user_id, States.S_SCHOOL_NAME_MAIN_CLASSROOM_SETTINGS, trans_message)
             else:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                self.classroom_db.update_school_name(classroom_id, message)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                await self.classroom_db.update_school_name(classroom_id, message)
 
                 trans_message = f"Новое название школы: {message}"
                 await self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, trans_message)
@@ -328,8 +328,8 @@ class ClassroomSettingsHandlers(SupportingFunctions):
                 trans_message = "Длина описания превышает 200 символов. Введите другое название:"
                 await self.state_transition(user_id, States.S_DESCRIPTION_MAIN_CLASSROOM_SETTINGS, trans_message)
             else:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                self.classroom_db.update_classroom_description(classroom_id, message)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                await self.classroom_db.update_classroom_description(classroom_id, message)
 
                 trans_message = f"Новое описание класса: {message}"
                 await self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, trans_message)
@@ -353,15 +353,15 @@ class ClassroomSettingsHandlers(SupportingFunctions):
             if message.strip().isdigit():
                 new_members_limit = int(message.strip())
 
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                members_count = len(self.classroom_db.get_dict_of_classroom_users(classroom_id))
-                old_members_limit = self.classroom_db.get_classroom_members_limit(classroom_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                members_count = len(await self.classroom_db.get_dict_of_classroom_users(classroom_id))
+                old_members_limit = await self.classroom_db.get_classroom_members_limit(classroom_id)
 
                 if new_members_limit == old_members_limit:
                     trans_message = f"Такой лимит уже и так задан\n\n{ask_message}"
                     await self.state_transition(user_id, States.S_LIMIT_MAIN_CLASSROOM_SETTINGS, trans_message)
                 elif members_count <= new_members_limit <= 40:
-                    self.classroom_db.update_classroom_members_limit(classroom_id, new_members_limit)
+                    await self.classroom_db.update_classroom_members_limit(classroom_id, new_members_limit)
 
                     trans_message = "Новый лимит участников сохранён!"
                     await self.state_transition(user_id, States.S_MAIN_CLASSROOM_SETTINGS, trans_message)

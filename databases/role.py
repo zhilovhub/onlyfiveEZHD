@@ -155,7 +155,7 @@ class RoleCommands(DataBase):
                 "is_admin"
             ]
 
-            cursor.execute(RoleQueries.get_classroom_role_properties_query.format(role_id))
+            await cursor.execute(RoleQueries.get_classroom_role_properties_query.format(role_id))
             property_values = list(await cursor.fetchone())
 
             return {name: value for name, value in zip(property_names, property_values)}
@@ -169,14 +169,14 @@ class RoleCommands(DataBase):
                 kick_members = False
 
             if is_default_member or is_admin:
-                cursor.execute(RoleQueries.insert_new_default_role_query.format(classroom_id, role_name, kick_members,
+                await cursor.execute(RoleQueries.insert_new_default_role_query.format(classroom_id, role_name, kick_members,
                                                                                 is_default_member, is_admin))
             else:
-                cursor.execute(RoleQueries.get_default_role_id_query.format(classroom_id))
+                await cursor.execute(RoleQueries.get_default_role_id_query.format(classroom_id))
                 default_role_id = list(await cursor.fetchone())[0]
-                cursor.execute(RoleQueries.get_all_role_properties_query.format(default_role_id))
+                await cursor.execute(RoleQueries.get_all_role_properties_query.format(default_role_id))
                 default_role_properties = list(await cursor.fetchone())[3:-2]
-                cursor.execute(RoleQueries.insert_new_role_query.format(classroom_id, role_name,
+                await cursor.execute(RoleQueries.insert_new_role_query.format(classroom_id, role_name,
                                                                         *default_role_properties, False, False))
 
             await self.connection.commit()
@@ -186,37 +186,37 @@ class RoleCommands(DataBase):
     async def update_student_role(self, user_id: int, new_role_id: int) -> None:
         """Updates student's role with new role_id"""
         async with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_student_role_query.format(new_role_id, user_id))
+            await cursor.execute(RoleQueries.update_student_role_query.format(new_role_id, user_id))
             await self.connection.commit()
 
     async def update_all_roles(self, old_role_id: int, new_role_id: int) -> None:
         """Updates students' role with new role_id"""
         async with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_all_roles_query.format(new_role_id, old_role_id))
+            await cursor.execute(RoleQueries.update_all_roles_query.format(new_role_id, old_role_id))
             await self.connection.commit()
 
     async def update_user_customize_role_id(self, user_id: int, role_id) -> None:
         """Update role_id that user is customizing"""
         async with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_user_customize_role_id_query.format(role_id, user_id))
+            await cursor.execute(RoleQueries.update_user_customize_role_id_query.format(role_id, user_id))
             await self.connection.commit()
 
     async def update_role_name(self, role_id: int, new_name: str) -> None:
         """Updates role's name"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_role_name_query.format(new_name, role_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(RoleQueries.update_role_name_query.format(new_name, role_id))
             await self.connection.commit()
 
     async def update_role_privilege(self, role_id: int, new_value: bool, privilege_type: str) -> None:
         """Updates role's privilege_type"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_role_privilege_query.format(privilege_type, new_value, role_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(RoleQueries.update_role_privilege_query.format(privilege_type, new_value, role_id))
             await self.connection.commit()
 
     async def delete_role(self, role_id: int) -> None:
         """Deletes role"""
-        with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.delete_role_query.format(role_id))
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(RoleQueries.delete_role_query.format(role_id))
             await self.connection.commit()
 
 

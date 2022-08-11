@@ -14,12 +14,12 @@ class NotificationHandlers(SupportingFunctions):
     async def s_choose_user_for_notification_handler_my_classes(self, user_id: int, message: str, payload: dict
                                                                 ) -> None:
         """Handling States.S_CHOOSE_USER_FOR_NOTIFICATION_MYCLASSES"""
-        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-        members_dictionary = self.classroom_db.get_dict_of_classroom_users(classroom_id)
+        classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+        members_dictionary = await self.classroom_db.get_dict_of_classroom_users(classroom_id)
 
         if payload is None:
-            roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
-            members_text = self.get_members_text(roles_dictionary)
+            roles_dictionary = await self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+            members_text = await self.get_members_text(roles_dictionary)
             ask_message = f"{members_text}\n\nВыбери, кого уведомить\n(впиши их номера через пробел, " \
                           f"например, 1 2 21 23):"
 
@@ -40,19 +40,19 @@ class NotificationHandlers(SupportingFunctions):
                             member_ids.append(member_id)
                         ind += 1
 
-                notification_id = self.notification_db.get_customizing_notification_id(user_id, classroom_id)
-                student_ids = self.classroom_db.get_student_ids(member_ids, classroom_id)
-                self.notification_db.insert_notification_students(notification_id, student_ids)
+                notification_id = await self.notification_db.get_customizing_notification_id(user_id, classroom_id)
+                student_ids = await self.classroom_db.get_student_ids(member_ids, classroom_id)
+                await self.notification_db.insert_notification_students(notification_id, student_ids)
 
                 await self.state_transition(user_id, States.S_ENTER_TEXT_FOR_NOTIFICATION_MYCLASSES,
                                             "Напиши текст уведомления (макс. 2000 символов):")
 
         elif payload["text"] == "Всех":
-            member_ids = [member_id for member_id in self.classroom_db.get_dict_of_classroom_users(classroom_id)]
+            member_ids = [member_id for member_id in await self.classroom_db.get_dict_of_classroom_users(classroom_id)]
 
-            notification_id = self.notification_db.get_customizing_notification_id(user_id, classroom_id)
-            student_ids = self.classroom_db.get_student_ids(member_ids, classroom_id)
-            self.notification_db.insert_notification_students(notification_id, student_ids)
+            notification_id = await self.notification_db.get_customizing_notification_id(user_id, classroom_id)
+            student_ids = await self.classroom_db.get_student_ids(member_ids, classroom_id)
+            await self.notification_db.insert_notification_students(notification_id, student_ids)
 
             await self.state_transition(user_id, States.S_ENTER_TEXT_FOR_NOTIFICATION_MYCLASSES,
                                         "Напиши текст уведомления (макс. 2000 символов):")
@@ -68,12 +68,12 @@ class NotificationHandlers(SupportingFunctions):
 
     async def s_enter_text_for_notification_handler_my_classes(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_TEXT_FOR_NOTIFICATION_MYCLASSES"""
-        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-        notification_id = self.notification_db.get_customizing_notification_id(user_id, classroom_id)
+        classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+        notification_id = await self.notification_db.get_customizing_notification_id(user_id, classroom_id)
 
         if payload is None:
             if len(message) <= 2000:
-                self.notification_db.update_notification_text(notification_id, message)
+                await self.notification_db.update_notification_text(notification_id, message)
 
                 await self.state_transition(user_id, States.S_ENTER_DATE_FOR_NOTIFICATION_MYCLASSES,
                                             "Впиши дату и время, когда это уведомление прислать выбранным участникам, в"
@@ -84,10 +84,10 @@ class NotificationHandlers(SupportingFunctions):
                                             f"Напиши текст уведомления (макс. 2000 символов):")
 
         elif payload["text"] == "Назад":
-            roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
-            members_text = self.get_members_text(roles_dictionary)
+            roles_dictionary = await self.classroom_db.get_dict_of_classroom_roles(classroom_id)
+            members_text = await self.get_members_text(roles_dictionary)
 
-            self.notification_db.delete_notification_students(notification_id)
+            await self.notification_db.delete_notification_students(notification_id)
 
             await self.state_transition(user_id, States.S_CHOOSE_USER_FOR_NOTIFICATION_MYCLASSES,
                                         f"{members_text}\n\nВыбери, кого уведомить\n(впиши их номера через пробел, "
@@ -101,8 +101,8 @@ class NotificationHandlers(SupportingFunctions):
 
     async def s_enter_date_for_notification_handler_my_classes(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ENTER_DATE_FOR_NOTIFICATION_MYCLASSES"""
-        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-        notification_id = self.notification_db.get_customizing_notification_id(user_id, classroom_id)
+        classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+        notification_id = await self.notification_db.get_customizing_notification_id(user_id, classroom_id)
 
         if payload is None:
             pattern = "%d.%m.%Y %H:%M"
@@ -112,8 +112,8 @@ class NotificationHandlers(SupportingFunctions):
             try:
                 notification_datetime = datetime.strptime(message, pattern)
                 if notification_datetime > datetime.now():
-                    self.notification_db.update_notification_datetime(notification_id, notification_datetime)
-                    notification_text = self.get_notification_text(notification_id)
+                    await self.notification_db.update_notification_datetime(notification_id, notification_datetime)
+                    notification_text = await self.get_notification_text(notification_id)
 
                     await self.state_transition(user_id, States.S_ACCEPT_CREATE_NOTIFICATION_MYCLASSES,
                                                 f"В {notification_datetime.strftime('%d.%m.%Y %H:%M')} выбранным "
@@ -128,7 +128,7 @@ class NotificationHandlers(SupportingFunctions):
                                             f"Введенная запись не соответсвует формату\n\n{ask_message}")
 
         elif payload["text"] == "Назад":
-            self.notification_db.update_notification_text(notification_id, None)
+            await self.notification_db.update_notification_text(notification_id, None)
 
             await self.state_transition(user_id, States.S_ENTER_TEXT_FOR_NOTIFICATION_MYCLASSES,
                                         "Напиши текст уведомления (макс. 2000 символов):")
@@ -141,21 +141,21 @@ class NotificationHandlers(SupportingFunctions):
 
     async def s_accept_create_notification_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_ACCEPT_CREATE_NOTIFICATION_MYCLASSES"""
-        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-        notification_id = self.notification_db.get_customizing_notification_id(user_id, classroom_id)
+        classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+        notification_id = await self.notification_db.get_customizing_notification_id(user_id, classroom_id)
 
         if payload is None:
             await self.state_transition(user_id, States.S_ACCEPT_CREATE_NOTIFICATION_MYCLASSES,
                                         "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Принять":
-            self.notification_db.update_notification_created(notification_id, True)
+            await self.notification_db.update_notification_created(notification_id, True)
 
             await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Уведомление создано!",
-                                        sign=self.get_sign(user_id))
+                                        sign=await self.get_sign(user_id))
 
         elif payload["text"] == "Отклонить":
-            self.notification_db.update_notification_datetime(notification_id, None)
+            await self.notification_db.update_notification_datetime(notification_id, None)
 
             await self.state_transition(user_id, States.S_ENTER_DATE_FOR_NOTIFICATION_MYCLASSES,
                                         "Впиши дату и время, когда это уведомление прислать выбранным участникам, в "
@@ -169,11 +169,11 @@ class NotificationHandlers(SupportingFunctions):
 
     async def cancel_creating_notification(self, user_id: int, to_main_menu: bool) -> None:
         """Trans to classroom/main menu"""
-        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-        notification_id = self.notification_db.get_customizing_notification_id(user_id, classroom_id)
-        self.notification_db.delete_notification_from_diary(notification_id)
+        classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+        notification_id = await self.notification_db.get_customizing_notification_id(user_id, classroom_id)
+        await self.notification_db.delete_notification_from_diary(notification_id)
         if to_main_menu:
             await self.trans_to_main_menu(user_id)
         else:
             await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Главное меню класса",
-                                        sign=self.get_sign(user_id))
+                                        sign=await self.get_sign(user_id))

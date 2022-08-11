@@ -2,7 +2,7 @@ from databases import *
 
 from keyboards import KeyBoards
 from states import States
-from exceptions import *
+from exceptions import UnknownPayload
 
 
 class SupportingFunctions:
@@ -76,9 +76,9 @@ class SupportingFunctions:
                                         KeyBoards.get_my_class_menu_keyboard(**kwargs))
 
             case States.S_IN_CLASS_MYCLASSES2:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
-                members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                role_id = await self.role_db.get_role_id_by_user_id(user_id, classroom_id)
+                members_role_properties_dictionary = await self.role_db.get_members_role_properties_dict(role_id)
 
                 accept_requests = members_role_properties_dictionary["accept_requests"]
                 notify = members_role_properties_dictionary["notify"]
@@ -125,13 +125,13 @@ class SupportingFunctions:
 
             # EVENTS
             case States.S_CHOOSE_EVENT_MYCLASSES:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                role_id = await self.role_db.get_role_id_by_user_id(user_id, classroom_id)
 
-                classroom_events = self.event_db.get_all_classroom_events(classroom_id)
+                classroom_events = await self.event_db.get_all_classroom_events(classroom_id)
                 sorted_events = sorted(classroom_events, key=lambda x: x["message_event_id"])
 
-                members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
+                members_role_properties_dictionary = await self.role_db.get_members_role_properties_dict(role_id)
                 redact_events = members_role_properties_dictionary.get("redact_events", False)
 
                 await self.send_message(user_id, message,
@@ -168,15 +168,15 @@ class SupportingFunctions:
                 await self.send_message(user_id, message, KeyBoards.get_submit_back_keyboard(**kwargs))
 
             case States.S_EDIT_EVENT_MYCLASSES:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
-                event_id = self.event_db.get_customizing_event_id(user_id)
-                event = self.event_db.get_classroom_event(event_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                role_id = await self.role_db.get_role_id_by_user_id(user_id, classroom_id)
+                event_id = await self.event_db.get_customizing_event_id(user_id)
+                event = await self.event_db.get_classroom_event(event_id)
 
-                event_students = self.event_db.get_event_students(event_id)
-                student_id = self.classroom_db.get_student_id(user_id, classroom_id)
+                event_students = await self.event_db.get_event_students(event_id)
+                student_id = await self.classroom_db.get_student_id(user_id, classroom_id)
 
-                members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
+                members_role_properties_dictionary = await self.role_db.get_members_role_properties_dict(role_id)
                 redact_events = members_role_properties_dictionary["redact_events"]
 
                 await self.send_message(user_id, message,
@@ -191,8 +191,8 @@ class SupportingFunctions:
                 await self.send_message(user_id, message, KeyBoards.KEYBOARD_BACK_MENU)
 
             case States.S_EVENT_SETTINGS_MYCLASSES:
-                event_id = self.event_db.get_customizing_event_id(user_id)
-                event = self.event_db.get_classroom_event(event_id)
+                event_id = await self.event_db.get_customizing_event_id(user_id)
+                event = await self.event_db.get_classroom_event(event_id)
 
                 await self.send_message(user_id, message, KeyBoards.get_event_settings_keyboard(event))
 
@@ -234,9 +234,9 @@ class SupportingFunctions:
                                         KeyBoards.KEYBOARD_CLASSROOM_SETTINGS.get_json())
 
             case States.S_MAIN_CLASSROOM_SETTINGS:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
-                classroom_role_properties_dictionary = self.role_db.get_classroom_role_properties_dict(role_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                role_id = await self.role_db.get_role_id_by_user_id(user_id, classroom_id)
+                classroom_role_properties_dictionary = await self.role_db.get_classroom_role_properties_dict(role_id)
 
                 classroom_role_properties_dictionary.pop("role_name", None)
                 classroom_role_properties_dictionary.pop("is_default_member", None)
@@ -246,9 +246,9 @@ class SupportingFunctions:
                                         KeyBoards.get_main_classroom_settings(**classroom_role_properties_dictionary))
 
             case States.S_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
-                admin_role_id = self.role_db.get_admin_role_id(classroom_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                role_id = await self.role_db.get_role_id_by_user_id(user_id, classroom_id)
+                admin_role_id = await self.role_db.get_admin_role_id(classroom_id)
 
                 is_admin = role_id == admin_role_id
 
@@ -303,12 +303,12 @@ class SupportingFunctions:
 
             # MEMBERSSETTINGS
             case States.S_MEMBERS_SETTINGS:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                role_id = self.role_db.get_role_id_by_user_id(user_id, classroom_id)
-                admin_role_id = self.role_db.get_admin_role_id(classroom_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                role_id = await self.role_db.get_role_id_by_user_id(user_id, classroom_id)
+                admin_role_id = await self.role_db.get_admin_role_id(classroom_id)
                 is_admin = role_id == admin_role_id
 
-                members_role_properties_dictionary = self.role_db.get_members_role_properties_dict(role_id)
+                members_role_properties_dictionary = await self.role_db.get_members_role_properties_dict(role_id)
 
                 kick_members = members_role_properties_dictionary["kick_members"]
                 invite_members = members_role_properties_dictionary["invite_members"]
@@ -365,14 +365,14 @@ class SupportingFunctions:
                 await self.send_message(user_id, message,
                                         KeyBoards.get_classroom_privilege_keyboard(args))
 
-        self.user_db.set_user_dialog_state(user_id, next_state.value)
+        await self.user_db.set_user_dialog_state(user_id, next_state.value)
 
     async def trans_to_main_menu(self, user_id: int) -> None:
         """Change user's state into S_NOTHING"""
         trans_message = "Возвращение в главное меню"
-        self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-        self.role_db.update_user_customize_role_id(user_id, "null")
-        self.event_db.update_customizing_event_id(user_id, None)
+        await self.classroom_db.update_user_customize_classroom_id(user_id, "null")
+        await self.role_db.update_user_customize_role_id(user_id, "null")
+        await self.event_db.update_customizing_event_id(user_id, None)
         await self.state_transition(user_id, States.S_NOTHING, trans_message)
 
     async def is_member(self, user_id: int) -> int:
@@ -392,24 +392,24 @@ class SupportingFunctions:
             "last_name": user_information.last_name
         }
 
-    def get_members_text(self, roles_dictionary: dict) -> str:
+    async def get_members_text(self, roles_dictionary: dict) -> str:
         members_text = ""
         ind = 1
         for role_id, member_ids in roles_dictionary.items():
-            role_name = self.role_db.get_role_name(role_id)
+            role_name = await self.role_db.get_role_name(role_id)
             members_text += f"{role_name}\n"
 
             for member_id in member_ids:
-                first_name, last_name = self.user_db.get_user_first_and_last_name(member_id)
+                first_name, last_name = await self.user_db.get_user_first_and_last_name(member_id)
                 members_text += f"{ind}. [id{member_id}|{first_name} {last_name}]\n"
                 ind += 1
             members_text += "\n"
 
         return members_text
 
-    def get_look_keyboard_kwargs(self, user_id: int, classroom_id: int) -> str:
+    async def get_look_keyboard_kwargs(self, user_id: int, classroom_id: int) -> str:
         """Returns look keyboard's kwargs"""
-        request_information = self.classroom_db.get_request_information(user_id, classroom_id)
+        request_information = await self.classroom_db.get_request_information(user_id, classroom_id)
 
         if request_information:
             return "look_request"
@@ -420,51 +420,51 @@ class SupportingFunctions:
                 "Закрытый": "close"
             }
 
-            access = self.classroom_db.get_classroom_access(classroom_id)
+            access = await self.classroom_db.get_classroom_access(classroom_id)
             return access_keyboard_dict[access]
 
-    def insert_new_student(self, user_id: int, classroom_id: int, role_id: int) -> None:
+    async def insert_new_student(self, user_id: int, classroom_id: int, role_id: int) -> None:
         """Inserts new student"""
-        student_id = self.classroom_db.insert_new_user_in_classroom(user_id, classroom_id, role_id)
-        self.notification_db.insert_new_notification(student_id, user_id, classroom_id)
+        student_id = await self.classroom_db.insert_new_user_in_classroom(user_id, classroom_id, role_id)
+        await self.notification_db.insert_new_notification(student_id, user_id, classroom_id)
 
     async def check_events_started(self) -> None:
         """Finds event that started and notifies about it"""
-        started_event_ids = self.event_db.get_started_events_and_mark_them()
+        started_event_ids = await self.event_db.get_started_events_and_mark_them()
         for event_id in started_event_ids:
             await self.notify_start_event(event_id)
 
     async def check_events_finished(self) -> None:
         """Finds event that finished and notifies about it"""
-        finished_event_ids = self.event_db.get_finished_events_and_mark_them()
+        finished_event_ids = await self.event_db.get_finished_events_and_mark_them()
         for event_id in finished_event_ids:
             await self.notify_finished_event(event_id)
 
     async def delete_finished_events(self) -> None:
         """Deletes events that finished two days ago"""
-        deleted_event_ids = self.event_db.get_deleted_finished_events()
+        deleted_event_ids = await self.event_db.get_deleted_finished_events()
         for event_id in deleted_event_ids:
             await self.notify_delete_event(event_id)
-        self.event_db.delete_finished_events(deleted_event_ids)
+        await self.event_db.delete_finished_events(deleted_event_ids)
 
     async def check_notifications(self) -> None:
         """Check users' notifications and notifies about them"""
-        notification_ids = self.notification_db.get_notified_notifications()
+        notification_ids = await self.notification_db.get_notified_notifications()
         for notification_id in notification_ids:
             await self.notify_notification(notification_id)
-        self.notification_db.delete_notified_notifications(notification_ids)
+        await self.notification_db.delete_notified_notifications(notification_ids)
 
     async def notify_notification(self, notification_id: int) -> None:
         """Notifies about notification"""
-        notification_text = self.get_notification_text(notification_id)
-        notification_students = self.notification_db.get_notification_students(notification_id)
-        user_ids = self.classroom_db.get_user_ids(notification_students)
+        notification_text = await self.get_notification_text(notification_id)
+        notification_students = await self.notification_db.get_notification_students(notification_id)
+        user_ids = await self.classroom_db.get_user_ids(notification_students)
 
         await self.send_message(user_ids=user_ids, message=notification_text)
 
     async def notify_new_classmate(self, user_id: int, classroom_id: int, without_user_ids=None) -> None:
         """Notifies about new classmate"""
-        notified_users = self.notification_db.get_users_with_notification_type(classroom_id, "new_classmate")
+        notified_users = await self.notification_db.get_users_with_notification_type(classroom_id, "new_classmate")
         if without_user_ids:
             for without_user_id in without_user_ids:
                 if without_user_id in notified_users:
@@ -472,7 +472,7 @@ class SupportingFunctions:
 
         if notified_users:
             first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
-            classroom_name = self.classroom_db.get_classroom_name(classroom_id)
+            classroom_name = await self.classroom_db.get_classroom_name(classroom_id)
 
             await self.send_message(user_ids=notified_users,
                                     message=f"[id{user_id}|{first_name} {last_name}] вступил в "
@@ -480,10 +480,10 @@ class SupportingFunctions:
 
     async def notify_request(self, user_id: int, classroom_id: int) -> None:
         """Notifies about request"""
-        notified_users = self.notification_db.get_users_with_notification_type(classroom_id, "requests")
+        notified_users = await self.notification_db.get_users_with_notification_type(classroom_id, "requests")
         if notified_users:
             first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
-            classroom_name = self.classroom_db.get_classroom_name(classroom_id)
+            classroom_name = await self.classroom_db.get_classroom_name(classroom_id)
 
             await self.send_message(user_ids=notified_users,
                                     message=f"[id{user_id}|{first_name} {last_name}] хочет вступить "
@@ -492,7 +492,7 @@ class SupportingFunctions:
     async def notify_leave_classmate(self, user_id: int, classroom_id: int, kicked: bool,
                                      without_user_ids=None) -> None:
         """Notifies about left classmate"""
-        notified_users = self.notification_db.get_users_with_notification_type(classroom_id, "leave_classmate")
+        notified_users = await self.notification_db.get_users_with_notification_type(classroom_id, "leave_classmate")
         if without_user_ids:
             for without_user_id in without_user_ids:
                 if without_user_id in notified_users:
@@ -500,7 +500,7 @@ class SupportingFunctions:
 
         if notified_users:
             first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
-            classroom_name = self.classroom_db.get_classroom_name(classroom_id)
+            classroom_name = await self.classroom_db.get_classroom_name(classroom_id)
 
             if kicked:
                 await self.send_message(user_ids=notified_users, message=f"[id{user_id}|{first_name} {last_name}] "
@@ -511,7 +511,7 @@ class SupportingFunctions:
 
     async def notify_new_event(self, user_id: int, event_id: int, classroom_id: int, without_user_ids=None) -> None:
         """Notifies about new event"""
-        notified_users = self.notification_db.get_users_with_notification_type(classroom_id, "events")
+        notified_users = await self.notification_db.get_users_with_notification_type(classroom_id, "events")
         if without_user_ids:
             for without_user_id in without_user_ids:
                 if without_user_id in notified_users:
@@ -520,7 +520,7 @@ class SupportingFunctions:
         if notified_users:
             first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
 
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             await self.send_message(user_ids=notified_users, message=f"[id{user_id}|{first_name} {last_name}] создал "
@@ -528,16 +528,18 @@ class SupportingFunctions:
 
     async def notify_delete_event(self, event_id: int, user_id=None, without_user_ids=None) -> None:
         """Notifies about deleted event"""
-        classroom_id = self.event_db.get_event_classroom_id(event_id)
-        notified_users = list(set(self.classroom_db.get_user_ids(self.event_db.get_event_students(event_id)) +
-                                  self.notification_db.get_users_with_notification_type(classroom_id, "events")))
+        classroom_id = await self.event_db.get_event_classroom_id(event_id)
+        notified_users = list(set(await self.classroom_db.get_user_ids(await
+                                                                       self.event_db.get_event_students(event_id)) +
+                                  await self.notification_db.get_users_with_notification_type
+                                  (classroom_id, "events")))
         if without_user_ids:
             for without_user_id in without_user_ids:
                 if without_user_id in notified_users:
                     notified_users.remove(without_user_id)
 
         if notified_users:
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             if user_id:
@@ -551,7 +553,7 @@ class SupportingFunctions:
     async def notify_new_leave_student_event(self, user_id: int, event_id: int, new: bool, without_user_ids=None
                                              ) -> None:
         """Notifies about left student from event"""
-        notified_users = self.classroom_db.get_user_ids(self.event_db.get_event_students(event_id))
+        notified_users = await self.classroom_db.get_user_ids(await self.event_db.get_event_students(event_id))
         if without_user_ids:
             for without_user_id in without_user_ids:
                 if without_user_id in notified_users:
@@ -560,7 +562,7 @@ class SupportingFunctions:
         if notified_users:
             first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
 
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             if new:
@@ -574,7 +576,7 @@ class SupportingFunctions:
     async def notify_new_count_event(self, user_id: int, event_id: int, count: int, add: bool,
                                      without_user_ids=None) -> None:
         """Notifies about new event required_count"""
-        notified_users = self.classroom_db.get_user_ids(self.event_db.get_event_students(event_id))
+        notified_users = await self.classroom_db.get_user_ids(await self.event_db.get_event_students(event_id))
         if without_user_ids:
             for without_user_id in without_user_ids:
                 if without_user_id in notified_users:
@@ -583,7 +585,7 @@ class SupportingFunctions:
         if notified_users:
             first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
 
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             if add:
@@ -607,9 +609,10 @@ class SupportingFunctions:
         }
         event_type_text = event_type_dict[event_type]
 
-        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-        notified_users = list(set(self.classroom_db.get_user_ids(self.event_db.get_event_students(event_id)) +
-                                  self.notification_db.get_users_with_notification_type(classroom_id, "events")))
+        classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+        notified_users = list(
+            set(await self.classroom_db.get_user_ids(await self.event_db.get_event_students(event_id)) +
+                await self.notification_db.get_users_with_notification_type(classroom_id, "events")))
 
         if without_user_ids:
             for without_user_id in without_user_ids:
@@ -619,7 +622,7 @@ class SupportingFunctions:
         if notified_users:
             first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
 
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             await self.send_message(user_ids=notified_users,
@@ -628,9 +631,10 @@ class SupportingFunctions:
 
     async def notify_finished_event(self, event_id: int, user_id=None, without_user_ids=None) -> None:
         """Notifies about finished event"""
-        classroom_id = self.event_db.get_event_classroom_id(event_id)
-        notified_users = list(set(self.classroom_db.get_user_ids(self.event_db.get_event_students(event_id)) +
-                                  self.notification_db.get_users_with_notification_type(classroom_id, "events")))
+        classroom_id = await self.event_db.get_event_classroom_id(event_id)
+        notified_users = list(
+            set(await self.classroom_db.get_user_ids(await self.event_db.get_event_students(event_id)) +
+                await self.notification_db.get_users_with_notification_type(classroom_id, "events")))
 
         if without_user_ids:
             for without_user_id in without_user_ids:
@@ -638,7 +642,7 @@ class SupportingFunctions:
                     notified_users.remove(without_user_id)
 
         if notified_users:
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             if user_id:
@@ -653,12 +657,13 @@ class SupportingFunctions:
 
     async def notify_start_event(self, event_id: int) -> None:
         """Notifies about start of the event"""
-        classroom_id = self.event_db.get_event_classroom_id(event_id)
-        notified_users = list(set(self.classroom_db.get_user_ids(self.event_db.get_event_students(event_id)) +
-                                  self.notification_db.get_users_with_notification_type(classroom_id, "events")))
+        classroom_id = await self.event_db.get_event_classroom_id(event_id)
+        notified_users = list(
+            set(await self.classroom_db.get_user_ids(await self.event_db.get_event_students(event_id)) +
+                await self.notification_db.get_users_with_notification_type(classroom_id, "events")))
 
         if notified_users:
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             await self.send_message(user_ids=notified_users,
@@ -667,6 +672,7 @@ class SupportingFunctions:
     @staticmethod
     def get_event_diary_text(classroom_events: list) -> str:
         """Returns text of events"""
+
         def formatted_date(date: date) -> str:
             weekday_dict = {
                 0: "ПОНЕДЕЛЬНИК",
@@ -779,17 +785,17 @@ class SupportingFunctions:
         role_names_text = "\n".join([f"{ind}. {role_name}" for ind, role_name in enumerate(role_names, start=1)])
         return role_names_text
 
-    def get_notification_text(self, notification_id: int) -> str:
+    async def get_notification_text(self, notification_id: int) -> str:
         """Returns text of the notification"""
-        student_id, text = self.notification_db.get_notification_information(notification_id)
-        user_id = self.classroom_db.get_user_ids([student_id])[0]
+        student_id, text = await self.notification_db.get_notification_information(notification_id)
+        user_id = list(await self.classroom_db.get_user_ids([student_id]))[0]
         first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
 
         return f"[id{user_id}|{first_name} {last_name}] уведомляет❗\n{text}"
 
-    def get_sign(self, user_id: int) -> bool:
+    async def get_sign(self, user_id: int) -> bool:
         """Returns sign"""
-        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-        request_list = self.classroom_db.get_list_of_request_information(classroom_id)
+        classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+        request_list = await self.classroom_db.get_list_of_request_information(classroom_id)
 
         return True if request_list else False

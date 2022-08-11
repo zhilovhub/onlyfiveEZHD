@@ -18,24 +18,24 @@ class EventHandlers(SupportingFunctions):
 
         elif payload["text"] == "edit_event":
             message_event_id = payload["message_event_id"]
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            event_id = self.event_db.get_event_id_by_message_event_id(message_event_id, classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            event_id = await self.event_db.get_event_id_by_message_event_id(message_event_id, classroom_id)
 
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
-            self.event_db.update_customizing_event_id(user_id, event_id)
+            await self.event_db.update_customizing_event_id(user_id, event_id)
 
             await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES,
                                         event_text + "\n\nПодробности события")
 
         elif payload["text"] == "Добавить событие":
             if payload["can"]:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                event_diary_id = self.event_db.get_event_diary_id(classroom_id)
-                event_id = self.event_db.insert_new_event(event_diary_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                event_diary_id = await self.event_db.get_event_diary_id(classroom_id)
+                event_id = await self.event_db.insert_new_event(event_diary_id)
 
-                self.event_db.update_customizing_event_id(user_id, event_id)
+                await self.event_db.update_customizing_event_id(user_id, event_id)
 
                 await self.state_transition(user_id,
                                             States.S_CHOOSE_EVENT_TYPE_MYCLASSES,
@@ -49,7 +49,7 @@ class EventHandlers(SupportingFunctions):
 
         elif payload["text"] == "Назад":
             await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2, "Главное меню класса",
-                                        sign=self.get_sign(user_id))
+                                        sign=await self.get_sign(user_id))
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
@@ -69,8 +69,8 @@ class EventHandlers(SupportingFunctions):
                 "2": True
             }
             collective = payload_meaning_dict[payload["text"]]
-            event_id = self.event_db.get_customizing_event_id(user_id)
-            self.event_db.update_event_type(event_id, collective)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
+            await self.event_db.update_event_type(event_id, collective)
 
             if collective:
                 await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_NAME_MYCLASSES,
@@ -93,8 +93,8 @@ class EventHandlers(SupportingFunctions):
         """Handling States.S_ENTER_NOT_COLLECTIVE_EVENT_NAME_MYCLASSES"""
         if payload is None:
             if len(message) < 200:
-                event_id = self.event_db.get_customizing_event_id(user_id)
-                self.event_db.update_event_label(event_id, message)
+                event_id = await self.event_db.get_customizing_event_id(user_id)
+                await self.event_db.update_event_label(event_id, message)
 
                 await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_START_TIME_MYCLASSES,
                                             "Впиши дату и время начала события в следующем формате: YYYY-MM-DD hh:mm\n"
@@ -125,8 +125,8 @@ class EventHandlers(SupportingFunctions):
             try:
                 event_start_time = datetime.strptime(message, "%Y-%m-%d %H:%M")
 
-                event_id = self.event_db.get_customizing_event_id(user_id)
-                self.event_db.update_event_start_time(event_id, event_start_time)
+                event_id = await self.event_db.get_customizing_event_id(user_id)
+                await self.event_db.update_event_start_time(event_id, event_start_time)
 
                 await self.state_transition(user_id, States.S_ENTER_NOT_COLLECTIVE_EVENT_END_TIME_MYCLASSES,
                                             "Впиши время конца события в формате (или нажми пропустить, если событие "
@@ -153,15 +153,15 @@ class EventHandlers(SupportingFunctions):
             try:
                 event_end_time_hour_minute = datetime.strptime(message, "%H:%M")
 
-                event_id = self.event_db.get_customizing_event_id(user_id)
-                event_start_time = self.event_db.get_event_start_time(event_id)
+                event_id = await self.event_db.get_customizing_event_id(user_id)
+                event_start_time = await self.event_db.get_event_start_time(event_id)
                 event_end_time = event_start_time.replace(hour=event_end_time_hour_minute.hour,
                                                           minute=event_end_time_hour_minute.minute)
 
                 if event_end_time > event_start_time:
-                    self.event_db.update_event_end_time(event_id, event_end_time)
-                    self.event_db.update_event_message_event_id(event_id, auto=True)
-                    event = self.event_db.get_classroom_event(event_id)
+                    await self.event_db.update_event_end_time(event_id, event_end_time)
+                    await self.event_db.update_event_message_event_id(event_id, auto=True)
+                    event = await self.event_db.get_classroom_event(event_id)
                     event_text = self.get_event_diary_text([event])
 
                     await self.state_transition(user_id, States.S_SUBMIT_EVENT_CREATE_MYCLASSES,
@@ -179,10 +179,10 @@ class EventHandlers(SupportingFunctions):
                                             "не имеет продолжительности): hh:mm\nНапример, 13:05")
 
         elif payload["text"] == "Пропустить":
-            event_id = self.event_db.get_customizing_event_id(user_id)
-            self.event_db.update_event_end_time(event_id, None)
-            self.event_db.update_event_message_event_id(event_id, auto=True)
-            event = self.event_db.get_classroom_event(event_id)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
+            await self.event_db.update_event_end_time(event_id, None)
+            await self.event_db.update_event_message_event_id(event_id, auto=True)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             await self.state_transition(user_id, States.S_SUBMIT_EVENT_CREATE_MYCLASSES, f"{event_text}\n\nСоздать?",
@@ -204,8 +204,8 @@ class EventHandlers(SupportingFunctions):
         """Handling States.S_ENTER_COLLECTIVE_EVENT_NAME_MYCLASSES"""
         if payload is None:
             if len(message) < 200:
-                event_id = self.event_db.get_customizing_event_id(user_id)
-                self.event_db.update_event_label(event_id, message)
+                event_id = await self.event_db.get_customizing_event_id(user_id)
+                await self.event_db.update_event_label(event_id, message)
 
                 await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_START_TIME_MYCLASSES,
                                             "Впиши дату начала события в следующем формате: YYYY-MM-DD\n"
@@ -236,8 +236,8 @@ class EventHandlers(SupportingFunctions):
             try:
                 event_start_time = datetime.strptime(message, "%Y-%m-%d")
 
-                event_id = self.event_db.get_customizing_event_id(user_id)
-                self.event_db.update_event_start_time(event_id, event_start_time)
+                event_id = await self.event_db.get_customizing_event_id(user_id)
+                await self.event_db.update_event_start_time(event_id, event_start_time)
 
                 await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_END_TIME_MYCLASSES,
                                             "Впиши дату конца события в формате (или нажми пропустить, если событие "
@@ -265,11 +265,11 @@ class EventHandlers(SupportingFunctions):
             try:
                 event_end_time = datetime.strptime(message, "%Y-%m-%d")
 
-                event_id = self.event_db.get_customizing_event_id(user_id)
-                event_start_time = self.event_db.get_event_start_time(event_id)
+                event_id = await self.event_db.get_customizing_event_id(user_id)
+                event_start_time = await self.event_db.get_event_start_time(event_id)
 
                 if event_end_time > event_start_time:
-                    self.event_db.update_event_end_time(event_id, event_end_time)
+                    await self.event_db.update_event_end_time(event_id, event_end_time)
 
                     await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_COUNT_MYCLASSES,
                                                 "Впиши требуемое кол-во того, что нужно собрать (или нажми пропустить, "
@@ -287,8 +287,8 @@ class EventHandlers(SupportingFunctions):
                                             "больше одного дня): hh:mm\nНапример, 2022-09-06")
 
         elif payload["text"] == "Пропустить":
-            event_id = self.event_db.get_customizing_event_id(user_id)
-            self.event_db.update_event_end_time(event_id, None)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
+            await self.event_db.update_event_end_time(event_id, None)
 
             await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_COUNT_MYCLASSES,
                                         "Впиши требуемое кол-во того, что нужно собрать (или нажми пропустить, "
@@ -313,9 +313,9 @@ class EventHandlers(SupportingFunctions):
                 count = int(message)
 
                 if count < 2000000000:
-                    event_id = self.event_db.get_customizing_event_id(user_id)
-                    self.event_db.update_event_current_count(event_id, 0)
-                    self.event_db.update_event_required_count(event_id, count)
+                    event_id = await self.event_db.get_customizing_event_id(user_id)
+                    await self.event_db.update_event_current_count(event_id, 0)
+                    await self.event_db.update_event_required_count(event_id, count)
 
                     await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_STUDENT_MYCLASSES,
                                                 "Впиши требуемое кол-во участников (или нажми пропустить, если не нужна"
@@ -331,9 +331,9 @@ class EventHandlers(SupportingFunctions):
                                             "нажми пропустить, если ничего собирать не нужно):")
 
         elif payload["text"] == "Пропустить":
-            event_id = self.event_db.get_customizing_event_id(user_id)
-            self.event_db.update_event_current_count(event_id, None)
-            self.event_db.update_event_required_count(event_id, None)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
+            await self.event_db.update_event_current_count(event_id, None)
+            await self.event_db.update_event_required_count(event_id, None)
 
             await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_STUDENT_MYCLASSES,
                                         "Впиши требуемое кол-во участников (или нажми пропустить, если не нужна"
@@ -358,10 +358,10 @@ class EventHandlers(SupportingFunctions):
                 count = int(message)
 
                 if count < 10000:
-                    event_id = self.event_db.get_customizing_event_id(user_id)
-                    self.event_db.update_event_required_students_count(event_id, count)
-                    self.event_db.update_event_message_event_id(event_id, auto=True)
-                    event = self.event_db.get_classroom_event(event_id)
+                    event_id = await self.event_db.get_customizing_event_id(user_id)
+                    await self.event_db.update_event_required_students_count(event_id, count)
+                    await self.event_db.update_event_message_event_id(event_id, auto=True)
+                    event = await self.event_db.get_classroom_event(event_id)
                     event_text = self.get_event_diary_text([event])
 
                     await self.state_transition(user_id, States.S_SUBMIT_EVENT_CREATE_MYCLASSES,
@@ -377,10 +377,10 @@ class EventHandlers(SupportingFunctions):
                                             " если не нужна запись участников):")
 
         elif payload["text"] == "Пропустить":
-            event_id = self.event_db.get_customizing_event_id(user_id)
-            self.event_db.update_event_required_students_count(event_id, None)
-            self.event_db.update_event_message_event_id(event_id, auto=True)
-            event = self.event_db.get_classroom_event(event_id)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
+            await self.event_db.update_event_required_students_count(event_id, None)
+            await self.event_db.update_event_message_event_id(event_id, auto=True)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             await self.state_transition(user_id, States.S_SUBMIT_EVENT_CREATE_MYCLASSES,
@@ -404,23 +404,23 @@ class EventHandlers(SupportingFunctions):
                                         "Для навигации используй кнопки!👇🏻")
 
         elif payload["text"] == "Принять":
-            event_id = self.event_db.get_customizing_event_id(user_id)
-            self.event_db.update_event_created(event_id, True)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
+            await self.event_db.update_event_created(event_id, True)
 
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            events = self.event_db.get_all_classroom_events(classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            events = await self.event_db.get_all_classroom_events(classroom_id)
             event_diary_text = self.get_event_diary_text(events)
 
-            self.event_db.update_customizing_event_id(user_id, None)
+            await self.event_db.update_customizing_event_id(user_id, None)
 
             await self.notify_new_event(user_id, event_id, classroom_id, without_user_ids=[user_id])
 
             await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES2,
-                                        f"{event_diary_text}\n\nСобытие создано!", sign=self.get_sign(user_id))
+                                        f"{event_diary_text}\n\nСобытие создано!", sign=await self.get_sign(user_id))
 
         elif payload["text"] == "Отклонить":
-            event_id = self.event_db.get_customizing_event_id(user_id)
-            self.event_db.update_event_message_event_id(event_id, None)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
+            await self.event_db.update_event_message_event_id(event_id, None)
 
             if payload["collective"]:
                 await self.state_transition(user_id, States.S_ENTER_COLLECTIVE_EVENT_REQUIRED_STUDENT_MYCLASSES,
@@ -446,10 +446,10 @@ class EventHandlers(SupportingFunctions):
             if payload["can"]:
                 finished_date = datetime.now()
 
-                event_id = self.event_db.get_customizing_event_id(user_id)
-                self.event_db.update_event_last_and_finished(event_id, False, finished_date)
+                event_id = await self.event_db.get_customizing_event_id(user_id)
+                await self.event_db.update_event_last_and_finished(event_id, False, finished_date)
 
-                event = self.event_db.get_classroom_event(event_id)
+                event = await self.event_db.get_classroom_event(event_id)
                 event_text = self.get_event_diary_text([event])
 
                 await self.notify_finished_event(event_id, user_id=user_id, without_user_ids=[user_id])
@@ -462,9 +462,9 @@ class EventHandlers(SupportingFunctions):
 
         elif payload["text"] == "Редактировать":
             if payload["can"]:
-                event_id = self.event_db.get_customizing_event_id(user_id)
+                event_id = await self.event_db.get_customizing_event_id(user_id)
 
-                event = self.event_db.get_classroom_event(event_id)
+                event = await self.event_db.get_classroom_event(event_id)
                 event_text = self.get_event_diary_text([event])
 
                 await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
@@ -474,13 +474,13 @@ class EventHandlers(SupportingFunctions):
                                                                                     "события из-за своей роли!")
 
         elif payload["text"] == "Участвовать":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            student_id = self.classroom_db.get_student_id(user_id, classroom_id)
-            event_id = self.event_db.get_customizing_event_id(user_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            student_id = await self.classroom_db.get_student_id(user_id, classroom_id)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
 
-            self.event_db.insert_new_student(event_id, student_id)
+            await self.event_db.insert_new_student(event_id, student_id)
 
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             await self.notify_new_leave_student_event(user_id, event_id, new=True, without_user_ids=[user_id])
@@ -488,13 +488,13 @@ class EventHandlers(SupportingFunctions):
             await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, f"{event_text}\n\nТы участвуешь!")
 
         elif payload["text"] == "Покинуть":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            student_id = self.classroom_db.get_student_id(user_id, classroom_id)
-            event_id = self.event_db.get_customizing_event_id(user_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            student_id = await self.classroom_db.get_student_id(user_id, classroom_id)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
 
-            self.event_db.delete_student(event_id, student_id)
+            await self.event_db.delete_student(event_id, student_id)
 
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             await self.notify_new_leave_student_event(user_id, event_id, new=False, without_user_ids=[user_id])
@@ -504,15 +504,15 @@ class EventHandlers(SupportingFunctions):
 
         elif payload["text"] == "Удалить событие":
             if payload["can"]:
-                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                event_id = self.event_db.get_customizing_event_id(user_id)
+                classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                event_id = await self.event_db.get_customizing_event_id(user_id)
 
                 await self.notify_delete_event(event_id, user_id=user_id, without_user_ids=[user_id])
 
-                self.event_db.delete_event(event_id)
-                self.event_db.update_customizing_event_id(user_id, None)
+                await self.event_db.delete_event(event_id)
+                await self.event_db.update_customizing_event_id(user_id, None)
 
-                classroom_events = self.event_db.get_all_classroom_events(classroom_id)
+                classroom_events = await self.event_db.get_all_classroom_events(classroom_id)
                 if classroom_events:
                     event_diary_text = self.get_event_diary_text(classroom_events)
                     trans_message = f"{event_diary_text}\n\nСобытие удалено!\nВыбери номер события, рассмотреть" \
@@ -534,11 +534,11 @@ class EventHandlers(SupportingFunctions):
             await self.state_transition(user_id, States.S_DECREASE_COUNT_COLLECTIVE_EVENT_MYCLASSES, trans_message)
 
         elif payload["text"] == "Назад":
-            classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-            events = self.event_db.get_all_classroom_events(classroom_id)
+            classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+            events = await self.event_db.get_all_classroom_events(classroom_id)
             event_diary_text = self.get_event_diary_text(events)
 
-            self.event_db.update_customizing_event_id(user_id, None)
+            await self.event_db.update_customizing_event_id(user_id, None)
 
             trans_message = f"{event_diary_text}\n\nВыбери номер события, рассмотреть который ты хочешь!"
             await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES, trans_message)
@@ -556,17 +556,17 @@ class EventHandlers(SupportingFunctions):
                 count = int(message)
 
                 if 0 < count < 2000000000:
-                    event_id = self.event_db.get_customizing_event_id(user_id)
-                    current_count = self.event_db.get_event_current_count(event_id)
-                    self.event_db.update_event_current_count(event_id, current_count + count)
+                    event_id = await self.event_db.get_customizing_event_id(user_id)
+                    current_count = await self.event_db.get_event_current_count(event_id)
+                    await self.event_db.update_event_current_count(event_id, current_count + count)
 
-                    classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                    student_id = self.classroom_db.get_student_id(user_id, classroom_id)
-                    event_students = self.event_db.get_event_students(event_id)
+                    classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                    student_id = await self.classroom_db.get_student_id(user_id, classroom_id)
+                    event_students = await self.event_db.get_event_students(event_id)
                     if student_id not in event_students:
-                        self.event_db.insert_new_student(event_id, student_id)
+                        await self.event_db.insert_new_student(event_id, student_id)
 
-                    event = self.event_db.get_classroom_event(event_id)
+                    event = await self.event_db.get_classroom_event(event_id)
                     event_text = self.get_event_diary_text([event])
 
                     await self.notify_new_count_event(user_id, event_id, count, add=True, without_user_ids=[user_id])
@@ -583,9 +583,9 @@ class EventHandlers(SupportingFunctions):
                                             "Введено не число\n\nВпиши количество, которое ты хочешь внести:")
 
         elif payload["text"] == "Назад":
-            event_id = self.event_db.get_customizing_event_id(user_id)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
 
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, f"{event_text}\n\nПодробности события")
@@ -604,19 +604,19 @@ class EventHandlers(SupportingFunctions):
                 count = int(message)
 
                 if 0 < count < 2000000000:
-                    event_id = self.event_db.get_customizing_event_id(user_id)
-                    current_count = self.event_db.get_event_current_count(event_id)
+                    event_id = await self.event_db.get_customizing_event_id(user_id)
+                    current_count = await self.event_db.get_event_current_count(event_id)
 
                     if count <= current_count:
-                        self.event_db.update_event_current_count(event_id, current_count - count)
+                        await self.event_db.update_event_current_count(event_id, current_count - count)
 
-                        classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-                        student_id = self.classroom_db.get_student_id(user_id, classroom_id)
-                        event_students = self.event_db.get_event_students(event_id)
+                        classroom_id = await self.classroom_db.get_customizing_classroom_id(user_id)
+                        student_id = await self.classroom_db.get_student_id(user_id, classroom_id)
+                        event_students = await self.event_db.get_event_students(event_id)
                         if student_id not in event_students:
-                            self.event_db.insert_new_student(event_id, student_id)
+                            await self.event_db.insert_new_student(event_id, student_id)
 
-                        event = self.event_db.get_classroom_event(event_id)
+                        event = await self.event_db.get_classroom_event(event_id)
                         event_text = self.get_event_diary_text([event])
 
                         await self.notify_new_count_event(user_id, event_id, count, add=False,
@@ -639,9 +639,9 @@ class EventHandlers(SupportingFunctions):
                                             "Впиши количество, на которое ты хочешь уменьшить собранное:")
 
         elif payload["text"] == "Назад":
-            event_id = self.event_db.get_customizing_event_id(user_id)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
 
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, f"{event_text}\n\nПодробности события")
@@ -686,9 +686,9 @@ class EventHandlers(SupportingFunctions):
                                         "Впиши новое описание события (макс. 200 символов)")
 
         elif payload["text"] == "Назад":
-            event_id = self.event_db.get_customizing_event_id(user_id)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
 
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             await self.state_transition(user_id, States.S_EDIT_EVENT_MYCLASSES, f"{event_text}\n\nПодробности события")
@@ -703,10 +703,10 @@ class EventHandlers(SupportingFunctions):
         """Handling States.S_ENTER_NEW_EVENT_NAME_MYCLASSES"""
         if payload is None:
             if len(message) < 200:
-                event_id = self.event_db.get_customizing_event_id(user_id)
-                self.event_db.update_event_label(event_id, message)
+                event_id = await self.event_db.get_customizing_event_id(user_id)
+                await self.event_db.update_event_label(event_id, message)
 
-                event = self.event_db.get_classroom_event(event_id)
+                event = await self.event_db.get_classroom_event(event_id)
                 event_text = self.get_event_diary_text([event])
 
                 await self.notify_change_event(user_id, event_id, "label", message, without_user_ids=[user_id])
@@ -719,9 +719,9 @@ class EventHandlers(SupportingFunctions):
                                             "Впиши новое описание события (макс. 200 символов)")
 
         elif payload["text"] == "Назад":
-            event_id = self.event_db.get_customizing_event_id(user_id)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
 
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
@@ -741,10 +741,10 @@ class EventHandlers(SupportingFunctions):
                 count = int(message)
 
                 if 0 < count < 2000000000:
-                    event_id = self.event_db.get_customizing_event_id(user_id)
-                    self.event_db.update_event_required_count(event_id, count)
+                    event_id = await self.event_db.get_customizing_event_id(user_id)
+                    await self.event_db.update_event_required_count(event_id, count)
 
-                    event = self.event_db.get_classroom_event(event_id)
+                    event = await self.event_db.get_classroom_event(event_id)
                     event_text = self.get_event_diary_text([event])
 
                     await self.notify_change_event(user_id, event_id, "required_count", count,
@@ -760,9 +760,9 @@ class EventHandlers(SupportingFunctions):
                                             f"Введено не число\n{ask_message}")
 
         elif payload["text"] == "Назад":
-            event_id = self.event_db.get_customizing_event_id(user_id)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
 
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
@@ -783,10 +783,10 @@ class EventHandlers(SupportingFunctions):
                 count = int(message)
 
                 if 0 < count < 10000:
-                    event_id = self.event_db.get_customizing_event_id(user_id)
-                    self.event_db.update_event_required_students_count(event_id, count)
+                    event_id = await self.event_db.get_customizing_event_id(user_id)
+                    await self.event_db.update_event_required_students_count(event_id, count)
 
-                    event = self.event_db.get_classroom_event(event_id)
+                    event = await self.event_db.get_classroom_event(event_id)
                     event_text = self.get_event_diary_text([event])
 
                     await self.notify_change_event(user_id, event_id, "required_students_count", count,
@@ -802,9 +802,9 @@ class EventHandlers(SupportingFunctions):
                                             f"Введено не число\n{ask_message}")
 
         elif payload["text"] == "Назад":
-            event_id = self.event_db.get_customizing_event_id(user_id)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
 
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
@@ -820,8 +820,8 @@ class EventHandlers(SupportingFunctions):
                                                    ) -> None:
         """Handling States.S_ENTER_NEW_EVENT_START_TIME"""
         if payload is None:
-            event_id = self.event_db.get_customizing_event_id(user_id)
-            collective = self.event_db.get_event_collective(event_id)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
+            collective = await self.event_db.get_event_collective(event_id)
 
             if collective:
                 pattern = "%Y-%m-%d"
@@ -833,16 +833,16 @@ class EventHandlers(SupportingFunctions):
 
             try:
                 event_start_time = datetime.strptime(message, pattern)
-                event_end_time = self.event_db.get_event_end_time(event_id)
+                event_end_time = await self.event_db.get_event_end_time(event_id)
                 if event_end_time:
                     event_end_time = event_end_time.replace(year=event_start_time.year, month=event_start_time.month,
                                                             day=event_start_time.day)
 
                 if event_end_time and event_start_time < event_end_time or not event_end_time:
-                    self.event_db.update_event_last_and_finished(event_id, False, None)
-                    self.event_db.update_event_start_time(event_id, event_start_time)
+                    await self.event_db.update_event_last_and_finished(event_id, False, None)
+                    await self.event_db.update_event_start_time(event_id, event_start_time)
 
-                    event = self.event_db.get_classroom_event(event_id)
+                    event = await self.event_db.get_classroom_event(event_id)
                     event_text = self.get_event_diary_text([event])
 
                     await self.notify_change_event(user_id, event_id, "start_time", event_start_time,
@@ -859,9 +859,9 @@ class EventHandlers(SupportingFunctions):
                                             f"Введенная запись не соответствует формату.\n{ask_message}")
 
         elif payload["text"] == "Назад":
-            event_id = self.event_db.get_customizing_event_id(user_id)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
 
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
@@ -877,8 +877,8 @@ class EventHandlers(SupportingFunctions):
                                                  ) -> None:
         """Handling States.S_ENTER_NEW_EVENT_END_TIME"""
         if payload is None:
-            event_id = self.event_db.get_customizing_event_id(user_id)
-            collective = self.event_db.get_event_collective(event_id)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
+            collective = await self.event_db.get_event_collective(event_id)
 
             if collective:
                 pattern = "%Y-%m-%d"
@@ -889,7 +889,7 @@ class EventHandlers(SupportingFunctions):
                               "Например, 13:05"
 
             try:
-                event_start_time = self.event_db.get_event_start_time(event_id)
+                event_start_time = await self.event_db.get_event_start_time(event_id)
                 if collective:
                     event_end_time = datetime.strptime(message, pattern)
                 else:
@@ -898,10 +898,10 @@ class EventHandlers(SupportingFunctions):
                                                               minute=event_end_time_hour_minute.minute)
 
                 if event_end_time > event_start_time:
-                    self.event_db.update_event_last_and_finished(event_id, False, None)
-                    self.event_db.update_event_end_time(event_id, event_end_time)
+                    await self.event_db.update_event_last_and_finished(event_id, False, None)
+                    await self.event_db.update_event_end_time(event_id, event_end_time)
 
-                    event = self.event_db.get_classroom_event(event_id)
+                    event = await self.event_db.get_classroom_event(event_id)
                     event_text = self.get_event_diary_text([event])
 
                     await self.notify_change_event(user_id, event_id, "end_time", event_end_time,
@@ -918,9 +918,9 @@ class EventHandlers(SupportingFunctions):
                                             f"Введенная запись не соответствует формату.\n{ask_message}")
 
         elif payload["text"] == "Назад":
-            event_id = self.event_db.get_customizing_event_id(user_id)
+            event_id = await self.event_db.get_customizing_event_id(user_id)
 
-            event = self.event_db.get_classroom_event(event_id)
+            event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
 
             await self.state_transition(user_id, States.S_EVENT_SETTINGS_MYCLASSES,
@@ -933,8 +933,8 @@ class EventHandlers(SupportingFunctions):
             raise UnknownPayload(user_id)
 
     async def cancel_creating_event(self, user_id: int, to_main_menu: bool) -> None:
-        event_id = self.event_db.get_customizing_event_id(user_id)
-        self.event_db.delete_event(event_id)
+        event_id = await self.event_db.get_customizing_event_id(user_id)
+        await self.event_db.delete_event(event_id)
         if to_main_menu:
             await self.trans_to_main_menu(user_id)
         else:
