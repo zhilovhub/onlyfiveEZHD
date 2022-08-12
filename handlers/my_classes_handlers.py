@@ -151,7 +151,7 @@ class MyClassesHandlers(SupportingFunctions):
             members_dictionary = await self.classroom_db.get_dict_of_classroom_users(classroom_id)
 
             request_user_id = payload["user_id"]
-            first_name, last_name = self.user_db.get_user_first_and_last_name(request_user_id)
+            first_name, last_name = await self.user_db.get_user_first_and_last_name(request_user_id)
 
             if request_user_id in members_dictionary.keys():
                 await self.classroom_db.delete_request(request_user_id, classroom_id)
@@ -181,7 +181,7 @@ class MyClassesHandlers(SupportingFunctions):
             request_user_id = payload["user_id"]
 
             await self.classroom_db.delete_request(request_user_id, classroom_id)
-            first_name, last_name = self.user_db.get_user_first_and_last_name(request_user_id)
+            first_name, last_name = await self.user_db.get_user_first_and_last_name(request_user_id)
 
             if request_user_id in members_dictionary.keys():
                 await self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
@@ -238,7 +238,7 @@ class MyClassesHandlers(SupportingFunctions):
                         request_text = request["request_text"]
                         request_datetime = request["datetime"]
 
-                        first_name, last_name = self.user_db.get_user_first_and_last_name(request_user_id)
+                        first_name, last_name = await self.user_db.get_user_first_and_last_name(request_user_id)
 
                         buttons = [
                             {

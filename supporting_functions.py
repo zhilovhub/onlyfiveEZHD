@@ -25,6 +25,7 @@ class SupportingFunctions:
 
     async def send_message(self, user_id=None, message=None, keyboard=None, template=None, user_ids=None) -> None:
         """Send message to user"""
+        print(8)
         await self.bot.api.messages.send(
             user_ids=[user_id] if not user_ids else ",".join(map(str, user_ids)),
             message=message,
@@ -32,6 +33,7 @@ class SupportingFunctions:
             template=template,
             random_id=randint(0, 2147483648)
         )
+        print(9)
 
     async def send_message_event_answer(self, event_id: str, user_id: int, peer_id: int, event_data: str) -> None:
         """Send message to user after callback-button using"""
@@ -471,7 +473,7 @@ class SupportingFunctions:
                     notified_users.remove(without_user_id)
 
         if notified_users:
-            first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+            first_name, last_name = await self.user_db.get_user_first_and_last_name(user_id)
             classroom_name = await self.classroom_db.get_classroom_name(classroom_id)
 
             await self.send_message(user_ids=notified_users,
@@ -482,7 +484,7 @@ class SupportingFunctions:
         """Notifies about request"""
         notified_users = await self.notification_db.get_users_with_notification_type(classroom_id, "requests")
         if notified_users:
-            first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+            first_name, last_name = await self.user_db.get_user_first_and_last_name(user_id)
             classroom_name = await self.classroom_db.get_classroom_name(classroom_id)
 
             await self.send_message(user_ids=notified_users,
@@ -499,7 +501,7 @@ class SupportingFunctions:
                     notified_users.remove(without_user_id)
 
         if notified_users:
-            first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+            first_name, last_name = await self.user_db.get_user_first_and_last_name(user_id)
             classroom_name = await self.classroom_db.get_classroom_name(classroom_id)
 
             if kicked:
@@ -518,7 +520,7 @@ class SupportingFunctions:
                     notified_users.remove(without_user_id)
 
         if notified_users:
-            first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+            first_name, last_name = await self.user_db.get_user_first_and_last_name(user_id)
 
             event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
@@ -543,7 +545,7 @@ class SupportingFunctions:
             event_text = self.get_event_diary_text([event])
 
             if user_id:
-                first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+                first_name, last_name = await self.user_db.get_user_first_and_last_name(user_id)
                 notification_text = f"[id{user_id}|{first_name} {last_name}] удалил следующее событие:\n\n{event_text}"
             else:
                 notification_text = f"Следующее событие удалено (прошло 2 дня с его окончания):\n\n{event_text}"
@@ -560,7 +562,7 @@ class SupportingFunctions:
                     notified_users.remove(without_user_id)
 
         if notified_users:
-            first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+            first_name, last_name = await self.user_db.get_user_first_and_last_name(user_id)
 
             event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
@@ -583,7 +585,7 @@ class SupportingFunctions:
                     notified_users.remove(without_user_id)
 
         if notified_users:
-            first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+            first_name, last_name = await self.user_db.get_user_first_and_last_name(user_id)
 
             event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
@@ -620,7 +622,7 @@ class SupportingFunctions:
                     notified_users.remove(without_user_id)
 
         if notified_users:
-            first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+            first_name, last_name = await self.user_db.get_user_first_and_last_name(user_id)
 
             event = await self.event_db.get_classroom_event(event_id)
             event_text = self.get_event_diary_text([event])
@@ -646,7 +648,7 @@ class SupportingFunctions:
             event_text = self.get_event_diary_text([event])
 
             if user_id:
-                first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+                first_name, last_name = await self.user_db.get_user_first_and_last_name(user_id)
                 notification_text = f"[id{user_id}|{first_name} {last_name}] завершил следующее событие:" \
                                     f"\n\n{event_text}"
             else:
@@ -789,7 +791,7 @@ class SupportingFunctions:
         """Returns text of the notification"""
         student_id, text = await self.notification_db.get_notification_information(notification_id)
         user_id = list(await self.classroom_db.get_user_ids([student_id]))[0]
-        first_name, last_name = self.user_db.get_user_first_and_last_name(user_id)
+        first_name, last_name = await self.user_db.get_user_first_and_last_name(user_id)
 
         return f"[id{user_id}|{first_name} {last_name}] уведомляет❗\n{text}"
 

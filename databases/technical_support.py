@@ -3,16 +3,17 @@ from database import *
 
 class TechnicalSupportCommands(DataBase):
     """Initialisation"""
-    def __init__(self, connection: Connection) -> None:
-        super().__init__(connection)
+    def __init__(self, pool: Pool) -> None:
+        super().__init__(pool)
 
     @classmethod
-    async def get_self(cls, connection: Connection):
-        self = cls(connection)
+    async def get_self(cls, pool: Pool):
+        self = cls(pool)
 
         try:
-            async with self.connection.cursor() as cursor:
-                await cursor.execute(TechnicalSupportQueries.create_table_technical_support_messages_query)
+            async with self.pool.acquire() as connection:
+                async with connection.cursor() as cursor:
+                    await cursor.execute(TechnicalSupportQueries.create_table_technical_support_messages_query)
 
         except Error as e:
             print(e)
@@ -22,21 +23,23 @@ class TechnicalSupportCommands(DataBase):
     async def insert_message(self, user_id: int, message: str) -> None:
         """Add a new message to message table"""
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(TechnicalSupportQueries.insert_message_query.format(user_id, message,
-                                                                                     current_datetime))
-            await self.connection.commit()
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(TechnicalSupportQueries.insert_message_query.format(user_id, message,
+                                                                                         current_datetime))
+                await connection.commit()
 
     async def get_message(self, user_id: int) -> str:
         """Return the message from DB by user_id"""
-        async with self.connection.cursor() as cursor:
-            try:
-                await cursor.execute(TechnicalSupportQueries.get_message_query.format(user_id))
-                message = list(await cursor.fetchone())
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                try:
+                    await cursor.execute(TechnicalSupportQueries.get_message_query.format(user_id))
+                    message = list(await cursor.fetchone())
 
-                return message[0] if message else ''
-            except Error:
-                return ''
+                    return message[0] if message else ''
+                except Error:
+                    return ''
 
 
 class TechnicalSupportQueries:

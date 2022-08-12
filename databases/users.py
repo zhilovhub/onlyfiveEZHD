@@ -2,18 +2,19 @@ from database import *
 
 
 class UserDataCommands(DataBase):
-    def __init__(self, connection: Connection) -> None:
+    def __init__(self, pool: Pool) -> None:
         """Initialization"""
-        super().__init__(connection)
+        super().__init__(pool)
 
     @classmethod
-    async def get_self(cls, connection: Connection):
-        self = cls(connection)
+    async def get_self(cls, pool: Pool):
+        self = cls(pool)
 
         try:
-            async with self.connection.cursor() as cursor:
-                await cursor.execute(UserDataQueries.create_table_user_query)
-                await self.connection.commit()
+            async with self.pool.acquire() as connection:
+                async with connection.cursor() as cursor:
+                    await cursor.execute(UserDataQueries.create_table_user_query)
+                    await connection.commit()
 
         except Error as e:
             print(e)
@@ -22,58 +23,66 @@ class UserDataCommands(DataBase):
 
     async def get_user_first_and_last_name(self, user_id: int) -> tuple:
         """Returns user's first and last name"""
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(UserDataQueries.get_user_first_and_last_name_query.format(user_id))
-            first_name, last_name = await cursor.fetchone()
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(UserDataQueries.get_user_first_and_last_name_query.format(user_id))
+                first_name, last_name = await cursor.fetchone()
 
-            return first_name, last_name
+                return first_name, last_name
 
     async def insert_new_user(self, user_id: int, screen_name: str, first_name: str, last_name: str,
-                              is_ready: bool) -> None:
+                              is_ready: bool) -> bool:
         try:
-            async with self.connection.cursor() as cursor:
-                await cursor.execute(UserDataQueries.insert_new_user_query.format(user_id, screen_name, first_name,
-                                                                                  last_name, is_ready))
-                await self.connection.commit()
-
+            async with self.pool.acquire() as connection:
+                async with connection.cursor() as cursor:
+                        await cursor.execute(UserDataQueries.insert_new_user_query.format(user_id, screen_name,
+                                                                                          first_name, last_name,
+                                                                                          is_ready))
+                        await connection.commit()
+                        return True
         except Error as e:
-            print(e, 123)
+            print(e, type(e))
+            return False
 
     async def set_user_is_ready(self, user_id: int) -> None:
         try:
-            async with self.connection.cursor() as cursor:
-                await cursor.execute(UserDataQueries.set_user_is_ready_query.format(user_id))
-                await self.connection.commit()
+            async with self.pool.acquire() as connection:
+                async with connection.cursor() as cursor:
+                    await cursor.execute(UserDataQueries.set_user_is_ready_query.format(user_id))
+                    await connection.commit()
 
         except Error as e:
             print(e)
 
     async def check_user_is_ready(self, user_id: int) -> bool:
         try:
-            async with self.connection.cursor() as cursor:
-                await cursor.execute(UserDataQueries.check_user_is_ready_query.format(user_id))
-                user = await cursor.fetchone()
-                return True if user else False
+            async with self.pool.acquire() as connection:
+                async with connection.cursor() as cursor:
+                    await cursor.execute(UserDataQueries.check_user_is_ready_query.format(user_id))
+                    user = await cursor.fetchone()
+                    return True if user else False
 
         except Error as e:
             print(e)
 
     async def get_user_dialog_state(self, user_id: int) -> int:
         try:
-            async with self.connection.cursor() as cursor:
-                await cursor.execute(UserDataQueries.get_user_dialog_state_query.format(user_id))
-                state = list(await cursor.fetchone())[0]
+            async with self.pool.acquire() as connection:
+                async with connection.cursor() as cursor:
+                    await cursor.execute(UserDataQueries.get_user_dialog_state_query.format(user_id))
+                    state = list(await cursor.fetchone())[0]
 
-                return state
+                    return state
 
         except Error as e:
             print(e)
 
     async def set_user_dialog_state(self, user_id: int, state: int) -> None:
         try:
-            async with self.connection.cursor() as cursor:
-                await cursor.execute(UserDataQueries.set_user_dialog_state_query.format(state, user_id))
-                await self.connection.commit()
+            async with self.pool.acquire() as connection:
+                async with connection.cursor() as cursor:
+                    await cursor.execute(UserDataQueries.set_user_dialog_state_query.format(state, user_id))
+                    await connection.commit()
 
         except Error as e:
             print(e)
@@ -103,16 +112,17 @@ class UserDataQueries:
 
 
 if __name__ == '__main__':
-    connection = connect(
-        host=HOST,
-        user=USER,
-        password=PASSWORD,
-        db=DATABASE_NAME
-    )
-
-    db = UserDataCommands(connection)
-    flag = input("Тестовый режим: ")
-
+    pass
+    # connection = connect(
+    #     host=HOST,
+    #     user=USER,
+    #     password=PASSWORD,
+    #     db=DATABASE_NAME
+    # )
+    #
+    # db = UserDataCommands(connection)
+    # flag = input("Тестовый режим: ")
+    #
     # if flag == "new users":
     #     for i in range(1, 55):
     #         db.insert_new_user(i, "test_user", "Артём", "Пурапов", True)

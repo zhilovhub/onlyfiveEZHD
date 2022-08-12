@@ -14,7 +14,7 @@ from json import loads, dumps
 # import for states file
 from enum import Enum
 # import for database file
-from aiomysql import connect, Error, Connection
+from aiomysql import create_pool, connect, Error, Pool
 
 # VK_api constants
 TOKEN = ""

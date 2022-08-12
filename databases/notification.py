@@ -2,19 +2,20 @@ from database import *
 
 
 class NotificationCommands(DataBase):
-    def __init__(self, connection: Connection) -> None:
+    def __init__(self, pool: Pool) -> None:
         """Initialization"""
-        super().__init__(connection)
+        super().__init__(pool)
 
     @classmethod
-    async def get_self(cls, connection: Connection):
-        self = cls(connection)
+    async def get_self(cls, pool: Pool):
+        self = cls(pool)
 
         try:
-            async with self.connection.cursor() as cursor:
-                await cursor.execute(NotificationQueries.create_table_notification_query)
-                await cursor.execute(NotificationQueries.create_table_notification_diary_query)
-                await cursor.execute(NotificationQueries.create_table_notification_students_query)
+            async with self.pool.acquire() as connection:
+                async with connection.cursor() as cursor:
+                    await cursor.execute(NotificationQueries.create_table_notification_query)
+                    await cursor.execute(NotificationQueries.create_table_notification_diary_query)
+                    await cursor.execute(NotificationQueries.create_table_notification_students_query)
 
         except Error as e:
             print(e)
@@ -23,127 +24,146 @@ class NotificationCommands(DataBase):
 
     async def get_customizing_notification_id(self, user_id: int, classroom_id: int) -> int:
         """Returns customizing notification id"""
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(NotificationQueries.get_customizing_notification_id_query, (user_id, classroom_id))
-            return list(await cursor.fetchone())[0]
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(NotificationQueries.get_customizing_notification_id_query, (user_id, classroom_id))
+                return list(await cursor.fetchone())[0]
 
     async def get_notification_values_dict(self, user_id: int, classroom_id: int) -> dict:
         """Returns notification's values"""
-        async with self.connection.cursor() as cursor:
-            notification_types = [
-                "new_classmate",
-                "leave_classmate",
-                "requests",
-                "events"
-            ]
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                notification_types = [
+                    "new_classmate",
+                    "leave_classmate",
+                    "requests",
+                    "events"
+                ]
 
-            await cursor.execute(NotificationQueries.get_notification_values_query, (user_id, classroom_id))
-            notification_dict = {notification_type: value
-                                 for notification_type, value in zip(notification_types, list(await cursor.fetchone())[3:])}
+                await cursor.execute(NotificationQueries.get_notification_values_query, (user_id, classroom_id))
+                notification_dict = {notification_type: value
+                                     for notification_type, value in
+                                     zip(notification_types, list(await cursor.fetchone())[3:])}
 
-            return notification_dict
+                return notification_dict
 
     async def get_notification_information(self, notification_id: int) -> tuple:
         """Returns notification's information"""
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(NotificationQueries.get_notification_information_query, (notification_id,))
-            student_id, text = list(await cursor.fetchone())
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(NotificationQueries.get_notification_information_query, (notification_id,))
+                student_id, text = await cursor.fetchone()
 
-            return student_id, text
+                return student_id, text
 
     async def get_users_with_notification_type(self, classroom_id: int, notification_type: str) -> list:
         """Returns tuple of the users who has this notification_type True"""
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(NotificationQueries.get_users_with_notification_type.format(notification_type),
-                                 (classroom_id,))
-            users = [row[0] for row in list(await cursor.fetchall())]
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(NotificationQueries.get_users_with_notification_type.format(notification_type),
+                                     (classroom_id,))
+                users = [row[0] for row in list(await cursor.fetchall())]
 
-            return users
+                return users
 
     async def get_notified_notifications(self) -> list:
         """Returns notifications that should be notified"""
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(NotificationQueries.get_notified_notifications_query)
-            return [row[0] for row in list(await cursor.fetchall())]
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(NotificationQueries.get_notified_notifications_query)
+                return [row[0] for row in list(await cursor.fetchall())]
 
     async def get_notification_students(self, notification_id: int) -> list:
         """Returns notification's students"""
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(NotificationQueries.get_notification_students_query, (notification_id,))
-            return [row[0] for row in list(await cursor.fetchall())]
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(NotificationQueries.get_notification_students_query, (notification_id,))
+                return [row[0] for row in list(await cursor.fetchall())]
 
     async def insert_new_notification(self, student_id: int, user_id: int, classroom_id: int) -> None:
         """Inserts new notification row"""
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(NotificationQueries.insert_new_notification_query, (student_id, user_id, classroom_id))
-            await self.connection.commit()
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(NotificationQueries.insert_new_notification_query,
+                                     (student_id, user_id, classroom_id))
+                await connection.commit()
 
     async def insert_new_notification_into_diary(self, user_id: int, classroom_id: int) -> None:
         """Inserts new notification into diary"""
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(NotificationQueries.get_student_id_query, (user_id, classroom_id))
-            student_id = list(await cursor.fetchone())[0]
-            await cursor.execute(NotificationQueries.insert_new_notification_into_diary_query, (student_id,))
-            await self.connection.commit()
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(NotificationQueries.get_student_id_query, (user_id, classroom_id))
+                student_id = list(await cursor.fetchone())[0]
+                await cursor.execute(NotificationQueries.insert_new_notification_into_diary_query, (student_id,))
+                await connection.commit()
 
     async def insert_notification_students(self, notification_id: int, student_ids: list) -> None:
         """Inserts notification students"""
-        async with self.connection.cursor() as cursor:
-            for student_id in student_ids:
-                await cursor.execute(NotificationQueries.insert_notification_student_query,
-                                     (notification_id, student_id))
-            await self.connection.commit()
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                for student_id in student_ids:
+                    await cursor.execute(NotificationQueries.insert_notification_student_query,
+                                         (notification_id, student_id))
+                await connection.commit()
 
     async def update_notification_value(self, user_id: int, classroom_id: int, notification_type: str) -> None:
         """Updates notification's value"""
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(NotificationQueries.get_notification_value_query.format(notification_type),
-                                 (user_id, classroom_id))
-            old_value = list(await cursor.fetchone())[0]
-            new_value = not old_value
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(NotificationQueries.get_notification_value_query.format(notification_type),
+                                     (user_id, classroom_id))
+                old_value = list(await cursor.fetchone())[0]
+                new_value = not old_value
 
-            await cursor.execute(NotificationQueries.update_notification_value_query.format(notification_type),
-                           (new_value, user_id, classroom_id))
-            await self.connection.commit()
+                await cursor.execute(NotificationQueries.update_notification_value_query.format(notification_type),
+                                     (new_value, user_id, classroom_id))
+                await connection.commit()
 
     async def update_notification_text(self, notification_id: int, text) -> None:
         """Updates notification's text"""
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(NotificationQueries.update_notification_text_query, (text, notification_id))
-            await self.connection.commit()
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(NotificationQueries.update_notification_text_query, (text, notification_id))
+                await connection.commit()
 
     async def update_notification_datetime(self, notification_id: int, notification_datetime) -> None:
         """Updates notification's text"""
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(NotificationQueries.update_notification_datetime_query,
-                           (notification_datetime, notification_id))
-            await self.connection.commit()
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(NotificationQueries.update_notification_datetime_query,
+                                     (notification_datetime, notification_id))
+                await connection.commit()
 
     async def update_notification_created(self, notification_id: int, created: bool) -> None:
         """Updates notification's created"""
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(NotificationQueries.update_notification_created_query, (created, notification_id))
-            await self.connection.commit()
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(NotificationQueries.update_notification_created_query, (created, notification_id))
+                await connection.commit()
 
     async def delete_notification_from_diary(self, notification_id: int) -> None:
         """Deletes notification from diary"""
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(NotificationQueries.delete_notification_from_diary_query, (notification_id,))
-            await self.connection.commit()
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(NotificationQueries.delete_notification_from_diary_query, (notification_id,))
+                await connection.commit()
 
     async def delete_notification_students(self, notification_id: int) -> None:
         """Deletes notification's students"""
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(NotificationQueries.delete_notification_students_query, (notification_id,))
-            await self.connection.commit()
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(NotificationQueries.delete_notification_students_query,
+                                     (notification_id,))
+                await connection.commit()
 
     async def delete_notified_notifications(self, notification_ids: list) -> None:
         """Deletes notified notifications"""
         if notification_ids:
-            async with self.connection.cursor() as cursor:
-                await cursor.execute(NotificationQueries.delete_notified_notifications_query.format(",".join(map(
-                    str, notification_ids))))
-                await self.connection.commit()
+            async with self.pool.acquire() as connection:
+                async with connection.cursor() as cursor:
+                    await cursor.execute(NotificationQueries.delete_notified_notifications_query.format(",".join(map(
+                        str, notification_ids))))
+                    await connection.commit()
 
 
 class NotificationQueries:

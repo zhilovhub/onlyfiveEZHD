@@ -13,13 +13,14 @@ async def listen_messages(message: Message) -> None:
 
     user_information = await handlers_class.get_user_info(user_id)  # User_id, first_name, nickname
 
-    await handlers_class.user_db.insert_new_user(user_id,
-                                                 user_information["screen_name"],
-                                                 user_information["first_name"],
-                                                 user_information["last_name"],
-                                                 False
-                                                 )  # Will add a new user if user writes his first message
-    await handlers_class.classroom_db.insert_new_customizer(user_id)
+    new_user = await handlers_class.user_db.insert_new_user(user_id,
+                                                            user_information["screen_name"],
+                                                            user_information["first_name"],
+                                                            user_information["last_name"],
+                                                            False
+                                                            )  # Will add a new user if user writes his first message
+    if new_user:
+        await handlers_class.classroom_db.insert_new_customizer(user_id)
 
     if await handlers_class.is_member(user_id):  # Checking first condition
 
@@ -322,21 +323,19 @@ async def start_bot() -> None:
             await cursor.execute(f"""CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}""")
 
     # Classes for working with database's tables (and creating all tables)
-    connection = await connect(
-        host=HOST,
-        port=PORT,
-        user=USER,
-        password=PASSWORD,
-        db=DATABASE_NAME
-    )
+    pool = await create_pool(host=HOST,
+                             port=PORT,
+                             user=USER,
+                             password=PASSWORD,
+                             db=DATABASE_NAME)
 
-    user_db = await UserDataCommands.get_self(connection)
-    classroom_db = await ClassroomCommands.get_self(connection)
-    technical_support_db = await TechnicalSupportCommands.get_self(connection)
-    diary_homework_db = await DiaryHomeworkCommands.get_self(connection)
-    role_db = await RoleCommands.get_self(connection)
-    notification_db = await NotificationCommands.get_self(connection)
-    event_db = await EventCommands.get_self(connection)
+    user_db = await UserDataCommands.get_self(pool)
+    classroom_db = await ClassroomCommands.get_self(pool)
+    technical_support_db = await TechnicalSupportCommands.get_self(pool)
+    diary_homework_db = await DiaryHomeworkCommands.get_self(pool)
+    role_db = await RoleCommands.get_self(pool)
+    notification_db = await NotificationCommands.get_self(pool)
+    event_db = await EventCommands.get_self(pool)
 
     # All handlers
     handlers_class = Handlers(bot=bot,
@@ -352,7 +351,7 @@ async def start_bot() -> None:
     # Tasks for asyncio loop
     tasks = [
         bot.run_polling(),
-        # aioscheduler_tasks()
+        aioscheduler_tasks()
     ]
     await asyncio.gather(*tasks)
 

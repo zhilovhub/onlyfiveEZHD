@@ -122,8 +122,8 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
                 await self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message,
                                             classroom_type=keyboard_kwarg)
 
-            else:
-                raise UnknownPayload(user_id)
+        else:
+            raise UnknownPayload(user_id)
 
     async def p_enter_the_classroom_handler(self, user_id: int, payload: dict, current_dialog_state: int) -> None:
         """Handling payload with text: enter_the_classroom"""
