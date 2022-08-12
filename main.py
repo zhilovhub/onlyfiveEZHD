@@ -1,6 +1,7 @@
 from handlers import *
 
 bot = Bot(TOKEN)
+handlers_class: Handlers
 
 
 @bot.on.message()
