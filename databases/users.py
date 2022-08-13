@@ -21,6 +21,13 @@ class UserDataCommands(DataBase):
 
         return self
 
+    async def get_user_exists(self, user_id: int) -> bool:
+        """Returns True if user exists"""
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(UserDataQueries.get_user_query, (user_id,))
+                return True if not list(await cursor.fetchone())[0] else False
+
     async def get_user_first_and_last_name(self, user_id: int) -> tuple:
         """Returns user's first and last name"""
         async with self.pool.acquire() as connection:
@@ -30,19 +37,16 @@ class UserDataCommands(DataBase):
 
                 return first_name, last_name
 
-    async def insert_new_user(self, user_id: int, screen_name: str, first_name: str, last_name: str,
-                              is_ready: bool) -> bool:
+    async def insert_new_user(self, user_id: int, screen_name: str, first_name: str, last_name: str, is_ready: bool):
         try:
             async with self.pool.acquire() as connection:
                 async with connection.cursor() as cursor:
-                        await cursor.execute(UserDataQueries.insert_new_user_query.format(user_id, screen_name,
-                                                                                          first_name, last_name,
-                                                                                          is_ready))
-                        await connection.commit()
-                        return True
+                    await cursor.execute(UserDataQueries.insert_new_user_query.format(user_id, screen_name,
+                                                                                      first_name, last_name,
+                                                                                      is_ready))
+                    await connection.commit()
         except Error as e:
             print(e, type(e))
-            return False
 
     async def set_user_is_ready(self, user_id: int) -> None:
         try:
@@ -98,16 +102,14 @@ class UserDataQueries:
         state INT
     )"""
 
+    get_user_dialog_state_query = """SELECT state FROM User WHERE user_id={}"""
+    get_user_query = """SELECT 1 FROM User WHERE user_id=%s"""
+    get_user_first_and_last_name_query = """SELECT first_name, last_name FROM User WHERE user_id={}"""
+    check_user_is_ready_query = """SELECT * FROM User WHERE user_id={} AND is_ready=TRUE"""
+
     insert_new_user_query = """INSERT INTO User VALUES({}, '{}', '{}', '{}', {}, 0)"""
 
     set_user_is_ready_query = """UPDATE User SET is_ready=TRUE WHERE user_id={}"""
-
-    check_user_is_ready_query = """SELECT * FROM User WHERE user_id={} AND is_ready=TRUE"""
-
-    get_user_dialog_state_query = """SELECT state FROM User WHERE user_id={}"""
-
-    get_user_first_and_last_name_query = """SELECT first_name, last_name FROM User WHERE user_id={}"""
-
     set_user_dialog_state_query = """UPDATE User SET state={} WHERE user_id={}"""
 
 

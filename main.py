@@ -7,6 +7,8 @@ handlers_class: Handlers
 @bot.on.message()
 async def listen_messages(message: Message) -> None:
     """Listening new messages"""
+    from time import time
+    start_time = time()
     user_id = message.from_id  # Getting user_id
     message_text = message.text.strip()  # Getting message's text
     attachments = message.attachments
@@ -14,13 +16,14 @@ async def listen_messages(message: Message) -> None:
 
     user_information = await handlers_class.get_user_info(user_id)  # User_id, first_name, nickname
 
-    new_user = await handlers_class.user_db.insert_new_user(user_id,
-                                                            user_information["screen_name"],
-                                                            user_information["first_name"],
-                                                            user_information["last_name"],
-                                                            False
-                                                            )  # Will add a new user if user writes his first message
-    if new_user:
+    is_new_user = await handlers_class.user_db.get_user_exists(user_id)
+    if is_new_user:
+        await handlers_class.user_db.insert_new_user(user_id,
+                                                     user_information["screen_name"],
+                                                     user_information["first_name"],
+                                                     user_information["last_name"],
+                                                     False
+                                                     )  # Will add a new user if user writes his first messag
         await handlers_class.classroom_db.insert_new_customizer(user_id)
 
     if await handlers_class.is_member(user_id):  # Checking first condition
@@ -32,6 +35,7 @@ async def listen_messages(message: Message) -> None:
 
                 try:
                     await filter_dialog_state(user_id, message_text, payload, current_dialog_state)
+                    print(time() - start_time)
                 except UnknownPayload:
                     trans_message = "Произошла ошибка, возвращение в главное меню"
                     await handlers_class.state_transition(user_id, States.S_NOTHING, trans_message)
