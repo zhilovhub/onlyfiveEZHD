@@ -3,6 +3,7 @@ from database import *
 
 class TechnicalSupportCommands(DataBase):
     """Initialisation"""
+
     def __init__(self, connection: CMySQLConnection) -> None:
         super().__init__(connection)
 
@@ -18,7 +19,6 @@ class TechnicalSupportCommands(DataBase):
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with self.connection.cursor() as cursor:
             cursor.execute(TechnicalSupportQueries.insert_message_query.format(user_id, message, current_datetime))
-            self.connection.commit()
 
     def get_message(self, user_id: int) -> str:
         """Return the message from DB by user_id"""
@@ -42,4 +42,5 @@ class TechnicalSupportQueries:
 
     insert_message_query = """INSERT INTO Technical_support_messages VALUES({}, '{}', '{}')"""
 
-    get_message_query = """SELECT message FROM Technical_support_messages WHERE user_id={} ORDER BY datetime DESC LIMIT 1"""
+    get_message_query = """SELECT message FROM Technical_support_messages WHERE user_id={} 
+    ORDER BY datetime DESC LIMIT 1"""

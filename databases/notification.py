@@ -70,7 +70,6 @@ class NotificationCommands(DataBase):
         """Inserts new notification row"""
         with self.connection.cursor() as cursor:
             cursor.execute(NotificationQueries.insert_new_notification_query, (student_id, user_id, classroom_id))
-            self.connection.commit()
 
     def insert_new_notification_into_diary(self, user_id: int, classroom_id: int) -> None:
         """Inserts new notification into diary"""
@@ -78,14 +77,12 @@ class NotificationCommands(DataBase):
             cursor.execute(NotificationQueries.get_student_id_query, (user_id, classroom_id))
             student_id = cursor.fetchone()[0]
             cursor.execute(NotificationQueries.insert_new_notification_into_diary_query, (student_id,))
-            self.connection.commit()
 
     def insert_notification_students(self, notification_id: int, student_ids: list) -> None:
         """Inserts notification students"""
         with self.connection.cursor() as cursor:
             for student_id in student_ids:
                 cursor.execute(NotificationQueries.insert_notification_student_query, (notification_id, student_id))
-            self.connection.commit()
 
     def update_notification_value(self, user_id: int, classroom_id: int, notification_type: str) -> None:
         """Updates notification's value"""
@@ -97,38 +94,32 @@ class NotificationCommands(DataBase):
 
             cursor.execute(NotificationQueries.update_notification_value_query.format(notification_type),
                            (new_value, user_id, classroom_id))
-            self.connection.commit()
 
     def update_notification_text(self, notification_id: int, text) -> None:
         """Updates notification's text"""
         with self.connection.cursor() as cursor:
             cursor.execute(NotificationQueries.update_notification_text_query, (text, notification_id))
-            self.connection.commit()
 
     def update_notification_datetime(self, notification_id: int, notification_datetime) -> None:
         """Updates notification's text"""
         with self.connection.cursor() as cursor:
             cursor.execute(NotificationQueries.update_notification_datetime_query,
                            (notification_datetime, notification_id))
-            self.connection.commit()
 
     def update_notification_created(self, notification_id: int, created: bool) -> None:
         """Updates notification's created"""
         with self.connection.cursor() as cursor:
             cursor.execute(NotificationQueries.update_notification_created_query, (created, notification_id))
-            self.connection.commit()
 
     def delete_notification_from_diary(self, notification_id: int) -> None:
         """Deletes notification from diary"""
         with self.connection.cursor() as cursor:
             cursor.execute(NotificationQueries.delete_notification_from_diary_query, (notification_id,))
-            self.connection.commit()
 
     def delete_notification_students(self, notification_id: int) -> None:
         """Deletes notification's students"""
         with self.connection.cursor() as cursor:
             cursor.execute(NotificationQueries.delete_notification_students_query, (notification_id,))
-            self.connection.commit()
 
     def delete_notified_notifications(self, notification_ids: list) -> None:
         """Deletes notified notifications"""
@@ -136,7 +127,6 @@ class NotificationCommands(DataBase):
             with self.connection.cursor() as cursor:
                 cursor.execute(NotificationQueries.delete_notified_notifications_query.format(",".join(map(
                     str, notification_ids))))
-                self.connection.commit()
 
 
 class NotificationQueries:

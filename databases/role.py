@@ -57,7 +57,7 @@ class RoleCommands(DataBase):
             role_id = cursor.fetchone()[0]
 
             return role_id
-        
+
     def get_default_role_name(self, classroom_id: int) -> str:
         """Returns default role's name"""
         with self.connection.cursor() as cursor:
@@ -169,45 +169,37 @@ class RoleCommands(DataBase):
                 cursor.execute(RoleQueries.insert_new_role_query.format(classroom_id, role_name,
                                                                         *default_role_properties, False, False))
 
-            self.connection.commit()
-
             return cursor.lastrowid
 
     def update_student_role(self, user_id: int, new_role_id: int) -> None:
         """Updates student's role with new role_id"""
         with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.update_student_role_query.format(new_role_id, user_id))
-            self.connection.commit()
 
     def update_all_roles(self, old_role_id: int, new_role_id: int) -> None:
         """Updates students' role with new role_id"""
         with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.update_all_roles_query.format(new_role_id, old_role_id))
-            self.connection.commit()
 
     def update_user_customize_role_id(self, user_id: int, role_id) -> None:
         """Update role_id that user is customizing"""
         with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.update_user_customize_role_id_query.format(role_id, user_id))
-            self.connection.commit()
 
     def update_role_name(self, role_id: int, new_name: str) -> None:
         """Updates role's name"""
         with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.update_role_name_query.format(new_name, role_id))
-            self.connection.commit()
 
     def update_role_privilege(self, role_id: int, new_value: bool, privilege_type: str) -> None:
         """Updates role's privilege_type"""
         with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.update_role_privilege_query.format(privilege_type, new_value, role_id))
-            self.connection.commit()
 
     def delete_role(self, role_id: int) -> None:
         """Deletes role"""
         with self.connection.cursor() as cursor:
             cursor.execute(RoleQueries.delete_role_query.format(role_id))
-            self.connection.commit()
 
 
 class RoleQueries:

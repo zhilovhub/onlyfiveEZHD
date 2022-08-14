@@ -9,7 +9,6 @@ class UserDataCommands(DataBase):
         try:
             with self.connection.cursor() as cursor:
                 cursor.execute(UserDataQueries.create_table_user_query)
-                self.connection.commit()
 
         except Error as e:
             print(e)
@@ -29,15 +28,11 @@ class UserDataCommands(DataBase):
                                                                             last_name, is_ready))
             except Error as e:
                 print(e, 123)
-            finally:
-                self.connection.commit()
-
 
     def set_user_is_ready(self, user_id: int) -> None:
         try:
             with self.connection.cursor() as cursor:
                 cursor.execute(UserDataQueries.set_user_is_ready_query.format(user_id))
-                self.connection.commit()
 
         except Error as e:
             print(e)
@@ -67,7 +62,6 @@ class UserDataCommands(DataBase):
         try:
             with self.connection.cursor() as cursor:
                 cursor.execute(UserDataQueries.set_user_dialog_state_query.format(state, user_id))
-                self.connection.commit()
 
         except Error as e:
             print(e)

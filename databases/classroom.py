@@ -3,6 +3,7 @@ from database import *
 
 class ClassroomCommands(DataBase):
     """Initialization"""
+
     def __init__(self, connection: CMySQLConnection) -> None:
         super().__init__(connection)
 
@@ -166,7 +167,6 @@ class ClassroomCommands(DataBase):
         try:
             with self.connection.cursor() as cursor:
                 cursor.execute(ClassroomQueries.insert_new_customizer_query.format(user_id))
-                self.connection.commit()
 
         except Error as e:
             print(e)
@@ -177,7 +177,6 @@ class ClassroomCommands(DataBase):
             cursor.execute(ClassroomQueries.insert_new_classroom_user_query.format(user_id, classroom_id, role_id))
             cursor.execute(ClassroomQueries.get_last_primary_id)
             student_id = cursor.fetchone()[0]
-            self.connection.commit()
 
             return student_id
 
@@ -195,61 +194,51 @@ class ClassroomCommands(DataBase):
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.insert_request_query.format(user_id, classroom_id, request_text,
                                                                         current_datetime))
-            self.connection.commit()
 
     def update_classroom_name(self, classroom_id: int, new_classroom_name: str) -> None:
         """Set name to the classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.update_classroom_name_query.format(new_classroom_name, classroom_id))
-            self.connection.commit()
 
     def update_school_name(self, classroom_id: int, new_school_name: str) -> None:
         """Update school name of the classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.update_school_name_query.format(new_school_name, classroom_id))
-            self.connection.commit()
 
     def update_classroom_access(self, classroom_id: int, access: str) -> None:
         """Update access of the classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.update_classroom_access_query.format(access, classroom_id))
-            self.connection.commit()
 
     def update_classroom_description(self, classroom_id: int, description: str) -> None:
         """Update description of the classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.update_classroom_description_query.format(description, classroom_id))
-            self.connection.commit()
 
     def update_classroom_members_limit(self, classroom_id: int, members_limit: int) -> None:
         """Update members_limit of the classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.update_classroom_members_limit_query.format(members_limit, classroom_id))
-            self.connection.commit()
 
     def update_classroom_invite_code(self, classroom_id: int, invite_code: str) -> None:
         """Update invite code of the classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.update_classroom_invite_code_query, (invite_code, classroom_id))
-            self.connection.commit()
 
     def update_classroom_created(self, classroom_id: int, created: bool) -> None:
         """Update created of classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.update_classroom_created_query.format(created, classroom_id))
-            self.connection.commit()
 
     def update_role_id_of_user(self, user_id: int, user_role_id: int) -> None:
         """Set role_id to the user"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.update_user_role_id_query.format(user_role_id, user_id))
-            self.connection.commit()
 
     def update_user_customize_classroom_id(self, user_id: int, classroom_id) -> None:
         """Update classroom_id that user is customizing"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.update_user_customize_classroom_id_query.format(classroom_id, user_id))
-            self.connection.commit()
 
     def update_request(self, user_id: int, classroom_id: int, new_request_text: str) -> None:
         """Updates request"""
@@ -262,19 +251,16 @@ class ClassroomCommands(DataBase):
         """Delete classroom and its owner from Student"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.delete_classroom_query.format(classroom_id))
-            self.connection.commit()
 
     def delete_student(self, classroom_id: int, user_id: int) -> None:
         """Deletes user from classroom"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.delete_user_from_classroom_query.format(user_id, classroom_id))
-            self.connection.commit()
 
     def delete_request(self, user_id: int, classroom_id: int) -> None:
         """Deletes request from Request"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.delete_request_query.format(user_id, classroom_id))
-            self.connection.commit()
 
 
 class ClassroomQueries:
