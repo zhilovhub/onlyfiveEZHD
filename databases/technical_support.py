@@ -36,8 +36,8 @@ class TechnicalSupportQueries:
     create_table_technical_support_messages_query = """CREATE TABLE IF NOT EXISTS Technical_support_messages(
     user_id INT,
     message TEXT,
-    datetime DATETIME,
-    FOREIGN KEY (user_id) REFERENCES User (user_id)
+    datetime TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users (user_id)
     )"""
 
     insert_message_query = """INSERT INTO Technical_support_messages VALUES({}, '{}', '{}')"""

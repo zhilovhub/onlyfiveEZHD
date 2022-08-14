@@ -145,22 +145,22 @@ class NotificationQueries:
         user_id INT,
         classroom_id INT,
         FOREIGN KEY (student_id) REFERENCES Student (student_id) ON DELETE CASCADE,
-        FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES Users (user_id) ON DELETE CASCADE,
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE,
         
-        new_classmate BOOLEAN DEFAULT 1,
-        leave_classmate BOOLEAN DEFAULT 1,
-        requests BOOLEAN DEFAULT 1,
-        events BOOLEAN DEFAULT 1
+        new_classmate BOOLEAN DEFAULT True,
+        leave_classmate BOOLEAN DEFAULT True,
+        requests BOOLEAN DEFAULT True,
+        events BOOLEAN DEFAULT True
     )"""
 
     create_table_notification_diary_query = """CREATE TABLE IF NOT EXISTS notification_diary(
-        notification_id INT NOT NULL UNIQUE PRIMARY KEY AUTO_INCREMENT,
+        notification_id SERIAL NOT NULL UNIQUE PRIMARY KEY,
         student_id INT,
         
         text TEXT,
-        date DATETIME,
-        created BOOLEAN DEFAULT 0,
+        date TIMESTAMP,
+        created BOOLEAN DEFAULT False,
         
         FOREIGN KEY (student_id) REFERENCES Student (student_id) ON DELETE CASCADE
     )"""
@@ -174,14 +174,14 @@ class NotificationQueries:
     )"""
 
     get_customizing_notification_id_query = """SELECT notification_id FROM notification_diary 
-    WHERE student_id IN (SELECT student_id FROM Student WHERE user_id=%s AND classroom_id=%s) AND created=0"""
+    WHERE student_id IN (SELECT student_id FROM Student WHERE user_id=%s AND classroom_id=%s) AND created=False"""
     get_notification_values_query = """SELECT * FROM notification WHERE user_id=%s AND classroom_id=%s"""
     get_notification_value_query = """SELECT {} FROM notification WHERE user_id=%s AND classroom_id=%s"""
     get_notification_information_query = """SELECT student_id, text FROM notification_diary WHERE notification_id=%s"""
     get_notified_notifications_query = """SELECT notification_id FROM notification_diary 
-    WHERE NOW() >= date AND created=1"""
+    WHERE NOW() >= date AND created=True"""
     get_notification_students_query = """SELECT student_id FROM notification_students WHERE notification_id=%s"""
-    get_users_with_notification_type = """SELECT user_id FROM notification WHERE {}=1 AND classroom_id=%s"""
+    get_users_with_notification_type = """SELECT user_id FROM notification WHERE {}=True AND classroom_id=%s"""
     get_student_id_query = """SELECT student_id FROM Student WHERE user_id=%s AND classroom_id=%s"""
 
     insert_new_notification_query = """INSERT INTO notification (student_id, user_id, classroom_id) 

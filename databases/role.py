@@ -212,46 +212,46 @@ class RoleCommands(DataBase):
 
 class RoleQueries:
     create_table_roles_query = """CREATE TABLE IF NOT EXISTS Role(
-        role_id INT PRIMARY KEY AUTO_INCREMENT,
+        role_id SERIAL PRIMARY KEY,
         classroom_id INT,
         role_name TEXT,
-        change_current_homework BOOLEAN DEFAULT 1,
-        change_next_homework BOOLEAN DEFAULT 1,
-        change_standard_week BOOLEAN DEFAULT 1,
-        change_current_week BOOLEAN DEFAULT 1,
-        change_next_week BOOLEAN DEFAULT 1,
-        kick_members BOOLEAN DEFAULT 0,
-        invite_members BOOLEAN DEFAULT 1,
-        accept_requests BOOLEAN DEFAULT 1,
-        notify BOOLEAN DEFAULT 1,
-        redact_events BOOLEAN DEFAULT 1,
-        change_classroom_name BOOLEAN DEFAULT 1,
-        change_school_name BOOLEAN DEFAULT 1,
-        change_classroom_access BOOLEAN DEFAULT 1,
-        change_description BOOLEAN DEFAULT 1,
-        change_members_limit BOOLEAN DEFAULT 1,
-        is_default_member BOOLEAN DEFAULT 0,
-        is_admin BOOLEAN DEFAULT 0,
+        change_current_homework BOOLEAN DEFAULT True,
+        change_next_homework BOOLEAN DEFAULT True,
+        change_standard_week BOOLEAN DEFAULT True,
+        change_current_week BOOLEAN DEFAULT True,
+        change_next_week BOOLEAN DEFAULT True,
+        kick_members BOOLEAN DEFAULT False,
+        invite_members BOOLEAN DEFAULT True,
+        accept_requests BOOLEAN DEFAULT True,
+        notify BOOLEAN DEFAULT True,
+        redact_events BOOLEAN DEFAULT True,
+        change_classroom_name BOOLEAN DEFAULT True,
+        change_school_name BOOLEAN DEFAULT True,
+        change_classroom_access BOOLEAN DEFAULT True,
+        change_description BOOLEAN DEFAULT True,
+        change_members_limit BOOLEAN DEFAULT True,
+        is_default_member BOOLEAN DEFAULT False,
+        is_admin BOOLEAN DEFAULT False,
         
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE
     )"""
 
     create_table_student_query = """CREATE TABLE IF NOT EXISTS Student(
-        student_id INT NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
+        student_id SERIAL NOT NULL UNIQUE PRIMARY KEY,
         user_id INT,
         classroom_id INT,
         role_id INT,
-        FOREIGN KEY (user_id) REFERENCES User (user_id),
+        FOREIGN KEY (user_id) REFERENCES Users (user_id),
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE,
         FOREIGN KEY (role_id) REFERENCES Role (role_id) ON DELETE SET NULL
     )"""
 
     get_customizing_role_id_query = """SELECT role_id FROM UserCustomize WHERE user_id={}"""
-    get_default_role_name_query = """SELECT role_name FROM Role WHERE classroom_id={} AND is_default_member=1"""
-    get_admin_role_name_query = """SELECT role_name FROM Role WHERE classroom_id={} AND is_admin=1"""
+    get_default_role_name_query = """SELECT role_name FROM Role WHERE classroom_id={} AND is_default_member=True"""
+    get_admin_role_name_query = """SELECT role_name FROM Role WHERE classroom_id={} AND is_admin=True"""
     get_role_name_query = """SELECT role_name FROM Role WHERE role_id={}"""
-    get_default_role_id_query = """SELECT role_id FROM Role WHERE classroom_id={} AND is_default_member=1"""
-    get_admin_role_id_query = """SELECT role_id FROM Role WHERE classroom_id={} AND is_admin=1"""
+    get_default_role_id_query = """SELECT role_id FROM Role WHERE classroom_id={} AND is_default_member=True"""
+    get_admin_role_id_query = """SELECT role_id FROM Role WHERE classroom_id={} AND is_admin=True"""
     get_role_id_by_name_query = """SELECT role_id FROM Role WHERE classroom_id={} AND role_name='{}'"""
     get_role_id_by_user_id_query = """SELECT role_id FROM Student WHERE user_id={} AND classroom_id={}"""
     get_all_role_names_from_classroom_query = """SELECT role_name FROM Role WHERE classroom_id={}"""

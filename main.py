@@ -1,14 +1,14 @@
 from handlers import *
 
 # Creating database if not exists
-with connect(
-        host=HOST,
-        port=PORT,
-        user=USER,
-        password=PASSWORD
-) as connection_to_create_db:
-    with connection_to_create_db.cursor() as cursor:
-        cursor.execute(f"""CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}""")
+# with connect(
+#         host=HOST,
+#         port=PORT,
+#         user=USER,
+#         password=PASSWORD
+# ) as connection_to_create_db:
+#     with connection_to_create_db.cursor() as cursor:
+#         cursor.execute(f"""CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}""")
 
 # Connection to the database
 connection = connect(
@@ -18,6 +18,7 @@ connection = connect(
     password=PASSWORD,
     database=DATABASE_NAME
 )
+connection.autocommit = True
 
 # Classes for working with database's tables
 user_db = UserDataCommands(connection)

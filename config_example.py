@@ -14,7 +14,7 @@ from json import loads, dumps
 # import for states file
 from enum import Enum
 # import for database file
-from mysql.connector import connect, Error
+from psycopg2 import connect, Error
 from mysql.connector.connection_cext import CMySQLConnection
 
 # VK_api constants

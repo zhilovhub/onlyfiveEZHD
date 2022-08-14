@@ -274,33 +274,33 @@ class EventCommands(DataBase):
 
 class EventQueries:
     create_table_event_diary_query = """CREATE TABLE IF NOT EXISTS event_diary(
-        event_diary_id INT NOT NULL UNIQUE PRIMARY KEY AUTO_INCREMENT,
+        event_diary_id SERIAL NOT NULL UNIQUE PRIMARY KEY,
         classroom_id INT,
         
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE
     )"""
 
     create_table_event_query = """CREATE TABLE IF NOT EXISTS event(
-        event_id INT NOT NULL UNIQUE PRIMARY KEY AUTO_INCREMENT,
+        event_id SERIAL NOT NULL UNIQUE PRIMARY KEY,
         event_diary_id INT,
         
         created BOOLEAN,
-        start_time DATETIME,
-        end_time DATETIME,
+        start_time TIMESTAMP,
+        end_time TIMESTAMP,
         label TEXT,
         message_event_id INT,
         collective BOOLEAN,
         current_count INT,
         required_count INT,
         required_students_count INT,
-        last BOOLEAN DEFAULT 0,
-        finished DATETIME DEFAULT NULL,
+        last BOOLEAN DEFAULT False,
+        finished TIMESTAMP DEFAULT NULL,
         
         FOREIGN KEY (event_diary_id) REFERENCES event_diary (event_diary_id) ON DELETE CASCADE
     )"""
 
     create_table_event_collective_info_query = """CREATE TABLE IF NOT EXISTS event_collective(
-        id INT NOT NULL UNIQUE PRIMARY KEY AUTO_INCREMENT,
+        id SERIAL NOT NULL UNIQUE PRIMARY KEY,
         event_id INT,
         student_id INT,
         
@@ -314,13 +314,13 @@ class EventQueries:
             role_id INT,
             event_id INT,
             
-            FOREIGN KEY (user_id) REFERENCES User (user_id),
+            FOREIGN KEY (user_id) REFERENCES Users (user_id) ON DELETE CASCADE,
             FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE SET NULL,
             FOREIGN KEY (role_id) REFERENCES Role (role_id) ON DELETE SET NULL,
             FOREIGN KEY (event_id) REFERENCES event (event_id) ON DELETE SET NULL
         )"""
 
-    get_classroom_events_query = """SELECT * FROM event WHERE created=1 AND event_diary_id IN (SELECT event_diary_id 
+    get_classroom_events_query = """SELECT * FROM event WHERE created=True AND event_diary_id IN (SELECT event_diary_id 
     FROM event_diary WHERE classroom_id=%s)"""
     get_classroom_event_query = """SELECT * FROM event WHERE event_id=%s"""
     get_classroom_message_event_ids_query = """SELECT message_event_id FROM event WHERE message_event_id IS NOT NULL
@@ -338,12 +338,12 @@ class EventQueries:
     get_event_finished_query = """SELECT finished FROM event WHERE event_id=%s"""
     get_event_classroom_id_query = """SELECT classroom_id FROM event_diary WHERE 
     event_diary_id IN (SELECT event_diary_id FROM event WHERE event_id=%s)"""
-    get_just_started_events_query = """SELECT event_id FROM event WHERE NOW() > start_time AND last=0 AND 
-    finished IS NULL AND created=1"""
+    get_just_started_events_query = """SELECT event_id FROM event WHERE NOW() > start_time AND last=False AND 
+    finished IS NULL AND created=True"""
     get_just_finished_events_query = """SELECT event_id FROM event 
-    WHERE ((NOW() > end_time) OR (end_time IS NULL AND NOW() > start_time)) AND finished IS NULL AND created=1"""
+    WHERE ((NOW() > end_time) OR (end_time IS NULL AND NOW() > start_time)) AND finished IS NULL AND created=True"""
     get_deleted_finished_events_query = """SELECT event_id FROM event
-    WHERE DATEDIFF(NOW(), finished) >= 2"""
+    WHERE DATE_PART('day', NOW() - finished) >= 2"""
 
     insert_event_diary_query = """INSERT INTO event_diary (classroom_id) VALUES (%s)"""
     insert_event_query = """INSERT INTO event (event_diary_id) VALUES (%s)"""
@@ -360,7 +360,7 @@ class EventQueries:
     update_event_required_students_count_query = """UPDATE event SET required_students_count=%s WHERE event_id=%s"""
     update_event_created_query = """UPDATE event SET created=%s WHERE event_id=%s"""
     update_event_last_and_finished_query = """UPDATE event SET last=%s, finished=%s WHERE event_id=%s"""
-    update_events_last_query = """UPDATE event SET last=1 WHERE event_id IN ({})"""
+    update_events_last_query = """UPDATE event SET last=True WHERE event_id IN ({})"""
     update_events_finished_query = """UPDATE event SET finished=NOW() WHERE event_id IN ({})"""
 
     delete_event_query = """DELETE FROM event WHERE event_id=%s"""

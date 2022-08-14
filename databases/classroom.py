@@ -279,7 +279,7 @@ class ClassroomCommands(DataBase):
 
 class ClassroomQueries:
     create_table_classroom_query = """CREATE TABLE IF NOT EXISTS Classroom(
-            classroom_id INT NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
+            classroom_id SERIAL NOT NULL UNIQUE PRIMARY KEY,
             classroom_name VARCHAR(255),
             school_name VARCHAR(255),
             access TEXT,
@@ -293,9 +293,9 @@ class ClassroomQueries:
         user_id INT,
         classroom_id INT,
         request_text TEXT,
-        datetime DATETIME,
+        datetime TIMESTAMP,
         
-        FOREIGN KEY (user_id) REFERENCES User (user_id),
+        FOREIGN KEY (user_id) REFERENCES Users (user_id),
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE
     )"""
 
@@ -316,7 +316,7 @@ class ClassroomQueries:
     get_classroom_invite_code_query = """SELECT invite_code FROM Classroom WHERE classroom_id=%s"""
     get_classroom_by_invite_code = """SELECT classroom_id FROM Classroom WHERE invite_code=%s"""
     get_list_of_classroom_users_query = """SELECT user_id, role_id FROM Student WHERE classroom_id={}"""
-    get_list_of_classroom_ids_query = """SELECT classroom_id FROM Classroom WHERE created=1"""
+    get_list_of_classroom_ids_query = """SELECT classroom_id FROM Classroom WHERE created=True"""
     get_request_information_query = """SELECT * FROM Request WHERE user_id={} AND classroom_id={}"""
     get_list_of_request_information_query = """SELECT * FROM Request WHERE classroom_id={}"""
     get_last_primary_id = """SELECT MAX(student_id) FROM Student"""

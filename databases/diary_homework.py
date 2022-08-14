@@ -730,7 +730,7 @@ class DiaryHomeworkQueries:
         user_id INT UNIQUE,
         weekday TEXT,
         week_type TEXT,
-        FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES Users (user_id) ON DELETE CASCADE,
         
         lesson1 TEXT,
         lesson2 TEXT,
