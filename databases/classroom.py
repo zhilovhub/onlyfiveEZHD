@@ -184,7 +184,8 @@ class ClassroomCommands(DataBase):
         """Insert new classroom and student-owner"""
         with self.connection.cursor() as cursor:
             cursor.execute(ClassroomQueries.insert_classroom_query)
-            classroom_id = cursor.lastrowid
+            classroom_id = cursor.fetchone()[0]
+            print(classroom_id)
 
         return classroom_id
 
@@ -307,7 +308,8 @@ class ClassroomQueries:
     get_list_of_request_information_query = """SELECT * FROM Request WHERE classroom_id={}"""
     get_last_primary_id = """SELECT MAX(student_id) FROM Student"""
 
-    insert_classroom_query = """INSERT INTO Classroom (members_limit, created) VALUES(40, FALSE)"""
+    insert_classroom_query = """INSERT INTO Classroom (members_limit, created) VALUES(40, FALSE) 
+    RETURNING classroom_id"""
     insert_new_classroom_user_query = """INSERT INTO Student (user_id, classroom_id, role_id) VALUES({}, {}, {})"""
     insert_new_customizer_query = """INSERT INTO UserCustomize VALUES({}, null, null, null)"""
     insert_request_query = """INSERT INTO Request VALUES({}, {}, '{}', '{}')"""

@@ -169,7 +169,7 @@ class RoleCommands(DataBase):
                 cursor.execute(RoleQueries.insert_new_role_query.format(classroom_id, role_name,
                                                                         *default_role_properties, False, False))
 
-            return cursor.lastrowid
+            return cursor.fetchone()[0]
 
     def update_student_role(self, user_id: int, new_role_id: int) -> None:
         """Updates student's role with new role_id"""
@@ -292,7 +292,7 @@ class RoleQueries:
     change_next_homework, kick_members, invite_members, accept_requests, notify, redact_events, change_classroom_name,
     change_school_name, change_classroom_access, change_description, change_members_limit) VALUES(
         {}, '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
-    )"""
+    ) RETURNING role_id"""
 
     update_student_role_query = """UPDATE Student SET role_id={} WHERE user_id={}"""
     update_all_roles_query = """UPDATE Student SET role_id={} WHERE role_id={}"""

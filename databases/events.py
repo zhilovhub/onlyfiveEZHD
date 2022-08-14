@@ -162,7 +162,7 @@ class EventCommands(DataBase):
         with self.connection.cursor() as cursor:
             cursor.execute(EventQueries.insert_event_query, (event_diary_id,))
 
-            return cursor.lastrowid
+            return cursor.fetchone()[0]
 
     def insert_new_student(self, event_id: int, student_id: int) -> None:
         """Inserts new student to the collective event"""
@@ -326,7 +326,7 @@ class EventQueries:
     WHERE DATE_PART('day', NOW() - finished) >= 2"""
 
     insert_event_diary_query = """INSERT INTO event_diary (classroom_id) VALUES (%s)"""
-    insert_event_query = """INSERT INTO event (event_diary_id) VALUES (%s)"""
+    insert_event_query = """INSERT INTO event (event_diary_id) VALUES (%s) RETURNING event_id"""
     insert_new_student_query = """INSERT INTO event_collective (event_id, student_id) VALUES (%s, %s)"""
 
     update_customizing_event_id_query = """UPDATE UserCustomize SET event_id=%s WHERE user_id=%s"""
