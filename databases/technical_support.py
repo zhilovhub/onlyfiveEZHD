@@ -4,7 +4,7 @@ from database import *
 class TechnicalSupportCommands(DataBase):
     """Initialisation"""
 
-    def __init__(self, connection: CMySQLConnection) -> None:
+    def __init__(self, connection) -> None:
         super().__init__(connection)
 
         try:

@@ -15,7 +15,6 @@ from json import loads, dumps
 from enum import Enum
 # import for database file
 from psycopg2 import connect, Error
-from mysql.connector.connection_cext import CMySQLConnection
 
 # VK_api constants
 TOKEN = ""

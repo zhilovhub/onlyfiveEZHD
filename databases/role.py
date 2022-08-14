@@ -2,7 +2,7 @@ from database import *
 
 
 class RoleCommands(DataBase):
-    def __init__(self, connection: CMySQLConnection) -> None:
+    def __init__(self, connection) -> None:
         """Initialization"""
         super().__init__(connection)
 
