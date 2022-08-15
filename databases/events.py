@@ -233,7 +233,8 @@ class EventCommands(DataBase):
     def update_event_last_and_finished(self, event_id: int, last: bool, finished) -> None:
         """Updates event's last and finished"""
         with self.connection.cursor() as cursor:
-            cursor.execute(EventQueries.update_event_last_and_finished_query, (last, finished, event_id))
+            cursor.execute(EventQueries.update_event_last_and_finished_query,
+                           (last, finished, event_id))
 
     def delete_event(self, event_id: int) -> None:
         """Deletes event"""
@@ -318,12 +319,13 @@ class EventQueries:
     get_event_finished_query = """SELECT finished FROM event WHERE event_id=%s"""
     get_event_classroom_id_query = """SELECT classroom_id FROM event_diary WHERE 
     event_diary_id IN (SELECT event_diary_id FROM event WHERE event_id=%s)"""
-    get_just_started_events_query = """SELECT event_id FROM event WHERE NOW() > start_time AND last=False AND 
-    finished IS NULL AND created=True"""
+    get_just_started_events_query = """SELECT event_id FROM event 
+    WHERE NOW()::timestamp + interval '3 hour' > start_time AND last=False AND finished IS NULL AND created=True"""
     get_just_finished_events_query = """SELECT event_id FROM event 
-    WHERE ((NOW() > end_time) OR (end_time IS NULL AND NOW() > start_time)) AND finished IS NULL AND created=True"""
+    WHERE ((NOW()::timestamp + interval '3 hour' > end_time) OR 
+    (end_time IS NULL AND NOW()::timestamp + interval '3 hour' > start_time)) AND finished IS NULL AND created=True"""
     get_deleted_finished_events_query = """SELECT event_id FROM event
-    WHERE DATE_PART('day', NOW() - finished) >= 2"""
+    WHERE DATE_PART('day', NOW()::timestamp + interval '3 hour' - finished) >= 2"""
 
     insert_event_diary_query = """INSERT INTO event_diary (classroom_id) VALUES (%s)"""
     insert_event_query = """INSERT INTO event (event_diary_id) VALUES (%s) RETURNING event_id"""
@@ -341,7 +343,8 @@ class EventQueries:
     update_event_created_query = """UPDATE event SET created=%s WHERE event_id=%s"""
     update_event_last_and_finished_query = """UPDATE event SET last=%s, finished=%s WHERE event_id=%s"""
     update_events_last_query = """UPDATE event SET last=True WHERE event_id IN ({})"""
-    update_events_finished_query = """UPDATE event SET finished=NOW() WHERE event_id IN ({})"""
+    update_events_finished_query = """UPDATE event SET finished=NOW()::timestamp + interval '3 hour' 
+    WHERE event_id IN ({})"""
 
     delete_event_query = """DELETE FROM event WHERE event_id=%s"""
     delete_student_query = """DELETE FROM event_collective WHERE event_id=%s AND student_id=%s"""

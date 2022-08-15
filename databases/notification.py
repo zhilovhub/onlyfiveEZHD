@@ -169,7 +169,7 @@ class NotificationQueries:
     get_notification_value_query = """SELECT {} FROM notification WHERE user_id=%s AND classroom_id=%s"""
     get_notification_information_query = """SELECT student_id, text FROM notification_diary WHERE notification_id=%s"""
     get_notified_notifications_query = """SELECT notification_id FROM notification_diary 
-    WHERE NOW() >= date AND created=True"""
+    WHERE NOW()::timestamp + interval '3 hour' >= date AND created=True"""
     get_notification_students_query = """SELECT student_id FROM notification_students WHERE notification_id=%s"""
     get_users_with_notification_type = """SELECT user_id FROM notification WHERE {}=True AND classroom_id=%s"""
     get_student_id_query = """SELECT student_id FROM Student WHERE user_id=%s AND classroom_id=%s"""
