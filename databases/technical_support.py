@@ -18,13 +18,13 @@ class TechnicalSupportCommands(DataBase):
         """Add a new message to message table"""
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with self.connection.cursor() as cursor:
-            cursor.execute(TechnicalSupportQueries.insert_message_query.format(user_id, message, current_datetime))
+            cursor.execute(TechnicalSupportQueries.insert_message_query, (user_id, message, current_datetime))
 
     def get_message(self, user_id: int) -> str:
         """Return the message from DB by user_id"""
         with self.connection.cursor() as cursor:
             try:
-                cursor.execute(TechnicalSupportQueries.get_message_query.format(user_id))
+                cursor.execute(TechnicalSupportQueries.get_message_query, (user_id,))
                 message = cursor.fetchone()
 
                 return message[0] if message else ''
@@ -40,7 +40,7 @@ class TechnicalSupportQueries:
     FOREIGN KEY (user_id) REFERENCES Users (user_id)
     )"""
 
-    insert_message_query = """INSERT INTO Technical_support_messages VALUES({}, '{}', '{}')"""
+    insert_message_query = """INSERT INTO Technical_support_messages VALUES(%s, %s, %s)"""
 
-    get_message_query = """SELECT message FROM Technical_support_messages WHERE user_id={} 
+    get_message_query = """SELECT message FROM Technical_support_messages WHERE user_id=%s 
     ORDER BY datetime DESC LIMIT 1"""
