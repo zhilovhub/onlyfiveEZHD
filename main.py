@@ -11,13 +11,7 @@ from handlers import *
 #         cursor.execute(f"""CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}""")
 
 # Connection to the database
-connection = connect(
-    host=HOST,
-    port=PORT,
-    user=USER,
-    password=PASSWORD,
-    database=DATABASE_NAME
-)
+connection = connect(DATABASE_URL)
 connection.autocommit = True
 
 # Classes for working with database's tables

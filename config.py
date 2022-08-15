@@ -27,8 +27,4 @@ ADMINS_ID = loads(os.environ["ADMINS_ID"])
 GROUP_ID = int(os.environ["GROUP_ID"])
 
 # DB constants
-HOST = os.environ["HOST"]
-PORT = int(os.environ["PORT"])
-USER = os.environ["USER"]
-PASSWORD = os.environ["PASSWORD"]
-DATABASE_NAME = os.environ["DATABASE_NAME"]
+DATABASE_URL = os.environ["DATABASE_URL"]
