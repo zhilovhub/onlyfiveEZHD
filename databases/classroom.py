@@ -43,7 +43,7 @@ class ClassroomCommands(DataBase):
     def get_classroom_name(self, classroom_id: int) -> str:
         """Get name of the classroom"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.get_classroom_name_query.format(classroom_id))
+            cursor.execute(ClassroomQueries.get_classroom_name_query, (classroom_id,))
             classroom_name = cursor.fetchone()[0]
 
             return classroom_name
@@ -51,7 +51,7 @@ class ClassroomCommands(DataBase):
     def get_classroom_access(self, classroom_id: int) -> str:
         """Get access of the classroom"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.get_classroom_access_query.format(classroom_id))
+            cursor.execute(ClassroomQueries.get_classroom_access_query, (classroom_id,))
             access = cursor.fetchone()[0]
 
             return access
@@ -59,7 +59,7 @@ class ClassroomCommands(DataBase):
     def get_classroom_members_limit(self, classroom_id: int) -> int:
         """Get access of the classroom"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.get_classroom_members_limit_query.format(classroom_id))
+            cursor.execute(ClassroomQueries.get_classroom_members_limit_query, (classroom_id,))
             members_limit = cursor.fetchone()[0]
 
             return members_limit
@@ -76,7 +76,7 @@ class ClassroomCommands(DataBase):
         """Returns user's classrooms_id and his role_id"""
         with self.connection.cursor() as cursor:
             classrooms_dictionary = {}
-            cursor.execute(ClassroomQueries.get_user_classrooms_with_role_id_query.format(user_id))
+            cursor.execute(ClassroomQueries.get_user_classrooms_with_role_id_query, (user_id,))
             for (classroom_id, role_id) in cursor:
                 classrooms_dictionary[classroom_id] = role_id
 
@@ -86,7 +86,7 @@ class ClassroomCommands(DataBase):
         """Get dict with classroom's members"""
         with self.connection.cursor() as cursor:
             users_dictionary = {}
-            cursor.execute(ClassroomQueries.get_list_of_classroom_users_query.format(classroom_id))
+            cursor.execute(ClassroomQueries.get_list_of_classroom_users_query, (classroom_id,))
             for (user_id, user_role_id) in cursor:
                 users_dictionary[user_id] = user_role_id
 
@@ -108,7 +108,7 @@ class ClassroomCommands(DataBase):
     def get_customizing_classroom_id(self, user_id: int) -> int:
         """Select classroomd_id that user_id is customizing"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.get_customizing_classroom_id_query.format(user_id))
+            cursor.execute(ClassroomQueries.get_customizing_classroom_id_query, (user_id,))
             classroom_id = cursor.fetchone()[0]
 
             return classroom_id
@@ -116,7 +116,7 @@ class ClassroomCommands(DataBase):
     def get_information_of_classroom(self, classroom_id: id) -> tuple:
         """Returns name, school_name, access and description"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.get_information_for_creating_query.format(classroom_id))
+            cursor.execute(ClassroomQueries.get_information_for_creating_query, (classroom_id,))
             classroom_name, school_name, access, description = cursor.fetchone()
 
             return classroom_name, school_name, access, description
@@ -132,14 +132,14 @@ class ClassroomCommands(DataBase):
     def get_request_information(self, user_id: int, classroom_id: int) -> tuple:
         """Returns information about request"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.get_request_information_query.format(user_id, classroom_id))
+            cursor.execute(ClassroomQueries.get_request_information_query, (user_id, classroom_id))
             request_information = cursor.fetchone()
 
             return request_information
 
     def get_list_of_request_information(self, classroom_id: int) -> list:
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.get_list_of_request_information_query.format(classroom_id))
+            cursor.execute(ClassroomQueries.get_list_of_request_information_query, (classroom_id,))
 
             request_information_list = []
             for user_id, request_classroom_id, request_text, request_datetime in cursor.fetchall():
@@ -166,7 +166,7 @@ class ClassroomCommands(DataBase):
         """Insert customizer into UserCustomize"""
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(ClassroomQueries.insert_new_customizer_query.format(user_id))
+                cursor.execute(ClassroomQueries.insert_new_customizer_query, (user_id,))
 
         except Error as e:
             print(e)
@@ -174,7 +174,7 @@ class ClassroomCommands(DataBase):
     def insert_new_user_in_classroom(self, user_id: int, classroom_id: int, role_id: int) -> int:
         """Add user to the classroom"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.insert_new_classroom_user_query.format(user_id, classroom_id, role_id))
+            cursor.execute(ClassroomQueries.insert_new_classroom_user_query, (user_id, classroom_id, role_id))
             cursor.execute(ClassroomQueries.get_last_primary_id)
             student_id = cursor.fetchone()[0]
 
@@ -193,33 +193,33 @@ class ClassroomCommands(DataBase):
         """Inserts new request"""
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.insert_request_query.format(user_id, classroom_id, request_text,
-                                                                        current_datetime))
+            cursor.execute(ClassroomQueries.insert_request_query, (user_id, classroom_id, request_text,
+                                                                   current_datetime))
 
     def update_classroom_name(self, classroom_id: int, new_classroom_name: str) -> None:
         """Set name to the classroom"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_classroom_name_query.format(new_classroom_name, classroom_id))
+            cursor.execute(ClassroomQueries.update_classroom_name_query, (new_classroom_name, classroom_id))
 
     def update_school_name(self, classroom_id: int, new_school_name: str) -> None:
         """Update school name of the classroom"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_school_name_query.format(new_school_name, classroom_id))
+            cursor.execute(ClassroomQueries.update_school_name_query, (new_school_name, classroom_id))
 
     def update_classroom_access(self, classroom_id: int, access: str) -> None:
         """Update access of the classroom"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_classroom_access_query.format(access, classroom_id))
+            cursor.execute(ClassroomQueries.update_classroom_access_query, (access, classroom_id))
 
     def update_classroom_description(self, classroom_id: int, description: str) -> None:
         """Update description of the classroom"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_classroom_description_query.format(description, classroom_id))
+            cursor.execute(ClassroomQueries.update_classroom_description_query, (description, classroom_id))
 
     def update_classroom_members_limit(self, classroom_id: int, members_limit: int) -> None:
         """Update members_limit of the classroom"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_classroom_members_limit_query.format(members_limit, classroom_id))
+            cursor.execute(ClassroomQueries.update_classroom_members_limit_query, (members_limit, classroom_id))
 
     def update_classroom_invite_code(self, classroom_id: int, invite_code: str) -> None:
         """Update invite code of the classroom"""
@@ -229,39 +229,39 @@ class ClassroomCommands(DataBase):
     def update_classroom_created(self, classroom_id: int, created: bool) -> None:
         """Update created of classroom"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_classroom_created_query.format(created, classroom_id))
+            cursor.execute(ClassroomQueries.update_classroom_created_query, (created, classroom_id))
 
     def update_role_id_of_user(self, user_id: int, user_role_id: int) -> None:
         """Set role_id to the user"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_user_role_id_query.format(user_role_id, user_id))
+            cursor.execute(ClassroomQueries.update_user_role_id_query, (user_role_id, user_id))
 
     def update_user_customize_classroom_id(self, user_id: int, classroom_id) -> None:
         """Update classroom_id that user is customizing"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_user_customize_classroom_id_query.format(classroom_id, user_id))
+            cursor.execute(ClassroomQueries.update_user_customize_classroom_id_query, (classroom_id, user_id))
 
     def update_request(self, user_id: int, classroom_id: int, new_request_text: str) -> None:
         """Updates request"""
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.update_request_query.format(new_request_text, current_datetime,
-                                                                        user_id, classroom_id))
+            cursor.execute(ClassroomQueries.update_request_query, (new_request_text, current_datetime,
+                                                                   user_id, classroom_id))
 
     def delete_classroom(self, classroom_id: int) -> None:
         """Delete classroom and its owner from Student"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.delete_classroom_query.format(classroom_id))
+            cursor.execute(ClassroomQueries.delete_classroom_query, (classroom_id,))
 
     def delete_student(self, classroom_id: int, user_id: int) -> None:
         """Deletes user from classroom"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.delete_user_from_classroom_query.format(user_id, classroom_id))
+            cursor.execute(ClassroomQueries.delete_user_from_classroom_query, (user_id, classroom_id))
 
     def delete_request(self, user_id: int, classroom_id: int) -> None:
         """Deletes request from Request"""
         with self.connection.cursor() as cursor:
-            cursor.execute(ClassroomQueries.delete_request_query.format(user_id, classroom_id))
+            cursor.execute(ClassroomQueries.delete_request_query, (user_id, classroom_id))
 
 
 class ClassroomQueries:
@@ -286,50 +286,50 @@ class ClassroomQueries:
         FOREIGN KEY (classroom_id) REFERENCES Classroom (classroom_id) ON DELETE CASCADE
     )"""
 
-    get_customizing_classroom_id_query = """SELECT classroom_id FROM UserCustomize WHERE user_id={}"""
+    get_customizing_classroom_id_query = """SELECT classroom_id FROM UserCustomize WHERE user_id=%s"""
     get_information_for_creating_query = """SELECT 
         classroom_name, 
         school_name,
         access,
         description
-    FROM Classroom WHERE classroom_id={}"""
-    get_user_classrooms_with_role_id_query = """SELECT classroom_id, role_id FROM Student WHERE user_id={}"""
+    FROM Classroom WHERE classroom_id=%s"""
+    get_user_classrooms_with_role_id_query = """SELECT classroom_id, role_id FROM Student WHERE user_id=%s"""
     get_student_id_query = """SELECT student_id FROM Student WHERE user_id=%s AND classroom_id=%s"""
     get_student_ids_query = """SELECT student_id FROM Student WHERE user_id IN ({}) AND classroom_id=%s"""
     get_user_ids_query = """SELECT user_id FROM Student WHERE student_id IN ({})"""
-    get_classroom_name_query = """SELECT classroom_name FROM Classroom WHERE classroom_id={}"""
-    get_classroom_access_query = """SELECT access FROM Classroom WHERE classroom_id={}"""
-    get_classroom_members_limit_query = """SELECT members_limit FROM Classroom WHERE classroom_id={}"""
+    get_classroom_name_query = """SELECT classroom_name FROM Classroom WHERE classroom_id=%s"""
+    get_classroom_access_query = """SELECT access FROM Classroom WHERE classroom_id=%s"""
+    get_classroom_members_limit_query = """SELECT members_limit FROM Classroom WHERE classroom_id=%s"""
     get_classroom_invite_code_query = """SELECT invite_code FROM Classroom WHERE classroom_id=%s"""
     get_classroom_by_invite_code = """SELECT classroom_id FROM Classroom WHERE invite_code=%s"""
-    get_list_of_classroom_users_query = """SELECT user_id, role_id FROM Student WHERE classroom_id={}"""
+    get_list_of_classroom_users_query = """SELECT user_id, role_id FROM Student WHERE classroom_id=%s"""
     get_list_of_classroom_ids_query = """SELECT classroom_id FROM Classroom WHERE created=True"""
-    get_request_information_query = """SELECT * FROM Request WHERE user_id={} AND classroom_id={}"""
-    get_list_of_request_information_query = """SELECT * FROM Request WHERE classroom_id={}"""
+    get_request_information_query = """SELECT * FROM Request WHERE user_id=%s AND classroom_id=%s"""
+    get_list_of_request_information_query = """SELECT * FROM Request WHERE classroom_id=%s"""
     get_last_primary_id = """SELECT MAX(student_id) FROM Student"""
 
     insert_classroom_query = """INSERT INTO Classroom (members_limit, created) VALUES(40, FALSE) 
     RETURNING classroom_id"""
-    insert_new_classroom_user_query = """INSERT INTO Student (user_id, classroom_id, role_id) VALUES({}, {}, {})"""
-    insert_new_customizer_query = """INSERT INTO UserCustomize VALUES({}, null, null, null)"""
-    insert_request_query = """INSERT INTO Request VALUES({}, {}, '{}', '{}')"""
+    insert_new_classroom_user_query = """INSERT INTO Student (user_id, classroom_id, role_id) VALUES(%s, %s, %s)"""
+    insert_new_customizer_query = """INSERT INTO UserCustomize VALUES(%s, null, null, null)"""
+    insert_request_query = """INSERT INTO Request VALUES(%s, %s, %s, %s)"""
 
-    update_classroom_name_query = """UPDATE Classroom SET classroom_name="{}" WHERE classroom_id={}"""
-    update_school_name_query = """UPDATE Classroom SET school_name="{}" WHERE classroom_id={}"""
-    update_classroom_access_query = """UPDATE Classroom SET access="{}" WHERE classroom_id={}"""
-    update_classroom_description_query = """UPDATE Classroom SET description="{}" WHERE classroom_id={}"""
-    update_classroom_members_limit_query = """UPDATE Classroom SET members_limit={} WHERE classroom_id={}"""
+    update_classroom_name_query = """UPDATE Classroom SET classroom_name=%s WHERE classroom_id=%s"""
+    update_school_name_query = """UPDATE Classroom SET school_name=%s WHERE classroom_id=%s"""
+    update_classroom_access_query = """UPDATE Classroom SET access=%s WHERE classroom_id=%s"""
+    update_classroom_description_query = """UPDATE Classroom SET description=%s WHERE classroom_id=%s"""
+    update_classroom_members_limit_query = """UPDATE Classroom SET members_limit=%s WHERE classroom_id=%s"""
     update_classroom_invite_code_query = """UPDATE Classroom SET invite_code=%s WHERE classroom_id=%s"""
-    update_user_role_id_query = """UPDATE Student SET role_id={} WHERE user_id={}"""
-    update_user_customize_classroom_id_query = """UPDATE UserCustomize SET classroom_id={} WHERE user_id={}"""
-    update_classroom_created_query = """UPDATE Classroom SET created={} WHERE classroom_id={}"""
+    update_user_role_id_query = """UPDATE Student SET role_id=%s WHERE user_id=%s"""
+    update_user_customize_classroom_id_query = """UPDATE UserCustomize SET classroom_id=%s WHERE user_id=%s"""
+    update_classroom_created_query = """UPDATE Classroom SET created=%s WHERE classroom_id=%s"""
     update_request_query = """UPDATE 
-        Request SET request_text='{}', datetime='{}' 
-    WHERE user_id={} AND classroom_id={}"""
+        Request SET request_text=%s, datetime=%s 
+    WHERE user_id=%s AND classroom_id=%s"""
 
-    delete_user_from_classroom_query = """DELETE FROM Student WHERE user_id={} AND classroom_id={}"""
-    delete_classroom_query = """DELETE FROM classroom WHERE classroom_id={}"""
-    delete_request_query = """DELETE FROM Request WHERE user_id={} AND classroom_id={}"""
+    delete_user_from_classroom_query = """DELETE FROM Student WHERE user_id=%s AND classroom_id=%s"""
+    delete_classroom_query = """DELETE FROM classroom WHERE classroom_id=%s"""
+    delete_request_query = """DELETE FROM Request WHERE user_id=%s AND classroom_id=%s"""
 
 
 if __name__ == "__main__":
