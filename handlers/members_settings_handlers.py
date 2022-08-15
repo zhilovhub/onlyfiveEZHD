@@ -310,7 +310,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             default_role_name = self.role_db.get_default_role_name(classroom_id)
             all_role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
 
-            self.role_db.update_user_customize_role_id(user_id, "null")
+            self.role_db.update_user_customize_role_id(user_id, None)
 
             trans_message = f"{all_role_names_text}\n\nВпишите номер роли, назначать которой хотите:"
             await self.state_transition(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS, trans_message)
@@ -365,7 +365,7 @@ class MembersSettingsHandlers(SupportingFunctions):
                                     new_members_text = self.get_members_text(new_roles_dictionary)
 
                                     if admin_role_id == new_role_id:
-                                        self.role_db.update_user_customize_role_id(user_id, "null")
+                                        self.role_db.update_user_customize_role_id(user_id, None)
 
                                         trans_message = f"{new_members_text}\n\nНовая роль участнику назначена!\n\nВы" \
                                                         f" больше не админ"
@@ -409,7 +409,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             admin_role_name = self.role_db.get_admin_role_name(classroom_id)
             default_role_name = self.role_db.get_default_role_name(classroom_id)
             all_role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
-            self.role_db.update_user_customize_role_id(user_id, "null")
+            self.role_db.update_user_customize_role_id(user_id, None)
 
             trans_message = f"{all_role_names_text}\n\nВпишите номер роли, назначать которой хотите:"
             await self.state_transition(user_id, States.S_CHOOSE_ROLE_MEMBERS_SETTINGS, trans_message)
@@ -506,7 +506,7 @@ class MembersSettingsHandlers(SupportingFunctions):
             admin_role_name = self.role_db.get_admin_role_name(classroom_id)
             default_role_name = self.role_db.get_default_role_name(classroom_id)
             all_role_names_text = self.get_all_role_names_text(all_role_names, admin_role_name, default_role_name)
-            self.role_db.update_user_customize_role_id(user_id, "null")
+            self.role_db.update_user_customize_role_id(user_id, None)
 
             trans_message = f"{all_role_names_text}\n\n{ask_message}"
             await self.state_transition(user_id, States.S_CHOOSE_ROLE_EDIT_ROLE_MEMBERS_SETTINGS, trans_message)

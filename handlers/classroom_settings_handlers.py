@@ -227,7 +227,7 @@ class ClassroomSettingsHandlers(SupportingFunctions):
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             classroom_name = self.classroom_db.get_classroom_name(classroom_id)
             self.classroom_db.delete_classroom(classroom_id)
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, None)
 
             trans_message = f"Класс с именем {classroom_name} удалён!"
             await self.state_transition(user_id, States.S_NOTHING, trans_message)

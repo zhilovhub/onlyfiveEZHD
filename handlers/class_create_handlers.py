@@ -128,7 +128,7 @@ class ClassCreateHandlers(SupportingFunctions):
             self.classroom_db.update_classroom_invite_code(classroom_id, invite_code)
 
             self.classroom_db.update_classroom_created(classroom_id, True)
-            self.classroom_db.update_user_customize_classroom_id(user_id, "null")
+            self.classroom_db.update_user_customize_classroom_id(user_id, None)
 
             trans_message = "Поздравляю! Класс создан"
             await self.state_transition(user_id, States.S_NOTHING, trans_message)
