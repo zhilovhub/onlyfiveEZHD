@@ -508,6 +508,20 @@ class SupportingFunctions:
                 await self.send_message(user_ids=notified_users, message=f"[id{user_id}|{first_name} {last_name}]"
                                                                          f" покинул {classroom_name}!")
 
+    async def notify_to_kicked_classmate(self, user_id: int, classroom_id: int) -> None:
+        classroom_name = self.classroom_db.get_classroom_name(classroom_id)
+        trans_message = f"Тебя искючили из {classroom_name}"
+
+        customizing_classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+        if classroom_id == customizing_classroom_id:
+            self.classroom_db.update_user_customize_classroom_id(user_id, None)
+            self.role_db.update_user_customize_role_id(user_id, None)
+            self.event_db.update_customizing_event_id(user_id, None)
+
+            await self.state_transition(user_id, States.S_NOTHING, trans_message)
+        else:
+            await self.send_message(user_id=user_id, message=trans_message)
+
     async def notify_new_event(self, user_id: int, event_id: int, classroom_id: int, without_user_ids=None) -> None:
         """Notifies about new event"""
         notified_users = self.notification_db.get_users_with_notification_type(classroom_id, "events")
