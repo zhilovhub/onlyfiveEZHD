@@ -25,9 +25,6 @@ class TechnicalSupportHandlers(SupportingFunctions):
             trans_message = "Вопросы отправлены администраторам!"
             await self.state_transition(user_id, States.S_NOTHING, trans_message)
 
-        else:
-            raise UnknownPayload(user_id)
-
     async def cancel_entering_technical_support_message(self, user_id: int) -> None:
         """Cancel creating technical support message and set state to States.S_NOTHING"""
         trans_message = "Отправка обращения в тех. поддержку отменена"

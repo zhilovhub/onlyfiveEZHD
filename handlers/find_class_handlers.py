@@ -71,9 +71,6 @@ class FindClassHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
 
-        else:
-            raise UnknownPayload(user_id)
-
     async def s_look_classroom_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_LOOK_CLASSROOM"""
         classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -129,9 +126,6 @@ class FindClassHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
 
-        else:
-            raise UnknownPayload(user_id)
-
     async def s_request_classroom_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_REQUEST_CLASSROOM"""
         classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
@@ -166,9 +160,6 @@ class FindClassHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
-
-        else:
-            raise UnknownPayload(user_id)
 
     async def s_edit_request_classroom_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_EDIT_REQUEST_CLASSROOM"""
@@ -209,6 +200,3 @@ class FindClassHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
-
-        else:
-            raise UnknownPayload(user_id)

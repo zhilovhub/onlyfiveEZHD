@@ -60,12 +60,7 @@ async def listen_messages(message: Message) -> None:
 
             if not attachments and message_text:  # Checking user didn't send attachment
                 current_dialog_state = user_db.get_user_dialog_state(user_id)
-
-                try:
-                    await filter_dialog_state(user_id, message_text, payload, current_dialog_state)
-                except UnknownPayload:
-                    trans_message = "Произошла ошибка, возвращение в главное меню"
-                    await handlers_class.state_transition(user_id, States.S_NOTHING, trans_message)
+                await filter_dialog_state(user_id, message_text, payload, current_dialog_state)
             elif attachments:
                 await handlers_class.send_message(user_id, "Пиши текстом... Или используй кнопки для навигации!👇🏻")
             elif not message_text:

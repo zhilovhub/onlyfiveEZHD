@@ -36,9 +36,6 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
 
-        else:
-            raise UnknownPayload(user_id)
-
     async def s_notification_settings_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS"""
         if payload is None:
@@ -75,9 +72,6 @@ class ClassroomSettingsHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
-
-        else:
-            raise UnknownPayload(user_id)
 
     async def s_main_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_MAIN_CLASSROOM_SETTINGS"""
@@ -155,9 +149,6 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
 
-        else:
-            raise UnknownPayload(user_id)
-
     async def s_main_dangerous_zone_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_MAIN_DANGEROUS_ZONE_CLASSROOM_SETTINGS"""
         if payload is None:
@@ -193,9 +184,6 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
 
-        else:
-            raise UnknownPayload(user_id)
-
     async def s_main_dangerous_zone_delete_one_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_MAIN_DANGEROUS_ZONE_DELETE_ONE_CLASSROOM_SETTINGS"""
         if payload is None:
@@ -213,9 +201,6 @@ class ClassroomSettingsHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
-
-        else:
-            raise UnknownPayload(user_id)
 
     async def s_main_dangerous_zone_delete_two_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_MAIN_DANGEROUS_ZONE_DELETE_TWO_CLASSROOM_SETTINGS"""
@@ -238,9 +223,6 @@ class ClassroomSettingsHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
-
-        else:
-            raise UnknownPayload(user_id)
 
     async def s_access_main_classroom_settings_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_ACCESS_MAIN_CLASSROOM_SETTINGS"""
@@ -272,9 +254,6 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
 
-        else:
-            raise UnknownPayload(user_id)
-
     async def s_classroom_name_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_CLASSROOM_NAME_MAIN_CLASSROOM_SETTINGS"""
         if payload is None:
@@ -294,9 +273,6 @@ class ClassroomSettingsHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
-
-        else:
-            raise UnknownPayload(user_id)
 
     async def s_school_name_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_SCHOOL_NAME_MAIN_CLASSROOM_SETTINGS"""
@@ -318,9 +294,6 @@ class ClassroomSettingsHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
 
-        else:
-            raise UnknownPayload(user_id)
-
     async def s_description_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_DESCRIPTION_MAIN_CLASSROOM_SETTINGS"""
         if payload is None:
@@ -340,9 +313,6 @@ class ClassroomSettingsHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
-
-        else:
-            raise UnknownPayload(user_id)
 
     async def s_limit_main_classroom_settings_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_LIMIT_MAIN_CLASSROOM_SETTINGS"""
@@ -378,6 +348,3 @@ class ClassroomSettingsHandlers(SupportingFunctions):
 
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
-
-        else:
-            raise UnknownPayload(user_id)

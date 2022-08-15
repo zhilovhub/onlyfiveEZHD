@@ -195,9 +195,6 @@ class MyClassesHandlers(SupportingFunctions):
             trans_message = "Выбери номер события, рассмотреть который ты хочешь!"
             await self.state_transition(user_id, States.S_CHOOSE_EVENT_MYCLASSES, trans_message)
 
-        else:
-            raise UnknownPayload(user_id)
-
     async def s_in_class_my_classes2_handler(self, user_id: int, payload: dict, info_message="") -> None:
         """Handling States.S_IN_CLASS_MYCLASSES2"""
         if payload is None:
@@ -310,9 +307,6 @@ class MyClassesHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             await self.trans_to_main_menu(user_id)
 
-        else:
-            raise UnknownPayload(user_id)
-
     async def s_edit_week_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_WEEK_MYCLASSES"""
         if payload is None:
@@ -366,9 +360,6 @@ class MyClassesHandlers(SupportingFunctions):
             trans_message = "Возвращаемся в меню класса"
             await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message,
                                         sign=self.get_sign(user_id))
-
-        else:
-            raise UnknownPayload(user_id)
 
     async def s_edit_weekday_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_WEEKDAY_MYCLASSES"""
@@ -473,9 +464,6 @@ class MyClassesHandlers(SupportingFunctions):
             trans_message = f"{diary_text}\n\nВсе изменения отменены!"
             await self.state_transition(user_id, States.S_EDIT_WEEK_MYCLASSES, trans_message, week_type=week_type)
 
-        else:
-            raise UnknownPayload(user_id)
-
     async def s_add_new_lesson_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_ADD_NEW_LESSON_WEEKDAY_MYCLASSES"""
         if payload is None:
@@ -505,9 +493,6 @@ class MyClassesHandlers(SupportingFunctions):
 
         elif payload["text"]:
             await self.s_edit_weekday_my_classes_handler(user_id, payload)
-
-        else:
-            raise UnknownPayload(user_id)
 
     async def s_edit_lesson_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_EDIT_LESSON_WEEKDAY_MYCLASSES"""
@@ -553,9 +538,6 @@ class MyClassesHandlers(SupportingFunctions):
 
         elif payload["text"]:
             await self.s_edit_weekday_my_classes_handler(user_id, payload)
-
-        else:
-            raise UnknownPayload(user_id)
 
     async def s_edit_homework_my_classes_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_EDIT_HOMEWORK_MYCLASSES"""
@@ -608,9 +590,6 @@ class MyClassesHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
             await self.trans_to_main_menu(user_id)
-
-        else:
-            raise UnknownPayload(user_id)
 
     async def s_edit_homework_weekday_my_classes_handler(self, user_id: int, message: str, payload: dict) -> None:
         """Handling States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES"""
@@ -739,9 +718,6 @@ class MyClassesHandlers(SupportingFunctions):
         elif payload["text"] == "Главное меню":
             self.diary_homework_db.delete_row_from_temp_weekday_table(user_id)
             await self.trans_to_main_menu(user_id)
-
-        else:
-            raise UnknownPayload(user_id)
 
     @staticmethod
     def get_week_diary_text(formatted_week_lessons_diary: list, formatted_week_lessons_homework=None) -> str:
