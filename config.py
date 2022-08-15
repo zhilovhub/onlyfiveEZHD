@@ -1,4 +1,4 @@
-# WRITE VALUES AND RENAME THIS FILE TO config.py
+import os
 
 # import for main file
 import asyncio
@@ -14,16 +14,21 @@ from json import loads, dumps
 # import for states file
 from enum import Enum
 # import for database file
+# from mysql.connector import connect, CMySQLConnection, Error
+# from aiomysql import create_pool, connect, Error, Pool
 from psycopg2 import connect, Error
 
+if os.path.exists("set_environ_vars.py"):
+    import set_environ_vars
+
 # VK_api constants
-TOKEN = ""
-ADMINS_ID = []
-GROUP_ID = 0
+TOKEN = os.environ["TOKEN"]
+ADMINS_ID = loads(os.environ["ADMINS_ID"])
+GROUP_ID = int(os.environ["GROUP_ID"])
 
 # DB constants
-HOST = ""
-PORT = 0
-USER = ""
-PASSWORD = ""
-DATABASE_NAME = ""
+HOST = os.environ["HOST"]
+PORT = int(os.environ["PORT"])
+USER = os.environ["USER"]
+PASSWORD = os.environ["PASSWORD"]
+DATABASE_NAME = os.environ["DATABASE_NAME"]
