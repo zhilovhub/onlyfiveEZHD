@@ -142,6 +142,7 @@ class FindClassHandlers(SupportingFunctions):
                 self.classroom_db.insert_new_request(user_id, classroom_id, message)
                 await self.notify_request(user_id, classroom_id)
 
+                keyboard_kwarg = self.get_look_keyboard_kwargs(user_id, classroom_id)
                 trans_message = "Заявка отправлена!"
                 await self.state_transition(user_id, States.S_LOOK_CLASSROOM, trans_message,
                                             classroom_type=keyboard_kwarg)

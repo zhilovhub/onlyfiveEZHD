@@ -567,8 +567,6 @@ class KeyBoards:
             keyboard_look_classroom_menu.row()
 
         keyboard_look_classroom_menu.add(Text("Участники", payload=KeyBoards.get_payload("Участники")))
-        keyboard_look_classroom_menu.add(Text("Вступить по ссылке",
-                                              payload=KeyBoards.get_payload("Вступить по ссылке")))
         keyboard_look_classroom_menu.row()
         keyboard_look_classroom_menu.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
                                          color=KeyboardButtonColor.PRIMARY)
