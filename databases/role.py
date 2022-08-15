@@ -13,7 +13,7 @@ class RoleCommands(DataBase):
     def get_role_name(self, role_id: int) -> str:
         """Returns role name"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_role_name_query.format(role_id))
+            cursor.execute(RoleQueries.get_role_name_query, (role_id,))
             role_name = cursor.fetchone()[0]
 
             return role_name
@@ -21,7 +21,7 @@ class RoleCommands(DataBase):
     def get_customizing_role_id(self, user_id: int) -> int:
         """Select role_id that user_id is customizing"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_customizing_role_id_query.format(user_id))
+            cursor.execute(RoleQueries.get_customizing_role_id_query, (user_id,))
             role_id = cursor.fetchone()[0]
 
             return role_id
@@ -29,7 +29,7 @@ class RoleCommands(DataBase):
     def get_default_role_id(self, classroom_id: int) -> int:
         """Returns default role's id"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_default_role_id_query.format(classroom_id))
+            cursor.execute(RoleQueries.get_default_role_id_query, (classroom_id,))
             role_id = cursor.fetchone()[0]
 
             return role_id
@@ -37,7 +37,7 @@ class RoleCommands(DataBase):
     def get_admin_role_id(self, classroom_id: int) -> int:
         """Returns admin role's id"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_admin_role_id_query.format(classroom_id))
+            cursor.execute(RoleQueries.get_admin_role_id_query, (classroom_id,))
             role_id = cursor.fetchone()[0]
 
             return role_id
@@ -45,7 +45,7 @@ class RoleCommands(DataBase):
     def get_role_id_by_name(self, classroom_id: int, role_name: str) -> int:
         """Returns role's id by name"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_role_id_by_name_query.format(classroom_id, role_name))
+            cursor.execute(RoleQueries.get_role_id_by_name_query, (classroom_id, role_name))
             role_id = cursor.fetchone()[0]
 
             return role_id
@@ -53,7 +53,7 @@ class RoleCommands(DataBase):
     def get_role_id_by_user_id(self, user_id: int, classroom_id: id) -> int:
         """Returns role's id by user_id"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_role_id_by_user_id_query.format(user_id, classroom_id))
+            cursor.execute(RoleQueries.get_role_id_by_user_id_query, (user_id, classroom_id))
             role_id = cursor.fetchone()[0]
 
             return role_id
@@ -61,7 +61,7 @@ class RoleCommands(DataBase):
     def get_default_role_name(self, classroom_id: int) -> str:
         """Returns default role's name"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_default_role_name_query.format(classroom_id))
+            cursor.execute(RoleQueries.get_default_role_name_query, (classroom_id,))
             default_role_name = cursor.fetchone()[0]
 
             return default_role_name
@@ -69,7 +69,7 @@ class RoleCommands(DataBase):
     def get_admin_role_name(self, classroom_id: int) -> str:
         """Returns admin role's name"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_admin_role_name_query.format(classroom_id))
+            cursor.execute(RoleQueries.get_admin_role_name_query, (classroom_id,))
             admin_role_name = cursor.fetchone()[0]
 
             return admin_role_name
@@ -77,7 +77,7 @@ class RoleCommands(DataBase):
     def get_all_role_names_from_classroom(self, classroom_id: int) -> list:
         """Returns all role names from classroom"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.get_all_role_names_from_classroom_query.format(classroom_id))
+            cursor.execute(RoleQueries.get_all_role_names_from_classroom_query, (classroom_id,))
             role_names = [row[0] for row in cursor.fetchall()]
 
             return role_names
@@ -88,7 +88,7 @@ class RoleCommands(DataBase):
             cursor.execute(RoleQueries.show_columns_query)
             property_names = [row[0] for row in cursor.fetchall()][2:]
 
-            cursor.execute(RoleQueries.get_all_role_properties_query.format(role_id))
+            cursor.execute(RoleQueries.get_all_role_properties_query, (role_id,))
             property_values = cursor.fetchone()[2:]
 
             return {name: value for name, value in zip(property_names, property_values)}
@@ -107,7 +107,7 @@ class RoleCommands(DataBase):
                 "is_admin"
             ]
 
-            cursor.execute(RoleQueries.get_diary_role_properties_query.format(role_id))
+            cursor.execute(RoleQueries.get_diary_role_properties_query, (role_id,))
             property_values = cursor.fetchone()
 
             return {name: value for name, value in zip(property_names, property_values)}
@@ -126,7 +126,7 @@ class RoleCommands(DataBase):
                 "is_admin"
             ]
 
-            cursor.execute(RoleQueries.get_members_role_properties_query.format(role_id))
+            cursor.execute(RoleQueries.get_members_role_properties_query, (role_id,))
             property_values = cursor.fetchone()
 
             return {name: value for name, value in zip(property_names, property_values)}
@@ -145,7 +145,7 @@ class RoleCommands(DataBase):
                 "is_admin"
             ]
 
-            cursor.execute(RoleQueries.get_classroom_role_properties_query.format(role_id))
+            cursor.execute(RoleQueries.get_classroom_role_properties_query, (role_id,))
             property_values = cursor.fetchone()
 
             return {name: value for name, value in zip(property_names, property_values)}
@@ -159,47 +159,47 @@ class RoleCommands(DataBase):
                 kick_members = False
 
             if is_default_member or is_admin:
-                cursor.execute(RoleQueries.insert_new_default_role_query.format(classroom_id, role_name, kick_members,
-                                                                                is_default_member, is_admin))
+                cursor.execute(RoleQueries.insert_new_default_role_query, (classroom_id, role_name, kick_members,
+                                                                           is_default_member, is_admin))
             else:
-                cursor.execute(RoleQueries.get_default_role_id_query.format(classroom_id))
+                cursor.execute(RoleQueries.get_default_role_id_query, (classroom_id,))
                 default_role_id = cursor.fetchone()[0]
-                cursor.execute(RoleQueries.get_all_role_properties_query.format(default_role_id))
+                cursor.execute(RoleQueries.get_all_role_properties_query, (default_role_id,))
                 default_role_properties = cursor.fetchone()[3:-2]
-                cursor.execute(RoleQueries.insert_new_role_query.format(classroom_id, role_name,
-                                                                        *default_role_properties, False, False))
+                cursor.execute(RoleQueries.insert_new_role_query, (classroom_id, role_name,
+                                                                   *default_role_properties, False, False))
 
             return cursor.fetchone()[0]
 
     def update_student_role(self, user_id: int, new_role_id: int) -> None:
         """Updates student's role with new role_id"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_student_role_query.format(new_role_id, user_id))
+            cursor.execute(RoleQueries.update_student_role_query, (new_role_id, user_id))
 
     def update_all_roles(self, old_role_id: int, new_role_id: int) -> None:
         """Updates students' role with new role_id"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_all_roles_query.format(new_role_id, old_role_id))
+            cursor.execute(RoleQueries.update_all_roles_query, (new_role_id, old_role_id))
 
     def update_user_customize_role_id(self, user_id: int, role_id) -> None:
         """Update role_id that user is customizing"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_user_customize_role_id_query.format(role_id, user_id))
+            cursor.execute(RoleQueries.update_user_customize_role_id_query, (role_id, user_id))
 
     def update_role_name(self, role_id: int, new_name: str) -> None:
         """Updates role's name"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_role_name_query.format(new_name, role_id))
+            cursor.execute(RoleQueries.update_role_name_query, (new_name, role_id))
 
     def update_role_privilege(self, role_id: int, new_value: bool, privilege_type: str) -> None:
         """Updates role's privilege_type"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_role_privilege_query.format(privilege_type, new_value, role_id))
+            cursor.execute(RoleQueries.update_role_privilege_query.format(privilege_type), (new_value, role_id))
 
     def delete_role(self, role_id: int) -> None:
         """Deletes role"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.delete_role_query.format(role_id))
+            cursor.execute(RoleQueries.delete_role_query, (role_id,))
 
 
 class RoleQueries:
@@ -238,16 +238,16 @@ class RoleQueries:
         FOREIGN KEY (role_id) REFERENCES Role (role_id) ON DELETE SET NULL
     )"""
 
-    get_customizing_role_id_query = """SELECT role_id FROM UserCustomize WHERE user_id={}"""
-    get_default_role_name_query = """SELECT role_name FROM Role WHERE classroom_id={} AND is_default_member=True"""
-    get_admin_role_name_query = """SELECT role_name FROM Role WHERE classroom_id={} AND is_admin=True"""
-    get_role_name_query = """SELECT role_name FROM Role WHERE role_id={}"""
-    get_default_role_id_query = """SELECT role_id FROM Role WHERE classroom_id={} AND is_default_member=True"""
-    get_admin_role_id_query = """SELECT role_id FROM Role WHERE classroom_id={} AND is_admin=True"""
-    get_role_id_by_name_query = """SELECT role_id FROM Role WHERE classroom_id={} AND role_name='{}'"""
-    get_role_id_by_user_id_query = """SELECT role_id FROM Student WHERE user_id={} AND classroom_id={}"""
-    get_all_role_names_from_classroom_query = """SELECT role_name FROM Role WHERE classroom_id={}"""
-    get_all_role_properties_query = """SELECT * FROM Role WHERE role_id={}"""
+    get_customizing_role_id_query = """SELECT role_id FROM UserCustomize WHERE user_id=%s"""
+    get_default_role_name_query = """SELECT role_name FROM Role WHERE classroom_id=%s AND is_default_member=True"""
+    get_admin_role_name_query = """SELECT role_name FROM Role WHERE classroom_id=%s AND is_admin=True"""
+    get_role_name_query = """SELECT role_name FROM Role WHERE role_id=%s"""
+    get_default_role_id_query = """SELECT role_id FROM Role WHERE classroom_id=%s AND is_default_member=True"""
+    get_admin_role_id_query = """SELECT role_id FROM Role WHERE classroom_id=%s AND is_admin=True"""
+    get_role_id_by_name_query = """SELECT role_id FROM Role WHERE classroom_id=%s AND role_name=%s"""
+    get_role_id_by_user_id_query = """SELECT role_id FROM Student WHERE user_id=%s AND classroom_id=%s"""
+    get_all_role_names_from_classroom_query = """SELECT role_name FROM Role WHERE classroom_id=%s"""
+    get_all_role_properties_query = """SELECT * FROM Role WHERE role_id=%s"""
 
     get_diary_role_properties_query = """SELECT 
         change_current_homework, 
@@ -258,7 +258,7 @@ class RoleQueries:
         role_name,
         is_default_member,
         is_admin
-    FROM Role WHERE role_id={}"""
+    FROM Role WHERE role_id=%s"""
 
     get_members_role_properties_query = """SELECT
         kick_members,
@@ -269,7 +269,7 @@ class RoleQueries:
         role_name,
         is_default_member,
         is_admin
-    FROM Role WHERE role_id={}"""
+    FROM Role WHERE role_id=%s"""
 
     get_classroom_role_properties_query = """SELECT
         change_classroom_name,
@@ -280,28 +280,28 @@ class RoleQueries:
         role_name,
         is_default_member,
         is_admin
-    FROM Role WHERE role_id={}"""
+    FROM Role WHERE role_id=%s"""
 
     insert_new_default_role_query = """INSERT INTO Role 
     (classroom_id, role_name, kick_members, is_default_member, is_admin) VALUES(
-        {}, '{}', {}, {}, {}
+        %s, %s, %s, %s, %s
     )"""
 
     insert_new_role_query = """INSERT INTO ROLE
     (classroom_id, role_name, change_standard_week, change_current_week, change_next_week, change_current_homework,
     change_next_homework, kick_members, invite_members, accept_requests, notify, redact_events, change_classroom_name,
     change_school_name, change_classroom_access, change_description, change_members_limit) VALUES(
-        {}, '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
     ) RETURNING role_id"""
 
-    update_student_role_query = """UPDATE Student SET role_id={} WHERE user_id={}"""
-    update_all_roles_query = """UPDATE Student SET role_id={} WHERE role_id={}"""
-    update_user_customize_role_id_query = """UPDATE UserCustomize SET role_id={} WHERE user_id={}"""
+    update_student_role_query = """UPDATE Student SET role_id=%s WHERE user_id=%s"""
+    update_all_roles_query = """UPDATE Student SET role_id=%s WHERE role_id=%s"""
+    update_user_customize_role_id_query = """UPDATE UserCustomize SET role_id=%s WHERE user_id=%s"""
 
-    update_role_name_query = """UPDATE Role SET role_name='{}' WHERE role_id={}"""
-    update_role_privilege_query = """UPDATE Role SET {}={} WHERE role_id={}"""
+    update_role_name_query = """UPDATE Role SET role_name=%s WHERE role_id=%s"""
+    update_role_privilege_query = """UPDATE Role SET {}=%s WHERE role_id=%s"""
 
-    delete_role_query = """DELETE FROM Role WHERE role_id={}"""
+    delete_role_query = """DELETE FROM Role WHERE role_id=%s"""
 
     # extra queries
     show_columns_query = """SHOW columns FROM Role"""
