@@ -285,7 +285,7 @@ class RoleQueries:
     insert_new_default_role_query = """INSERT INTO Role 
     (classroom_id, role_name, kick_members, is_default_member, is_admin) VALUES(
         %s, %s, %s, %s, %s
-    )"""
+    ) RETURNING role_id"""
 
     insert_new_role_query = """INSERT INTO ROLE
     (classroom_id, role_name, change_standard_week, change_current_week, change_next_week, change_current_homework,
