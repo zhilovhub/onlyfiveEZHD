@@ -333,15 +333,16 @@ class ClassroomQueries:
 
 
 if __name__ == "__main__":
-    connection = connect(
-        host=HOST,
-        user=USER,
-        password=PASSWORD,
-        database=DATABASE_NAME
-    )
-
-    db = ClassroomCommands(connection)
-    flag = input("Тестовый режим: ")
+    pass
+    # connection = connect(
+    #     host=HOST,
+    #     user=USER,
+    #     password=PASSWORD,
+    #     database=DATABASE_NAME
+    # )
+    #
+    # db = ClassroomCommands(connection)
+    # flag = input("Тестовый режим: ")
 
     # if flag == "new":
     #     for i in range(1, 55):

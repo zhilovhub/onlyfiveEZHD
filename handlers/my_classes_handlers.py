@@ -166,6 +166,7 @@ class MyClassesHandlers(SupportingFunctions):
                 await self.s_in_class_my_classes2_handler(user_id, {"text": "Заявки", "can": 1},
                                                           info_message=f"[id{request_user_id}|{first_name} {last_name}]"
                                                                        f" принят в класс")
+                await self.notify_about_accept_to_classroom(request_user_id, classroom_id)
                 await self.notify_new_classmate(request_user_id, classroom_id,
                                                 without_user_ids=[user_id, request_user_id])
             else:

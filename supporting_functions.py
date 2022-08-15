@@ -509,6 +509,7 @@ class SupportingFunctions:
                                                                          f" покинул {classroom_name}!")
 
     async def notify_to_kicked_classmate(self, user_id: int, classroom_id: int) -> None:
+        """Notifies kicked classmate"""
         classroom_name = self.classroom_db.get_classroom_name(classroom_id)
         trans_message = f"Тебя искючили из {classroom_name}"
 
@@ -519,6 +520,20 @@ class SupportingFunctions:
             self.event_db.update_customizing_event_id(user_id, None)
 
             await self.state_transition(user_id, States.S_NOTHING, trans_message)
+        else:
+            await self.send_message(user_id=user_id, message=trans_message)
+
+    async def notify_about_accept_to_classroom(self, user_id: int, classroom_id: int) -> None:
+        """Notifies classmate about his accept to classroom"""
+        classroom_name = self.classroom_db.get_classroom_name(classroom_id)
+        trans_message = f"Тебя приняли в {classroom_name}"
+
+        current_dialog_state = self.user_db.get_user_dialog_state(user_id)
+        customizing_classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+        if current_dialog_state in (States.S_REQUEST_CLASSROOM.value, States.S_EDIT_REQUEST_CLASSROOM.value) and \
+                classroom_id == customizing_classroom_id:
+            await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message,
+                                        sign=self.get_sign(user_id))
         else:
             await self.send_message(user_id=user_id, message=trans_message)
 
