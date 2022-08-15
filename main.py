@@ -20,6 +20,8 @@ connection = connect(
 )
 connection.autocommit = True
 
+print("Соединились")
+
 # Classes for working with database's tables
 user_db = UserDataCommands(connection)
 classroom_db = ClassroomCommands(connection)
