@@ -38,8 +38,8 @@ class KeyBoards:
 
     # CANCEL_SEND KEYBOARD
     KEYBOARD_CANCEL_SEND = Keyboard()
-    KEYBOARD_CANCEL_SEND.add(Text("Отменить", payload=get_payload("Отменить")))
-    KEYBOARD_CANCEL_SEND.add(Text("Отправить", payload=get_payload("Отправить")))
+    KEYBOARD_CANCEL_SEND.add(Text("Отменить", payload=get_payload("Отменить")), color=KeyboardButtonColor.NEGATIVE)
+    KEYBOARD_CANCEL_SEND.add(Text("Отправить", payload=get_payload("Отправить")), color=KeyboardButtonColor.POSITIVE)
 
     # BACK_MENU KEYBOARD
     KEYBOARD_BACK_MENU = Keyboard()
@@ -136,11 +136,14 @@ class KeyBoards:
     def get_submit_back_keyboard(collective=None) -> str:
         keyboard_submit_back = Keyboard()
         if collective is None:
-            keyboard_submit_back.add(Text("Отклонить", payload=KeyBoards.get_payload("Отклонить")))
+            keyboard_submit_back.add(Text("Отклонить", payload=KeyBoards.get_payload("Отклонить")),
+                                     color=KeyboardButtonColor.NEGATIVE)
         else:
             keyboard_submit_back.add(Text("Отклонить",
-                                          payload=KeyBoards.get_payload("Отклонить", collective=collective)))
-        keyboard_submit_back.add(Text("Принять", payload=KeyBoards.get_payload("Принять")))
+                                          payload=KeyBoards.get_payload("Отклонить", collective=collective)),
+                                     color=KeyboardButtonColor.NEGATIVE)
+        keyboard_submit_back.add(Text("Принять", payload=KeyBoards.get_payload("Принять")),
+                                 color=KeyboardButtonColor.POSITIVE)
         keyboard_submit_back.row()
         keyboard_submit_back.add(Text("Главное меню", payload=KeyBoards.get_payload("Главное меню")),
                                  color=KeyboardButtonColor.PRIMARY)
@@ -342,7 +345,8 @@ class KeyBoards:
             keyboard_members_settings.row()
         keyboard_members_settings.add(Text(kick_members_label,
                                            payload=KeyBoards.get_payload("Удалить участника",
-                                                                         can=kick_members)))
+                                                                         can=kick_members)),
+                                      color=KeyboardButtonColor.NEGATIVE)
         keyboard_members_settings.row()
         keyboard_members_settings.add(Text("⏪Назад",
                                            payload=KeyBoards.get_payload("Назад")))
