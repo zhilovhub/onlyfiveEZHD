@@ -16,7 +16,7 @@ class UserDataCommands(DataBase):
     def get_user_first_and_last_name(self, user_id: int) -> tuple:
         """Returns user's first and last name"""
         with self.connection.cursor() as cursor:
-            cursor.execute(UserDataQueries.get_user_first_and_last_name_query.format(user_id))
+            cursor.execute(UserDataQueries.get_user_first_and_last_name_query, (user_id,))
             first_name, last_name = cursor.fetchone()
 
             return first_name, last_name
@@ -24,15 +24,15 @@ class UserDataCommands(DataBase):
     def insert_new_user(self, user_id: int, screen_name: str, first_name: str, last_name: str, is_ready: bool) -> None:
         with self.connection.cursor() as cursor:
             try:
-                cursor.execute(UserDataQueries.insert_new_user_query.format(user_id, screen_name, first_name,
-                                                                            last_name, is_ready))
+                cursor.execute(UserDataQueries.insert_new_user_query, (user_id, screen_name, first_name,
+                                                                       last_name, is_ready))
             except Error as e:
                 print(e, 123)
 
     def set_user_is_ready(self, user_id: int) -> None:
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(UserDataQueries.set_user_is_ready_query.format(user_id))
+                cursor.execute(UserDataQueries.set_user_is_ready_query, (user_id,))
 
         except Error as e:
             print(e)
@@ -40,7 +40,7 @@ class UserDataCommands(DataBase):
     def check_user_is_ready(self, user_id: int) -> bool:
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(UserDataQueries.check_user_is_ready_query.format(user_id))
+                cursor.execute(UserDataQueries.check_user_is_ready_query, (user_id,))
                 user = cursor.fetchone()
                 return True if user else False
 
@@ -50,7 +50,7 @@ class UserDataCommands(DataBase):
     def get_user_dialog_state(self, user_id: int) -> int:
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(UserDataQueries.get_user_dialog_state_query.format(user_id))
+                cursor.execute(UserDataQueries.get_user_dialog_state_query, (user_id,))
                 state = cursor.fetchone()[0]
 
                 return state
@@ -61,7 +61,7 @@ class UserDataCommands(DataBase):
     def set_user_dialog_state(self, user_id: int, state: int) -> None:
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(UserDataQueries.set_user_dialog_state_query.format(state, user_id))
+                cursor.execute(UserDataQueries.set_user_dialog_state_query, (state, user_id))
 
         except Error as e:
             print(e)
@@ -77,29 +77,27 @@ class UserDataQueries:
         state INT
     )"""
 
-    insert_new_user_query = """INSERT INTO Users VALUES({}, '{}', '{}', '{}', {}, 0)"""
+    get_user_first_and_last_name_query = """SELECT first_name, last_name FROM Users WHERE user_id=%s"""
+    get_user_dialog_state_query = """SELECT state FROM Users WHERE user_id=%s"""
+    check_user_is_ready_query = """SELECT * FROM Users WHERE user_id=%s AND is_ready=TRUE"""
 
-    set_user_is_ready_query = """UPDATE Users SET is_ready=TRUE WHERE user_id={}"""
+    insert_new_user_query = """INSERT INTO Users VALUES(%s, %s, %s, %s, %s, 0)"""
 
-    check_user_is_ready_query = """SELECT * FROM Users WHERE user_id={} AND is_ready=TRUE"""
-
-    get_user_dialog_state_query = """SELECT state FROM Users WHERE user_id={}"""
-
-    get_user_first_and_last_name_query = """SELECT first_name, last_name FROM Users WHERE user_id={}"""
-
-    set_user_dialog_state_query = """UPDATE Users SET state={} WHERE user_id={}"""
+    set_user_is_ready_query = """UPDATE Users SET is_ready=True WHERE user_id=%s"""
+    set_user_dialog_state_query = """UPDATE Users SET state=%s WHERE user_id=%s"""
 
 
 if __name__ == '__main__':
-    connection = connect(
-        host=HOST,
-        user=USER,
-        password=PASSWORD,
-        database=DATABASE_NAME
-    )
-
-    db = UserDataCommands(connection)
-    flag = input("Тестовый режим: ")
+    pass
+    # connection = connect(
+    #     host=HOST,
+    #     user=USER,
+    #     password=PASSWORD,
+    #     database=DATABASE_NAME
+    # )
+    #
+    # db = UserDataCommands(connection)
+    # flag = input("Тестовый режим: ")
 
     # if flag == "new users":
     #     for i in range(1, 55):

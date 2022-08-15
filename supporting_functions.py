@@ -370,8 +370,8 @@ class SupportingFunctions:
     async def trans_to_main_menu(self, user_id: int) -> None:
         """Change user's state into S_NOTHING"""
         trans_message = "Возвращение в главное меню"
-        self.classroom_db.update_user_customize_classroom_id(user_id, "null")
-        self.role_db.update_user_customize_role_id(user_id, "null")
+        self.classroom_db.update_user_customize_classroom_id(user_id, None)
+        self.role_db.update_user_customize_role_id(user_id, None)
         self.event_db.update_customizing_event_id(user_id, None)
         await self.state_transition(user_id, States.S_NOTHING, trans_message)
 
