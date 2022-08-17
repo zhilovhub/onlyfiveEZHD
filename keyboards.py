@@ -29,12 +29,13 @@ class KeyBoards:
     KEYBOARD_MENU = Keyboard()
     KEYBOARD_MENU.add(Text("Найти класс", payload=get_payload("Найти класс")))
     KEYBOARD_MENU.add(Text("Создать класс", payload=get_payload("Создать класс")))
+    KEYBOARD_MENU.row()
     KEYBOARD_MENU.add(Text("Мои классы", payload=get_payload("Мои классы")))
     # KEYBOARD_MENU.row()
     # KEYBOARD_MENU.add(Text("Создать беседу класса", payload=get_payload("Создать беседу класса")))
     # KEYBOARD_MENU.add(Text("Настройка беседы класса", payload=get_payload("Настройка беседы класса")))
-    KEYBOARD_MENU.row()
-    KEYBOARD_MENU.add(Text("Обращение в тех. поддержку", payload=get_payload("Обращение в тех. поддержку")))
+    # KEYBOARD_MENU.row()
+    # KEYBOARD_MENU.add(Text("Обращение в тех. поддержку", payload=get_payload("Обращение в тех. поддержку")))
 
     # CANCEL_SEND KEYBOARD
     KEYBOARD_CANCEL_SEND = Keyboard()
