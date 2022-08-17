@@ -67,7 +67,7 @@ class MyClassesHandlers(SupportingFunctions):
             formatted_week_lessons_homework = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id,
                                                                                                     week_type,
                                                                                                     homework=True)
-            diary_homework_text = self.get_week_diary_text(formatted_week_lessons_diary,
+            diary_homework_text = self.get_week_diary_text(formatted_week_lessons_diary, "current",
                                                            formatted_week_lessons_homework)
 
             keyboard = Keyboard(inline=True)
@@ -106,7 +106,7 @@ class MyClassesHandlers(SupportingFunctions):
             can = payload_meanings_dict[payload["text"]][3]
 
             formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, week_type)
-            diary_text = self.get_week_diary_text(formatted_week_lessons)
+            diary_text = self.get_week_diary_text(formatted_week_lessons, week_type)
 
             keyboard = Keyboard(inline=True)
             keyboard.add(Callback("Изменить" if can else "Изменить❌",
@@ -348,7 +348,7 @@ class MyClassesHandlers(SupportingFunctions):
 
             new_formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, week_type)
 
-            week_diary_text = self.get_week_diary_text(new_formatted_week_lessons)
+            week_diary_text = self.get_week_diary_text(new_formatted_week_lessons, week_type)
             await self.state_transition(user_id, States.S_EDIT_WEEK_MYCLASSES, week_diary_text, week_type=week_type)
 
         elif payload["text"] == "Главное меню":
@@ -443,7 +443,7 @@ class MyClassesHandlers(SupportingFunctions):
             self.diary_homework_db.update_delete_weekday_from_temp_table(user_id)
 
             formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, week_type)
-            diary_text = self.get_week_diary_text(formatted_week_lessons)
+            diary_text = self.get_week_diary_text(formatted_week_lessons, week_type)
             weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
 
             await self.notify_change_diary(classroom_id, weekday_diary_text, homework=False, without_user_ids=[user_id])
@@ -459,7 +459,7 @@ class MyClassesHandlers(SupportingFunctions):
 
             classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
             formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, week_type)
-            diary_text = self.get_week_diary_text(formatted_week_lessons)
+            diary_text = self.get_week_diary_text(formatted_week_lessons, week_type)
 
             self.diary_homework_db.update_delete_all_lessons_from_temp_table(user_id)
             self.diary_homework_db.update_delete_weekday_from_temp_table(user_id)
@@ -698,7 +698,7 @@ class MyClassesHandlers(SupportingFunctions):
                                                                                                     homework=True)
             weekday_diary_homework_text = self.get_weekday_diary_text(formatted_day_lessons_diary, weekday,
                                                                       formatted_day_lessons_homework)
-            diary_homework_text = self.get_week_diary_text(formatted_week_lessons_diary,
+            diary_homework_text = self.get_week_diary_text(formatted_week_lessons_diary, week_type,
                                                            formatted_week_lessons_homework)
 
             await self.notify_change_diary(classroom_id, weekday_diary_homework_text, homework=True,
@@ -715,7 +715,7 @@ class MyClassesHandlers(SupportingFunctions):
             formatted_week_lessons_homework = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id,
                                                                                                     week_type,
                                                                                                     homework=True)
-            diary_homework_text = self.get_week_diary_text(formatted_week_lessons_diary,
+            diary_homework_text = self.get_week_diary_text(formatted_week_lessons_diary, week_type,
                                                            formatted_week_lessons_homework)
 
             self.diary_homework_db.update_delete_all_lessons_from_temp_table(user_id)
@@ -729,11 +729,30 @@ class MyClassesHandlers(SupportingFunctions):
             await self.trans_to_main_menu(user_id)
 
     @staticmethod
-    def get_week_diary_text(formatted_week_lessons_diary: list, formatted_week_lessons_homework=None) -> str:
+    def get_week_diary_text(formatted_week_lessons_diary: list, week_type: str,
+                            formatted_week_lessons_homework=None) -> str:
         """Returns text of week's diary"""
         week_diary = []
 
-        weekdays = ["ПОНЕДЕЛЬНИК", "ВТОРНИК", "СРЕДА", "ЧЕТВЕРГ", "ПЯТНИЦА", "СУББОТА", "ВОСКРЕСЕНЬЕ"]
+        if week_type == "current":
+            weekdays = ["ПОНЕДЕЛЬНИК", "ВТОРНИК", "СРЕДА", "ЧЕТВЕРГ", "ПЯТНИЦА", "СУББОТА", "ВОСКРЕСЕНЬЕ"]
+            datetime_now = datetime.now()
+            weekday_number_now = datetime_now.weekday()
+            for day_count in range(7):
+                str_date = datetime_now.replace(day=datetime_now.day -
+                                                    weekday_number_now + day_count).strftime("%d %a")
+                weekdays[day_count] = f"{weekdays[day_count]}, {str_date}"
+        elif week_type == "next":
+            weekdays = ["ПОНЕДЕЛЬНИК", "ВТОРНИК", "СРЕДА", "ЧЕТВЕРГ", "ПЯТНИЦА", "СУББОТА", "ВОСКРЕСЕНЬЕ"]
+            datetime_now = datetime.now()
+            datetime_next_week_now = datetime_now.replace(day=datetime_now.day + 7)
+            weekday_number_now = datetime_next_week_now.weekday()
+            for day_count in range(7):
+                str_date = datetime_next_week_now.replace(day=datetime_next_week_now.day -
+                                                              weekday_number_now + day_count).strftime("%d %a")
+                weekdays[day_count] = f"{weekdays[day_count]}, {str_date}"
+        else:
+            weekdays = ["ПОНЕДЕЛЬНИК", "ВТОРНИК", "СРЕДА", "ЧЕТВЕРГ", "ПЯТНИЦА", "СУББОТА", "ВОСКРЕСЕНЬЕ"]
 
         if formatted_week_lessons_homework is None:
             for weekday_name, weekday_diary_tuple in zip(weekdays, formatted_week_lessons_diary):
