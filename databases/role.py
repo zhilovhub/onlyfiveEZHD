@@ -166,8 +166,7 @@ class RoleCommands(DataBase):
                 default_role_id = cursor.fetchone()[0]
                 cursor.execute(RoleQueries.get_all_role_properties_query, (default_role_id,))
                 default_role_properties = cursor.fetchone()[3:-2]
-                cursor.execute(RoleQueries.insert_new_role_query, (classroom_id, role_name,
-                                                                   *default_role_properties, False, False))
+                cursor.execute(RoleQueries.insert_new_role_query, (classroom_id, role_name, *default_role_properties))
 
             return cursor.fetchone()[0]
 
@@ -304,16 +303,18 @@ class RoleQueries:
     delete_role_query = """DELETE FROM Role WHERE role_id=%s"""
 
     # extra queries
-    show_columns_query = """SHOW columns FROM Role"""
+    show_columns_query = """SELECT Column_name FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='role'"""
 
 
 if __name__ == '__main__':
-    connection = connect(
-        host=HOST,
-        user=USER,
-        password=PASSWORD,
-        database=DATABASE_NAME
-    )
-
-    roles_db = RoleCommands(connection)
-    print(roles_db.get_role_properties_dict(28))
+    pass
+    # connection = connect(
+    #     host=HOST,
+    #     user=USER,
+    #     password=PASSWORD,
+    #     database=DATABASE_NAME
+    # )
+    #
+    # roles_db = RoleCommands(connection)
+    # print(roles_db.get_role_properties_dict(28))
