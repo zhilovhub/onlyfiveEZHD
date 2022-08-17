@@ -335,7 +335,7 @@ class MyClassesHandlers(SupportingFunctions):
             self.diary_homework_db.update_all_lessons_in_temp_weekday_table(user_id, english_weekday,
                                                                             formatted_day_lessons)
 
-            weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, english_weekday)
+            weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, english_weekday, week_type)
             await self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, weekday_diary_text)
 
         elif payload["text"] == "Скопировать с эталонного":
@@ -370,7 +370,8 @@ class MyClassesHandlers(SupportingFunctions):
         elif payload["text"] == "Добавить":
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
             weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
-            weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
+            week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
+            weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday, week_type)
 
             if all(formatted_day_lessons):
                 trans_message = f"Максимальное число (12) уроков уже записано!\n\n{weekday_diary_text}"
@@ -385,7 +386,8 @@ class MyClassesHandlers(SupportingFunctions):
         elif payload["text"] == "Изменить":
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
             weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
-            weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
+            week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
+            weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday, week_type)
 
             if not any(formatted_day_lessons):
                 trans_message = f"Расписание пустое, нечего редактировать\n\n{weekday_diary_text}"
@@ -398,9 +400,10 @@ class MyClassesHandlers(SupportingFunctions):
         elif payload["text"] == "Удалить урок":
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
             weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
+            week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
 
             if not any(formatted_day_lessons):
-                weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
+                weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday, week_type)
 
                 trans_message = f"Расписание на этот день и так пустое\n\n{weekday_diary_text}"
             else:
@@ -409,7 +412,7 @@ class MyClassesHandlers(SupportingFunctions):
                 self.diary_homework_db.update_delete_lesson_from_temp_table(user_id, last_lesson_index)
 
                 new_formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
-                weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday)
+                weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday, week_type)
 
                 trans_message = f"Удалён {last_lesson_index}. {deleted_lesson}\n\n{weekday_diary_text}"
 
@@ -418,16 +421,17 @@ class MyClassesHandlers(SupportingFunctions):
         elif payload["text"] == "Удалить всё":
             formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
             weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
+            week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
 
             if not any(formatted_day_lessons):
-                weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
+                weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday, week_type)
 
                 trans_message = f"Расписание на этот день и так пустое\n\n{weekday_diary_text}"
                 await self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, trans_message)
             else:
                 self.diary_homework_db.update_delete_all_lessons_from_temp_table(user_id)
                 new_formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
-                weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday)
+                weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday, week_type)
 
                 trans_message = f"Все уроки удалены!\n\n{weekday_diary_text}"
                 await self.state_transition(user_id, States.S_EDIT_WEEKDAY_MYCLASSES, trans_message)
@@ -444,7 +448,7 @@ class MyClassesHandlers(SupportingFunctions):
 
             formatted_week_lessons = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id, week_type)
             diary_text = self.get_week_diary_text(formatted_week_lessons, week_type)
-            weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday)
+            weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons, weekday, week_type)
 
             await self.notify_change_diary(classroom_id, weekday_diary_text, homework=False, without_user_ids=[user_id])
             trans_message = f"{diary_text}\n\nВсе изменения сохранены!"
@@ -480,7 +484,8 @@ class MyClassesHandlers(SupportingFunctions):
 
                 new_formatted_day_lessons = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
                 weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
-                new_weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday)
+                week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
+                new_weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday, week_type)
 
                 if new_lesson_index <= 11:
                     trans_message = f"Урок добавлен!\n\n{new_weekday_diary_text}\n\n" \
@@ -517,7 +522,9 @@ class MyClassesHandlers(SupportingFunctions):
                             new_formatted_day_lessons = \
                                 self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
                             weekday = self.diary_homework_db.get_weekday_name_from_temp_table(user_id)
-                            weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday)
+                            week_type = self.diary_homework_db.get_week_type_from_temp_table(user_id)
+                            weekday_diary_text = self.get_weekday_diary_text(new_formatted_day_lessons, weekday,
+                                                                             week_type)
 
                             trans_message = f"Название урока изменено!\n\n{weekday_diary_text}\n\n{ask_message}"
                             await self.state_transition(user_id, States.S_EDIT_LESSON_WEEKDAY_MYCLASSES, trans_message)
@@ -573,6 +580,7 @@ class MyClassesHandlers(SupportingFunctions):
                 self.diary_homework_db.update_all_lessons_in_temp_weekday_table(user_id, english_weekday,
                                                                                 formatted_day_lessons_homework)
                 weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons_diary, english_weekday,
+                                                                 week_type,
                                                                  formatted_day_lessons_homework)
 
                 help_text = "\n\nВпиши новое домашнее задание в формате: номер_урока. дз\n(Например,\n2. " \
@@ -616,7 +624,7 @@ class MyClassesHandlers(SupportingFunctions):
                     self.diary_homework_db.update_lesson_in_temp_table(user_id, "", lesson_index)
                     formatted_day_lessons_homework = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
 
-                    weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons_diary, weekday,
+                    weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons_diary, weekday, week_type,
                                                                      formatted_day_lessons_homework)
                     await self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES,
                                                 f"Дз с {lesson_index}-го "
@@ -640,6 +648,7 @@ class MyClassesHandlers(SupportingFunctions):
                             new_formatted_day_homework = \
                                 self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
                             weekday_diary_text = self.get_weekday_diary_text(formatted_day_lessons_diary, weekday,
+                                                                             week_type,
                                                                              new_formatted_day_homework)
 
                             trans_message = f"Дз обновлено!\n\n{weekday_diary_text}\n\n{ask_message}"
@@ -671,7 +680,7 @@ class MyClassesHandlers(SupportingFunctions):
                                                                                                weekday)
             formatted_day_lessons_homework = self.diary_homework_db.get_weekday_lessons_from_temp_table(user_id)
 
-            dairy_homework_text = self.get_weekday_diary_text(formatted_day_lessons_diary, weekday,
+            dairy_homework_text = self.get_weekday_diary_text(formatted_day_lessons_diary, weekday, week_type,
                                                               formatted_day_lessons_homework)
             await self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES,
                                         f"Всё дз с этого дня удалено!\n\n"
@@ -696,7 +705,7 @@ class MyClassesHandlers(SupportingFunctions):
             formatted_week_lessons_homework = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id,
                                                                                                     week_type,
                                                                                                     homework=True)
-            weekday_diary_homework_text = self.get_weekday_diary_text(formatted_day_lessons_diary, weekday,
+            weekday_diary_homework_text = self.get_weekday_diary_text(formatted_day_lessons_diary, weekday, week_type,
                                                                       formatted_day_lessons_homework)
             diary_homework_text = self.get_week_diary_text(formatted_week_lessons_diary, week_type,
                                                            formatted_week_lessons_homework)
@@ -798,18 +807,43 @@ class MyClassesHandlers(SupportingFunctions):
         return "\n\n".join(week_diary)
 
     @staticmethod
-    def get_weekday_diary_text(formatted_days_diary: tuple, weekday: str, formatted_days_homework=None) -> str:
+    def get_weekday_diary_text(formatted_days_diary: tuple, weekday: str, week_type: str,
+                               formatted_days_homework=None) -> str:
         """Returns text of weekday's diary"""
         weekday_meanings_dict = {
-            "monday": "Понедельник",
-            "tuesday": "Вторник",
-            "wednesday": "Среда",
-            "thursday": "Четверг",
-            "friday": "Пятница",
-            "saturday": "Суббота",
-            "sunday": "Воскресение"
+            "monday": ("Понедельник", 0),
+            "tuesday": ("Вторник", 1),
+            "wednesday": ("Среда", 2),
+            "thursday": ("Четверг", 3),
+            "friday": ("Пятница", 4),
+            "saturday": ("Суббота", 5),
+            "sunday": ("Воскресение", 6),
         }
-        weekday_russian = weekday_meanings_dict[weekday]
+        weekday_russian = weekday_meanings_dict[weekday][0]
+        weekday_index = weekday_meanings_dict[weekday][1]
+
+        if week_type in ("current", "next"):
+            month_dict = {
+                1: "Янв",
+                2: "Фев",
+                3: "Мар",
+                4: "Апр",
+                5: "Май",
+                6: "Июн",
+                7: "Июл",
+                8: "Авг",
+                9: "Сен",
+                10: "Окт",
+                11: "Ноя",
+                12: "Дек",
+            }
+
+            datetime_now = datetime.now()
+            if week_type == "next":
+                datetime_now = datetime_now.replace(day=datetime_now.day + 7)
+            weekday_number_now = datetime_now.weekday()
+            weekday_date = datetime_now.replace(day=datetime_now.day - weekday_number_now + weekday_index)
+            weekday_russian = f"{weekday_russian}, {weekday_date.day} {month_dict[weekday_date.month]}"
 
         if None in formatted_days_diary:
             weekday_without_empty = formatted_days_diary[:formatted_days_diary.index(None)]
