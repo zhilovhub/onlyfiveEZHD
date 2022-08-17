@@ -67,7 +67,7 @@ class MyClassesHandlers(SupportingFunctions):
             formatted_week_lessons_homework = self.diary_homework_db.get_all_days_lessons_from_week(classroom_id,
                                                                                                     week_type,
                                                                                                     homework=True)
-            diary_homework_text = self.get_week_diary_text(formatted_week_lessons_diary, "current",
+            diary_homework_text = self.get_week_diary_text(formatted_week_lessons_diary, week_type,
                                                            formatted_week_lessons_homework)
 
             keyboard = Keyboard(inline=True)
@@ -734,25 +734,33 @@ class MyClassesHandlers(SupportingFunctions):
         """Returns text of week's diary"""
         week_diary = []
 
-        if week_type == "current":
-            weekdays = ["ПОНЕДЕЛЬНИК", "ВТОРНИК", "СРЕДА", "ЧЕТВЕРГ", "ПЯТНИЦА", "СУББОТА", "ВОСКРЕСЕНЬЕ"]
+        weekdays = ["ПОНЕДЕЛЬНИК", "ВТОРНИК", "СРЕДА", "ЧЕТВЕРГ", "ПЯТНИЦА", "СУББОТА", "ВОСКРЕСЕНЬЕ"]
+        if week_type in ("current", "next"):
+            month_dict = {
+                1: "Янв",
+                2: "Фев",
+                3: "Мар",
+                4: "Апр",
+                5: "Май",
+                6: "Июн",
+                7: "Июл",
+                8: "Авг",
+                9: "Сен",
+                10: "Окт",
+                11: "Ноя",
+                12: "Дек",
+            }
+
             datetime_now = datetime.now()
+
+            if week_type == "next":
+                datetime_now = datetime_now.replace(day=datetime_now.day + 7)
             weekday_number_now = datetime_now.weekday()
+
             for day_count in range(7):
-                str_date = datetime_now.replace(day=datetime_now.day -
-                                                    weekday_number_now + day_count).strftime("%d %a")
+                replaced_datetime = datetime_now.replace(day=datetime_now.day - weekday_number_now + day_count)
+                str_date = f"{replaced_datetime.day} {month_dict[replaced_datetime.month]}"
                 weekdays[day_count] = f"{weekdays[day_count]}, {str_date}"
-        elif week_type == "next":
-            weekdays = ["ПОНЕДЕЛЬНИК", "ВТОРНИК", "СРЕДА", "ЧЕТВЕРГ", "ПЯТНИЦА", "СУББОТА", "ВОСКРЕСЕНЬЕ"]
-            datetime_now = datetime.now()
-            datetime_next_week_now = datetime_now.replace(day=datetime_now.day + 7)
-            weekday_number_now = datetime_next_week_now.weekday()
-            for day_count in range(7):
-                str_date = datetime_next_week_now.replace(day=datetime_next_week_now.day -
-                                                              weekday_number_now + day_count).strftime("%d %a")
-                weekdays[day_count] = f"{weekdays[day_count]}, {str_date}"
-        else:
-            weekdays = ["ПОНЕДЕЛЬНИК", "ВТОРНИК", "СРЕДА", "ЧЕТВЕРГ", "ПЯТНИЦА", "СУББОТА", "ВОСКРЕСЕНЬЕ"]
 
         if formatted_week_lessons_homework is None:
             for weekday_name, weekday_diary_tuple in zip(weekdays, formatted_week_lessons_diary):
