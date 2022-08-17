@@ -45,12 +45,13 @@ class ClassroomSettingsHandlers(SupportingFunctions):
             await self.state_transition(user_id, States.S_NOTIFICATION_SETTINGS_CLASSROOM_SETTINGS,
                                         "Для навигации используй кнопки!👇🏻", *notification_dict.values())
 
-        elif payload["text"] in ["Кто-то вступил", "Кто-то ушел", "Новая заявка", "События"]:
+        elif payload["text"] in ["Кто-то вступил", "Кто-то ушел", "Новая заявка", "События", "Расписание"]:
             payload_text_meaning_dict = {
                 "Кто-то вступил": "new_classmate",
                 "Кто-то ушел": "leave_classmate",
                 "Новая заявка": "requests",
-                "События": "events"
+                "События": "events",
+                "Расписание": "diary"
             }
             notification_type = payload_text_meaning_dict[payload["text"]]
 

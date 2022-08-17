@@ -24,22 +24,28 @@ class SupportingFunctions:
 
     async def send_message(self, user_id=None, message=None, keyboard=None, template=None, user_ids=None) -> None:
         """Send message to user"""
-        await self.bot.api.messages.send(
-            user_ids=[user_id] if not user_ids else ",".join(map(str, user_ids)),
-            message=message,
-            keyboard=keyboard if user_id else None,
-            template=template,
-            random_id=randint(0, 2147483648)
-        )
+        try:
+            await self.bot.api.messages.send(
+                user_ids=[user_id] if not user_ids else ",".join(map(str, user_ids)),
+                message=message,
+                keyboard=keyboard if user_id else None,
+                template=template,
+                random_id=randint(0, 2147483648)
+            )
+        except Exception as e:
+            print(e, type(e))
 
     async def send_message_event_answer(self, event_id: str, user_id: int, peer_id: int, event_data: str) -> None:
         """Send message to user after callback-button using"""
-        await self.bot.api.messages.send_message_event_answer(
-            event_id=event_id,
-            user_id=user_id,
-            peer_id=peer_id,
-            event_data=event_data
-        )
+        try:
+            await self.bot.api.messages.send_message_event_answer(
+                event_id=event_id,
+                user_id=user_id,
+                peer_id=peer_id,
+                event_data=event_data
+            )
+        except Exception as e:
+            print(e, type(e))
 
     async def state_transition(self, user_id: int, next_state, message: str, *args, **kwargs) -> None:
         """Changes states"""
@@ -487,6 +493,22 @@ class SupportingFunctions:
             await self.send_message(user_ids=notified_users,
                                     message=f"[id{user_id}|{first_name} {last_name}] хочет вступить "
                                             f"в {classroom_name}!")
+
+    async def notify_change_diary(self, classroom_id: int, diary_text: str, homework: bool, without_user_ids=None
+                                  ) -> None:
+        """Notifies about changes in diary"""
+        notified_users = self.notification_db.get_users_with_notification_type(classroom_id, "diary")
+        if without_user_ids:
+            for without_user_id in without_user_ids:
+                if without_user_id in notified_users:
+                    notified_users.remove(without_user_id)
+
+        if notified_users:
+            if homework:
+                message = f"Изменения в дз!🍀🍀\n\n{diary_text}"
+            else:
+                message = f"Изменения в расписании!🍀🍀\n\n{diary_text}"
+            await self.send_message(user_ids=notified_users, message=message)
 
     async def notify_leave_classmate(self, user_id: int, classroom_id: int, kicked: bool,
                                      without_user_ids=None) -> None:

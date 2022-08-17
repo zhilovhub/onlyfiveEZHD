@@ -28,7 +28,8 @@ class NotificationCommands(DataBase):
                 "new_classmate",
                 "leave_classmate",
                 "requests",
-                "events"
+                "events",
+                "diary"
             ]
 
             cursor.execute(NotificationQueries.get_notification_values_query, (user_id, classroom_id))
@@ -141,7 +142,8 @@ class NotificationQueries:
         new_classmate BOOLEAN DEFAULT True,
         leave_classmate BOOLEAN DEFAULT True,
         requests BOOLEAN DEFAULT True,
-        events BOOLEAN DEFAULT True
+        events BOOLEAN DEFAULT True,
+        diary BOOLEAN DEFAULT True
     )"""
 
     create_table_notification_diary_query = """CREATE TABLE IF NOT EXISTS notification_diary(
