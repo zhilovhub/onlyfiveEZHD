@@ -8,7 +8,7 @@ from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback
 from vkbottle import GroupEventType, GroupTypes
 from random import randint, choice, choices
 from string import ascii_letters, digits
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from re import search, fullmatch
 from json import loads, dumps
 # import for states file

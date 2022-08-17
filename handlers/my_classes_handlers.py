@@ -763,11 +763,11 @@ class MyClassesHandlers(SupportingFunctions):
             datetime_now = datetime.now()
 
             if week_type == "next":
-                datetime_now = datetime_now.replace(day=datetime_now.day + 7)
+                datetime_now = datetime_now + timedelta(days=7)
             weekday_number_now = datetime_now.weekday()
 
             for day_count in range(7):
-                replaced_datetime = datetime_now.replace(day=datetime_now.day - weekday_number_now + day_count)
+                replaced_datetime = datetime_now + timedelta(days=-weekday_number_now + day_count)
                 str_date = f"{replaced_datetime.day} {month_dict[replaced_datetime.month]}"
                 weekdays[day_count] = f"{weekdays[day_count]}, {str_date}"
 
@@ -840,9 +840,9 @@ class MyClassesHandlers(SupportingFunctions):
 
             datetime_now = datetime.now()
             if week_type == "next":
-                datetime_now = datetime_now.replace(day=datetime_now.day + 7)
+                datetime_now = datetime_now + timedelta(days=7)
             weekday_number_now = datetime_now.weekday()
-            weekday_date = datetime_now.replace(day=datetime_now.day - weekday_number_now + weekday_index)
+            weekday_date = datetime_now + timedelta(days=-weekday_number_now + weekday_index)
             weekday_russian = f"{weekday_russian}, {weekday_date.day} {month_dict[weekday_date.month]}"
 
         if None in formatted_days_diary:
