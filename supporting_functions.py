@@ -552,7 +552,8 @@ class SupportingFunctions:
 
         current_dialog_state = self.user_db.get_user_dialog_state(user_id)
         customizing_classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
-        if current_dialog_state in (States.S_REQUEST_CLASSROOM.value, States.S_EDIT_REQUEST_CLASSROOM.value) and \
+        if current_dialog_state in (States.S_REQUEST_CLASSROOM.value, States.S_EDIT_REQUEST_CLASSROOM.value,
+                                    States.S_LOOK_CLASSROOM) and \
                 classroom_id == customizing_classroom_id:
             await self.state_transition(user_id, States.S_IN_CLASS_MYCLASSES, trans_message,
                                         sign=self.get_sign(user_id))
