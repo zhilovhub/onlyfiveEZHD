@@ -170,10 +170,10 @@ class RoleCommands(DataBase):
 
             return cursor.fetchone()[0]
 
-    def update_student_role(self, user_id: int, new_role_id: int) -> None:
+    def update_student_role(self, student_id: int, new_role_id: int) -> None:
         """Updates student's role with new role_id"""
         with self.connection.cursor() as cursor:
-            cursor.execute(RoleQueries.update_student_role_query, (new_role_id, user_id))
+            cursor.execute(RoleQueries.update_student_role_query, (new_role_id, student_id))
 
     def update_all_roles(self, old_role_id: int, new_role_id: int) -> None:
         """Updates students' role with new role_id"""
@@ -293,7 +293,7 @@ class RoleQueries:
         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
     ) RETURNING role_id"""
 
-    update_student_role_query = """UPDATE Student SET role_id=%s WHERE user_id=%s"""
+    update_student_role_query = """UPDATE Student SET role_id=%s WHERE student_id=%s"""
     update_all_roles_query = """UPDATE Student SET role_id=%s WHERE role_id=%s"""
     update_user_customize_role_id_query = """UPDATE UserCustomize SET role_id=%s WHERE user_id=%s"""
 

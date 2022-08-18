@@ -339,11 +339,13 @@ class MembersSettingsHandlers(SupportingFunctions):
                                 admin_role_id = self.role_db.get_admin_role_id(classroom_id)
 
                                 if member_id != user_id and role_id != new_role_id:
-                                    self.role_db.update_student_role(member_id, new_role_id)
+                                    member_student_id = self.classroom_db.get_student_id(member_id, classroom_id)
+                                    self.role_db.update_student_role(member_student_id, new_role_id)
 
                                     if admin_role_id == new_role_id:
                                         default_role_id = self.role_db.get_default_role_id(classroom_id)
-                                        self.role_db.update_student_role(user_id, default_role_id)
+                                        student_id = self.classroom_db.get_student_id(user_id, classroom_id)
+                                        self.role_db.update_student_role(student_id, default_role_id)
 
                                     new_roles_dictionary = self.classroom_db.get_dict_of_classroom_roles(classroom_id)
                                     new_members_text = self.get_members_text(new_roles_dictionary)
