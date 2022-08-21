@@ -132,7 +132,9 @@ class MyClassesHandlers(SupportingFunctions):
                 russian_comments = payload_meanings_dict[payload["text"]][1]
                 next_state = payload_meanings_dict[payload["text"]][2]
 
-                self.diary_homework_db.insert_row_into_temp_weekday_table(user_id, week_type)
+                classroom_id = self.classroom_db.get_customizing_classroom_id(user_id)
+                student_id = self.classroom_db.get_student_id(user_id, classroom_id)
+                self.diary_homework_db.insert_row_into_temp_weekday_table(student_id, user_id, week_type)
 
                 trans_message = f"Редактирование {russian_comments}\n\nИзменения увидят ВСЕ участники класса!"
                 await self.state_transition(user_id, next_state, trans_message, week_type=week_type)
