@@ -504,10 +504,11 @@ class SupportingFunctions:
                     notified_users.remove(without_user_id)
 
         if notified_users:
+            classroom_name = self.classroom_db.get_classroom_name(classroom_id)
             if homework:
-                message = f"Изменения в дз!🍀🍀\n\n{diary_text}"
+                message = f"Изменения в дз {classroom_name}!🍀🍀\n\n{diary_text}"
             else:
-                message = f"Изменения в расписании!🍀🍀\n\n{diary_text}"
+                message = f"Изменения в расписании {classroom_name}!🍀🍀\n\n{diary_text}"
             await self.send_message(user_ids=notified_users, message=message)
 
     async def notify_leave_classmate(self, user_id: int, classroom_id: int, kicked: bool,
