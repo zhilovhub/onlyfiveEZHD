@@ -1,5 +1,9 @@
 from handlers import *
 
+# only_five_cdz imports for heroku
+from only_five_cdz import bot as bot_cdz
+from only_five_cdz import handlers_class as handlers_class_cdz
+
 # Creating database if not exists
 # with connect(
 #         host=HOST,
@@ -351,7 +355,11 @@ async def create_tasks() -> None:
     """Creates tasks for asyncio-loop"""
     tasks = [
         bot.run_polling(),
-        aioscheduler_tasks()
+        aioscheduler_tasks(),
+
+        # for heroku
+        handlers_class_cdz.set_auth_data(),
+        bot_cdz.run_polling(),
     ]
     await asyncio.gather(*tasks)
 

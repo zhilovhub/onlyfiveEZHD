@@ -1,0 +1,17 @@
+import asyncio
+import aiohttp
+from vkbottle.bot import Bot, Message
+
+from random import randint
+from json import dumps
+
+import os
+
+if os.path.exists("only_five_cdz/set_environ_vars.py"):
+    import only_five_cdz.set_environ_vars
+
+ADMIN_ID = os.environ["ADMIN_ID"]
+GROUP_ID = os.environ["GROUP_ID"]
+
+MAIN_TOKEN = os.environ["MAIN_TOKEN"]
+ACCESS_TOKEN = os.environ["ACCESS_TOKEN"]
