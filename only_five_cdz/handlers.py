@@ -17,9 +17,11 @@ class Handlers:
             "Accept": "application/json; charset=UTF-8"
         }
 
+        print(1)
         async with aiohttp.ClientSession(headers=headers) as session:
             async with session.post(url, data=dumps(data)) as response:
                 self.auth_data = await response.json()
+        print(2)
 
     async def is_member(self, user_id: int) -> int:
         """Check if user is member"""
