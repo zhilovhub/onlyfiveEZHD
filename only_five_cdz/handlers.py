@@ -10,20 +10,33 @@ class Handlers:
 
     async def set_auth_data(self) -> None:
         """Sets auth data"""
-        url = 'https://uchebnik.mos.ru/api/sessions/demo'
-        data = {"login": "", "password_hash2": ""}
-        headers = {
-            "Content-type": "application/json",
-            "Accept": "application/json; charset=UTF-8"
+        # url = 'https://uchebnik.mos.ru/api/sessions/demo'
+        # data = {"login": "", "password_hash2": ""}
+        # headers = {
+        #     "Content-type": "application/json",
+        #     "Accept": "application/json; charset=UTF-8"
+        # }
+        #
+        # async with aiohttp.ClientSession(headers=headers) as session:
+        #     async with session.post(url, data=dumps(data)) as response:
+        #         self.auth_data = await response.json()
+        self.auth_data = {
+            'id': 1000000000,
+            'profiles': [{
+                'id': 1000000000,
+                'type': 'demo',
+                'roles': [],
+                'user_id': 1000000000,
+                'agree_pers_data': False,
+                'agreement_accepted': False,
+                'subject_ids': []
+            }],
+            'phone_number': '',
+            'authentication_token': AUTH_TOKEN,
+            'password_change_required': False,
+            'activity': []
         }
 
-        print(1)
-        async with aiohttp.ClientSession(headers=headers) as session:
-            print(2)
-            async with session.post(url, data=dumps(data)) as response:
-                print(3)
-                self.auth_data = await response.json()
-                print(4)
 
     async def is_member(self, user_id: int) -> int:
         """Check if user is member"""

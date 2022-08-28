@@ -14,3 +14,5 @@ ADMIN_ID = os.environ["ADMIN_ID"]
 GROUP_ID_CDZ = os.environ["GROUP_ID_CDZ"]
 
 MAIN_TOKEN = os.environ["MAIN_TOKEN"]
+
+AUTH_TOKEN = os.environ["AUTH_TOKEN"]
