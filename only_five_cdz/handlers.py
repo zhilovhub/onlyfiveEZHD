@@ -106,7 +106,7 @@ class Handlers:
 
         headers = {"Content-type": "application/json"}
 
-        async with aiohttp.ClientSession(headers=headers, cookies=request_cookies) as session:
+        async with aiohttp.ClientSession(headers=headers, cookies=request_cookies, trust_env=True) as session:
             async with session.post(parse_url, data=dumps(request_data)) as response:
                 parsed_answers = await response.json()
 
