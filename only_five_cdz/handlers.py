@@ -5,8 +5,8 @@ from only_five_cdz.config import *
 class Handlers:
     def __init__(self, bot: Bot) -> None:
         """Initialization"""
+        self.auth_data = None
         self.bot = bot
-        self.auth_data: dict
 
     async def set_auth_data(self) -> None:
         """Sets auth data"""
@@ -26,7 +26,7 @@ class Handlers:
     async def is_member(self, user_id: int) -> int:
         """Check if user is member"""
         try:
-            is_member = await self.bot.api.groups.is_member(group_id=GROUP_ID, user_id=user_id)
+            is_member = await self.bot.api.groups.is_member(group_id=GROUP_ID_CDZ, user_id=user_id)
             return is_member.value
         except Exception as e:
             print(e)

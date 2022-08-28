@@ -11,7 +11,6 @@ if os.path.exists("only_five_cdz/set_environ_vars.py"):
     import only_five_cdz.set_environ_vars
 
 ADMIN_ID = os.environ["ADMIN_ID"]
-GROUP_ID = os.environ["GROUP_ID"]
+GROUP_ID_CDZ = os.environ["GROUP_ID_CDZ"]
 
 MAIN_TOKEN = os.environ["MAIN_TOKEN"]
-ACCESS_TOKEN = os.environ["ACCESS_TOKEN"]
