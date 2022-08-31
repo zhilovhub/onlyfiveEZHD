@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 from vkbottle.bot import Bot, Message
+from vkbottle import Keyboard, OpenLink
 
 from random import randint
 from json import dumps

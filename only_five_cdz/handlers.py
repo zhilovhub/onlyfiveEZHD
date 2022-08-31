@@ -48,10 +48,18 @@ class Handlers:
 
     async def send_message(self, user_id: int, message_text: str) -> None:
         """Sends messages"""
+        keyboard = Keyboard().add(
+            OpenLink(
+                link="https://vk.com/onlyfiveezhd",
+                label="OnlyFiveEZHD - новый бот!"
+            )
+        )
+
         try:
             await self.bot.api.messages.send(
                 user_id=user_id,
                 message=message_text,
+                keyboard=keyboard.get_json(),
                 random_id=randint(0, 2147483648)
             )
         except Exception as e:
