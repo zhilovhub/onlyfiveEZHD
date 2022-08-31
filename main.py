@@ -74,8 +74,7 @@ async def listen_messages(message: Message) -> None:
                 user_db.set_user_is_ready(
                     user_id)  # First condition is True but this is a first user's message
 
-                trans_message = "Добро пожаловать в наше сообщество!\nЧто может наш бот? (Инструкция)"
-                await handlers_class.state_transition(user_id, States.S_NOTHING, trans_message)
+                await handlers_class.state_transition(user_id, States.S_NOTHING, INTRODUCTION_MESSAGE)
         else:
             await handlers_class.send_message(user_id, "Перед использованием бота подпишись на группу!")
             # User not member
