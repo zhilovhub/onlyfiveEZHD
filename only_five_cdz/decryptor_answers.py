@@ -175,6 +175,16 @@ def get_answers_text(response):
             right_answers = ' - '.join(right_answers)
             string = f'{k}. {question}\nОтвет:\n{right_answers}'
 
+        elif task_type == "answer/table":
+            right_answer = answer["right_answer"]
+            right_answers = []
+            options = answer["options"][0]["content"][0]["table"]["cells"]["0"]
+            for column_index, answer_index in right_answer["cells"]["1"].items():
+                column_name = options[column_index]
+                right_answers.append(f"{column_name} - {answer_index}")
+            right_answers = "\n".join(right_answers)
+            string = f'{k}. {question}\nОтвет:\n{right_answers}'
+
         else:
             string = f'{k}. {question}\nОтвет: {task_type}'
         answers.append([string])

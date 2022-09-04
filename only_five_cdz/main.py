@@ -13,15 +13,14 @@ async def listen_message(message: Message) -> None:
     attachments = message.attachments
 
     if await handlers_class.is_member(user_id):
-        await handlers_class.send_message(user_id, "Бот на тех обслуживании сегодня")
-        # if (not attachments or attachments and not attachments[0].link) and not message_text:
-        #     await handlers_class.send_message(user_id, "Ты должен отправить ссылку на мэш-тест")
-        # else:
-        #     if attachments and attachments[0].link:
-        #         url = attachments[0].link.url
-        #     else:
-        #         url = message_text
-        #     await handlers_class.handler(user_id, url)
+        if (not attachments or attachments and not attachments[0].link) and not message_text:
+            await handlers_class.send_message(user_id, "Ты должен отправить ссылку на мэш-тест")
+        else:
+            if attachments and attachments[0].link:
+                url = attachments[0].link.url
+            else:
+                url = message_text
+            await handlers_class.handler(user_id, url)
 
     else:
         await handlers_class.send_message(user_id, "Перед использованием бота подпишись на группу!")

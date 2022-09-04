@@ -68,10 +68,7 @@ class Handlers:
     async def handler(self, user_id: int, url: str) -> None:
         """handling url"""
         try:
-            if "training_spec" in url:
-                await self.send_message(user_id, "Ты должен отправить ссылку на мэш-тест, который "
-                                                 "тебе задали в качестве дз")
-            elif "uchebnik.mos.ru" in url:
+            if "uchebnik.mos.ru" in url:
                 parsed_answers = await self.parse_answers(url)
                 answers_text = get_answers_text(parsed_answers)
                 await self.send_message(user_id, answers_text)
@@ -99,8 +96,8 @@ class Handlers:
                 return separated_url[separated_url.index('test_by_binding') + 1]
             elif 'homework' in separated_url:
                 return separated_url[separated_url.index('homework') + 1].split("?")[0]
-            # elif "training_spec" in separated_url:
-                # return separated_url[separated_url.index("training_spec") + 1]
+            elif "training_spec" in separated_url:
+                return separated_url[separated_url.index("training_spec") + 1]
 
         parse_url = 'https://uchebnik.mos.ru/exam/rest/secure/testplayer/group'
 
