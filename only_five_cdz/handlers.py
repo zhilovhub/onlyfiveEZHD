@@ -108,9 +108,8 @@ class Handlers:
         }
 
         request_cookies = {
-            'aupd_token': self.auth_data['authentication_token'],
             'auth_token': self.auth_data['authentication_token'],
-            'profile_id': str(self.auth_data['id']),
+            'profile_id': "31841918",
             'udacl': 'resh'
         }
 
