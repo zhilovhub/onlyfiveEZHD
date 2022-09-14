@@ -17,3 +17,6 @@ GROUP_ID_CDZ = os.environ["GROUP_ID_CDZ"]
 MAIN_TOKEN = os.environ["MAIN_TOKEN"]
 
 AUTH_TOKEN = os.environ["AUTH_TOKEN"]
+
+LOGIN = os.environ["LOGIN"]
+PASSWORD_HASH2 = os.environ["PASSWORD_HASH2"]

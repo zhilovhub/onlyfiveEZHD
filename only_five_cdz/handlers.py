@@ -10,33 +10,17 @@ class Handlers:
 
     async def set_auth_data(self) -> None:
         """Sets auth data"""
-        # url = 'https://uchebnik.mos.ru/api/sessions/demo'
-        # data = {"login": "", "password_hash2": ""}
-        # headers = {
-        #     "Content-type": "application/json",
-        #     "Accept": "application/json; charset=UTF-8"
-        # }
-        #
-        # async with aiohttp.ClientSession(headers=headers) as session:
-        #     async with session.post(url, data=dumps(data)) as response:
-        #         self.auth_data = await response.json()
-        self.auth_data = {
-            'id': 1000000000,
-            'profiles': [{
-                'id': 1000000000,
-                'type': 'demo',
-                'roles': [],
-                'user_id': 1000000000,
-                'agree_pers_data': False,
-                'agreement_accepted': False,
-                'subject_ids': []
-            }],
-            'phone_number': '',
-            'authentication_token': AUTH_TOKEN,
-            'password_change_required': False,
-            'activity': []
+        url = 'https://uchebnik.mos.ru/api/sessions'
+        data = {"login": LOGIN, "password_hash2": PASSWORD_HASH2}
+        headers = {
+            "Content-type": "application/json",
+            "Accept": "application/json; charset=UTF-8"
         }
 
+        async with aiohttp.ClientSession(headers=headers) as session:
+            async with session.post(url, data=dumps(data),
+                                    proxy="http://4VyjPz:MqE23V@88.218.72.101:9920") as response:
+                self.auth_data = await response.json()
 
     async def is_member(self, user_id: int) -> int:
         """Check if user is member"""
@@ -108,16 +92,25 @@ class Handlers:
         }
 
         request_cookies = {
-            'auth_token': self.auth_data['authentication_token'],
-            'profile_id': "31841918",
-            'udacl': 'resh'
+            "auth_token": self.auth_data["authentication_token"],
+            "profile_id": self.auth_data["profiles"][0]["id"]
         }
 
         headers = {"Content-type": "application/json"}
 
-        async with aiohttp.ClientSession(headers=headers, cookies=request_cookies) as session:
-            async with session.post(parse_url, data=dumps(request_data),
-                                    proxy="http://4VyjPz:MqE23V@88.218.72.101:9920") as response:
-                parsed_answers = await response.json()
+        attempts = 0
+        while attempts < 5:
+            async with aiohttp.ClientSession(headers=headers, cookies=request_cookies) as session:
+                async with session.post(parse_url, data=dumps(request_data),
+                                        proxy="http://4VyjPz:MqE23V@88.218.72.101:9920") as response:
+                    if response.status in (401, 403):
+                        await self.set_auth_data()
+                        print(await response.text())
+                        attempts += 1
+                        continue
+                    parsed_answers = await response.json()
+                    break
+        else:
+            raise Exception("Attempts out")
 
         return parsed_answers
