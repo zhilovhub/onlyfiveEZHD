@@ -644,7 +644,7 @@ class MyClassesHandlers(SupportingFunctions):
 
                 if lesson_index.isdigit():
                     if 0 < int(lesson_index) <= max_lesson_index:
-                        if 0 < len(homework_text) <= 70:
+                        if 0 < len(homework_text) <= 200:
                             self.diary_homework_db.update_lesson_in_temp_table(user_id, homework_text, lesson_index)
 
                             new_formatted_day_homework = \
@@ -658,7 +658,7 @@ class MyClassesHandlers(SupportingFunctions):
                                                         trans_message)
                         else:
                             trans_message = f"Текст дз не может быть пустым или быть длиннее " \
-                                            f"70 символов\n\n{ask_message}"
+                                            f"200 символов\n\n{ask_message}"
                             await self.state_transition(user_id, States.S_EDIT_HOMEWORK_WEEKDAY_MYCLASSES,
                                                         trans_message)
                     else:
