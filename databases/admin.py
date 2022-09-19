@@ -10,6 +10,9 @@ class AdminCommands(DataBase):
             with self.connection.cursor() as cursor:
                 cursor.execute(AdminQueries.create_table_admin_panel_query)
 
+                # Insert admin row if not exists
+                cursor.execute(AdminQueries.insert_admin_row_query, (ADMIN_ID,))
+
         except Error as e:
             print(e)
 
@@ -20,3 +23,5 @@ class AdminQueries:
         
         maintenance BOOLEAN DEFAULT False
     )"""
+
+    insert_admin_row_query = """INSERT INTO admin_panel (user_id) VALUES(%s) ON CONFLICT DO NOTHING"""
