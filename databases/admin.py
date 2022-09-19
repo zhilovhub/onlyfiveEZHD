@@ -24,6 +24,11 @@ class AdminCommands(DataBase):
 
             return maintenance
 
+    def update_maintenance(self, maintenance) -> None:
+        """Updates maintenance"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(AdminQueries.update_maintenance_query, (maintenance,))
+
 
 class AdminQueries:
     create_table_admin_panel_query = """CREATE TABLE IF NOT EXISTS admin_panel(
@@ -35,3 +40,5 @@ class AdminQueries:
     get_maintenance_query = """SELECT maintenance FROM admin_panel WHERE id=1"""
 
     insert_admin_row_query = """INSERT INTO admin_panel (id) VALUES(1) ON CONFLICT DO NOTHING"""
+
+    update_maintenance_query = """UPDATE admin_panel SET maintenance=%s WHERE id=1"""

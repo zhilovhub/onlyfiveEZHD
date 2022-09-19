@@ -85,6 +85,16 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
             trans_message = "Опишите свой вопрос..."
             await self.state_transition(user_id, States.S_ENTER_TECHNICAL_SUPPORT_MESSAGE, trans_message)
 
+        elif payload["text"] == "Тех обслуживание":
+            maintenance = self.admin_panel_db.get_maintenance()
+            self.admin_panel_db.update_maintenance(not maintenance)
+
+            if maintenance:
+                trans_message = "Тех обслуживание ВЫКЛЮЧЕНО!"
+            else:
+                trans_message = "Тех обслуживание ВКЛЮЧЕНО!"
+            await self.state_transition(user_id, States.S_NOTHING, trans_message)
+
         elif payload["text"] in ("enter_the_classroom", "look_at_the_classroom"):
             classroom_id = payload["classroom_id"]
             classroom_name, school_name, access, description = \

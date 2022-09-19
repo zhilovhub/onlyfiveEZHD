@@ -93,7 +93,7 @@ class KeyBoards:
         if is_admin:
             color = KeyboardButtonColor.POSITIVE if maintenance else KeyboardButtonColor.NEGATIVE
             keyboard_menu.row()
-            keyboard_menu.add(Text("Тех осблуживание", payload=KeyBoards.get_payload("Тех осблуживание")),
+            keyboard_menu.add(Text("Тех обслуживание", payload=KeyBoards.get_payload("Тех обслуживание")),
                               color=color)
 
         # keyboard_menu.row()
