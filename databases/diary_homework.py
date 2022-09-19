@@ -741,7 +741,7 @@ class DiaryHomeworkQueries:
     get_week_type_from_temp_table_query = """SELECT week_type FROM temp_weekday_diary WHERE user_id=%s"""
     get_temp_weekday_name_query = """SELECT weekday FROM temp_weekday_diary WHERE user_id=%s"""
 
-    get_all_classroom_ids_query = """SELECT classroom_id FROM classroom"""
+    get_all_classroom_ids_query = """SELECT classroom_id FROM classroom WHERE created=True"""
 
     insert_classroom_id_homework_current_week_query = "INSERT INTO homework_current_week (classroom_id) VALUES(%s)"
     insert_classroom_id_homework_next_week_query = "INSERT INTO homework_next_week (classroom_id) VALUES(%s)"
