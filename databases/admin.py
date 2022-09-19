@@ -11,17 +11,27 @@ class AdminCommands(DataBase):
                 cursor.execute(AdminQueries.create_table_admin_panel_query)
 
                 # Insert admin row if not exists
-                cursor.execute(AdminQueries.insert_admin_row_query, (ADMIN_ID,))
+                cursor.execute(AdminQueries.insert_admin_row_query)
 
         except Error as e:
             print(e)
 
+    def get_maintenance(self) -> bool:
+        """Returns True if maintenance"""
+        with self.connection.cursor() as cursor:
+            cursor.execute(AdminQueries.get_maintenance_query)
+            maintenance = cursor.fetchone()[0]
+
+            return maintenance
+
 
 class AdminQueries:
     create_table_admin_panel_query = """CREATE TABLE IF NOT EXISTS admin_panel(
-        user_id SERIAL NOT NULL UNIQUE PRIMARY KEY,
+        id INT NOT NULL UNIQUE PRIMARY KEY,
         
         maintenance BOOLEAN DEFAULT False
     )"""
 
-    insert_admin_row_query = """INSERT INTO admin_panel (user_id) VALUES(%s) ON CONFLICT DO NOTHING"""
+    get_maintenance_query = """SELECT maintenance FROM admin_panel WHERE id=1"""
+
+    insert_admin_row_query = """INSERT INTO admin_panel (id) VALUES(1) ON CONFLICT DO NOTHING"""

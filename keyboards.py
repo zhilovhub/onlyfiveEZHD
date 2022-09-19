@@ -25,18 +25,6 @@ class KeyBoards:
     # EMPTY KEYBOARD
     KEYBOARD_EMPTY = Keyboard()
 
-    # MENU KEYBOARD
-    KEYBOARD_MENU = Keyboard()
-    KEYBOARD_MENU.add(Text("Найти класс", payload=get_payload("Найти класс")))
-    KEYBOARD_MENU.add(Text("Создать класс", payload=get_payload("Создать класс")))
-    KEYBOARD_MENU.row()
-    KEYBOARD_MENU.add(Text("Мои классы", payload=get_payload("Мои классы")))
-    # KEYBOARD_MENU.row()
-    # KEYBOARD_MENU.add(Text("Создать беседу класса", payload=get_payload("Создать беседу класса")))
-    # KEYBOARD_MENU.add(Text("Настройка беседы класса", payload=get_payload("Настройка беседы класса")))
-    # KEYBOARD_MENU.row()
-    # KEYBOARD_MENU.add(Text("Обращение в тех. поддержку", payload=get_payload("Обращение в тех. поддержку")))
-
     # CANCEL_SEND KEYBOARD
     KEYBOARD_CANCEL_SEND = Keyboard()
     KEYBOARD_CANCEL_SEND.add(Text("Отменить", payload=get_payload("Отменить")), color=KeyboardButtonColor.NEGATIVE)
@@ -92,6 +80,29 @@ class KeyBoards:
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add(Text("⏪Назад", payload=get_payload("Назад")))
     KEYBOARD_BACK_MENU_DELETE_REQUEST.add(Text("Главное меню", payload=get_payload("Главное меню")),
                                           color=KeyboardButtonColor.PRIMARY)
+
+    # MENU KEYBOARD
+    @staticmethod
+    def get_menu_keyboard(is_admin: bool, maintenance: bool) -> str:
+        keyboard_menu = Keyboard()
+        keyboard_menu.add(Text("Найти класс", payload=KeyBoards.get_payload("Найти класс")))
+        keyboard_menu.add(Text("Создать класс", payload=KeyBoards.get_payload("Создать класс")))
+        keyboard_menu.row()
+        keyboard_menu.add(Text("Мои классы", payload=KeyBoards.get_payload("Мои классы")))
+
+        if is_admin:
+            color = KeyboardButtonColor.POSITIVE if maintenance else KeyboardButtonColor.NEGATIVE
+            keyboard_menu.row()
+            keyboard_menu.add(Text("Тех осблуживание", payload=KeyBoards.get_payload("Тех осблуживание")),
+                              color=color)
+
+        # keyboard_menu.row()
+        # keyboard_menu.add(Text("Создать беседу класса", payload=get_payload("Создать беседу класса")))
+        # keyboard_menu.add(Text("Настройка беседы класса", payload=get_payload("Настройка беседы класса")))
+        # keyboard_menu.row()
+        # keyboard_menu.add(Text("Обращение в тех. поддержку", payload=get_payload("Обращение в тех. поддержку")))
+
+        return keyboard_menu.get_json()
 
     # CHOOSE_NOTIFICATION KEYBOARD
     @staticmethod

@@ -19,6 +19,7 @@ class SupportingFunctions:
         self.role_db = role_db
         self.notification_db = notification_db
         self.event_db = event_db
+        self.admin_panel_db = admin_panel_db
 
         self.bot = bot
 
@@ -51,8 +52,14 @@ class SupportingFunctions:
         """Changes states"""
         match next_state:
             case States.S_NOTHING:
+                is_admin = self.user_db.check_user_is_admin(user_id)
+                if is_admin:
+                    maintenance = self.admin_panel_db.get_maintenance()
+                else:
+                    maintenance = False
+
                 await self.send_message(user_id, message,
-                                        KeyBoards.KEYBOARD_MENU.get_json())
+                                        KeyBoards.get_menu_keyboard(is_admin, maintenance))
 
             # CLASSCREATE
             case States.S_ENTER_CLASS_NAME_CLASSCREATE:
