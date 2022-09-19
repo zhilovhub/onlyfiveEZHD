@@ -8,7 +8,7 @@ class AdminCommands(DataBase):
 
         try:
             with self.connection.cursor() as cursor:
-                cursor.exexute(AdminQueries.create_table_admin_panel_query)
+                cursor.execute(AdminQueries.create_table_admin_panel_query)
 
         except Error as e:
             print(e)

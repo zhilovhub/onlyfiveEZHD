@@ -5,3 +5,4 @@ from .users import *
 from .diary_homework import *
 from .notification import *
 from .events import *
+from .admin import *

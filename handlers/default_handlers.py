@@ -15,11 +15,12 @@ class Handlers(ClassroomSettingsHandlers, ClassCreateHandlers, FindClassHandlers
     def __init__(self, bot: Bot, user_db: UserDataCommands,
                  classroom_db: ClassroomCommands, technical_support_db: TechnicalSupportCommands,
                  diary_homework_db: DiaryHomeworkCommands, role_db: RoleCommands,
-                 notification_db: NotificationCommands, event_db: EventCommands) -> None:
+                 notification_db: NotificationCommands, event_db: EventCommands, admin_panel_db: AdminCommands) -> None:
         """Initialization"""
         super().__init__(bot=bot, user_db=user_db, classroom_db=classroom_db,
                          technical_support_db=technical_support_db, diary_homework_db=diary_homework_db,
-                         role_db=role_db, notification_db=notification_db, event_db=event_db)
+                         role_db=role_db, notification_db=notification_db, event_db=event_db,
+                         admin_panel_db=admin_panel_db)
 
     async def s_nothing_handler(self, user_id: int, payload: dict) -> None:
         """Handling States.S_NOTHING"""

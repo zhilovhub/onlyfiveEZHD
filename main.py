@@ -26,6 +26,7 @@ diary_homework_db = DiaryHomeworkCommands(connection)
 role_db = RoleCommands(connection)
 notification_db = NotificationCommands(connection)
 event_db = EventCommands(connection)
+admin_panel_db = AdminCommands(connection)
 
 # All handlers + bot
 bot = Bot(TOKEN)
@@ -36,7 +37,8 @@ handlers_class = Handlers(bot=bot,
                           diary_homework_db=diary_homework_db,
                           role_db=role_db,
                           notification_db=notification_db,
-                          event_db=event_db
+                          event_db=event_db,
+                          admin_panel_db=admin_panel_db
                           )
 
 
