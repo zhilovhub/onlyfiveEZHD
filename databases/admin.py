@@ -16,7 +16,7 @@ class AdminCommands(DataBase):
 
 class AdminQueries:
     create_table_admin_panel_query = """CREATE TABLE IF NOT EXISTS admin_panel(
-        id SERIAL NOT NULL UNIQUE PRIMARY KEY,
+        user_id SERIAL NOT NULL UNIQUE PRIMARY KEY,
         
         maintenance BOOLEAN DEFAULT False
     )"""

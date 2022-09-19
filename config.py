@@ -23,7 +23,7 @@ if os.path.exists("set_environ_vars.py"):
 
 # VK_api constants
 TOKEN = os.environ["TOKEN"]
-ADMINS_ID = loads(os.environ["ADMINS_ID"])
+ADMIN_ID = int(os.environ["ADMIN_ID"])
 GROUP_ID = int(os.environ["GROUP_ID"])
 
 # DB constants

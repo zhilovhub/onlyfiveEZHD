@@ -84,7 +84,7 @@ async def listen_messages(message: Message) -> None:
     except Exception as e:
         await handlers_class.send_message(user_id=user_id,
                                           message="Произошла какая-то ошибка, информация подана админу")
-        await handlers_class.send_message(user_id=ADMINS_ID[0], message=str(e))
+        await handlers_class.send_message(user_id=ADMIN_ID, message=str(e))
         raise e
 
 
@@ -107,7 +107,7 @@ async def listen_message_events(event: GroupTypes.MessageEvent):
     except Exception as e:
         await handlers_class.send_message(user_id=user_id,
                                           message="Произошла какая-то ошибка, информация подана админу")
-        await handlers_class.send_message(user_id=ADMINS_ID[0], message=str(e))
+        await handlers_class.send_message(user_id=ADMIN_ID, message=str(e))
 
 
 async def filter_dialog_state(user_id: int, message: str, payload: dict, current_dialog_state: int) -> None:
