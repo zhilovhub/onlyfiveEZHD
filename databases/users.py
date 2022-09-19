@@ -25,7 +25,7 @@ class UserDataCommands(DataBase):
         with self.connection.cursor() as cursor:
             try:
                 cursor.execute(UserDataQueries.insert_new_user_query, (user_id, screen_name, first_name,
-                                                                       last_name, is_ready))
+                                                                       last_name, is_ready, False))
             except Error as e:
                 print(e, 123)
 
@@ -43,6 +43,17 @@ class UserDataCommands(DataBase):
                 cursor.execute(UserDataQueries.check_user_is_ready_query, (user_id,))
                 user = cursor.fetchone()
                 return True if user else False
+
+        except Error as e:
+            print(e)
+
+    def check_user_is_admin(self, user_id: int) -> bool:
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(UserDataQueries.check_user_is_admin_query, (user_id,))
+                is_admin = cursor.fetchone()[0]
+
+                return is_admin
 
         except Error as e:
             print(e)
@@ -74,14 +85,16 @@ class UserDataQueries:
         first_name VARCHAR(255),
         last_name VARCHAR(255),
         is_ready BOOLEAN,
-        state INT
+        state INT,
+        is_admin BOOLEAN DEFAULT False
     )"""
 
     get_user_first_and_last_name_query = """SELECT first_name, last_name FROM Users WHERE user_id=%s"""
     get_user_dialog_state_query = """SELECT state FROM Users WHERE user_id=%s"""
     check_user_is_ready_query = """SELECT * FROM Users WHERE user_id=%s AND is_ready=TRUE"""
+    check_user_is_admin_query = """SELECT is_admin FROM Users WHERE user_id=%s"""
 
-    insert_new_user_query = """INSERT INTO Users VALUES(%s, %s, %s, %s, %s, 0)"""
+    insert_new_user_query = """INSERT INTO Users VALUES(%s, %s, %s, %s, %s, 0, %s)"""
 
     set_user_is_ready_query = """UPDATE Users SET is_ready=True WHERE user_id=%s"""
     set_user_dialog_state_query = """UPDATE Users SET state=%s WHERE user_id=%s"""
