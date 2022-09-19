@@ -51,36 +51,42 @@ async def listen_messages(message: Message) -> None:
     payload = message.get_payload_json()
 
     try:
-        user_information = await handlers_class.get_user_info(user_id)  # User_id, first_name, nickname
+        maintenance = admin_panel_db.get_maintenance()
 
-        user_db.insert_new_user(user_id,
-                                user_information["screen_name"],
-                                user_information["first_name"],
-                                user_information["last_name"],
-                                False
-                                )  # Will add a new user if user writes his first message
-        classroom_db.insert_new_customizer(user_id)
+        if not maintenance or user_db.check_user_is_admin(user_id):  # Not maintenance or user is admin
+            user_information = await handlers_class.get_user_info(user_id)  # User_id, first_name, nickname
 
-        await handlers_class.send_message(user_id, "Бот на тех обслуживании")
-        # if await handlers_class.is_member(user_id):  # Checking first condition
-        #
-        #     if user_db.check_user_is_ready(user_id):  # Checking second condition
-        #
-        #         if not attachments and message_text:  # Checking user didn't send attachment
-        #             current_dialog_state = user_db.get_user_dialog_state(user_id)
-        #             await filter_dialog_state(user_id, message_text, payload, current_dialog_state)
-        #         elif attachments:
-        #             await handlers_class.send_message(user_id, "Пиши текстом... Или используй кнопки для навигации!👇🏻")
-        #         elif not message_text:
-        #             await handlers_class.send_message(user_id, "Пустой текст😐")
-        #     else:
-        #         user_db.set_user_is_ready(
-        #             user_id)  # First condition is True but this is a first user's message
-        #
-        #         await handlers_class.state_transition(user_id, States.S_NOTHING, INTRODUCTION_MESSAGE)
-        # else:
-        #     await handlers_class.send_message(user_id, "Перед использованием бота подпишись на группу!")
-        #     # User not member
+            user_db.insert_new_user(user_id,
+                                    user_information["screen_name"],
+                                    user_information["first_name"],
+                                    user_information["last_name"],
+                                    False
+                                    )  # Will add a new user if user writes his first message
+            classroom_db.insert_new_customizer(user_id)
+
+            if await handlers_class.is_member(user_id):  # Checking first condition
+
+                if user_db.check_user_is_ready(user_id):  # Checking second condition
+
+                    if not attachments and message_text:  # Checking user didn't send attachment
+                        current_dialog_state = user_db.get_user_dialog_state(user_id)
+                        await filter_dialog_state(user_id, message_text, payload, current_dialog_state)
+                    elif attachments:
+                        await handlers_class.send_message(user_id,
+                                                          "Пиши текстом... Или используй кнопки для навигации!👇🏻")
+                    elif not message_text:
+                        await handlers_class.send_message(user_id, "Пустой текст😐")
+                else:
+                    user_db.set_user_is_ready(
+                        user_id)  # First condition is True but this is a first user's message
+
+                    await handlers_class.state_transition(user_id, States.S_NOTHING, INTRODUCTION_MESSAGE)
+            else:
+                await handlers_class.send_message(user_id, "Перед использованием бота подпишись на группу!")
+                # User not member
+        else:
+            await handlers_class.send_message(user_id, "Бот на тех обслуживании")
+
     except Exception as e:
         await handlers_class.send_message(user_id=user_id,
                                           message="Произошла какая-то ошибка, информация подана админу")
@@ -98,12 +104,17 @@ async def listen_message_events(event: GroupTypes.MessageEvent):
 
     try:
         await handlers_class.send_message_event_answer(event_id, user_id, peer_id, "")
-        await handlers_class.send_message(user_id, "Бот на тех обслуживании")
-        # if await handlers_class.is_member(user_id):
-        #     current_dialog_state = user_db.get_user_dialog_state(user_id)
-        #     await filter_callback_button_payload(user_id, payload, current_dialog_state)
-        # else:
-        #     await handlers_class.send_message(user_id, "Перед использованием бота подпишись на группу!")
+
+        maintenance = admin_panel_db.get_maintenance()
+
+        if not maintenance or user_db.check_user_is_admin(user_id):
+            if await handlers_class.is_member(user_id):
+                current_dialog_state = user_db.get_user_dialog_state(user_id)
+                await filter_callback_button_payload(user_id, payload, current_dialog_state)
+            else:
+                await handlers_class.send_message(user_id, "Перед использованием бота подпишись на группу!")
+        else:
+            await handlers_class.send_message(user_id, "Бот на тех обслуживании")
     except Exception as e:
         await handlers_class.send_message(user_id=user_id,
                                           message="Произошла какая-то ошибка, информация подана админу")
