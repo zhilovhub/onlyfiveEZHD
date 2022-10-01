@@ -20,3 +20,5 @@ AUTH_TOKEN = os.environ["AUTH_TOKEN"]
 
 LOGIN = os.environ["LOGIN"]
 PASSWORD_HASH2 = os.environ["PASSWORD_HASH2"]
+
+PROXY = os.environ["PROXY"]

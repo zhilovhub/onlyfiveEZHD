@@ -19,7 +19,7 @@ class Handlers:
 
         async with aiohttp.ClientSession(headers=headers) as session:
             async with session.post(url, data=dumps(data),
-                                    proxy="http://4VyjPz:MqE23V@88.218.72.101:9920") as response:
+                                    proxy=PROXY) as response:
                 self.auth_data = await response.json()
 
     async def is_member(self, user_id: int) -> int:
@@ -102,7 +102,7 @@ class Handlers:
         while attempts < 5:
             async with aiohttp.ClientSession(headers=headers, cookies=request_cookies) as session:
                 async with session.post(parse_url, data=dumps(request_data),
-                                        proxy="http://4VyjPz:MqE23V@88.218.72.101:9920") as response:
+                                        proxy=PROXY) as response:
                     if response.status in (401, 403):
                         await self.set_auth_data()
                         print(await response.text())
